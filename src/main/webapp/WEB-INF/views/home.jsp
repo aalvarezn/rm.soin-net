@@ -1,0 +1,1 @@
+<%@include file="plantilla/home.jsp"%>
