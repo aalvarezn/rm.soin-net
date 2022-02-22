@@ -28,6 +28,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
@@ -39,7 +40,7 @@ public class UserInfo implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEGURIDAD_CUSTOMUSER_SQ")
 	@SequenceGenerator(name = "SEGURIDAD_CUSTOMUSER_SQ", sequenceName = "SEGURIDAD_CUSTOMUSER_SQ", allocationSize = 1)
 	@Column(name = "ID")
-	private int id;
+	private Integer id;
 
 	@Column(name = "PASSWORD2")
 	private String password;
@@ -88,11 +89,11 @@ public class UserInfo implements Serializable {
 	@Transient
 	List<Integer> rolesId;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -180,7 +181,7 @@ public class UserInfo implements Serializable {
 			this.rolesId = jsonList;
 		} catch (Exception e) {
 			this.rolesId = null;
-			e.printStackTrace();
+			Sentry.capture(e, "roles");
 		}
 	}
 

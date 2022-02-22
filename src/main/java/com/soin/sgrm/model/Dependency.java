@@ -34,7 +34,7 @@ public class Dependency implements Serializable, Cloneable {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "TO_RELEASE_ID", nullable = false)
-	private Release to_release;
+	private ReleaseUser to_release;
 
 	@Column(name = "OBLIGATORIA")
 	private Boolean mandatory;
@@ -58,11 +58,11 @@ public class Dependency implements Serializable, Cloneable {
 		this.release = release;
 	}
 
-	public Release getTo_release() {
+	public ReleaseUser getTo_release() {
 		return to_release;
 	}
 
-	public void setTo_release(Release to_release) {
+	public void setTo_release(ReleaseUser to_release) {
 		this.to_release = to_release;
 	}
 

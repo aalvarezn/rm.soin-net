@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule ^ssgrm_desa/?$ /sgrm_desa/desa

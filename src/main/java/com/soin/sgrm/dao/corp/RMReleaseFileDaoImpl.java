@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.corp.RMReleaseFile;
@@ -44,7 +45,7 @@ public class RMReleaseFileDaoImpl implements RMReleaseFileDao {
 			return items;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "RMRelease");
 		} finally {
 			sessionObj.close();
 		}

@@ -26,4 +26,19 @@ public class AuthorityServiceImpl implements AuthorityService {
 		return dao.findById(id);
 	}
 
+	@Override
+	public void save(Authority authority) {
+		dao.save(authority);
+	}
+
+	@Override
+	public void update(Authority authority) {
+		dao.update(authority);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		dao.delete(id);
+	}
+
 }

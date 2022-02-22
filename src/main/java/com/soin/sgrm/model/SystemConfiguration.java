@@ -5,10 +5,14 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @SuppressWarnings("serial")
 @Entity
@@ -16,6 +20,8 @@ import javax.persistence.Table;
 public class SystemConfiguration implements Serializable {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SISTEMAS_CONFIGURATION_SQ")
+	@SequenceGenerator(name = "SISTEMAS_CONFIGURATION_SQ", sequenceName = "SISTEMAS_CONFIGURATION_SQ", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 
@@ -58,6 +64,12 @@ public class SystemConfiguration implements Serializable {
 
 	@Column(name = "VERSIONAPLICACION")
 	private boolean applicationVersion;
+	
+	@Column(name = "OBSERVACIONES")
+	private boolean observations;
+
+	@Transient
+	private Integer systemId;
 
 	public int getId() {
 		return id;
@@ -170,4 +182,23 @@ public class SystemConfiguration implements Serializable {
 	public void setApplicationVersion(boolean applicationVersion) {
 		this.applicationVersion = applicationVersion;
 	}
+
+	public Integer getSystemId() {
+		return systemId;
+	}
+
+	public void setSystemId(Integer systemId) {
+		this.systemId = systemId;
+	}
+
+	public boolean getObservations() {
+		return observations;
+	}
+
+	public void setObservations(boolean observations) {
+		this.observations = observations;
+	}
+	
+	
+
 }

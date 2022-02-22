@@ -11,9 +11,9 @@ import com.soin.sgrm.dao.AmbientDao;
 import com.soin.sgrm.model.Ambient;
 
 @Transactional("transactionManager")
-@Service("EnvironmentService")
+@Service("AmbientService")
 public class AmbientServiceImpl implements AmbientService {
-	
+
 	@Autowired
 	AmbientDao dao;
 
@@ -26,7 +26,7 @@ public class AmbientServiceImpl implements AmbientService {
 	public List<Ambient> list(String search, String system) {
 		return dao.list(search, system);
 	}
-	
+
 	@Override
 	public void addReleaseAmbient(Integer release_id, Integer ambient_id) throws SQLException {
 		dao.addReleaseAmbient(release_id, ambient_id);
@@ -40,6 +40,31 @@ public class AmbientServiceImpl implements AmbientService {
 	@Override
 	public Ambient findById(Integer id, String system) {
 		return dao.findById(id, system);
+	}
+
+	@Override
+	public List<Ambient> list() {
+		return dao.list();
+	}
+
+	@Override
+	public Ambient findById(Integer id) {
+		return dao.findById(id);
+	}
+
+	@Override
+	public void save(Ambient ambient) {
+		dao.save(ambient);
+	}
+
+	@Override
+	public void update(Ambient ambient) {
+		dao.update(ambient);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		dao.delete(id);
 	}
 
 }

@@ -1,7 +1,5 @@
 package com.soin.sgrm.controller;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Locale;
 
@@ -10,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,27 +20,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.soin.sgrm.model.ButtonCommand;
 import com.soin.sgrm.model.ButtonFile;
 import com.soin.sgrm.model.DetailButtonCommand;
 import com.soin.sgrm.model.DetailButtonFile;
 import com.soin.sgrm.model.ReleaseUser;
-import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeDetail;
-import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.service.ButtonCommandService;
 import com.soin.sgrm.service.ButtonFileService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.utils.Constant;
-import com.soin.sgrm.utils.JsonAutocomplete;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/button")
 public class ButtonController extends BaseController {
+
+	public static final Logger logger = Logger.getLogger(ButtonController.class);
 
 	@Autowired
 	private ReleaseService releaseService;
@@ -80,7 +78,7 @@ public class ButtonController extends BaseController {
 			}
 
 			if (bc.getPrincipalPage() && bc.getPageName().trim().equals("")) {
-				
+
 				res.addError("pageName", Constant.EMPTY);
 			}
 
@@ -93,19 +91,21 @@ public class ButtonController extends BaseController {
 				detail.setTypeDetail(typeDetail);
 			}
 			bc.setRelease(release);
-			bc.setHaveCrontab(false);
+//			bc.setHaveCrontab(false);
 			bc = buttonService.saveButton(bc);
 			for (DetailButtonCommand detail : bc.getDetailsButtonCommands()) {
 				detail.setButton(null);
 			}
 			res.setObj(bc);
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "button");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "button");
 			res.setStatus("exception");
 			res.setException("Error al guardar el botón: " + e.toString());
-			logs("RELEASE_ERROR", "Error al guardar el botón: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -117,20 +117,23 @@ public class ButtonController extends BaseController {
 			res.setStatus("success");
 
 			ButtonCommand button = buttonService.findById(id);
-			if (button.getHaveCrontab()) {
-				res.setStatus("fail");
-				res.setException("El Botón esta asociado a un Crontab.");
-				return res;
-			}
+			/* TODO: Hacer la validación por el ContrabID */
+//			if (button.getHaveCrontab()) {
+//				res.setStatus("fail");
+//				res.setException("El Botón esta asociado a un Crontab.");
+//				return res;
+//			}
 			buttonService.deleteButton(button);
 			res.setData(id + "");
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "button");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "button");
 			res.setStatus("exception");
 			res.setException("La acción no se pudo completar correctamente.");
-			logs("RELEASE_ERROR", "Error al eliminar el botón: " + id.toString() + ". " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -145,12 +148,14 @@ public class ButtonController extends BaseController {
 				detail.setButton(null);
 			}
 			return button;
-		}catch (SQLException ex) {
-			logs("SYSTEM_ERROR","Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "button");
+			logger.log(MyLevel.RELEASE_ERROR, ex.toString());
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error findButtonCommand. " + getErrorFormat(e));
+			Sentry.capture(e, "button");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
-		
+
 		return null;
 	}
 
@@ -199,13 +204,15 @@ public class ButtonController extends BaseController {
 				detail.setButton(null);
 			}
 			res.setObj(bc);
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "button");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "button");
 			res.setStatus("exception");
 			res.setException("Error al actualizar el botón: " + e.toString());
-			logs("RELEASE_ERROR", "Error al actualizar el botón: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -213,7 +220,8 @@ public class ButtonController extends BaseController {
 	// -------------------------------------------------------------------------------------
 	@RequestMapping(value = "/saveButtonFile-{id}", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveButtonFile(@PathVariable String id, HttpServletResponse response,
-			@Valid @ModelAttribute("ButtonFile") ButtonFile bf, BindingResult errors, ModelMap model) throws SQLException {
+			@Valid @ModelAttribute("ButtonFile") ButtonFile bf, BindingResult errors, ModelMap model)
+			throws SQLException {
 		JsonResponse res = new JsonResponse();
 		try {
 			ReleaseUser release = releaseService.findReleaseUserById(Integer.parseInt(id));
@@ -242,9 +250,10 @@ public class ButtonController extends BaseController {
 			}
 			res.setObj(bf);
 		} catch (Exception e) {
+			Sentry.capture(e, "button");
 			res.setStatus("exception");
 			res.setException("Error al guardar el botón: " + e.toString());
-			logs("RELEASE_ERROR", "Error al guardar el botón: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -264,9 +273,10 @@ public class ButtonController extends BaseController {
 			buttonFileService.deleteButton(button);
 			res.setData(id + "");
 		} catch (Exception e) {
+			Sentry.capture(e, "button");
 			res.setStatus("exception");
 			res.setException("La acción no se pudo completar correctamente.");
-			logs("RELEASE_ERROR", "Error al eliminar el botón: " + id.toString() + ". " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -282,7 +292,8 @@ public class ButtonController extends BaseController {
 			}
 			return button;
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error findButtonFile. " + getErrorFormat(e));
+			Sentry.capture(e, "button");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return null;
 	}
@@ -318,9 +329,10 @@ public class ButtonController extends BaseController {
 			}
 			res.setObj(bf);
 		} catch (Exception e) {
+			Sentry.capture(e, "button");
 			res.setStatus("exception");
 			res.setException("Error al actualizar el botón: " + e.toString());
-			logs("RELEASE_ERROR", "Error al actualizar el botón: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}

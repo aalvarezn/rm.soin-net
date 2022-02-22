@@ -26,6 +26,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
@@ -70,10 +71,10 @@ public class ButtonFile implements Serializable {
 	private String permissions;
 
 	@Column(name = "SUSTITUIR_VARIABLES")
-	private boolean replaceVariables;
+	private Boolean replaceVariables;
 
 	@Column(name = "DISPONIBILIDAD_USERMIN")
-	private boolean userminAvailability;
+	private Boolean userminAvailability;
 
 	@Column(name = "COMANDO_ANTES_EDITAR")
 	@NotEmpty(message = Constant.EMPTY)
@@ -216,7 +217,7 @@ public class ButtonFile implements Serializable {
 			this.detailsButtonFiles = jsonList;
 		} catch (Exception e) {
 			this.detailsButtonFiles = null;
-			e.printStackTrace();
+			Sentry.capture(e, "buttonFile");
 		}
 	}
 

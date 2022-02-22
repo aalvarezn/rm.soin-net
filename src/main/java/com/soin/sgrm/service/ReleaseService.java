@@ -1,6 +1,7 @@
 package com.soin.sgrm.service;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +22,15 @@ import com.soin.sgrm.utils.ReleaseCreate;
 public interface ReleaseService {
 
 	/* Creado para visualizar la paginacion por ajax de 10 items */
-	JsonSheet<?> listByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch)
-			throws SQLException;
+	JsonSheet<?> listByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
 
 	JsonSheet<?> listByTeams(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			Object[] ids) throws SQLException;
+			Object[] ids, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
 
-	JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch)
-			throws SQLException;
+	JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
+			throws SQLException, ParseException;
 	/* #Paginacion por ajax de 10 items# */
 
 	Integer countByType(String name, String type, int query, Object[] ids);
@@ -49,7 +51,7 @@ public interface ReleaseService {
 
 	List<ReleaseUser> list(String search, String release_id) throws SQLException;
 
-	void cancelRelease(ReleaseEdit release) throws Exception;
+	void updateStatusRelease(ReleaseEdit release) throws Exception;
 
 	Release findReleaseById(Integer id) throws SQLException;
 
@@ -58,5 +60,11 @@ public interface ReleaseService {
 	void requestRelease(Release release) throws SQLException;
 
 	ArrayList<ReleaseObjectEdit> saveReleaseObjects(Integer release_id, ArrayList<ReleaseObjectEdit> objects);
+
+	String generateTPO_BT_ReleaseNumber(String system_id, String requirement_name);
+
+	String verifySecuence(String partCode);
+	
+	String generateReleaseNumber(String requeriment, String requirement_name, String system_id);
 
 }

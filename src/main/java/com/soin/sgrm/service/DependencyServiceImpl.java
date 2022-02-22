@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.DependencyDao;
 import com.soin.sgrm.model.Dependency;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 
 @Transactional("transactionManager")
@@ -34,7 +35,7 @@ public class DependencyServiceImpl implements DependencyService {
 	}
 
 	@Override
-	public ArrayList<Dependency> save(Release release, ArrayList<Dependency> dependencies) {
+	public ArrayList<Dependency> save(ReleaseEdit release, ArrayList<Dependency> dependencies) {
 		return dao.save(release, dependencies);
 	}
 

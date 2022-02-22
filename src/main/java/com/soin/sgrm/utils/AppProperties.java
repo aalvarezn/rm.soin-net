@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.utils.AppProperties;
 import com.soin.sgrm.utils.Constant;
 
@@ -22,9 +23,9 @@ public class AppProperties {
 			this.properties.load(resourceInputStream);
 			resourceInputStream.close();
 		} catch (FileNotFoundException fnfe) {
-//			logger.error("No se logro cargar el archivo de propiedades", fnfe);
+			Sentry.capture(fnfe, "properties");
 		} catch (IOException e) {
-//			logger.error(e);
+			Sentry.capture(e, "properties");
 		}
 	}
 

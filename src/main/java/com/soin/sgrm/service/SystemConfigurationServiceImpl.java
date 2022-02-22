@@ -36,4 +36,9 @@ public class SystemConfigurationServiceImpl implements SystemConfigurationServic
 		return dao.update(systemConfig);
 	}
 
+	@Override
+	public void save(SystemConfiguration systemConfig) {
+		dao.save(systemConfig);
+	}
+
 }

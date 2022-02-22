@@ -6,6 +6,8 @@
 	value="<c:url value='/'/>" />
 <input type="hidden" id="userInfo_username" name="userInfo_username"
 	value="${userInfo.username}" />
+<input type="hidden" id="userInfo_Id" name="userInfo_Id"
+	value="${userInfo.id}" />
 <nav class="navbar">
 	<div class="container-fluid">
 		<div class="navbar-header">
@@ -17,7 +19,7 @@
 		<div class="collapse navbar-collapse" id="navbar-collapse">
 			<ul class="nav navbar-nav navbar-right">
 
-				<li><a><i class="material-icons">person_outline</i>
+				<li><a href="<c:url value='/profile/'/> "><i class="material-icons">person_outline</i>
 						<p style="float: right; padding-top: 3px; padding-left: 5px">${name }</p></a></li>
 
 				<!-- Notifications -->

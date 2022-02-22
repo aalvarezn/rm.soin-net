@@ -1,11 +1,7 @@
 package com.soin.sgrm.configuration;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Properties;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -20,15 +16,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.utils.AppProperties;
-import com.soin.sgrm.utils.MyLevel;
+
+import com.soin.sgrm.exception.Sentry;
 
 @Configuration
 @EnableTransactionManagement
@@ -50,7 +45,7 @@ public class HibernateConfiguration {
 	public LocalSessionFactoryBean sessionFactory() {
 		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
 		sessionFactory.setDataSource(dataSource());
-		sessionFactory.setPackagesToScan(new String[] { "com.soin.sgrm.model", "com.soin.sgrm.wf.model" });
+		sessionFactory.setPackagesToScan(new String[] { "com.soin.sgrm.model", "com.soin.sgrm.model.wf" });
 		sessionFactory.setHibernateProperties(hibernateProperties());
 		return sessionFactory;
 	}
@@ -66,7 +61,7 @@ public class HibernateConfiguration {
 				dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm");
 				return dataSource;
 			} catch (NamingException e) {
-				e.printStackTrace();
+				Sentry.capture(e, "hibernate");
 			}
 		} else {
 			// --- qa ---
@@ -76,7 +71,7 @@ public class HibernateConfiguration {
 					dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_qa");
 					return dataSource;
 				} catch (NamingException e) {
-					e.printStackTrace();
+					Sentry.capture(e, "hibernate");
 				}
 			} else {
 				// --- desa ---
@@ -85,7 +80,7 @@ public class HibernateConfiguration {
 					dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_desa");
 					return dataSource;
 				} catch (NamingException e) {
-					e.printStackTrace();
+					Sentry.capture(e, "hibernate");
 				}
 			}
 		}

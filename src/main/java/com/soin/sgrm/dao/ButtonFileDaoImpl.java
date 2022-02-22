@@ -12,6 +12,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ButtonCommand;
 import com.soin.sgrm.model.ButtonFile;
 import com.soin.sgrm.model.DetailButtonCommand;
@@ -45,7 +46,7 @@ public class ButtonFileDaoImpl implements ButtonFileDao {
 			transObj.commit();
 			return button;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "buttonFile");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -75,7 +76,7 @@ public class ButtonFileDaoImpl implements ButtonFileDao {
 			transObj.commit();
 			return button;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "buttonFile");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -104,7 +105,7 @@ public class ButtonFileDaoImpl implements ButtonFileDao {
 			sessionObj.delete(button);
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "buttonFile");
 			transObj.rollback();
 			throw e;
 		} finally {

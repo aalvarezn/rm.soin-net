@@ -1,6 +1,8 @@
 var $csvForm = $('#csvForm');
 $(function() {
-
+	$('#configurationItemsTable').on('draw.dt', function() {
+		$("#countObject").text($('#configurationItemsTable').DataTable().rows().count());
+	});
 });
 
 function openCSVModal() {
@@ -18,24 +20,24 @@ function addRowObject(obj) {
 
 	for (var i = 0; i < obj.length; i++) {
 		table.row
-				.add(
-						[
-								obj[i].name,
-								obj[i].description,
-								obj[i].revision_SVN,
-								formatDateCustom(obj[i].revision_Date, '/'),
-								$(
-										"#addObjectItemModal #typeObject option[id='"
-												+ obj[i].typeObject + "']")
-										.text(),
-								$(
-										"#addObjectItemModal #itemConfiguration option[id='"
-												+ obj[i].itemConfiguration
-												+ "']").text(),
-								'<div style="text-align: center"> <i onclick="deleteconfigurationItemsRow('
-										+ obj[i].id
-										+ ')" class="material-icons gris" style="font-size: 30px;">delete</i></div>' ])
-				.node().id = obj[i].id;
+		.add(
+				[
+					obj[i].name,
+					obj[i].description,
+					obj[i].revision_SVN,
+					formatDateCustom(obj[i].revision_Date, '/'),
+					$(
+							"#addObjectItemModal #typeObject option[id='"
+							+ obj[i].typeObject + "']")
+							.text(),
+							$(
+									"#addObjectItemModal #itemConfiguration option[id='"
+									+ obj[i].itemConfiguration
+									+ "']").text(),
+									'<div style="text-align: center"> <i onclick="deleteconfigurationItemsRow('
+									+ obj[i].id
+									+ ')" class="material-icons gris" style="font-size: 30px;">delete</i></div>' ])
+									.node().id = obj[i].id;
 		table.draw();
 
 		if (obj[i].isSql == 1) {
@@ -58,7 +60,7 @@ function uploadCSV() {
 	$.ajax({
 		type : "POST",
 		url : cont + "release/" + "uploadCSV/" + id,
-		timeout : 60000,
+		timeout : 300000,
 		data : {
 			csv : $csvForm.find('#csv').val(),
 		},
@@ -83,7 +85,7 @@ function responseAjaxSendReleaseCSV(response) {
 
 		break;
 	case 'fail':
-		swal("Error!", response.exception, "error")
+		swalReport("Error!", response.exception, "error")
 		break;
 	case 'exception':
 		swal("Exception!", response.exception, "error")

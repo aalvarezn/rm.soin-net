@@ -12,10 +12,6 @@
 	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Waves Effect Css -->
-<link href="<c:url value='/static/plugins/node-waves/waves.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Animation Css -->
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
@@ -124,6 +120,9 @@
 										oninput="myEvent('newPassword',true)" name="newPassword"
 										placeholder="Ingrese una nueva contraseña" maxlength="32" minlength="8">
 										<div class="help-info">Min. 8, Max. 32 caracteres</div>
+										<label
+										id="mensajePass_error" class="control-label col-md-12 text-danger"
+										style="display: none;">Las contraseñas no coinciden</label>
 								</div>
 							</div>
 						</div>
@@ -199,9 +198,6 @@
 	<script
 		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
 
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
-
 	<!-- Jquery CountTo Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-countto/jquery.countTo.js'/>"></script>
@@ -246,12 +242,6 @@
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 	<script src="<c:url value='/static/js/profile/profile.js'/>"></script>
-
-	<script type="text/javascript">
-		$(document).ready(function() {
-			changeMenuItemTo('settingItem');
-		});
-	</script>
 
 </body>
 

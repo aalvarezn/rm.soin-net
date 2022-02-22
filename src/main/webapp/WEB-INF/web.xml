@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 	<display-name>sgrm</display-name>
 
-    <resource-ref>
+	<resource-ref>
 		<description>Connection SGRM</description>
 		<res-ref-name>jdbc/sgrm</res-ref-name>
 		<res-type>javax.sql.DataSource</res-type>
@@ -37,18 +37,31 @@
 		<error-code>403</error-code>
 		<location>/WEB-INF/views/plantilla/403.jsp</location>
 	</error-page>
-	
+
 	<error-page>
 		<error-code>500</error-code>
 		<location>/500</location>
 	</error-page>
 
 	<env-entry>
-		<description>Ruta local archivos</description>
-		<env-entry-name>FileStore</env-entry-name>
+		<description>Email User</description>
+		<env-entry-name>mailUser</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>E:/SGRM/archivos/</env-entry-value>
-		<!-- <env-entry-value>/home/administrator/Desktop/files/</env-entry-value> -->
+		<env-entry-value>soinpruebas@gmail.com</env-entry-value>
+	</env-entry>
+
+	<env-entry>
+		<description>Email Password</description>
+		<env-entry-name>mailPassword</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>szsjucdeicalgbek</env-entry-value>
+	</env-entry>
+	
+	<env-entry>
+		<description>Email Properties</description>
+		<env-entry-name>mailProperties</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>mail.transport.protocol=smtp; mail.smtp.auth=true; mail.smtp.starttls.enable=true; mail.smtp.ssl.trust=smtp.gmail.com; mail.debug= true</env-entry-value>
 	</env-entry>
 
 </web-app>

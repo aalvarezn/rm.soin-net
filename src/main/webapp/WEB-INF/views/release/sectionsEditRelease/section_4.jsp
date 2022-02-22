@@ -46,9 +46,7 @@
 										<div class="iconLine">
 											<a href="#" class="" style="visibility: hidden;"> <i
 												class="material-icons gris" style="font-size: 30px;">delete</i>
-											</a> <a
-												href="<c:url value='/file/download/${release.id }/${doc.id}'/>"
-												download class=""> <i class="material-icons gris"
+											</a> <a class=""> <i class="material-icons gris"
 												style="font-size: 30px;">cloud_download</i>
 											</a>
 										</div>

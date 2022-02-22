@@ -1,11 +1,15 @@
+$(function() {
+	activeItemMenu("configurationItem", true);
+});
 let $emailForm = $('#emailForm');
 let $emailTable = $('#emailTable').DataTable({
 	"language" : {
 		"emptyTable" : "No existen registros",
 		"zeroRecords" : "No existen registros"
 	},
-	"searching" : false,
-	"paging" : false
+	"ordering" : true,
+	"searching" : true,
+	"paging" : true
 });
 
 $('.tagInit').tagsInput();

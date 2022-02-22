@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ReleaseFile;
 
 @Repository
@@ -57,7 +58,7 @@ public class ReleaseFileDaoImpl implements ReleaseFileDao {
 			}
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "releaseFile");
 			transObj.rollback();
 			throw new Exception("Error al procesar la solucitud de agregar.", e);
 		} finally {
@@ -100,7 +101,7 @@ public class ReleaseFileDaoImpl implements ReleaseFileDao {
 
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "releaseFile");
 			transObj.rollback();
 			throw new Exception("Error al procesar la solucitud de eliminar archivo.", e);
 		} finally {
@@ -137,7 +138,7 @@ public class ReleaseFileDaoImpl implements ReleaseFileDao {
 			return items;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "releaseFile");
 		} finally {
 			sessionObj.close();
 		}

@@ -1,8 +1,12 @@
+$(function() {
+	activeItemMenu("projectItem");
+});
 var $projectTable = $('#projectTable').DataTable({
 	"language" : {
 		"emptyTable" : "No existen registros",
 		"zeroRecords" : "No existen registros"
 	},
+	"ordering" : true,
 	"searching" : true,
 	"paging" : true
 });

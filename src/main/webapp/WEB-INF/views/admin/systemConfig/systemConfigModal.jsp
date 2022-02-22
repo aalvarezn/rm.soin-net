@@ -17,11 +17,25 @@
 							value="${_csrf.token}" /> <input type="hidden"
 							id="systemConfigId" value="" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-10">
-							<label for="email_address">Sistema</label>
-							<div class="form-group m-b-0i">
-								<div class="form-line disabled">
-									<p id="systemName">SGRM</p>
-								</div>
+							<label>Sistema</label>
+							<div class="form-group">
+								<select id="systemId"
+									class="form-control show-tick selectpicker" data-live-search="true">
+									<option value="">-- Seleccione una opci&oacute;n --</option>
+									<c:forEach items="${systems}" var="system">
+										<option id="${system.id }" value="${system.id }">${system.name }</option>
+									</c:forEach>
+								</select> <label id="systemId_error" class="error fieldError"
+									for="system" style="visibility: hidden">Campo
+									Requerido.</label>
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 align-right">
+							<div class="switch" style="margin-top: 20px;">
+								<label>Observaciones<input
+									id="observations" type="checkbox" value="0"><span
+									class="lever"></span>
+								</label>
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 align-right">
@@ -114,8 +128,10 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
 					onclick="closeSystemConfigModal()">CANCELAR</button>
-				<button type="button" class="btn btn-primary waves-effect"
-					onclick="updateSystemConfig()">GUARDAR</button>
+				<button id="btnSaveSystemConfig" type="button"
+					class="btn btn-primary waves-effect" onclick="saveSystemConfig()">GUARDAR</button>
+				<button id="btnUpdateSystemConfig" type="button"
+					class="btn btn-primary waves-effect" onclick="updateSystemConfig()">ACTUALIZAR</button>
 			</div>
 		</div>
 	</div>

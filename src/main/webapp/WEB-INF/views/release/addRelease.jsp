@@ -16,7 +16,8 @@
 					<label>Sistema</label>
 					<div class="form-group m-b-0">
 						<select id="system_id" name="system_id"
-							class="form-control show-tick">
+							class="form-control show-tick selectpicker"
+							data-live-search="true">
 							<option value="">-- Seleccione una opci&oacute;n --</option>
 							<c:forEach items="${systems}" var="system">
 								<option value="${system.code }">${system.code }</option>
@@ -77,14 +78,15 @@
 								for="problem">Problema</label> <input name="group1" type="radio"
 								id="ss" value="SS" /> <label for="ss">SS</label> <input
 								name="group1" type="radio" id="so" value="SO-ICE" /> <label
-								for="so">SO-ICE</label>
+								for="so">SO-ICE</label> <input name="group1" type="radio"
+								id="infra" value="INFRA" /> <label for="infra">INFRA</label>
 						</div>
 					</div>
 				</div>
 				<div class="col-sm-12">
 					<div class="form-group m-b-0">
 						<div class="form-line">
-							<textarea rows="2" class="form-control no-resize"
+							<textarea rows="1" class="form-control no-resize"
 								id="requirement_name" name="requirement_name" maxlength="30"
 								placeholder="Ingrese una búsqueda..."></textarea>
 							<div class="help-info">Min. 2 caracteres</div>

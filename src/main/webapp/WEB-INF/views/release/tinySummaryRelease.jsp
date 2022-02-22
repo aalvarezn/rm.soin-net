@@ -14,10 +14,6 @@
 	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Waves Effect Css -->
-<link href="<c:url value='/static/plugins/node-waves/waves.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Animation Css -->
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
@@ -158,13 +154,15 @@
 					<label for="">Descripción</label>
 					<textarea class="areaWidth" rows="" cols="">${release.description }</textarea>
 				</div>
-				<c:if test="${systemConfiguration.solutionInfo}">
 
+				<c:if test="${systemConfiguration.observations}">
 					<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 						<label for="">Observaciones</label>
 						<textarea class="areaWidth" rows="" cols="">${release.observations }</textarea>
 					</div>
+				</c:if>
 
+				<c:if test="${systemConfiguration.solutionInfo}">
 					<div class="col-md-12 col-lg-12 col-xs-6 col-sm-6 m-b-10">
 						<label for="">Solución Funcional</label>
 						<c:choose>
@@ -201,7 +199,7 @@
 					</div>
 				</c:if>
 				<div class="col-md-6 col-lg-6 col-xs-6 col-sm-6 m-b-5">
-					<label for="">Requiere Plan de ejeción</label>
+					<label for="">Requiere Plan de ejecución</label>
 					<div class="switch">
 						<c:choose>
 							<c:when test="${release.plan_required}">
@@ -915,9 +913,6 @@
 	<!-- Slimscroll Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
 
 	<!-- Jquery CountTo Plugin Js -->
 	<script

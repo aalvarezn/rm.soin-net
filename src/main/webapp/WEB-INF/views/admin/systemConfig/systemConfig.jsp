@@ -11,10 +11,6 @@
 	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Waves Effect Css -->
-<link href="<c:url value='/static/plugins/node-waves/waves.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Animation Css -->
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
@@ -113,7 +109,7 @@
 										<td>${systemConfig.id}</td>
 										<td>${systemConfig.system.code}</td>
 										<td><div style="text-align: center">
-												<i onclick="openSystemConfigModal(${systemConfig.id})"
+												<i onclick="updateSystemConfigModal(${systemConfig.id})"
 													class="material-icons gris" style="font-size: 30px;">mode_edit</i>
 											</div></td>
 									</tr>
@@ -124,6 +120,10 @@
 				</div>
 			</div>
 		</div>
+		<a id="buttonAddSystemConfig" type="button"
+			class="btn btn-primary btn-fab waves-effect fixedDown"
+			onclick="openSystemConfigModal()"> <i class="material-icons lh-1-8">add</i>
+		</a>
 	</section>
 
 	<!-- Jquery Core Js -->
@@ -144,9 +144,6 @@
 	<!-- Slimscroll Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
 
 	<!-- Jquery CountTo Plugin Js -->
 	<script

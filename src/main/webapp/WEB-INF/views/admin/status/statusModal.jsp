@@ -19,9 +19,9 @@
 							<div class="form-group">
 								<div class="form-line">
 									<input type="text" class="form-control" id="name"
-										maxlength="50" name="name" placeholder="Ingrese un nombre"
+										maxlength="25" name="name" placeholder="Ingrese un nombre"
 										style="height: 60px;">
-									<div class="help-info">Máx. 50 caracteres</div>
+									<div class="help-info">Máx. 25 caracteres</div>
 								</div>
 								<label id="name_error" class="error fieldError" for="name"
 									style="visibility: hidden">Campo Requerido.</label>

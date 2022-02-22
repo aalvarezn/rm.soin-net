@@ -31,4 +31,20 @@ public class AuthorityDaoImpl implements AuthorityDao {
 		return (Authority) crit.uniqueResult();
 	}
 
+	@Override
+	public void save(Authority authority) {
+		sessionFactory.getCurrentSession().save(authority);
+	}
+
+	@Override
+	public void update(Authority authority) {
+		sessionFactory.getCurrentSession().update(authority);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		Authority authority = findById(id);
+		sessionFactory.getCurrentSession().delete(authority);
+	}
+
 }

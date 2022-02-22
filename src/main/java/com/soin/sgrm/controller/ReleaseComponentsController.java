@@ -1,19 +1,16 @@
 package com.soin.sgrm.controller;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.soin.sgrm.model.Ambient;
 import com.soin.sgrm.model.ConfigurationItem;
 import com.soin.sgrm.model.Dependency;
 import com.soin.sgrm.model.ModifiedComponent;
@@ -46,14 +42,19 @@ import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.TypeObjectService;
 import com.soin.sgrm.service.corp.RMReleaseFileService;
 import com.soin.sgrm.utils.BulkLoad;
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.ItemObject;
 import com.soin.sgrm.utils.JsonAutocomplete;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/release")
 public class ReleaseComponentsController extends BaseController {
+
+	public static final Logger logger = Logger.getLogger(ReleaseComponentsController.class);
 
 	@Autowired
 	private DependencyService dependencyService;
@@ -84,12 +85,14 @@ public class ReleaseComponentsController extends BaseController {
 			res.setStatus("success");
 
 		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Error al agregar el ambiente: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error al agregar el ambiente. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -102,13 +105,15 @@ public class ReleaseComponentsController extends BaseController {
 			ambientService.deleteReleaseAmbient(release_id, ambient_id);
 			res.setStatus("success");
 
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Error al eliminar el ambiente: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error al eliminar el ambiente. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -135,10 +140,10 @@ public class ReleaseComponentsController extends BaseController {
 					.findById(Integer.parseInt(rObj.getObjectConfigurationItem()));
 			rObjE.setItemConfiguration(Integer.parseInt(rObj.getObjectConfigurationItem()));
 			rObjE.setTypeObject(Integer.parseInt(rObj.getObjectType()));
-			rObjE.setRevision_Date(getSqlDate(rObj.getRevisionDate()));
+			rObjE.setRevision_Date(CommonUtils.getSqlDate(rObj.getRevisionDate()));
 			rObjE.setIsSql((configurationItem.getName().equalsIgnoreCase("Base Datos")) ? 1 : 0);
 
-			Release dependRelease = releaseObjectService.findReleaseToAddByObject(rObjE, release);
+			ReleaseUser dependRelease = releaseObjectService.findReleaseToAddByObject(rObjE, release);
 			ReleaseUser releaseUser = releaseService.findReleaseUserById(id);
 			Dependency dependency = null;
 			if (dependRelease != null) {
@@ -155,13 +160,15 @@ public class ReleaseComponentsController extends BaseController {
 			res.setData(rObjE.getId() + "");
 			res.setObj(dependRelease);
 
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Error al agregar objeto: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error al agregar el objeto. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -181,9 +188,20 @@ public class ReleaseComponentsController extends BaseController {
 				return res;
 			}
 
-			Release releaseDependency = releaseObjectService.findReleaseToDeleteByObject(release, object);
-			// verificar si otro objeto tiene la misma dependencia
-			anotherDep = existAnotherDependency(release, object, releaseDependency);
+			ReleaseUser releaseDependency = releaseObjectService.findReleaseToDeleteByObject(release, object);
+
+			// verificar las dependencias de los otros objetos
+			ArrayList<ReleaseObject> objects = new ArrayList<ReleaseObject>(release.getObjects());
+			objects.remove(object);
+
+			List<Object[]> list = null;
+			if (releaseDependency != null) {
+				list = releaseObjectService.findCoDependencies(objects, releaseDependency);
+			}
+
+			if (list != null) {
+				anotherDep = existAnotherDependency(list, releaseDependency);
+			}
 
 			if (!anotherDep) { // si no tiene otras, se elimina
 				Dependency toDelete = null;
@@ -202,13 +220,15 @@ public class ReleaseComponentsController extends BaseController {
 			releaseObjectService.deleteObject(releaseId, object);
 			res.setStatus("success");
 
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Error al eliminar el objeto: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error al eliminar el objeto. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -226,10 +246,12 @@ public class ReleaseComponentsController extends BaseController {
 						list.get(i).getReleaseNumber() + ": " + list.get(i).getDescription()));
 			}
 
-		}catch (SQLException ex) {
-			logs("SYSTEM_ERROR", "Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseComponent");
+			logger.log(MyLevel.RELEASE_ERROR, ex.toString());
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error en el método releaseAutoComplete." + getErrorFormat(e));
+			Sentry.capture(e, "releaseComponent");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return listAutoComplete;
 	}
@@ -246,10 +268,12 @@ public class ReleaseComponentsController extends BaseController {
 						new JsonAutocomplete(list.get(i).getId() + "", list.get(i).getName(), list.get(i).getName()));
 			}
 			return listAutoComplete;
-		}catch (SQLException ex) {
-			logs("SYSTEM_ERROR", "Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseComponent");
+			logger.log(MyLevel.RELEASE_ERROR, ex.toString());
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error modifiedComponentAutoComplete. " + getErrorFormat(e));
+			Sentry.capture(e, "releaseComponent");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return null;
 	}
@@ -262,13 +286,15 @@ public class ReleaseComponentsController extends BaseController {
 			action = actionEnvironmentService.addReleaseAction(action, release_id);
 			res.setStatus("success");
 			res.setData(action.getId() + "");
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Error al agregar la acción: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error al agregar la acción. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -280,13 +306,15 @@ public class ReleaseComponentsController extends BaseController {
 		try {
 			actionEnvironmentService.deleteReleaseDependency(action_id, release_id);
 			res.setStatus("success");
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Error al eliminar la acción: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error al eliminar la acción. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -297,6 +325,9 @@ public class ReleaseComponentsController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			ReleaseEdit release = releaseService.findEditById(id);
+			List<ConfigurationItem> configurationItemList = configurationItemService
+					.listBySystem(release.getSystem().getId());
+			List<TypeObject> typeObjectList = typeObjectService.listBySystem(release.getSystem().getId());
 			ArrayList<MyError> errors = new ArrayList<MyError>();
 			boolean isEmpty = false;
 			String[] lines = null;
@@ -308,10 +339,10 @@ public class ReleaseComponentsController extends BaseController {
 			lines = csvLines.split("\n");
 			Map<String, Integer> duplicates = new HashMap<String, Integer>();
 			for (int i = 0; i < lines.length; i++) {
-				if (duplicates.containsKey(lines[i].split(";")[0])) {
-					duplicates.put(lines[i].split(";")[0], duplicates.get(lines[i].split(";")[0]) + 1);
+				if (duplicates.containsKey(lines[i].split(",")[0])) {
+					duplicates.put(lines[i].split(",")[0], duplicates.get(lines[i].split(",")[0]) + 1);
 				} else {
-					duplicates.put(lines[i].split(";")[0], 1);
+					duplicates.put(lines[i].split(",")[0], 1);
 				}
 			}
 			for (Map.Entry<String, Integer> entry : duplicates.entrySet()) {
@@ -319,10 +350,10 @@ public class ReleaseComponentsController extends BaseController {
 					errors.add(new MyError("Elemento " + entry.getKey(), " repetido"));
 			}
 			for (int i = 0; i < lines.length; i++) {
-				if (lines[i].split(";").length != 6) {
+				if (lines[i].split(",").length != 6) {
 					errors.add(new MyError("Linea# " + (i + 1), "No cumple formato"));
 				} else {
-					line = lines[i].split(";");
+					line = lines[i].split(",");
 					isEmpty = false;
 					for (String field : line) {
 						if (field.trim().equals(""))
@@ -331,56 +362,64 @@ public class ReleaseComponentsController extends BaseController {
 					if (isEmpty)
 						errors.add(new MyError("Linea# " + (i + 1), "Tiene campos en blanco"));
 					else
-						validLine(errors, line, i, release);
+						validLine(errors, line, i, release, configurationItemList, typeObjectList);
 				}
 			}
 			if (errors.size() != 0) {
 				res.setStatus("fail");
 				for (MyError error : errors) {
-					infoErrors += error.getKey() + " " + error.getMessage() + "\n";
+					infoErrors += error.getKey() + " " + error.getMessage() + "<br>";
 				}
 				res.setException(infoErrors);
 				res.setErrors(errors);
 				return res;
 			}
-			ArrayList<ReleaseObjectEdit> objects = createObjects(csvLines, release);
+
+			ArrayList<ReleaseObjectEdit> objects = createObjects(csvLines, release, configurationItemList,
+					typeObjectList);
+			List<Object[]> list = releaseObjectService.findReleaseToAddByObjectList(objects, release);
+
+			ReleaseUser releaseFrom = releaseService.findReleaseUserById(id);
 			ArrayList<Dependency> dependencies = new ArrayList<Dependency>();
-			ArrayList<Release> releaseDependencies = new ArrayList<Release>();
-			ReleaseUser releaseUser = releaseService.findReleaseUserById(id);
-			Release releaseObjects = releaseService.findReleaseById(id);
 			Dependency dependency = null;
-			Release dependRelease = null;
-			for (ReleaseObjectEdit rObjE : objects) {
-				dependRelease = releaseObjectService.findReleaseToAddByObject(rObjE, releaseObjects);// Busco_dependencias
-				if (dependRelease != null) {
-					releaseDependencies.add(dependRelease);
+			ReleaseUser releaseTo = null;
+			if (list != null) {
+				for (Object[] obj : list) {
+					if (!release.existDependency((Integer) obj[0])) {
+						releaseTo = new ReleaseUser();
+						releaseTo.setId((Integer) obj[0]);
+						releaseTo.setReleaseNumber((String) obj[1]);
+
+						dependency = new Dependency();
+						dependency.setRelease(releaseFrom);
+						dependency.setTo_release(releaseTo);
+						dependency.setMandatory(true);
+						dependency.setIsFunctional(false);
+						dependency.setId(0);
+						dependencies.add(dependency);
+					}
 				}
 			}
-			releaseDependencies = deleteReleaseDuplicate(releaseDependencies); // elimino dependencias repetidas
-			for (Release item : releaseDependencies) { // verifica si ya existen
-				dependency = new Dependency();
-				dependency.setRelease(releaseUser);
-				dependency.setTo_release(item);
-				dependency.setMandatory(true);
-				dependency.setIsFunctional(false);
-				dependency.setId(item.getExistDependencyId(dependency));
-				dependencies.add(dependency);
-			}
+
 			if (dependencies.size() != 0) {
-				dependencies = dependencyService.save(releaseObjects, dependencies);
+				dependencies = dependencyService.save(release, dependencies);
 				bl.setDependencies(dependencies);
 			}
+
 			objects = releaseService.saveReleaseObjects(release.getId(), objects);
+			bl.setDependencies(dependencies);
 			bl.setObjects(objects);
 			res.setObj(bl);
 			res.setStatus("success");
 		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseCSV");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "releaseCSV");
 			res.setStatus("exception");
 			res.setException("Error al cargar csv: " + e);
-			logs("RELEASE_ERROR", "Error al cargar csv. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -401,59 +440,66 @@ public class ReleaseComponentsController extends BaseController {
 				for (RMReleaseFile rmReleaseFile : list) {
 					obj = new ReleaseObjectEdit(rmReleaseFile.getFilename(), rmReleaseFile.getFilename(),
 							rmReleaseFile.getRevision() + "", release.getModule_id());
-
-					type = getTypeObjectSincronice(rmReleaseFile, release);
-					configurationItem = getConfigurationItemSincronice(rmReleaseFile, release);
-					obj.setTypeObject(type.getId());
-					obj.setItemConfiguration(configurationItem.getId());
-					obj.setModuleId(release.getModule_id());
-					obj.setRevision_Date(getSqlDate(getSystemDate().toLowerCase()));
-					obj.setIsSql((configurationItem.getName().equalsIgnoreCase("Base Datos")) ? 1 : 0);
 					if (!release.existObject(obj)) {
+						type = getTypeObjectSincronice(rmReleaseFile, release);
+						configurationItem = getConfigurationItemSincronice(rmReleaseFile, release);
+						obj.setTypeObject(type.getId());
+						obj.setItemConfiguration(configurationItem.getId());
+						obj.setModuleId(release.getModule_id());
+						obj.setRevision_Date(CommonUtils.getSqlDate(CommonUtils.getSystemDate().toLowerCase()));
+						obj.setIsSql((configurationItem.getName().equalsIgnoreCase("Base Datos")) ? 1 : 0);
 						objects.add(obj);
 					}
 				}
+			} else {
+				res.setStatus("success");
+				res.setData("No hay objeto a sincronizar!.");
+				return res;
 			}
+			List<Object[]> listObj = new ArrayList<Object[]>();
+			if (objects.size() != 0)
+				listObj = releaseObjectService.findReleaseToAddByObjectList(objects, release);
+
+			ReleaseUser releaseFrom = releaseService.findReleaseUserById(id);
+//			Release releaseObjects = releaseService.findReleaseById(id);
 			ArrayList<Dependency> dependencies = new ArrayList<Dependency>();
-			ArrayList<Release> releaseDependencies = new ArrayList<Release>();
-			ReleaseUser releaseUser = releaseService.findReleaseUserById(id);
-			Release releaseObjects = releaseService.findReleaseById(id);
 			Dependency dependency = null;
-			Release dependRelease = null;
-			for (ReleaseObjectEdit rObjE : objects) {
-				dependRelease = releaseObjectService.findReleaseToAddByObject(rObjE, releaseObjects);// Busco_dependencias
-				if (dependRelease != null) {
-					releaseDependencies.add(dependRelease);
+			ReleaseUser releaseTo = null;
+			for (Object[] object : listObj) {
+				if (!release.existDependency((Integer) object[0])) {
+					releaseTo = new ReleaseUser();
+					releaseTo.setId((Integer) object[0]);
+					releaseTo.setReleaseNumber((String) object[1]);
+
+					dependency = new Dependency();
+					dependency.setRelease(releaseFrom);
+					dependency.setTo_release(releaseTo);
+					dependency.setMandatory(true);
+					dependency.setIsFunctional(false);
+					dependency.setId(0);
+					dependencies.add(dependency);
 				}
 			}
-			releaseDependencies = deleteReleaseDuplicate(releaseDependencies); // elimino dependencias repetidas
-			for (Release item : releaseDependencies) { // verifica si ya existen
-				dependency = new Dependency();
-				dependency.setRelease(releaseUser);
-				dependency.setTo_release(item);
-				dependency.setMandatory(true);
-				dependency.setIsFunctional(false);
-				dependency.setId(item.getExistDependencyId(dependency));
-				dependencies.add(dependency);
-			}
+
 			if (dependencies.size() != 0) {
-				dependencies = dependencyService.save(releaseObjects, dependencies);
+				dependencies = dependencyService.save(release, dependencies);
 				bl.setDependencies(dependencies);
 			}
-
-			if (objects.size() > 0) {
+			if (objects.size() != 0)
 				objects = releaseService.saveReleaseObjects(release.getId(), objects);
-			}
-			res.setStatus("success");
+			bl.setDependencies(dependencies);
 			bl.setObjects(objects);
 			res.setObj(bl);
-		}catch (SQLException ex) {
+			res.setStatus("success");
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "releaseComponent");
 			res.setStatus("exception");
 			res.setException("Error al sincronizar los objetos: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error al sincronizar los objetos. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -490,45 +536,68 @@ public class ReleaseComponentsController extends BaseController {
 			type = new TypeObject();
 			type.setName("Objeto");
 			type.setExtension(".");
-			type.setSystem_id(release.getSystem().getId());
+			type.setSystem(release.getSystem());
 			type.setDescription("Objeto");
 			type = typeObjectService.save(type);
 		}
 		return type;
 	}
 
-	public ArrayList<ReleaseObjectEdit> createObjects(String csv, ReleaseEdit release) throws Exception {
+	public ArrayList<ReleaseObjectEdit> createObjects(String csv, ReleaseEdit release,
+			List<ConfigurationItem> configurationItemList, List<TypeObject> typeObjectList) throws Exception {
+
 		ArrayList<ReleaseObjectEdit> objects = new ArrayList<ReleaseObjectEdit>();
 		String[] lines = csv.split("\n");
 		ReleaseObjectEdit object = null;
 		for (int i = 0; i < lines.length; i++) { // line
 			object = new ReleaseObjectEdit();
-			object.setName(lines[i].split(";")[0]); // name
-			object.setDescription(lines[i].split(";")[1]); // description
-			object.setRevision_SVN(lines[i].split(";")[2]); // Revision_SVN
-			object.setRevision_Date(getSqlDate(lines[i].split(";")[3])); // Timestamp
-			object.setItemConfiguration(
-					configurationItemService.findByName(lines[i].split(";")[4], release.getSystem().getId()).getId());
-			object.setTypeObject(
-					typeObjectService.findByName(lines[i].split(";")[5], release.getSystem().getId()).getId());
-			object.setIsSql((lines[i].split(";")[4].equals("Base Datos")) ? 1 : 0);
+			object.setName(lines[i].split(",")[0]); // name
+			object.setDescription(lines[i].split(",")[1]); // description
+			object.setRevision_SVN(lines[i].split(",")[2]); // Revision_SVN
+			object.setRevision_Date(CommonUtils.getSqlDate(lines[i].split(",")[3])); // Timestamp
+
+			for (ConfigurationItem confItem : configurationItemList) {
+				if ((lines[i].split(",")[4]).equals(confItem.getName())) {
+					object.setItemConfiguration(confItem.getId());
+				}
+			}
+			for (TypeObject typeObject : typeObjectList) {
+				if ((lines[i].split(",")[5]).equals(typeObject.getName())) {
+					object.setTypeObject(typeObject.getId());
+				}
+			}
+			object.setIsSql((lines[i].split(",")[4].equals("Base Datos")) ? 1 : 0);
 			object.setModuleId(release.getModule_id());
 			objects.add(object);
 		}
 		return objects;
 	}
 
-	public ArrayList<MyError> validLine(ArrayList<MyError> errors, String[] line, int i, ReleaseEdit release) {
-		if (isSqlDate(line[3].trim()) == null) {
+	public ArrayList<MyError> validLine(ArrayList<MyError> errors, String[] line, int i, ReleaseEdit release,
+			List<ConfigurationItem> configurationItemList, List<TypeObject> typeObjectList) {
+		if (CommonUtils.isSqlDate(line[3].trim()) == null) {
 			errors.add(new MyError("Linea# " + (i + 1), "Fecha en formato incorrecto"));
 		}
 		if (release.existObject(line[0].trim())) {// nombre no exista ya para el release
 			errors.add(new MyError("Linea# " + (i + 1) + " Nombre " + (line[0].trim()), "Ya existe"));
 		}
-		if (!configurationItemService.existItem((line[4].trim()), release.getSystem().getId())) {// NombreItem exista
+
+		Boolean existItem = false;
+		for (ConfigurationItem item : configurationItemList) {
+			if (line[4].trim().equals(item.getName())) {
+				existItem = true;
+			}
+		}
+		Boolean existObject = false;
+		for (TypeObject typeObject : typeObjectList) {
+			if (line[5].trim().equals(typeObject.getName())) {
+				existObject = true;
+			}
+		}
+		if (!existItem) {// NombreItem exista
 			errors.add(new MyError("Linea# " + (i + 1) + " NombreItemConfiguración " + (line[4].trim()), "inválido"));
 		}
-		if (!typeObjectService.existTypeObject((line[5].trim()), release.getSystem().getId())) {// NombreTipo exista
+		if (!existObject) {// NombreTipo exista
 			errors.add(new MyError("Linea# " + (i + 1) + " NombreTipo " + (line[5].trim()), "inválido"));
 		}
 		return errors;
@@ -551,17 +620,10 @@ public class ReleaseComponentsController extends BaseController {
 		return newList;
 	}
 
-	public Boolean existAnotherDependency(Release release, ReleaseObject object, Release releaseDependency) {
-		Release anotherDependency = null;
-		for (ReleaseObject item : release.getObjects()) {
-			if (item.getId() != object.getId()) {
-				anotherDependency = releaseObjectService.findReleaseToDeleteByObject(release, item);
-				if (anotherDependency != null && releaseDependency != null) {
-					if (anotherDependency.getReleaseNumber().equals(releaseDependency.getReleaseNumber())) {
-						return true;
-					}
-				}
-			}
+	public Boolean existAnotherDependency(List<Object[]> list, ReleaseUser releaseDependency) {
+		for (Object[] object : list) {
+			if ((Integer) object[0] == releaseDependency.getId())
+				return true;
 		}
 		return false;
 	}

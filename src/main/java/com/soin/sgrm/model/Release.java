@@ -28,6 +28,8 @@ import org.hibernate.annotations.CascadeType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.utils.ReleaseCreate;
 
 @SuppressWarnings("serial")
@@ -49,17 +51,17 @@ public class Release implements Serializable, Cloneable {
 	@JoinColumn(name = "SISTEMA_ID", nullable = true)
 	private SystemInfo system;
 
-	@Value("${priority:0}")
-	@Column(name = "PRIORIDAD_ID", nullable = true)
-	private Integer priority;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "PRIORIDAD_ID", nullable = true)
+	private Priority priority;
 
-	@Value("${risk:0}")
-	@Column(name = "RIESGO_ID", nullable = true)
-	private Integer risk;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "RIESGO_ID", nullable = true)
+	private Risk risk;
 
-	@Value("${impact:0}")
-	@Column(name = "IMPACTO_ID", nullable = true)
-	private Integer impact;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "IMPACTO_ID", nullable = true)
+	private Impact impact;
 
 	@Column(name = "DESCRIPCION")
 	private String description;
@@ -207,8 +209,9 @@ public class Release implements Serializable, Cloneable {
 	@Column(name = "DESCRIPCION_FUNCIONAL")
 	private String functionalDescription;
 
-	@Column(name = "SOLICITADO_POR_ID")
-	private int user_id;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "SOLICITADO_POR_ID", nullable = true)
+	private User user;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ESTADO_ID", nullable = true)
@@ -262,6 +265,16 @@ public class Release implements Serializable, Cloneable {
 	@Column(name = "NUMEROVERSION")
 	private String versionNumber;
 
+	@Column(name = "OPERADOR")
+	private String operator;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "NODO_ID", nullable = true)
+	private Node node;
+	
+	@Column(name = "MOTIVO")
+	private String motive;
+
 	public int getId() {
 		return id;
 	}
@@ -286,27 +299,27 @@ public class Release implements Serializable, Cloneable {
 		this.system = system;
 	}
 
-	public Integer getPriority() {
+	public Priority getPriority() {
 		return priority;
 	}
 
-	public void setPriority(Integer priority) {
+	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
 
-	public Integer getRisk() {
+	public Risk getRisk() {
 		return risk;
 	}
 
-	public void setRisk(Integer risk) {
+	public void setRisk(Risk risk) {
 		this.risk = risk;
 	}
 
-	public Integer getImpact() {
+	public Impact getImpact() {
 		return impact;
 	}
 
-	public void setImpact(Integer impact) {
+	public void setImpact(Impact impact) {
 		this.impact = impact;
 	}
 
@@ -394,12 +407,12 @@ public class Release implements Serializable, Cloneable {
 		this.functionalDescription = functionalDescription;
 	}
 
-	public int getUser_id() {
-		return user_id;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUser_id(int user_id) {
-		this.user_id = user_id;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public Status getStatus() {
@@ -722,6 +735,14 @@ public class Release implements Serializable, Cloneable {
 		this.requirements = requirements;
 	}
 
+	public String getOperator() {
+		return operator;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
+
 	public ReleaseObject getObjectById(Integer id) {
 		for (ReleaseObject object : this.objects) {
 			if (object.getId() == id) {
@@ -899,18 +920,24 @@ public class Release implements Serializable, Cloneable {
 
 		try {
 			// Informacion General
-			if(!rc.getImpactId().equals("")) {
-				this.impact = Integer.parseInt(rc.getImpactId());
+			if (!rc.getImpactId().equals("")) {
+				Impact impact = new Impact();
+				impact.setId(Integer.parseInt(rc.getImpactId()));
+				this.impact = impact;
 			}
-			
-			if(!rc.getRiskId().equals("")) {
-				this.risk = Integer.parseInt(rc.getRiskId());
+
+			if (!rc.getRiskId().equals("")) {
+				Risk risk = new Risk();
+				risk.setId(Integer.parseInt(rc.getRiskId()));
+				this.risk = risk;
 			}
-			
-			if(!rc.getPriorityId().equals("")) {
-				this.priority = Integer.parseInt(rc.getPriorityId());
+
+			if (!rc.getPriorityId().equals("")) {
+				Priority priority = new Priority();
+				priority.setId(Integer.parseInt(rc.getPriorityId()));
+				this.priority = priority;
 			}
-			
+
 			this.description = rc.getDescription();
 
 			// Tipos de reporte
@@ -969,6 +996,7 @@ public class Release implements Serializable, Cloneable {
 			this.versionNumber = rc.getVersionNumber();
 
 		} catch (Exception e) {
+			Sentry.capture(e, "release");
 			throw e;
 		}
 	}
@@ -976,6 +1004,22 @@ public class Release implements Serializable, Cloneable {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
+	}
+	
+	public String getMotive() {
+		return motive;
+	}
+
+	public void setMotive(String motive) {
+		this.motive = motive;
 	}
 
 }

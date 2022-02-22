@@ -10,4 +10,10 @@ public interface AuthorityService {
 
 	Authority findById(Integer id);
 
+	void save(Authority authority);
+
+	void update(Authority authority);
+
+	void delete(Integer id);
+
 }

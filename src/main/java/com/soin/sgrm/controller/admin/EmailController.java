@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,13 +21,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/admin/email")
 public class EmailController extends BaseController {
+
+	public static final Logger logger = Logger.getLogger(EmailController.class);
 
 	@Autowired
 	EmailTemplateService emailService;
@@ -66,7 +73,7 @@ public class EmailController extends BaseController {
 			String cc_invalid = "";
 			String[] ccAddress = email.getCc().split(",");
 			for (int i = 0; i < ccAddress.length; i++) {
-				if (!isValidEmailAddress(ccAddress[i])) {
+				if (!CommonUtils.isValidEmailAddress(ccAddress[i])) {
 					cc_invalid += ((i + 1) == ccAddress.length) ? (ccAddress[i]) : (ccAddress[i] + ",");
 				}
 			}
@@ -78,7 +85,7 @@ public class EmailController extends BaseController {
 			String to_invalid = "";
 			String[] toAddress = email.getTo().split(",");
 			for (int i = 0; i < toAddress.length; i++) {
-				if (!isValidEmailAddress(toAddress[i])) {
+				if (!CommonUtils.isValidEmailAddress(toAddress[i])) {
 					to_invalid += ((i + 1) == toAddress.length) ? (toAddress[i]) : (toAddress[i] + ",");
 				}
 			}
@@ -93,9 +100,10 @@ public class EmailController extends BaseController {
 			emailService.sendMail(email.getTo(), email.getCc(), email.getSubject(), email.getHtml());
 
 		} catch (Exception e) {
+			Sentry.capture(e, "email");
 			res.setStatus("exception");
 			res.setException("Error al enviar correo: " + e.toString());
-			logs("ADMIN_ERROR", "Error al enviar correo: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 
@@ -127,16 +135,16 @@ public class EmailController extends BaseController {
 				return res;
 			}
 			email.setRetry(0);
-			email.setCreatedormodify(getSystemTimestamp());
+			email.setCreatedormodify(CommonUtils.getSystemTimestamp());
 			email.setState(0);
-			email.setUsermodify(getUserId());
+			email.setUsermodify(getUserLogin().getId());
 			emailService.saveEmail(email);
 			res.setObj(email);
 		} catch (Exception e) {
+			Sentry.capture(e, "email");
 			res.setStatus("exception");
 			res.setException("Error al crear correo: " + e.toString());
-			logs("ADMIN_ERROR", "Error al crear correo: " + getErrorFormat(e));
-			e.printStackTrace();
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -175,7 +183,7 @@ public class EmailController extends BaseController {
 			String cc_invalid = "";
 			String[] ccAddress = email.getCc().split(",");
 			for (int i = 0; i < ccAddress.length; i++) {
-				if (!isValidEmailAddress(ccAddress[i])) {
+				if (!CommonUtils.isValidEmailAddress(ccAddress[i])) {
 					cc_invalid += ((i + 1) == ccAddress.length) ? (ccAddress[i]) : (ccAddress[i] + ",");
 				}
 			}
@@ -187,7 +195,7 @@ public class EmailController extends BaseController {
 			String to_invalid = "";
 			String[] toAddress = email.getTo().split(",");
 			for (int i = 0; i < toAddress.length; i++) {
-				if (!isValidEmailAddress(toAddress[i])) {
+				if (!CommonUtils.isValidEmailAddress(toAddress[i])) {
 					to_invalid += ((i + 1) == toAddress.length) ? (toAddress[i]) : (toAddress[i] + ",");
 				}
 			}
@@ -201,16 +209,16 @@ public class EmailController extends BaseController {
 			}
 
 			email.setRetry(0);
-			email.setCreatedormodify(getSystemTimestamp());
+			email.setCreatedormodify(CommonUtils.getSystemTimestamp());
 			email.setState(1);
-			email.setUsermodify(getUserId());
+			email.setUsermodify(getUserLogin().getId());
 			emailService.updateEmail(email);
 
 		} catch (Exception e) {
+			Sentry.capture(e, "email");
 			res.setStatus("exception");
 			res.setException("Error al actualizar correo: " + e.toString());
-			logs("ADMIN_ERROR", "Error al actualizar correo: " + getErrorFormat(e));
-			e.printStackTrace();
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -223,10 +231,10 @@ public class EmailController extends BaseController {
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {
+			Sentry.capture(e, "email");
 			res.setStatus("exception");
 			res.setException("Error al eliminar correo: " + e.toString());
-			logs("ADMIN_ERROR", "Error al eliminar correo: " + getErrorFormat(e));
-			e.printStackTrace();
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}

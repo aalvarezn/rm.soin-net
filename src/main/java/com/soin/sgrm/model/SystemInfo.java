@@ -14,6 +14,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
@@ -62,6 +63,13 @@ public class SystemInfo implements Serializable {
 	@JoinTable(name = "SISTEMAS_SISTEMA_EQUIPO_TR2580", joinColumns = {
 			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
 	private Set<User> userTeam = new HashSet<User>();
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@OrderBy("fullName ASC")
+	@Fetch(value = FetchMode.SUBSELECT)
+	@JoinTable(name = "SISTEMAS_SISTEMA_GESTORES", joinColumns = {
+			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
+	private Set<User> managers = new HashSet<User>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -163,6 +171,21 @@ public class SystemInfo implements Serializable {
 
 	public void setEmailTemplate(Set<EmailTemplate> emailTemplate) {
 		this.emailTemplate = emailTemplate;
+	}
+
+	public Set<User> getManagers() {
+		return managers;
+	}
+
+	public void setManagers(Set<User> managers) {
+		this.managers = managers;
+	}
+	
+	public String getManager() {
+		for (User user : this.managers) {
+			return user.getFullName();
+		}
+		return null;
 	}
 
 }

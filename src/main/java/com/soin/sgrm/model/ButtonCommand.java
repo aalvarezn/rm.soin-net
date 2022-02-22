@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -31,6 +32,7 @@ import org.springframework.core.annotation.Order;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
@@ -49,9 +51,6 @@ public class ButtonCommand implements Serializable {
 	@JoinColumn(name = "RELEASE_ID", nullable = false)
 	private ReleaseUser release;
 
-	@Column(name = "TIENE_CRONTAB")
-	private boolean haveCrontab;
-
 	@Column(name = "NOMBRE")
 	@NotEmpty(message = Constant.EMPTY)
 	@NotBlank(message = Constant.EMPTY)
@@ -68,40 +67,40 @@ public class ButtonCommand implements Serializable {
 	private String command;
 
 	@Column(name = "EJECUTAR_DIRECTORIO")
-	private boolean executeDirectory;
+	private Boolean executeDirectory;
 
 	@Column(name = "NOMBRE_DIRECTORIO")
 	private String directoryName;
 
 	@Column(name = "EJECUTAR_USUARIO")
-	private boolean executeUser;
+	private Boolean executeUser;
 
 	@Column(name = "NOMBRE_USUARIO")
 	private String userName;
 
 	@Column(name = "USAR_ENTORNO_USUARIO")
-	private boolean useUserEnvironment;
+	private Boolean useUserEnvironment;
 
 	@Column(name = "TIENE_SALIDA_HTML")
-	private boolean haveHTML;
+	private Boolean haveHTML;
 
 	@Column(name = "OCULTAR_AL_EJECUTAR")
-	private boolean hideExecute;
+	private Boolean hideExecute;
 
 	@Column(name = "DISPONIBILIDAD_USERMIN")
-	private boolean userminAvailability;
+	private Boolean userminAvailability;
 
 	@Column(name = "LIMPIAR_VARIABLES_ENTORNO")
-	private boolean clearVariables;
+	private Boolean clearVariables;
 
 	@Column(name = "ESPERA_COMANDO")
-	private boolean waitCommand;
+	private Boolean waitCommand;
 
 	@Column(name = "TIEMPO_COMANDO")
 	private String timeCommand;
 
 	@Column(name = "PAGINA_PRINCIPAL")
-	private boolean principalPage;
+	private Boolean principalPage;
 
 	@Column(name = "NOMBRE_PAGINA")
 	private String pageName;
@@ -110,6 +109,9 @@ public class ButtonCommand implements Serializable {
 	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.DETACH, CascadeType.EVICT })
 	@OneToMany(mappedBy = "button", orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<DetailButtonCommand> detailsButtonCommands = new ArrayList<DetailButtonCommand>();
+
+	@OneToOne(mappedBy = "button", fetch = FetchType.EAGER)
+	private Crontab crontab;
 
 	@Transient
 	private String detailName;
@@ -140,14 +142,6 @@ public class ButtonCommand implements Serializable {
 		this.release = release;
 	}
 
-	public boolean getHaveCrontab() {
-		return haveCrontab;
-	}
-
-	public void setHaveCrontab(boolean haveCrontab) {
-		this.haveCrontab = haveCrontab;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -172,11 +166,11 @@ public class ButtonCommand implements Serializable {
 		this.command = command;
 	}
 
-	public boolean getExecuteDirectory() {
+	public Boolean getExecuteDirectory() {
 		return executeDirectory;
 	}
 
-	public void setExecuteDirectory(boolean executeDirectory) {
+	public void setExecuteDirectory(Boolean executeDirectory) {
 		this.executeDirectory = executeDirectory;
 	}
 
@@ -188,11 +182,11 @@ public class ButtonCommand implements Serializable {
 		this.directoryName = directoryName;
 	}
 
-	public boolean getExecuteUser() {
+	public Boolean getExecuteUser() {
 		return executeUser;
 	}
 
-	public void setExecuteUser(boolean executeUser) {
+	public void setExecuteUser(Boolean executeUser) {
 		this.executeUser = executeUser;
 	}
 
@@ -204,51 +198,51 @@ public class ButtonCommand implements Serializable {
 		this.userName = userName;
 	}
 
-	public boolean getUseUserEnvironment() {
+	public Boolean getUseUserEnvironment() {
 		return useUserEnvironment;
 	}
 
-	public void setUseUserEnvironment(boolean useUserEnvironment) {
+	public void setUseUserEnvironment(Boolean useUserEnvironment) {
 		this.useUserEnvironment = useUserEnvironment;
 	}
 
-	public boolean getHaveHTML() {
+	public Boolean getHaveHTML() {
 		return haveHTML;
 	}
 
-	public void setHaveHTML(boolean haveHTML) {
+	public void setHaveHTML(Boolean haveHTML) {
 		this.haveHTML = haveHTML;
 	}
 
-	public boolean getHideExecute() {
+	public Boolean getHideExecute() {
 		return hideExecute;
 	}
 
-	public void setHideExecute(boolean hideExecute) {
+	public void setHideExecute(Boolean hideExecute) {
 		this.hideExecute = hideExecute;
 	}
 
-	public boolean getUserminAvailability() {
+	public Boolean getUserminAvailability() {
 		return userminAvailability;
 	}
 
-	public void setUserminAvailability(boolean userminAvailability) {
+	public void setUserminAvailability(Boolean userminAvailability) {
 		this.userminAvailability = userminAvailability;
 	}
 
-	public boolean getClearVariables() {
+	public Boolean getClearVariables() {
 		return clearVariables;
 	}
 
-	public void setClearVariables(boolean clearVariables) {
+	public void setClearVariables(Boolean clearVariables) {
 		this.clearVariables = clearVariables;
 	}
 
-	public boolean getWaitCommand() {
+	public Boolean getWaitCommand() {
 		return waitCommand;
 	}
 
-	public void setWaitCommand(boolean waitCommand) {
+	public void setWaitCommand(Boolean waitCommand) {
 		this.waitCommand = waitCommand;
 	}
 
@@ -260,11 +254,11 @@ public class ButtonCommand implements Serializable {
 		this.timeCommand = timeCommand;
 	}
 
-	public boolean getPrincipalPage() {
+	public Boolean getPrincipalPage() {
 		return principalPage;
 	}
 
-	public void setPrincipalPage(boolean principalPage) {
+	public void setPrincipalPage(Boolean principalPage) {
 		this.principalPage = principalPage;
 	}
 
@@ -292,11 +286,11 @@ public class ButtonCommand implements Serializable {
 			this.detailsButtonCommands = jsonList;
 		} catch (Exception e) {
 			this.detailsButtonCommands = null;
-			e.printStackTrace();
+			Sentry.capture(e, "buttonCommand");
 		}
 	}
 
-	public boolean existDetail(int id) {
+	public Boolean existDetail(int id) {
 		for (DetailButtonCommand detail : getDetailsButtonCommands()) {
 			if (detail.getId() == id) {
 				return true;
@@ -351,6 +345,14 @@ public class ButtonCommand implements Serializable {
 
 	public void setDetailRequired(String detailRequired) {
 		this.detailRequired = detailRequired;
+	}
+
+	public Crontab getCrontab() {
+		return crontab;
+	}
+
+	public void setCrontab(Crontab crontab) {
+		this.crontab = crontab;
 	}
 
 }

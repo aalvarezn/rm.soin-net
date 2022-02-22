@@ -11,10 +11,6 @@
 	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Waves Effect Css -->
-<link href="<c:url value='/static/plugins/node-waves/waves.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Animation Css -->
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
@@ -48,8 +44,9 @@
 <link href="<c:url value='/static/css/themes/all-themes.css'/>"
 	rel="stylesheet" type="text/css">
 
+<!-- Bootstrap Select Css -->
 <link
-	href="<c:url value='/static/plugins/multi-select/css/multi-select.css'/>"
+	href="<c:url value='/static/plugins/bootstrap-select/css/bootstrap-select.css'/>"
 	rel="stylesheet" type="text/css">
 
 <!-- Custom Css -->
@@ -157,12 +154,13 @@
 	<script
 		src="<c:url value='/static/plugins/bootstrap/js/bootstrap.js'/>"></script>
 
+	<!-- Select Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/bootstrap-select/js/bootstrap-select.js'/>"></script>
+
 	<!-- Slimscroll Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
 
 	<!-- Jquery CountTo Plugin Js -->
 	<script
@@ -187,10 +185,6 @@
 	<!-- Moment Plugin Js -->
 	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
 
-	<!-- Bootstrap Material Datetime Picker Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
-
 	<!-- summernote -->
 	<script
 		src="<c:url value='/static/plugins/summernote/summernote.min.js'/>"></script>
@@ -206,15 +200,8 @@
 	<!-- Custom Js -->
 	<script src="<c:url value='/static/js/admin.js?v=${jsVersion}'/>"></script>
 	<script src="<c:url value='/static/js/admin/email.js?v=${jsVersion}'/>"></script>
-	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
-	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
-	<script
-		src="<c:url value='/static/js/pages/forms/basic-form-elements.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
-
-	<script
-		src="<c:url value='/static/plugins/multi-select/js/jquery.multi-select.js'/>"></script>
 
 </body>
 

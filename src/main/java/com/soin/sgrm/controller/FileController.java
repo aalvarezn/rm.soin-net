@@ -11,17 +11,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLConnection;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
@@ -35,14 +32,20 @@ import org.springframework.web.multipart.MultipartFile;
 import org.wickedsource.docxstamper.DocxStamper;
 import org.wickedsource.docxstamper.DocxStamperConfiguration;
 import org.apache.commons.io.FileUtils;
-
-import com.soin.sgrm.model.DocsTemplate;
+import org.apache.log4j.Logger;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseFile;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.Request;
-import com.soin.sgrm.service.DocsTemplateService;
+import com.soin.sgrm.service.DocTemplateService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseFileService;
 import com.soin.sgrm.service.ReleaseService;
@@ -52,20 +55,20 @@ import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.DocxContext;
 import com.soin.sgrm.utils.DocxVariables;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 import pl.jsolve.templ4docx.core.Docx;
 import pl.jsolve.templ4docx.core.VariablePattern;
-import pl.jsolve.templ4docx.variable.TableVariable;
-import pl.jsolve.templ4docx.variable.TextVariable;
-import pl.jsolve.templ4docx.variable.Variable;
-import pl.jsolve.templ4docx.variable.Variables;
 
 @Controller
 @RequestMapping("/file")
 public class FileController extends BaseController {
 
+	public static final Logger logger = Logger.getLogger(FileController.class);
+
 	@Autowired
-	private DocsTemplateService docsTemplateService;
+	private DocTemplateService docsTemplateService;
 	@Autowired
 	ReleaseService releaseService;
 	@Autowired
@@ -79,13 +82,14 @@ public class FileController extends BaseController {
 	@Autowired
 	ResourceLoader resourceLoader;
 
-//	EnviromentConfig envConfig = new EnviromentConfig();
 	@Autowired
 	private Environment env;
 
 	DocxVariables docxVariables = null;
 
 	DocxContext context = null;
+
+	Map<String, String> replacedElementsMap;
 
 	/**
 	 * @description: Descarga de un archivo particular del release.
@@ -110,15 +114,15 @@ public class FileController extends BaseController {
 				fileWriter.append("\n");
 			}
 		} catch (Exception e) {
-			logs("FILE_READ", "Error Objetos Impactados. " + getErrorFormat(e));
-			e.printStackTrace();
+			Sentry.capture(e, "files");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		} finally {
 			try {
 				fileWriter.flush();
 				fileWriter.close();
 			} catch (IOException e) {
-				logs("FILE_READ", "Error al cerrar Objetos Impactados. " + getErrorFormat(e));
-				e.printStackTrace();
+				Sentry.capture(e, "files");
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			}
 		}
 
@@ -165,12 +169,14 @@ public class FileController extends BaseController {
 			json.setStatus("success");
 			json.setObj(releaseFile);
 		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
 			json.setStatus("exception");
 			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "files");
 			json.setStatus("exception");
 			json.setException(e.getMessage());
-			logs("FILE_READ", "Error al adjunta archivo. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			if (e instanceof MaxUploadSizeExceededException) {
 				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
 			}
@@ -220,13 +226,15 @@ public class FileController extends BaseController {
 				file.delete();
 			}
 			res.setData(releaseFile.getId() + "");
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "files");
 			res.setStatus("exception");
 			res.setException(e.getMessage());
-			logs("FILE_READ", "Error al eliminar archivo. " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -255,6 +263,7 @@ public class FileController extends BaseController {
 			new File(basePath + path).mkdirs();
 			return path;
 		} catch (SQLException e) {
+			Sentry.capture(e, "files");
 			throw e;
 		}
 
@@ -292,7 +301,7 @@ public class FileController extends BaseController {
 
 		String basePath = env.getProperty("fileStore.path");
 		try {
-			DocsTemplate docFile = docsTemplateService.findById(docId);
+			DocTemplate docFile = docsTemplateService.findById(docId);
 			ReleaseSummary release = releaseService.findById(releaseId);
 
 			if (docFile != null) {
@@ -305,7 +314,7 @@ public class FileController extends BaseController {
 				File outFile = new File(path + release.getReleaseNumber() + sufix + ".docx");
 
 				// TODO Descomentear esta linea
-//				if (!outFile.exists()) {
+				// if (!outFile.exists()) {
 				FileUtils.copyFile(fileTemplate, outFile);
 
 				if (docFile.getComponentGenerator().equals("GenerarDocumentoBRM_IFW_BO")) {
@@ -344,16 +353,52 @@ public class FileController extends BaseController {
 
 				docx.fillTemplate(docxVariables.getVariables());
 				docx.save(outFile.getPath());
-//				}
-				// Se prepara el response de salida
+				XWPFDocument document = docx.getXWPFDocument();
+				lineBreak(document, outFile);
 				response = prepareFile(response, outFile, outFile.getName());
 				InputStream inputStream = new BufferedInputStream(new FileInputStream(outFile));
 				FileCopyUtils.copy(inputStream, response.getOutputStream());
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logs("RELEASE_ERROR", "Error en la generacion de documento." + getErrorFormat(e));
+			Sentry.capture(e, "files");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+	}
+
+	private void lineBreak(XWPFDocument document, File outFile) throws FileNotFoundException, IOException {
+		List<XWPFTable> xwpftables = document.getTables();
+		// se recorren las tablas
+		for (XWPFTable xwpftable : xwpftables) {
+			List<XWPFTableRow> xwpfrows = xwpftable.getRows();
+			// se recorren las filas de la tabla
+			for (XWPFTableRow xwpfrow : xwpfrows) {
+				List<XWPFTableCell> xwpfcells = xwpfrow.getTableCells();
+				// se recorren las celdas de la fila
+				for (XWPFTableCell xwpfcell : xwpfcells) {
+					for (XWPFParagraph p : xwpfcell.getParagraphs()) {
+						for (XWPFRun xwpfRun : p.getRuns()) {
+							String xwpfRunText = xwpfRun.getText(xwpfRun.getTextPosition());
+							if (xwpfRunText != null && xwpfRunText.contains("\n")) {
+								String[] lines = xwpfRunText.split("\n");
+								if (lines.length > 0) {
+									xwpfRun.setText(lines[0], 0); // set first line into XWPFRun
+									for (int i = 1; i < lines.length; i++) {
+										// add break and insert new text
+										xwpfRun.addBreak();
+										xwpfRun.setText(lines[i]);
+									}
+								}
+
+							} else {
+								if (xwpfRunText != null)
+									xwpfRun.setText(xwpfRunText, 0);
+							}
+						}
+					}
+				}
+			}
+			document.write(new FileOutputStream(outFile.getPath()));
 		}
 	}
 
@@ -367,15 +412,14 @@ public class FileController extends BaseController {
 		docxVariables.releaseSolutionInformation(release);
 		docxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
 		docxVariables.releaseAmbientInformation(release);
+		docxVariables.releaseAmbients(release);
 		docxVariables.releaseDataBaseInstructions(release);
 		docxVariables.releaseInstalationInstructions(release);
 		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
-		docxVariables.releaseAmbients(release);
 		docxVariables.releaseEnvironment(release);
 		docxVariables.releaseActions(release);
 		docxVariables.releaseModifiedComponents(release);
-
 	}
 
 	/**
@@ -390,6 +434,7 @@ public class FileController extends BaseController {
 		docxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
 		docxVariables.releaseActions(release);
 		docxVariables.releaseAmbientInformation(release);
+		docxVariables.releaseAmbients(release);
 		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 	}
@@ -404,6 +449,7 @@ public class FileController extends BaseController {
 		docxVariables.releaseSolutionInformation(release);
 		docxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
 		docxVariables.releaseAmbientInformation(release);
+		docxVariables.releaseAmbients(release);
 		docxVariables.releaseActions(release);
 		docxVariables.releaseDataBaseInstructions(release);
 		docxVariables.releaseInstalationInstructions(release);

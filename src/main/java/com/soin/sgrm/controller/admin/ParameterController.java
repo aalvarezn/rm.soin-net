@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,11 +22,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Parameter;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/admin/parameter")
 public class ParameterController extends BaseController {
+
+	public static final Logger logger = Logger.getLogger(ParameterController.class);
 
 	@Autowired
 	ParameterService parameterService;
@@ -43,7 +49,8 @@ public class ParameterController extends BaseController {
 			Parameter param = parameterService.findById(id);
 			return param;
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error findParameter. " + getErrorFormat(e));
+			Sentry.capture(e, "parameter");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
 	}
@@ -65,15 +72,16 @@ public class ParameterController extends BaseController {
 				Parameter parameter = parameterService.findById(param.getId());
 				parameter.setDescription(param.getDescription());
 				parameter.setParamValue(param.getParamValue());
-				parameter.setDate(getSystemTimestamp());
+				parameter.setDate(CommonUtils.getSystemTimestamp());
 				parameterService.updateParameter(parameter);
 				res.setObj(parameter);
 			}
 
 		} catch (Exception e) {
+			Sentry.capture(e, "parameter");
 			res.setStatus("exception");
 			res.setException("Error al modificar parámetro: " + e.toString());
-			logs("ADMIN_ERROR", "Error al modificar parámetro: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}

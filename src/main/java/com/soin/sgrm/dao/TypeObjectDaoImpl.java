@@ -14,6 +14,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ConfigurationItem;
 import com.soin.sgrm.model.TypeObject;
 
@@ -27,7 +28,7 @@ public class TypeObjectDaoImpl implements TypeObjectDao {
 	@Override
 	public List<TypeObject> listBySystem(Integer id) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TypeObject.class);
-		crit.add(Restrictions.eq("system_id", id));
+		crit.add(Restrictions.eq("system.id", id));
 		List<TypeObject> list = crit.list();
 		return list;
 	}
@@ -36,7 +37,7 @@ public class TypeObjectDaoImpl implements TypeObjectDao {
 	public boolean existTypeObject(String name, Integer system_id) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TypeObject.class);
 		crit.add(Restrictions.eq("name", name));
-		crit.add(Restrictions.eq("system_id", system_id));
+		crit.add(Restrictions.eq("system.id", system_id));
 		crit.setProjection(Projections.rowCount());
 		Long count = (Long) crit.uniqueResult();
 		return (count > 0);
@@ -46,7 +47,7 @@ public class TypeObjectDaoImpl implements TypeObjectDao {
 	public TypeObject findByName(String name, Integer system_id) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TypeObject.class);
 		crit.add(Restrictions.eq("name", name));
-		crit.add(Restrictions.eq("system_id", system_id));
+		crit.add(Restrictions.eq("system.id", system_id));
 		crit.setMaxResults(1);
 		TypeObject object = (TypeObject) crit.uniqueResult();
 		return object;
@@ -72,7 +73,7 @@ public class TypeObjectDaoImpl implements TypeObjectDao {
 		} else {
 			crit.add(nameRest);
 		}
-		crit.add(Restrictions.eq("system_id", system_id));
+		crit.add(Restrictions.eq("system.id", system_id));
 		crit.setMaxResults(1);
 		TypeObject object = (TypeObject) crit.uniqueResult();
 		return object;
@@ -89,12 +90,30 @@ public class TypeObjectDaoImpl implements TypeObjectDao {
 			transObj.commit();
 			return type;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "typeObject");
 			transObj.rollback();
 			throw e;
 		} finally {
 			sessionObj.close();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<TypeObject> list() {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TypeObject.class);
+		return crit.list();
+	}
+
+	@Override
+	public void update(TypeObject typeObject) {
+		sessionFactory.getCurrentSession().update(typeObject);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		TypeObject typeObject = findById(id);
+		sessionFactory.getCurrentSession().delete(typeObject);
 	}
 
 }

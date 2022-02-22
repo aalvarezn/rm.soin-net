@@ -2,6 +2,7 @@ package com.soin.sgrm.dao;
 
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ActionEnvironment;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseActionEdit;
@@ -24,7 +26,7 @@ public class ActionEnvironmentDaoImpl implements ActionEnvironmentDao {
 	@Override
 	public List<ActionEnvironment> listBySystem(Integer id) {
 		List<ActionEnvironment> list = sessionFactory.getCurrentSession().createCriteria(ActionEnvironment.class)
-				.add(Restrictions.eq("systemId", id)).list();
+				.add(Restrictions.eq("system.id", id)).list();
 		return list;
 	}
 
@@ -52,7 +54,7 @@ public class ActionEnvironmentDaoImpl implements ActionEnvironmentDao {
 			query.executeUpdate();
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "action");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -81,12 +83,42 @@ public class ActionEnvironmentDaoImpl implements ActionEnvironmentDao {
 			
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "action");
 			transObj.rollback();
 			throw e;
 		} finally {
 			sessionObj.close();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ActionEnvironment> list() {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ActionEnvironment.class);
+		return crit.list();
+	}
+
+	@Override
+	public ActionEnvironment findActionById(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ActionEnvironment.class);
+		crit.add(Restrictions.eq("id", id));
+		return (ActionEnvironment) crit.uniqueResult();
+	}
+
+	@Override
+	public void save(ActionEnvironment action) {
+		sessionFactory.getCurrentSession().save(action);
+	}
+
+	@Override
+	public void update(ActionEnvironment action) {
+		sessionFactory.getCurrentSession().update(action);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		ActionEnvironment action = findActionById(id);
+		sessionFactory.getCurrentSession().delete(action);
 	}
 
 }

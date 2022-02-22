@@ -61,10 +61,10 @@
 		<label for="email_address">&nbsp;</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<input type="text" id="directoryName" maxlength="50" value=""
+				<input type="text" id="directoryName" maxlength="250" value=""
 					class="form-control" disabled="disabled"
 					placeholder="Ingrese un valor..">
-				<div class="help-info">M&aacute;x. 50 caracteres</div>
+				<div class="help-info">M&aacute;x. 250 caracteres</div>
 			</div>
 			<label id="directoryName_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Valor requerido.</label>

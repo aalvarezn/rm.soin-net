@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,10 +23,14 @@ import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/admin/project")
 public class ProjectController extends BaseController {
+
+	public static final Logger logger = Logger.getLogger(ProjectController.class);
 
 	@Autowired
 	ProjectService projectService;
@@ -44,7 +49,8 @@ public class ProjectController extends BaseController {
 			Project project = projectService.findById(id);
 			return project;
 		} catch (Exception e) {
-			logs("ADMIN_ERROR", "Error findProject. " + getErrorFormat(e));
+			Sentry.capture(e, "project");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
 	}
@@ -73,10 +79,10 @@ public class ProjectController extends BaseController {
 				res.setObj(project);
 			}
 		} catch (Exception e) {
+			Sentry.capture(e, "project");
 			res.setStatus("exception");
 			res.setException("Error al crear proyecto: " + e.toString());
-			logs("ADMIN_ERROR", "Error al crear proyecto: " + getErrorFormat(e));
-			e.printStackTrace();
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -102,9 +108,10 @@ public class ProjectController extends BaseController {
 				res.setObj(project);
 			}
 		} catch (Exception e) {
+			Sentry.capture(e, "project");
 			res.setStatus("exception");
 			res.setException("Error al modificar proyecto: " + e.toString());
-			logs("ADMIN_ERROR", "Error al modificar proyecto: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -120,8 +127,13 @@ public class ProjectController extends BaseController {
 			res.setStatus("exception");
 			res.setException("Error al eliminar proyecto: " + e.getCause().getCause().getCause().getMessage() + ":"
 					+ e.getMessage());
-			logs("ADMIN_ERROR", "Error al eliminar proyecto: " + getErrorFormat(e));
-			e.printStackTrace();
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar proyecto: Existen referencias que debe eliminar antes");
+			} else {
+				Sentry.capture(e, "project");
+			}
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}

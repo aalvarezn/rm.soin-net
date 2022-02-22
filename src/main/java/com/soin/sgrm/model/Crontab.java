@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,16 +13,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.Valid;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
@@ -35,8 +37,7 @@ public class Crontab implements Serializable {
 	@Column(name = "ID")
 	private int id;
 
-	@Cascade({ CascadeType.MERGE, CascadeType.DETACH, CascadeType.EVICT })
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "RELEASE_ID", nullable = false)
 	private ReleaseUser release;
 
@@ -46,7 +47,7 @@ public class Crontab implements Serializable {
 	private String user;
 
 	@Column(name = "ACTIVA")
-	private boolean isActive;
+	private Boolean isActive;
 
 	@Column(name = "COMANDO")
 	@NotEmpty(message = Constant.EMPTY)
@@ -89,7 +90,7 @@ public class Crontab implements Serializable {
 	private String weekDays;
 
 	@Valid
-	@ManyToOne(fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "BOTON_ID", nullable = true)
 	private ButtonCommand button;
 
@@ -117,11 +118,11 @@ public class Crontab implements Serializable {
 		this.user = user;
 	}
 
-	public boolean getActive() {
+	public Boolean getActive() {
 		return isActive;
 	}
 
-	public void setActive(boolean isActive) {
+	public void setActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
 
@@ -200,7 +201,7 @@ public class Crontab implements Serializable {
 			this.button = jsonObj;
 		} catch (Exception e) {
 			this.button = null;
-			e.printStackTrace();
+			Sentry.capture(e, "button");
 		}
 	}
 

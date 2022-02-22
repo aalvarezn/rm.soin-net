@@ -11,10 +11,6 @@
 	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Waves Effect Css -->
-<link href="<c:url value='/static/plugins/node-waves/waves.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Animation Css -->
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
@@ -94,14 +90,10 @@
 	<!-- Select Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/bootstrap-select/js/bootstrap-select.js'/>"></script>
-	-->
 
 	<!-- Slimscroll Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
 
 	<!-- Jquery CountTo Plugin Js -->
 	<script

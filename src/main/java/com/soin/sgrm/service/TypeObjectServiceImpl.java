@@ -46,4 +46,19 @@ public class TypeObjectServiceImpl implements TypeObjectService {
 		return dao.save(type);
 	}
 
+	@Override
+	public List<TypeObject> list() {
+		return dao.list();
+	}
+
+	@Override
+	public void update(TypeObject typeObject) {
+		dao.update(typeObject);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		dao.delete(id);
+	}
+
 }

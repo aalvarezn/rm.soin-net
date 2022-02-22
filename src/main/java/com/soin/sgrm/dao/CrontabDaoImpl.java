@@ -13,6 +13,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ButtonCommand;
 import com.soin.sgrm.model.Crontab;
 import com.soin.sgrm.model.DetailButtonCommand;
@@ -44,14 +45,14 @@ public class CrontabDaoImpl implements CrontabDao {
 				sessionObj.saveOrUpdate(detailButtonCommand);
 			}
 			button.updateDetailsButtonCommands(temp);
-			button.setHaveCrontab(true);
+//			button.setHaveCrontab(true);
 			crontab.updateButton(button);
 
 			sessionObj.saveOrUpdate(crontab);
 			transObj.commit();
 			return crontab;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "crontab");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -63,7 +64,7 @@ public class CrontabDaoImpl implements CrontabDao {
 	public Crontab updateCrontab(Crontab crontab, ButtonCommand old) {
 		Transaction transObj = null;
 		Session sessionObj = null;
-		ButtonCommand button = null; 
+		ButtonCommand button = null;
 		try {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
@@ -72,9 +73,9 @@ public class CrontabDaoImpl implements CrontabDao {
 			for (DetailButtonCommand detail : button.getDetailsButtonCommands()) {
 				detail.setButton(button);
 			}
-			
+
 			for (DetailButtonCommand detailOld : old.getDetailsButtonCommands()) {
-				if(!button.existDetail(detailOld.getId())) {
+				if (!button.existDetail(detailOld.getId())) {
 					sessionObj.delete(detailOld);
 				}
 			}
@@ -84,7 +85,7 @@ public class CrontabDaoImpl implements CrontabDao {
 			transObj.commit();
 			return crontab;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "crontab");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -114,7 +115,7 @@ public class CrontabDaoImpl implements CrontabDao {
 			sessionObj.delete(button);
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "crontab");
 			transObj.rollback();
 			throw e;
 		} finally {

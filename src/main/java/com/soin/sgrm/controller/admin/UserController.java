@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -23,16 +24,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Authority;
 import com.soin.sgrm.model.Password;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.service.AuthorityService;
 import com.soin.sgrm.service.UserInfoService;
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
 
 @Controller
 @RequestMapping("/admin/user")
 public class UserController extends BaseController {
+
+	public static final Logger logger = Logger.getLogger(UserController.class);
 
 	@Autowired
 	private PasswordEncoder encoder;
@@ -58,7 +64,8 @@ public class UserController extends BaseController {
 			user = userService.findUserInfoById(id);
 			return user;
 		} catch (Exception e) {
-			logs("ADMIN_ERROR", "Error findUserInfoById. " + getErrorFormat(e));
+			Sentry.capture(e, "user");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
 	}
@@ -106,10 +113,10 @@ public class UserController extends BaseController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "user");
 			res.setStatus("exception");
 			res.setException("Error al actualizar usuario: " + e.toString());
-			logs("ADMIN_ERROR", "Error al actualizar usuario: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -142,7 +149,7 @@ public class UserController extends BaseController {
 			userInfo.setIsReleaseManager(0);
 			userInfo.setIsSuperUser(0);
 			userInfo.setStaff(false);
-			userInfo.setDateJoined(getSystemTimestamp());
+			userInfo.setDateJoined(CommonUtils.getSystemTimestamp());
 
 			if (!userService.uniqueUsername(userInfo)) {
 				res.setStatus("exception");
@@ -155,10 +162,10 @@ public class UserController extends BaseController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "user");
 			res.setStatus("exception");
 			res.setException("Error al guardar usuario: " + e.toString());
-			logs("ADMIN_ERROR", "Error al guardar usuario: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -182,6 +189,7 @@ public class UserController extends BaseController {
 				userService.changePassword(user);
 			}
 		} catch (Exception e) {
+			Sentry.capture(e, "user");
 			res.setStatus("exception");
 			res.setException(e.getMessage());
 		}
@@ -202,6 +210,7 @@ public class UserController extends BaseController {
 			res.setStatus("success");
 
 		} catch (Exception e) {
+			Sentry.capture(e, "user");
 			res.setStatus("exception");
 			res.setException(e.getMessage());
 		}
@@ -219,8 +228,14 @@ public class UserController extends BaseController {
 			res.setStatus("exception");
 			res.setException("Error al eliminar usuario: " + e.getCause().getCause().getCause().getMessage() + ":"
 					+ e.getMessage());
-			logs("ADMIN_ERROR", "Error al eliminar usuario: " + e.toString());
-			e.printStackTrace();
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar usuario: Existen referencias que debe eliminar antes");
+			} else {
+				Sentry.capture(e, "user");
+			}
+
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}

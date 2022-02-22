@@ -37,8 +37,23 @@ public class ConfigurationItemServiceImpl implements ConfigurationItemService {
 	}
 
 	@Override
-	public ConfigurationItem save(ConfigurationItem confItem) {
-		return dao.save(confItem);
+	public void save(ConfigurationItem confItem) {
+		dao.save(confItem);
+	}
+
+	@Override
+	public List<ConfigurationItem> list() {
+		return dao.list();
+	}
+
+	@Override
+	public void update(ConfigurationItem configurationItem) {
+		dao.update(configurationItem);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		dao.delete(id);
 	}
 
 }

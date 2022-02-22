@@ -1,58 +1,32 @@
+$(function() {
+	activeItemMenu("profileItem");
+});
 function confirmChangePassword() {
 	if (valid()) {
 		Swal.fire({
-			  title: 'Desea cambiar la contrase\u00f1a?',
-			  text: "Es posible que requiera iniciar sesi\u00F3n para validar los cambios!",
-			  icon: 'question',
-			  showCancelButton: true,
-			  customClass: 'swal-wide',
-			  cancelButtonText: 'Cancelar',
-			  cancelButtonColor: '#f14747',
-			  confirmButtonColor: '#3085d6',
-			  confirmButtonText: 'Aceptar',
-			}).then((result) => {
-				if(result.value){
-					changePassword();
-				}		
-			});
+			title: 'Desea cambiar la contrase\u00f1a?',
+			text: "Es posible que requiera iniciar sesi\u00F3n para validar los cambios!",
+			icon: 'question',
+			showCancelButton: true,
+			customClass: 'swal-wide',
+			cancelButtonText: 'Cancelar',
+			cancelButtonColor: '#f14747',
+			confirmButtonColor: '#3085d6',
+			confirmButtonText: 'Aceptar',
+		}).then((result) => {
+			if(result.value){
+				changePassword();
+			}		
+		});
 	}
 
 }
 
 function changePassword() {
-
 	var cont = getCont();
 	var form = "#formChangePassword";
-
-	var response = ajaxChangePassword(cont, form);
-	if (response != null) {
-
-		switch (response.status) {
-		case 'success':
-			$("#formChangePassword")[0].reset();
-			matches(true);
-			swal("Correcto!",
-					"Tu contrase\u00f1a a sido actualizada exitosamente.",
-					"success")
-			break;
-		case 'fail':
-			swal("Error!", response.exception, "error")
-			break;
-		case 'exception':
-			swal("Exception!", response.exception, "warning")
-			break;
-		default:
-			location.reload();
-		}
-
-	}
-
-}
-
-function ajaxChangePassword(cont, form) {
-	var answer = null;
+	blockUI();
 	$.ajax({
-		async : false,
 		type : "POST",
 		url : cont + "profile/" + "changePassword",
 		timeout : 60000,
@@ -62,13 +36,37 @@ function ajaxChangePassword(cont, form) {
 			confirmPassword : $(form + " #confirmPassword").val()
 		},
 		success : function(response) {
-			answer = response;
+			ajaxChangePassword(response);
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
 		}
 	});
-	return answer;
+
+
+
+}
+
+function ajaxChangePassword(response) {
+	unblockUI();
+	if (response != null) {
+		switch (response.status) {
+		case 'success':
+			$("#formChangePassword")[0].reset();
+			matches(true);
+			swal("Correcto!", "Tu contrase\u00f1a a sido actualizada exitosamente.",
+					"success", 2000)
+					break;
+		case 'fail':
+			swal("Error!", response.exception, "error")
+			break;
+		case 'exception':
+			swal("Exception!", response.exception, "warning")
+			break;
+		default:
+			location.reload();
+		}
+	}
 }
 
 function valid() {
@@ -77,8 +75,8 @@ function valid() {
 	var newPassword = $('#newPassword').val();
 
 	var valid = matches(false) && ((oldPassword.trim().length) >= 8)
-			&& ((confirmPassword.trim().length) >= 8)
-			&& ((newPassword.trim().length) >= 8);
+	&& ((confirmPassword.trim().length) >= 8)
+	&& ((newPassword.trim().length) >= 8);
 
 	if (valid) {
 		$('#change').removeAttr('disabled');
@@ -89,17 +87,17 @@ function valid() {
 	return valid;
 }
 
-// PasswordOld
+//PasswordOld
 $("#oldPassword").bind("contextmenu", function(e) {
 	e.preventDefault();
 });
 
-// PasswordConfirm
+//PasswordConfirm
 $("#confirmPassword").bind("contextmenu", function(e) {
 	e.preventDefault();
 });
 
-// PasswordNew
+//PasswordNew
 $("#newPassword").bind("contextmenu", function(e) {
 	e.preventDefault();
 });
@@ -123,23 +121,31 @@ function matches(alert) {
 
 	if (!alert) {
 		return (confirmPassword == newPassword)
-				&& !$.isNumeric($('#newPassword').val())
-				&& !$.isNumeric($('#confirmPassword').val());
+		&& !$.isNumeric($('#newPassword').val())
+		&& !$.isNumeric($('#confirmPassword').val());
 	}
 
 	if (confirmPassword == newPassword) {
 		$('#mensaje_error').hide();
 		$('#mensaje_error').attr("class",
-				"control-label col-md-12 text-success");
+		"control-label col-md-12 text-success");
 		$('#mensaje_error').show();
 		$('#mensaje_error').html("Las constrase\u00f1as si coinciden");
 	} else {
-
 		$('#mensaje_error').show();
 		$('#mensaje_error')
-				.attr("class", "control-label col-md-12 text-danger");
+		.attr("class", "control-label col-md-12 text-danger");
 		$('#mensaje_error').html("Las constrase\u00f1as no coinciden");
 
+	}
+
+	if(isNumeric(newPassword)){
+		$('#mensajePass_error').show();
+		$('#mensajePass_error')
+		.attr("class", "control-label col-md-12 text-danger");
+		$('#mensajePass_error').html("Las constrase\u00f1as no puede ser n\u00famerica");
+	}else{
+		$('#mensajePass_error').hide();
 	}
 
 	if ((confirmPassword.trim().length + newPassword.trim().length) == 0) {

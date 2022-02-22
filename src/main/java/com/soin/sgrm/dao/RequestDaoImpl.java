@@ -4,15 +4,23 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.type.StringType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.TypeRequest;
+import com.soin.sgrm.model.corp.RMReleaseFile;
 
 @Repository
 public class RequestDaoImpl implements RequestDao {
@@ -22,16 +30,38 @@ public class RequestDaoImpl implements RequestDao {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Request> list(String search) throws SQLException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Request.class);
-		crit.setMaxResults(50);
+	public List<Request> list(String search, Object[] projects) throws SQLException {
+		String concatObjet = "";
+		for (int i = 0; i < projects.length; i++) {
+			concatObjet = concatObjet + " " + projects[i] + (((i + 1) == projects.length) ? "" : ",");
+		}
 
-		crit.add(Restrictions.or(Restrictions.like("code_soin", search, MatchMode.ANYWHERE).ignoreCase(),
-				Restrictions.like("code_ice", search, MatchMode.ANYWHERE).ignoreCase(),
-				Restrictions.like("description", search, MatchMode.ANYWHERE).ignoreCase()));
+		if (projects.length == 0)
+			concatObjet = "null";
 
-		List<Request> requestList = crit.list();
-		return requestList;
+		Session sessionObj = null;
+		String sql = "";
+		try {
+			sessionObj = sessionFactory.openSession();
+			sql = String.format(
+					"select r.id , r.codigo_soin as code_soin , r.codigo_ice as code_ice, r.descripcion as description from requerimientos_requerimiento r "
+							+ "where r.codigo_soin || ' ' ||r.codigo_ice || ' ' || r.descripcion like %s "
+							+ "and r.proyecto_id in ( %s ) and r.activo = 1 and ROWNUM <= 50 ",
+					"'%" + search + "%'", concatObjet);
+
+			SQLQuery query = (SQLQuery) sessionObj.createSQLQuery(sql).addScalar("id", StandardBasicTypes.INTEGER)
+					.addScalar("code_soin", StandardBasicTypes.STRING).addScalar("code_ice", StandardBasicTypes.STRING)
+					.addScalar("description", StandardBasicTypes.STRING)
+					.setResultTransformer(Transformers.aliasToBean(Request.class));
+			List<Request> items = query.list();
+			return items;
+
+		} catch (Exception e) {
+			Sentry.capture(e, "releaseRequest");
+		} finally {
+			sessionObj.close();
+		}
+		return null;
 	}
 
 	@Override
@@ -52,6 +82,42 @@ public class RequestDaoImpl implements RequestDao {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Request.class);
 		crit.add(Restrictions.eqProperty("code_soin", code_soin));
 		return (Request) crit.uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Request> list() {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Request.class);
+		return crit.list();
+	}
+
+	@Override
+	public void save(Request request) {
+		sessionFactory.getCurrentSession().save(request);
+	}
+
+	@Override
+	public void update(Request request) {
+		sessionFactory.getCurrentSession().update(request);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		Request request = findById(id);
+		sessionFactory.getCurrentSession().delete(request);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Request> listByType(TypeRequest type) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Request.class);
+		crit.createCriteria("typeRequest").add(Restrictions.eq("id", type.getId()));
+		return crit.list();
+	}
+
+	@Override
+	public void softDelete(Request request) {
+		sessionFactory.getCurrentSession().update(request);
 	}
 
 }

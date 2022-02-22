@@ -5,6 +5,8 @@ import java.util.List;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.WFRelease;
 
 public interface EmailTemplateService {
 
@@ -27,5 +29,9 @@ public interface EmailTemplateService {
 	boolean existEmailTemplate(String name);
 
 	boolean existEmailTemplate(String name, Integer id);
+
+	void sendMail(WFRelease releaseEmail, EmailTemplate email, String motive);
+
+	void sendMailActor(WFRelease releaseEmail, EmailTemplate email);
 
 }

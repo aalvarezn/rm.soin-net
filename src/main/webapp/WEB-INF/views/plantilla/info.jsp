@@ -94,8 +94,7 @@
 				<div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
 					<table class="table table-bordered  table-hover dataTable">
 						<tr>
-							<td class="bg-cyan" style="color: black;" colspan="3"><strong>Email
-									Propiedades</strong> <!-- 								<button type="button" onclick="testEmail()" -->
+							<td class="bg-cyan" style="color: black;" colspan="3"><strong>Propiedades de correos</strong> <!-- 								<button type="button" onclick="testEmail()" -->
 								<!-- 									class="btn btn-default flr">PRUEBA</button> --></td>
 						</tr>
 						<c:forEach var="property" items="${emailProperties}">

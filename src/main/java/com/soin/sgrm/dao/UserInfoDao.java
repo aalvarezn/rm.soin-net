@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
 
 public interface UserInfoDao {
@@ -30,5 +31,7 @@ public interface UserInfoDao {
 	void saveUserInfo(UserInfo userInfo);
 
 	boolean uniqueUsername(UserInfo userInfo);
+	
+	User findUserById(Integer id);
 
 }

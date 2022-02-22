@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,10 +23,14 @@ import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/admin/impact")
 public class ImpactController extends BaseController {
+
+	public static final Logger logger = Logger.getLogger(ImpactController.class);
 
 	@Autowired
 	ImpactService impactService;
@@ -44,7 +49,8 @@ public class ImpactController extends BaseController {
 			Impact impact = impactService.findById(id);
 			return impact;
 		} catch (Exception e) {
-			logs("ADMIN_ERROR", "Error findImpact. " + getErrorFormat(e));
+			Sentry.capture(e, "impact");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
 	}
@@ -69,10 +75,10 @@ public class ImpactController extends BaseController {
 				res.setObj(impact);
 			}
 		} catch (Exception e) {
+			Sentry.capture(e, "impact");
 			res.setStatus("exception");
 			res.setException("Error al crear impacto: " + e.toString());
-			logs("ADMIN_ERROR", "Error al crear impacto: " + getErrorFormat(e));
-			e.printStackTrace();
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -98,9 +104,10 @@ public class ImpactController extends BaseController {
 				res.setObj(impact);
 			}
 		} catch (Exception e) {
+			Sentry.capture(e, "impact");
 			res.setStatus("exception");
 			res.setException("Error al modificar impacto: " + e.toString());
-			logs("ADMIN_ERROR", "Error al modificar impacto: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -116,8 +123,12 @@ public class ImpactController extends BaseController {
 			res.setStatus("exception");
 			res.setException("Error al eliminar impacto: " + e.getCause().getCause().getCause().getMessage() + ":"
 					+ e.getMessage());
-			logs("ADMIN_ERROR", "Error al eliminar impacto: " + getErrorFormat(e));
-			e.printStackTrace();
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar impacto: Existen referencias que debe eliminar antes");
+			} else {
+				Sentry.capture(e, "impact");
+			}
 		}
 		return res;
 	}

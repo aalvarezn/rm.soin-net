@@ -32,4 +32,29 @@ public class ActionEnvironmentServiceImpl implements ActionEnvironmentService {
 		dao.deleteReleaseDependency(action_id, release_id);
 	}
 
+	@Override
+	public List<ActionEnvironment> list() {
+		return dao.list();
+	}
+
+	@Override
+	public ActionEnvironment findActionById(Integer id) {
+		return dao.findActionById(id);
+	}
+
+	@Override
+	public void save(ActionEnvironment action) {
+		dao.save(action);
+	}
+
+	@Override
+	public void update(ActionEnvironment action) {
+		dao.update(action);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		dao.delete(id);
+	}
+
 }

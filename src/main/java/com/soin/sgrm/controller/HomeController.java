@@ -5,27 +5,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.net.URLConnection;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,15 +36,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Parameter;
-import com.soin.sgrm.model.ReleaseFile;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.service.corp.RMReleaseFileService;
+import com.soin.sgrm.utils.CommonUtils;
+import com.soin.sgrm.utils.EnviromentConfig;
+
+import com.soin.sgrm.exception.Sentry;
 
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.Log4jConfigurer;
 
 @Controller
 @RequestMapping("/")
@@ -82,9 +76,25 @@ public class HomeController extends BaseController {
 	@Autowired
 	private ParameterService paramService;
 
+	EnviromentConfig envConfig = new EnviromentConfig();
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+		if (request.isUserInRole("ROLE_Release Manager")) {
+			return "redirect:/management/release/";
+		}
+
 		return "redirect:/release/";
+	}
+
+	@RequestMapping(value = "/successLogin", method = RequestMethod.GET)
+	public String successLogin(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		if (request.isUserInRole("ROLE_Admin")) {
+			return "redirect:/admin/";
+		}
+
+		return "redirect:/";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -119,10 +129,10 @@ public class HomeController extends BaseController {
 	public String recoverPassword(HttpServletRequest request, @ModelAttribute("UserInfo") UserInfo user, ModelMap model,
 			Locale locale, HttpSession session) {
 		try {
-			if (isValidEmailAddress(user.getEmailAddress())) {
+			if (CommonUtils.isValidEmailAddress(user.getEmailAddress())) {
 				UserInfo userInfo = userService.getUserByEmail(user.getEmailAddress());
 				if (userInfo != null) {
-					String code = "soin" + getRandom();
+					String code = "soin" + CommonUtils.getRandom();
 					String newPassword = encoder.encode(code);
 					userInfo.setPassword(newPassword);
 					Parameter param = paramService.findByCode(2);
@@ -146,13 +156,13 @@ public class HomeController extends BaseController {
 			}
 
 		} catch (Exception e) {
+			Sentry.capture(e, "home");
 			model.addAttribute("errorMessge", "Error: " + e.toString());
 		}
 
 		return "/forgetPassword";
 	}
 
-	// recoverPassword
 	@RequestMapping(value = "/info", method = RequestMethod.GET)
 	public String info(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
@@ -235,12 +245,14 @@ public class HomeController extends BaseController {
 		}
 		model.addAttribute("fileAdminLog", fileAdminLog);
 
-		Map<String, String> emailProperties = getEmailProperties();
+		Map<String, String> emailProperties = envConfig.getEntryProperties("mailProperties");
+		emailProperties.put("mail.user", envConfig.getEntry("mailUser"));
 		model.addAttribute("emailProperties", emailProperties);
 
 		return "/plantilla/info";
 	}
 
+	@SuppressWarnings("resource")
 	public String getLog4jProperty(String property) {
 		java.io.InputStream propertiesStream = this.getClass().getClassLoader().getResourceAsStream("log4j.properties");
 		java.util.Scanner s = new java.util.Scanner(propertiesStream).useDelimiter("\\A");
@@ -262,7 +274,7 @@ public class HomeController extends BaseController {
 
 		for (String property : properties) {
 			String value = env.getProperty(property);
-			if (property.equals("mail.password") || property.equals("mail.user")) {
+			if (property.equals("mail.password")) {
 				value = "xxxx";
 			}
 			emailProperties.put(property, (value != null) ? value : nd);

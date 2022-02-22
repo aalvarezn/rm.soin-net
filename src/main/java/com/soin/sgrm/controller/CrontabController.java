@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,10 +32,14 @@ import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/crontab")
 public class CrontabController extends BaseController {
+	
+	public static final Logger logger = Logger.getLogger(CrontabController.class);
 
 	@Autowired
 	private ReleaseService releaseService;
@@ -85,19 +90,21 @@ public class CrontabController extends BaseController {
 			}
 			crontab.getButton().setRelease(release);
 			crontab.setRelease(release);
-			crontab.getButton().setHaveCrontab(true);
+//			crontab.getButton().setHaveCrontab(true);
 			crontab = crontabService.saveCrontab(crontab);
 			for (DetailButtonCommand detail : crontab.getButton().getDetailsButtonCommands()) {
 				detail.setButton(null);
 			}
 			res.setObj(crontab);
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "crontab");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "crontab");
 			res.setStatus("exception");
 			res.setException("Error al guardar el release: " + e.toString());
-			logs("RELEASE_ERROR", "Error al guardar el boton: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -114,34 +121,39 @@ public class CrontabController extends BaseController {
 				detail.setButton(null);
 			}
 			res.setObj(crontab);
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "crontab");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "crontab");
 			res.setStatus("exception");
 			res.setException("La acción no se pudo completar correctamente.");
-			logs("RELEASE_ERROR", "Error al eliminar el release: " + id.toString() + ". " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
-	
+
 	@RequestMapping(value = "/findCrontab/{id}", method = RequestMethod.GET)
-	public @ResponseBody Crontab findCrontab(@PathVariable Integer id, HttpServletRequest request, Locale locale, Model model, HttpSession session) {		
+	public @ResponseBody Crontab findCrontab(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
 		Crontab crontab = null;
-		try {			
+		try {
 			crontab = crontabService.findById(id);
 			for (DetailButtonCommand detail : crontab.getButton().getDetailsButtonCommands()) {
 				detail.setButton(null);
 			}
 			return crontab;
-		}catch (SQLException ex) {
-			logs("SYSTEM_ERROR", "Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "crontab");
+			logger.log(MyLevel.RELEASE_ERROR, ex.toString());
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error findButtonCommand. " + getErrorFormat(e));
+			Sentry.capture(e, "crontab");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return null;
 	}
-	
+
 	@RequestMapping(value = "/updateCrontab-{id}", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateCrontab(@PathVariable String id, HttpServletResponse response,
 			@Valid @ModelAttribute("Crontab") Crontab crontab, BindingResult errors, ModelMap model) {
@@ -181,7 +193,7 @@ public class CrontabController extends BaseController {
 				detail.setTypeDetail(typeDetail);
 			}
 			crontab.getButton().setRelease(release);
-			crontab.getButton().setHaveCrontab(true);
+//			crontab.getButton().setHaveCrontab(true);
 			crontab.setRelease(release);
 			ButtonCommand old = buttonService.findById(crontab.getButton().getId());
 			crontab.getButton().setRelease(release);
@@ -190,13 +202,15 @@ public class CrontabController extends BaseController {
 				detail.setButton(null);
 			}
 			res.setObj(crontab);
-		}catch (SQLException ex) {
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "crontab");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "crontab");
 			res.setStatus("exception");
 			res.setException("Error al guardar el release: " + e.toString());
-			logs("RELEASE_ERROR", "Error al guardar el boton: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}

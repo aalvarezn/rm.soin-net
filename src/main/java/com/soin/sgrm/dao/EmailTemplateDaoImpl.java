@@ -12,6 +12,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.EmailTemplate;
 
 @Repository
@@ -84,7 +85,7 @@ public class EmailTemplateDaoImpl implements EmailTemplateDao {
 
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "email");
 			transObj.rollback();
 			throw e;
 		} finally {

@@ -80,7 +80,7 @@
 						</div>
 						<div class="col-xs-12" style="">
 							<p style="text-align: center">
-								<a href="<c:url value='/forgetPassword' />" style="color: #00538d;">¿Olvidaste tu contraseña?</a>
+								<a href="<c:url value='/forgetPassword' />" style="color: #00538d;">¿Olvidó su contraseña?</a>
 							</p>
 						</div>
 					</div>

@@ -28,7 +28,7 @@ public class ReleaseAction implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ENTORNO_ID")
-	private SystemEnvironment environment;
+	private Environment environment;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ACCION_ID")
@@ -53,11 +53,11 @@ public class ReleaseAction implements Serializable {
 		this.time = time;
 	}
 
-	public SystemEnvironment getEnvironment() {
+	public Environment getEnvironment() {
 		return environment;
 	}
 
-	public void setEnvironment(SystemEnvironment environment) {
+	public void setEnvironment(Environment environment) {
 		this.environment = environment;
 	}
 

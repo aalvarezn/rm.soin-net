@@ -188,6 +188,7 @@
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="table-responsive"
 				style="margin-top: 20px; margin-bottom: 20px;">
+				<div class="help-info">Agregados: <span id="countObject">${release.releaseObjects.size()}</span></div>
 				<table
 					class="table tableIni table-bordered table-striped table-hover dataTable"
 					id="configurationItemsTable">
@@ -331,11 +332,11 @@
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group m-b-0i">
 								<div class="form-line">
-									<input type="text" id="dependencyTechnical" maxlength="30"
+									<input type="text" id="dependencyTechnical" maxlength="50"
 										name="dependencyTechnical" class="form-control"
 										placeholder="Ingrese las dependencias..."
 										style="height: 60px;">
-										<div class="help-info">M&aacute;x. 30 caracteres</div>
+										<div class="help-info">M&aacute;x. 50 caracteres</div>
 								</div>
 							</div>
 						</div>
@@ -374,11 +375,11 @@
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<div class="form-group m-b-0i">
 								<div class="form-line">
-									<input type="text" id="dependencyFunctional" maxlength="30"
+									<input type="text" id="dependencyFunctional" maxlength="50"
 										name="dependencyFunctional" class="form-control"
 										placeholder="Ingrese las dependencias..."
 										style="height: 60px;">
-										<div class="help-info">M&aacute;x. 30 caracteres</div>
+										<div class="help-info">M&aacute;x. 50 caracteres</div>
 								</div>
 							</div>
 						</div>

@@ -83,13 +83,13 @@ function modifyDependency(obj) {
 
 function addObjectItem() {
 	if (validAddObjectItem()) {
-//		blockUI();
+		blockUI();
 		var cont = getCont();
 		var id = $('#generateReleaseForm #release_id').val();
 		$.ajax({
 			type : "POST",
 			url : cont + "release/" + "addConfigurationItem/" + id,
-			timeout : 60000,
+			timeout : 120000,
 			data : {
 				// Informacion general
 				name : $objectItemForm.find('#name').val(),
@@ -201,7 +201,7 @@ function deleteconfigurationItemsRow(id) {
 	var ajaxReq = $.ajax({
 		url : cont + "release/" + "deleteConfigurationItem/" + idRelease + "/"
 				+ id,
-		timeout : 60000,
+		timeout : 120000,
 		type : 'DELETE',
 		data : {},
 		success : function(response) {

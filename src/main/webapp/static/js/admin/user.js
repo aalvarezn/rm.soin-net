@@ -1,8 +1,12 @@
+$(function() {
+	activeItemMenu("userItem", true);
+});
 var $userTable = $('#userTable').DataTable({
 	"language" : {
 		"emptyTable" : "No existen registros",
 		"zeroRecords" : "No existen registros"
 	},
+	"ordering" : true,
 	"searching" : true,
 	"paging" : true
 });
@@ -136,6 +140,7 @@ function ajaxEditUser(obj) {
 	$('#userGroups').multiSelect("refresh");
 	resetErrors();
 	changeBtnModal(2);
+	$userModal.find('a[href="#tabHome"]').click();
 	$userModal.modal('show');
 }
 

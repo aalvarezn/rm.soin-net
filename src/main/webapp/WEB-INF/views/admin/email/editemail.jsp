@@ -11,10 +11,6 @@
 	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Waves Effect Css -->
-<link href="<c:url value='/static/plugins/node-waves/waves.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Animation Css -->
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
@@ -28,17 +24,9 @@
 	href="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- <!-- Bootstrap Select Css -->
-<!-- <link rel="stylesheet" -->
-<!-- 	href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css"> -->
-
 <!-- Sweetalert Css -->
 <link href="<c:url value='/static/plugins/sweetalert/sweetalert.css'/>"
 	rel="stylesheet" />
-
-<!-- Materialize Css -->
-<%-- <link href="<c:url value='/static/plugins/materialize-css/css/materialize.css'/>" --%>
-<!-- 	rel="stylesheet" /> -->
 
 <!-- Custom Css -->
 <link href="<c:url value='/static/css/style.css'/>" rel="stylesheet"
@@ -58,6 +46,11 @@
 
 <link
 	href="<c:url value='/static/plugins/multi-select/css/multi-select.css'/>"
+	rel="stylesheet" type="text/css">
+
+<!-- Bootstrap Select Css -->
+<link
+	href="<c:url value='/static/plugins/bootstrap-select/css/bootstrap-select.css'/>"
 	rel="stylesheet" type="text/css">
 
 <!-- Custom Css -->
@@ -165,8 +158,20 @@
 				<div class="row clearfix">
 					<div class="col-sm-12">
 						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{userName}}">Solicitante</button>
+						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{releaseNumber}}">Número
 							Release</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{priority}}">Prioridad</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{risk}}">Riesgo</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{impact}}">Impacto</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{description}}">Descripción</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{observation}}">Observación</button>
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))"
 							data-type="{{functionalSolution}}">Solución Funcional</button>
@@ -176,9 +181,13 @@
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{ambient}}">Ambientes</button>
 						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{minimalEvidence}}">Pruebas</button>
+						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{dependencies}}">Dependencias</button>
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{objects}}">Objetos</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{version}}">Versión</button>
 					</div>
 				</div>
 				<div class="row clearfix">
@@ -203,12 +212,13 @@
 	<script
 		src="<c:url value='/static/plugins/bootstrap/js/bootstrap.js'/>"></script>
 
+	<!-- Select Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/bootstrap-select/js/bootstrap-select.js'/>"></script>
+
 	<!-- Slimscroll Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
 
 	<!-- Jquery CountTo Plugin Js -->
 	<script
@@ -252,12 +262,6 @@
 	<!-- Custom Js -->
 	<script src="<c:url value='/static/js/admin.js?v=${jsVersion}'/>"></script>
 	<script src="<c:url value='/static/js/admin/email.js?v=${jsVersion}'/>"></script>
-	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
-	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
-	<script
-		src="<c:url value='/static/js/pages/forms/basic-form-elements.js'/>"></script>
-	<script
-		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 
 </body>
 

@@ -10,6 +10,7 @@ import com.soin.sgrm.dao.SystemDao;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.SystemModule;
 import com.soin.sgrm.model.SystemUser;
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.utils.JsonSheet;
 
 @Transactional("transactionManager")
@@ -29,6 +30,7 @@ public class SystemServiceImpl implements SystemService {
 		return dao.myTeams(name);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public JsonSheet listSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch) {
 		return dao.listSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch);
@@ -52,5 +54,55 @@ public class SystemServiceImpl implements SystemService {
 	@Override
 	public List<SystemInfo> listAll() {
 		return dao.listAll();
+	}
+
+	@Override
+	public SystemInfo findById(Integer id) {
+		return dao.findById(id);
+	}
+
+	@Override
+	public SystemUser findSystemUserById(Integer id) {
+		return dao.findSystemUserById(id);
+	}
+
+	@Override
+	public List<System> list() {
+		return dao.list();
+	}
+
+	@Override
+	public System findSystemById(Integer id) {
+		return dao.findSystemById(id);
+	}
+
+	@Override
+	public void save(System system) {
+		dao.save(system);
+	}
+
+	@Override
+	public void update(System system) {
+		dao.update(system);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		dao.delete(id);
+	}
+
+	@Override
+	public List<SystemUser> listSystemUser() {
+		return dao.listSystemUser();
+	}
+
+	@Override
+	public Object[] myTeamsProyect(String name) {
+		return dao.myTeamsProyect(name);
+	}
+
+	@Override
+	public List<SystemUser> listSystemUserByIds(Object[] ids) {
+		return dao.listSystemUserByIds(ids);
 	}
 }

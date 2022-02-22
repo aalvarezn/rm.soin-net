@@ -21,7 +21,7 @@
 										placeholder="Ingrese un c&oacute;digo CSV..." style=""></textarea>
 								</div>
 								<p class="p-t-5" style="font-size: 12px;">
-									Nombre;Descripción;CódigoRevisiónSVN;FechaRevisionSVN(dd-mm-YYYY);NombreItemConfiguración;NombreTipo
+									Nombre,Descripción,CódigoRevisiónSVN,FechaRevisionSVN(dd-mm-YYYY),NombreItemConfiguración,NombreTipo
 								</p>
 							</div>
 						</div>

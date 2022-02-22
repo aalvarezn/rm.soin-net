@@ -11,8 +11,10 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Dependency;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 
 @Repository
@@ -46,7 +48,7 @@ public class DependencyDaoImpl implements DependencyDao {
 			transObj.commit();
 			return dependency;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "dependency");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -60,7 +62,7 @@ public class DependencyDaoImpl implements DependencyDao {
 	}
 
 	@Override
-	public ArrayList<Dependency> save(Release release, ArrayList<Dependency> dependencies) {
+	public ArrayList<Dependency> save(ReleaseEdit release, ArrayList<Dependency> dependencies) {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		try {
@@ -73,13 +75,12 @@ public class DependencyDaoImpl implements DependencyDao {
 						dependency.setId(item.getId());
 					}
 				}
-				System.out.println("VERIFICAR: " + dependency.toString());
 				sessionObj.saveOrUpdate(dependency);
 			}
 			transObj.commit();
 			return dependencies;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "dependency");
 			transObj.rollback();
 			throw e;
 		} finally {

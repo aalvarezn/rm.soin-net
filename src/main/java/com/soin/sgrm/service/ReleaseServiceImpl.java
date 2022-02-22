@@ -1,14 +1,18 @@
 package com.soin.sgrm.service;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.soin.sgrm.controller.ReleaseController;
 import com.soin.sgrm.dao.ReleaseDao;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
@@ -17,13 +21,21 @@ import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonSheet;
+import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.utils.ReleaseCreate;
 
 @Transactional("transactionManager")
 @Service("ReleaseService")
 public class ReleaseServiceImpl implements ReleaseService {
+
+	public static final Logger logger = Logger.getLogger(ReleaseServiceImpl.class);
+
+	@Autowired
+	private RequestService requestService;
 
 	@Autowired
 	ReleaseDao dao;
@@ -39,21 +51,23 @@ public class ReleaseServiceImpl implements ReleaseService {
 	}
 
 	@Override
-	public JsonSheet<?> listByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch)
-			throws SQLException {
-		return dao.listByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch);
+	public JsonSheet<?> listByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException {
+		return dao.listByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId, statusId);
 	}
 
 	@Override
 	public JsonSheet<?> listByTeams(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			Object[] ids) throws SQLException {
-		return dao.listByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch, ids);
+			Object[] ids, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException {
+		return dao.listByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch, ids, dateRange, systemId, statusId);
 	}
 
 	@Override
-	public JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch)
-			throws SQLException {
-		return dao.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch);
+	public JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
+			throws SQLException, ParseException {
+		return dao.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
+				statusId);
 	}
 
 	@Override
@@ -78,8 +92,8 @@ public class ReleaseServiceImpl implements ReleaseService {
 	}
 
 	@Override
-	public void cancelRelease(ReleaseEdit release) throws Exception {
-		dao.cancelRelease(release);
+	public void updateStatusRelease(ReleaseEdit release) throws Exception {
+		dao.updateStatusRelease(release);
 	}
 
 	@Override
@@ -115,6 +129,116 @@ public class ReleaseServiceImpl implements ReleaseService {
 	@Override
 	public ReleaseUser findReleaseUserById(Integer id) throws SQLException {
 		return dao.findReleaseUserById(id);
+	}
+
+	public String generateReleaseNumber(String requeriment, String requirement_name, String system_id) {
+		String number_release = "";
+		String partCode = "";
+		try {
+
+			switch (requeriment) {
+			case "IN":
+				// Si no comienza con IN, se agrega.
+				if (!requirement_name.substring(0, 2).toString().toUpperCase().equals("IN")) {
+					partCode = system_id + "." + "IN" + requirement_name;
+				} else {
+					partCode = system_id + "." + requirement_name;
+				}
+				number_release = verifySecuence(partCode);
+				break;
+			case "PR":
+				// Si no comienza con PR, se agrega.
+				if (!requirement_name.substring(0, 2).toString().toUpperCase().equals("PR")) {
+					partCode = system_id + "." + "PR" + requirement_name;
+				} else {
+					partCode = system_id + "." + requirement_name;
+				}
+				number_release = verifySecuence(partCode);
+				break;
+			case "SS":
+				// Si no comienza con SS, se agrega.
+				if (!requirement_name.substring(0, 2).toString().toUpperCase().equals("SS")) {
+					partCode = system_id + "." + "SS" + requirement_name;
+				} else {
+					partCode = system_id + "." + requirement_name;
+				}
+				number_release = verifySecuence(partCode);
+				break;
+			case "SO-ICE":
+				partCode = system_id + "." + "SO-ICE" + requirement_name;
+				number_release = verifySecuence(partCode);
+				break;
+			case "INFRA":
+				partCode = system_id + "." + "INFRA" + "." + requirement_name;
+				number_release = verifySecuence(partCode);
+				break;
+			default:
+				number_release = "Sin Asignar";
+				break;
+			}
+		} catch (Exception e) {
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			number_release = "Sin Asignar";
+		}
+		return number_release;
+	}
+
+	public String verifySecuence(String partCode) {
+		try {
+			int amount = existNumRelease(partCode);
+
+			if (amount == 0) {
+				return partCode + "." + CommonUtils.getSystemDate("yyyyMMdd");
+			} else {
+				return partCode + "_" + (amount + 1) + "." + CommonUtils.getSystemDate("yyyyMMdd");
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return "Sin Asignar";
+
+	}
+
+	public String generateTPO_BT_ReleaseNumber(String system_id, String requirement_name) {
+
+		try {
+			String ids = requirement_name;
+			String[] words = ids.split(",");
+			String partCode = "";
+			int id = Integer.parseInt(words[0]);
+			String number_release = "";
+			Request request = requestService.findById(id);
+			String[] code = request.getCode_soin().split("-");
+			String codeSOIN = "";
+			String codeICE = request.getCode_ice();
+			for (int i = 0; i < code.length; i++) {
+				if (i <= 1) {
+					codeSOIN += code[i];
+				} else {
+					codeSOIN += "-" + code[i];
+				}
+			}
+			// Esto es para los releases de ATV
+			if (request.getCode_soin().substring(0, 2).toString().equals("R-")) {
+				partCode = system_id + "." + codeSOIN;
+			} else {
+				// en caso de las BT el codeICE es null por lo que no es requerido.
+				if (codeICE == null) {
+					partCode = system_id + "." + codeSOIN;
+				} else {
+					partCode = system_id + "." + codeSOIN + "." + codeICE;
+				}
+			}
+			partCode = partCode.replaceAll("\\s", ""); // Se eliminan los espacios en blanco
+			number_release = verifySecuence(partCode);
+			return number_release;
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return "Sin Asignar";
 	}
 
 }

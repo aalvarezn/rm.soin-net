@@ -15,5 +15,15 @@ public interface ActionEnvironmentDao {
 	
 	void deleteReleaseDependency(Integer action_id, Integer release_id) throws Exception;
 	
+	List<ActionEnvironment> list();
+	
+	ActionEnvironment findActionById(Integer id);
+
+	void save(ActionEnvironment action);
+
+	void update(ActionEnvironment action);
+
+	void delete(Integer id);
+	
 
 }

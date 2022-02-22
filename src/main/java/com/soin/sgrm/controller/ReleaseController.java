@@ -2,13 +2,17 @@ package com.soin.sgrm.controller;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,55 +27,63 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.model.Ambient;
 import com.soin.sgrm.model.Dependency;
-import com.soin.sgrm.model.DocsTemplate;
+import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.Module;
-import com.soin.sgrm.model.Parameter;
-import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
+import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.WFRelease;
+import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.ActionEnvironmentService;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.ConfigurationItemService;
-import com.soin.sgrm.service.DocsTemplateService;
+import com.soin.sgrm.service.DocTemplateService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.service.ModifiedComponentService;
 import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
-import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.RiskService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
-import com.soin.sgrm.service.SystemEnvironmentService;
+import com.soin.sgrm.service.EnvironmentService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.service.TypeObjectService;
 import com.soin.sgrm.service.UserInfoService;
+import com.soin.sgrm.service.wf.NodeService;
+import com.soin.sgrm.utils.CommonUtils;
+import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.MyError;
+import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.utils.ReleaseCreate;
+
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/release")
 public class ReleaseController extends BaseController {
 
+	public static final Logger logger = Logger.getLogger(ReleaseController.class);
+
 	@Autowired
 	private UserInfoService loginService;
-	@Autowired
-	private ProjectService projectService;
 	@Autowired
 	private SystemConfigurationService systemConfigurationService;
 	@Autowired
@@ -93,13 +105,11 @@ public class ReleaseController extends BaseController {
 	@Autowired
 	private SystemService systemService;
 	@Autowired
-	private DocsTemplateService docsTemplateService;
-	@Autowired
-	private RequestService requestService;
+	private DocTemplateService docsTemplateService;
 	@Autowired
 	private TypeObjectService typeObjectService;
 	@Autowired
-	private SystemEnvironmentService environmentService;
+	private EnvironmentService environmentService;
 	@Autowired
 	private ConfigurationItemService configurationItemService;
 	@Autowired
@@ -108,81 +118,55 @@ public class ReleaseController extends BaseController {
 	private TypeDetailService typeDetail;
 	@Autowired
 	private EmailTemplateService emailService;
-
 	@Autowired
 	private ParameterService paramService;
-
-	public void loadInfoData(Model model, String name, int query, Object[] ids) {
-		try {
-			model.addAttribute("certification", releaseService.countByType(name, "Certificacion", query, ids));
-			model.addAttribute("draft", releaseService.countByType(name, "Borrador", query, ids));
-			model.addAttribute("review", releaseService.countByType(name, "En Revision", query, ids));
-			model.addAttribute("completed", releaseService.countByType(name, "Completado", query, ids));
-			model.addAttribute("system", new SystemUser());
-			model.addAttribute("systems", systemService.listSystemByUser(name));
-			model.addAttribute("project", new Project());
-			model.addAttribute("projects", projectService.listAll());
-
-		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error en conteo de releases por pagina." + getErrorFormat(e));
-		}
-
-	}
+	@Autowired
+	private NodeService nodeService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
-			UserInfo user = (UserInfo) request.getAttribute("userInfo");
-			if (user.getIsReleaseManager() == 1) {
-				return "redirect:/release/release-management";
-			}
-
-			String name = getUserName();
-			loadInfoData(model, name, 1, null);
+			String name = getUserLogin().getUsername();
+			loadCountsRelease(request, name);
+			model.addAttribute("system", new SystemUser());
+			model.addAttribute("systems", systemService.listSystemByUser(getUserLogin().getUsername()));
+			model.addAttribute("status", new Status());
+			model.addAttribute("statuses", statusService.list());
 			model.addAttribute("list", "userRelease");
 		} catch (Exception e) {
+			Sentry.capture(e, "release");
 			redirectAttributes.addFlashAttribute("data",
 					"Error en la carga de la pagina inicial." + " ERROR: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error en la carga de la pagina inicial." + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return "redirect:/";
 		}
 		return "/release/release";
 
 	}
 
-	@RequestMapping(value = "/release-management", method = RequestMethod.GET)
-	public String progress(HttpServletRequest request, Locale locale, Model model, HttpSession session,
-			RedirectAttributes redirectAttributes) {
-		try {
-			UserInfo user = (UserInfo) request.getAttribute("userInfo");
-			if (user.getIsReleaseManager() == 0) {
-				redirectAttributes.addFlashAttribute("data", "No tiene permisos de release Manager.");
-				return "redirect:/release/";
-			}
-			model.addAttribute("list", "systemRelease");
-		} catch (Exception e) {
-			redirectAttributes.addFlashAttribute("data",
-					"Error en la carga de la pagina inicial/systemas." + " ERROR: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error en la carga de la pagina inicial/systemas." + getErrorFormat(e));
-			return "redirect:/";
-		}
-		return "/release/releaseManager";
-	}
-
 	@RequestMapping(path = "/userRelease", method = RequestMethod.GET)
 	public @ResponseBody JsonSheet<?> getUserRelease(HttpServletRequest request, Locale locale, Model model,
 			HttpSession session) {
 		try {
-			String name = getUserName(), sSearch = request.getParameter("sSearch");
+			String range = request.getParameter("dateRange");
+			String[] dateRange = (range != null) ? range.split("-") : null;
+
+			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
+			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
+
+			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
-			return releaseService.listByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch);
+			return releaseService.listByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,
+					statusId);
 		} catch (SQLException ex) {
-			logs("SYSTEM_ERROR", "Problemas de conexión con la base de datos, favor intente más tarde.");
+			Sentry.capture(ex, "release");
+			logger.log(MyLevel.RELEASE_ERROR, ex.toString());
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error durante el proceso de paginacion de releases de usuario." + getErrorFormat(e));
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return null;
 
@@ -192,14 +176,20 @@ public class ReleaseController extends BaseController {
 	public @ResponseBody JsonSheet<?> getAllEmployees(HttpServletRequest request, Locale locale, Model model,
 			HttpSession session) {
 		try {
-			String name = getUserName(), sSearch = request.getParameter("sSearch");
+			String range = request.getParameter("dateRange");
+			String[] dateRange = (range != null) ? range.split("-") : null;
+			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
+			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
+
+			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			return releaseService.listByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
-					systemService.myTeams(name));
+					systemService.myTeams(name), dateRange, systemId, statusId);
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error durante el proceso de paginacion de releases de equipo." + getErrorFormat(e));
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
 
@@ -209,13 +199,20 @@ public class ReleaseController extends BaseController {
 	public @ResponseBody JsonSheet<?> getSystemRelease(HttpServletRequest request, Locale locale, Model model,
 			HttpSession session) {
 		try {
-			String name = getUserName(), sSearch = request.getParameter("sSearch");
+			String range = request.getParameter("dateRange");
+			String[] dateRange = (range != null) ? range.split("-") : null;
+			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
+			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
+
+			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
-			return releaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch);
+			return releaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, Constant.FILTRED,
+					dateRange, systemId, statusId);
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error durante el proceso de paginacion de releases de sistema." + getErrorFormat(e));
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
 	}
@@ -227,7 +224,7 @@ public class ReleaseController extends BaseController {
 		try {
 			model.addAttribute("parameter", status);
 			ReleaseSummary release = null;
-			if (isNumeric(status)) {
+			if (CommonUtils.isNumeric(status)) {
 				release = releaseService.findById(Integer.parseInt(status));
 			}
 
@@ -236,19 +233,23 @@ public class ReleaseController extends BaseController {
 			}
 			SystemConfiguration systemConfiguration = systemConfigurationService
 					.findBySystemId(release.getSystem().getId());
-			List<DocsTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
+			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
 			model.addAttribute("dependency", new Release());
 			model.addAttribute("object", new ReleaseObject());
-			model.addAttribute("doc", new DocsTemplate());
+			model.addAttribute("doc", new DocTemplate());
 			model.addAttribute("docs", docs);
 			model.addAttribute("release", release);
 			model.addAttribute("systemConfiguration", systemConfiguration);
+			model.addAttribute("status", new Status());
+			model.addAttribute("statuses", statusService.list());
 		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
 			throw ex;
 		} catch (Exception e) {
+			Sentry.capture(e, "release");
 			redirectAttributes.addFlashAttribute("data",
 					"Error en la carga de la pagina resumen release." + " ERROR: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error en la carga de la pagina resumen release." + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return "redirect:/";
 		}
 		return "/release/summaryRelease";
@@ -260,7 +261,7 @@ public class ReleaseController extends BaseController {
 		try {
 			model.addAttribute("parameter", status);
 			ReleaseSummary release = null;
-			if (isNumeric(status)) {
+			if (CommonUtils.isNumeric(status)) {
 				release = releaseService.findById(Integer.parseInt(status));
 			}
 
@@ -269,18 +270,19 @@ public class ReleaseController extends BaseController {
 			}
 			SystemConfiguration systemConfiguration = systemConfigurationService
 					.findBySystemId(release.getSystem().getId());
-			List<DocsTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
+			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
 			model.addAttribute("dependency", new Release());
 			model.addAttribute("object", new ReleaseObject());
-			model.addAttribute("doc", new DocsTemplate());
+			model.addAttribute("doc", new DocTemplate());
 			model.addAttribute("docs", docs);
 			model.addAttribute("release", release);
 			model.addAttribute("systemConfiguration", systemConfiguration);
 
 		} catch (Exception e) {
+			Sentry.capture(e, "release");
 			redirectAttributes.addFlashAttribute("data",
 					"Error en la carga de la pagina resumen release." + " ERROR: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error en la carga de la pagina resumen release." + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return "redirect:/";
 		}
 		return "/release/tinySummaryRelease";
@@ -291,7 +293,7 @@ public class ReleaseController extends BaseController {
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		ReleaseEdit release = new ReleaseEdit();
 		SystemConfiguration systemConfiguration = new SystemConfiguration();
-
+		UserLogin user = getUserLogin();
 		try {
 			if (id == null) {
 				return "redirect:/";
@@ -310,20 +312,21 @@ public class ReleaseController extends BaseController {
 				return "redirect:" + referer;
 			}
 
-			if (release.getUser().getId() != getUserId()) {
+			if (!(release.getUser().getUsername().toLowerCase().trim())
+					.equals((user.getUsername().toLowerCase().trim()))) {
 				redirectAttributes.addFlashAttribute("data", "No tiene permisos sobre el release.");
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
 
 			systemConfiguration = systemConfigurationService.findBySystemId(release.getSystem().getId());
-			List<DocsTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
+			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
 
 			if (release.getSystem().getImportObjects()) {
 				model.addAttribute("typeDetailList", typeDetail.list());
 			}
 
-			model.addAttribute("systems", systemService.listSystemByUser(getUserName()));
+			model.addAttribute("systems", systemService.listSystemByUser(getUserLogin().getUsername()));
 			model.addAttribute("impacts", impactService.list());
 			model.addAttribute("risks", riskService.list());
 			model.addAttribute("priorities", priorityService.list());
@@ -334,16 +337,16 @@ public class ReleaseController extends BaseController {
 			model.addAttribute("actionEnvironments", actionService.listBySystem(release.getSystem().getId()));
 			model.addAttribute("configurationItems",
 					configurationItemService.listBySystem(release.getSystem().getId()));
-			model.addAttribute("doc", new DocsTemplate());
+			model.addAttribute("doc", new DocTemplate());
 			model.addAttribute("docs", docs);
 			model.addAttribute("release", release);
 
 			return "/release/editRelease";
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			redirectAttributes.addFlashAttribute("data", getErrorFormat(e));
-			logs("RELEASE_ERROR", "Error en la carga de la pagina editRelease." + getErrorFormat(e));
+			Sentry.capture(e, "release");
+			redirectAttributes.addFlashAttribute("data", e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 
 		return "redirect:/";
@@ -359,15 +362,17 @@ public class ReleaseController extends BaseController {
 			@RequestParam(value = "addObject", required = true) Boolean addObject) {
 		JsonResponse res = new JsonResponse();
 		try {
+			UserInfo user = loginService.findUserInfoById(getUserLogin().getId());
 			String number_release = "";
 			ReleaseEdit release = releaseService.findEditById(Integer.parseInt(idRelease));
 
 			ReleaseEdit releaseCopy = (ReleaseEdit) release.clone();
 			if (!requeriment.equals("TPO/BT")) {
-				number_release = generateReleaseNumber(requeriment, requirement_name,
+				number_release = releaseService.generateReleaseNumber(requeriment, requirement_name,
 						releaseCopy.getSystem().getName());
 			} else {
-				number_release = generateTPO_BT_ReleaseNumber((releaseCopy.getSystem().getName()), requirement_name);
+				number_release = releaseService.generateTPO_BT_ReleaseNumber((releaseCopy.getSystem().getName()),
+						requirement_name);
 			}
 
 			releaseCopy.setId(0);
@@ -375,9 +380,11 @@ public class ReleaseController extends BaseController {
 			releaseCopy.setObservations(observations);
 			releaseCopy.setReleaseNumber(number_release);
 			releaseCopy.clearObjectsCopy();
-			releaseCopy.copyObjects(releaseCopy, release);
-			releaseCopy.setCreateDate(getSystemTimestamp());
-			releaseCopy.setUser(getUseInfo());
+			if (addObject) {
+				releaseCopy.copyObjects(releaseCopy, release);
+			}
+			releaseCopy.setCreateDate(CommonUtils.getSystemTimestamp());
+			releaseCopy.setUser(user);
 			releaseCopy.setStatus(statusService.findByName("Borrador"));
 
 			if (requeriment.equals("IN"))
@@ -400,13 +407,14 @@ public class ReleaseController extends BaseController {
 			res.setData(releaseCopy.getId() + "");
 			res.setStatus("success");
 		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "release");
 			res.setStatus("exception");
 			res.setException(e.getMessage());
-			logs("RELEASE_ERROR", "Error en la copia del release-copy." + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -423,12 +431,13 @@ public class ReleaseController extends BaseController {
 		String number_release = "";
 		Release release = new Release();
 		Module module = new Module();
+		User user = loginService.findUserById(getUserLogin().getId());
 		try {
 			res.setStatus("success");
 			if (!requeriment.equals("TPO/BT")) {
-				number_release = generateReleaseNumber(requeriment, requirement_name, system_id);
+				number_release = releaseService.generateReleaseNumber(requeriment, requirement_name, system_id);
 			} else {
-				number_release = generateTPO_BT_ReleaseNumber(system_id, requirement_name);
+				number_release = releaseService.generateTPO_BT_ReleaseNumber(system_id, requirement_name);
 			}
 			module = moduleService.findBySystemId(system_id);
 			if (module == null) {
@@ -440,10 +449,11 @@ public class ReleaseController extends BaseController {
 			release.setDescription(description);
 			release.setObservations(observations);
 			release.setReleaseNumber(number_release);
-			release.setUser_id(getUserId());
-			release.setStatus(statusService.findByName("Borrador"));
+			release.setUser(user);
+			Status status = statusService.findByName("Borrador");
+			release.setStatus(status);
 			release.setModule(module);
-			release.setCreateDate(getSystemTimestamp());
+			release.setCreateDate(CommonUtils.getSystemTimestamp());
 
 			release.setReportHaveArt(false);
 			release.setReportfixedTelephony(false);
@@ -454,6 +464,9 @@ public class ReleaseController extends BaseController {
 
 			release.setBilledCalls(false);
 			release.setNotBilledCalls(false);
+
+			release.setMotive("Inicio de release");
+			release.setOperator(getUserLogin().getFullName());
 
 			if (requeriment.equals("IN"))
 				release.setIncident((!requirement_name.substring(0, 2).toString().toUpperCase().equals("IN"))
@@ -481,119 +494,16 @@ public class ReleaseController extends BaseController {
 			res.setData(release.getId() + "");
 			return res;
 		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "release");
 			res.setStatus("exception");
 			res.setException(e.getMessage());
-			logs("RELEASE_ERROR", "Error en la generacion del release-generate." + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
-	}
-
-	public String generateReleaseNumber(String requeriment, String requirement_name, String system_id) {
-		String number_release = "";
-		String partCode = "";
-		try {
-
-			switch (requeriment) {
-			case "IN":
-				// Si no comienza con IN, se agrega.
-				if (!requirement_name.substring(0, 2).toString().toUpperCase().equals("IN")) {
-					partCode = system_id + "." + "IN" + requirement_name;
-				} else {
-					partCode = system_id + "." + requirement_name;
-				}
-				number_release = verifySecuence(partCode);
-				break;
-			case "PR":
-				// Si no comienza con PR, se agrega.
-				if (!requirement_name.substring(0, 2).toString().toUpperCase().equals("PR")) {
-					partCode = system_id + "." + "PR" + requirement_name;
-				} else {
-					partCode = system_id + "." + requirement_name;
-				}
-				number_release = verifySecuence(partCode);
-				break;
-			case "SS":
-				// Si no comienza con SS, se agrega.
-				if (!requirement_name.substring(0, 2).toString().toUpperCase().equals("SS")) {
-					partCode = system_id + "." + "SS" + requirement_name;
-				} else {
-					partCode = system_id + "." + requirement_name;
-				}
-				number_release = verifySecuence(partCode);
-				break;
-			case "SO-ICE":
-				partCode = system_id + "." + "SO-ICE" + requirement_name;
-				number_release = verifySecuence(partCode);
-				break;
-			default:
-				number_release = "Sin Asignar";
-				break;
-			}
-		} catch (Exception e) {
-			number_release = "Sin Asignar";
-			logs("RELEASE_ERROR", "Error en la generacion del numero de release." + getErrorFormat(e));
-		}
-		return number_release;
-	}
-
-	public String verifySecuence(String partCode) {
-		try {
-			int amount = releaseService.existNumRelease(partCode);
-
-			if (amount == 0) {
-				return partCode + "." + getSystemDate("yyyyMMdd");
-			} else {
-				return partCode + "_" + (amount + 1) + "." + getSystemDate("yyyyMMdd");
-			}
-
-		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error en la generacion del numero de release VerifySecuence." + getErrorFormat(e));
-		}
-		return "Sin Asignar";
-
-	}
-
-	public String generateTPO_BT_ReleaseNumber(String system_id, String requirement_name) {
-
-		try {
-			String ids = requirement_name;
-			String[] words = ids.split(",");
-			String partCode = "";
-			int id = Integer.parseInt(words[0]);
-			String number_release = "";
-			Request request = requestService.findById(id);
-			String[] code = request.getCode_soin().split("-");
-			String codeSOIN = "";
-			String codeICE = request.getCode_ice();
-			for (int i = 0; i < code.length; i++) {
-				if (i <= 1) {
-					codeSOIN += code[i];
-				} else {
-					codeSOIN += "-" + code[i];
-				}
-			}
-			// Esto es para los releases de ATV
-			if (request.getCode_soin().substring(0, 2).toString().equals("R-")) {
-				partCode = system_id + "." + codeSOIN;
-			} else {
-				// en caso de las BT el codeICE es null por lo que no es requerido.
-				if (codeICE == null) {
-					partCode = system_id + "." + codeSOIN;
-				} else {
-					partCode = system_id + "." + codeSOIN + "." + codeICE;
-				}
-			}
-			partCode = partCode.replaceAll("\\s", ""); // Se eliminan los espacios en blanco
-			number_release = verifySecuence(partCode);
-			return number_release;
-		} catch (Exception e) {
-			logs("RELEASE_ERROR",
-					"Error en la generacion del numero de release generateTPO_BT_ReleaseNumber." + getErrorFormat(e));
-		}
-		return "Sin Asignar";
 	}
 
 	@RequestMapping(value = "/deleteRelease/{id}", method = RequestMethod.DELETE)
@@ -603,25 +513,29 @@ public class ReleaseController extends BaseController {
 			res.setStatus("success");
 			ReleaseEdit release = releaseService.findEditById(id);
 			if (release.getStatus().getName().equals("Borrador")) {
-				if (release.getUser().getId() != getUserId()) {
-					res.setStatus("fail");
-					res.setException("No tiene permisos sobre el release.");
-				} else {
+				if (release.getUser().getUsername().equals(getUserLogin().getUsername())) {
 					Status status = statusService.findByName("Anulado");
 					release.setStatus(status);
-					releaseService.cancelRelease(release);
+					release.setMotive(status.getMotive());
+					release.setOperator(getUserLogin().getFullName());
+					releaseService.updateStatusRelease(release);
+				} else {
+					res.setStatus("fail");
+					res.setException("No tiene permisos sobre el release.");
 				}
 			} else {
 				res.setStatus("fail");
 				res.setException("La acción no se pudo completar, el release no esta en estado de Borrador.");
 			}
 		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "release");
 			res.setStatus("exception");
 			res.setException("La acción no se pudo completar correctamente.");
-			logs("RELEASE_ERROR", "Error al eliminar el release: " + id.toString() + ". " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -645,12 +559,14 @@ public class ReleaseController extends BaseController {
 			releaseService.assignRelease(release, user);
 			res.setStatus("success");
 		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "release");
 			res.setStatus("exception");
 			res.setException("La acción no se pudo completar correctamente.");
-			logs("RELEASE_ERROR", "Error al eliminar el release: " + idRelease + ". " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -680,11 +596,12 @@ public class ReleaseController extends BaseController {
 				modifiedComponents.add(modifiedComponentService.findById(idComponent));
 			}
 
+			ReleaseUser releaseUser = releaseService.findReleaseUserById(Integer.parseInt(rc.getRelease_id()));
 			for (Integer to_id : rc.getDependenciesFunctionals()) {
 				dependency = new Dependency();
 				dependency.setId(0);
-				dependency.setRelease(releaseService.findReleaseUserById(Integer.parseInt(rc.getRelease_id())));
-				dependency.setTo_release(releaseService.findReleaseById(to_id));
+				dependency.setRelease(releaseUser);
+				dependency.setTo_release(releaseService.findReleaseUserById(to_id));
 				dependency.setMandatory(release.isMandatory(dependency));
 				dependency.setIsFunctional(true);
 				dependencies.add(dependency);
@@ -692,8 +609,8 @@ public class ReleaseController extends BaseController {
 			for (Integer to_id : rc.getDependenciesTechnical()) {
 				dependency = new Dependency();
 				dependency.setId(0);
-				dependency.setRelease(releaseService.findReleaseUserById(Integer.parseInt(rc.getRelease_id())));
-				dependency.setTo_release(releaseService.findReleaseById(to_id));
+				dependency.setRelease(releaseUser);
+				dependency.setTo_release(releaseService.findReleaseUserById(to_id));
 				dependency.setMandatory(release.isMandatory(dependency));
 				dependency.setIsFunctional(false);
 				dependencies.add(dependency);
@@ -710,12 +627,14 @@ public class ReleaseController extends BaseController {
 				res.setErrors(errors);
 			}
 		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
 			res.setStatus("exception");
 			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
+			Sentry.capture(e, "release");
 			res.setStatus("exception");
 			res.setException("Error al guardar el release: " + e.getMessage());
-			logs("RELEASE_ERROR", "Error al guardar el release: " + rc.getReleaseNumber() + "." + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -726,16 +645,24 @@ public class ReleaseController extends BaseController {
 		try {
 			Release release = null;
 
-			if (isNumeric(releaseId)) {
+			if (CommonUtils.isNumeric(releaseId)) {
 				release = releaseService.findReleaseById(Integer.parseInt(releaseId));
 			}
 			// Si el release no existe se regresa al inicio.
 			if (release == null) {
 				return "redirect:/";
 			}
-			// Se cambia el estado a Solicitado
+			// Verificar si existe un flujo para el sistema
+			Node node = nodeService.existWorkFlow(release);
 			Status status = statusService.findByName("Solicitado");
+
+//			if (node != null)
+//				release.setNode(node);
+
 			release.setStatus(status);
+			release.setMotive(status.getMotive());
+			release.setOperator(getUserLogin().getFullName());
+
 			if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 					EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
@@ -744,18 +671,37 @@ public class ReleaseController extends BaseController {
 						try {
 							emailService.sendMail(releaseEmail, email);
 						} catch (Exception e) {
-							// log para error
-							e.printStackTrace();
+							Sentry.capture(e, "release");
 						}
 
 					});
 					newThread.start();
 				}
 			}
-//			releaseService.requestRelease(release);
+
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getActors().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+				EmailTemplate emailActor = emailService.findById(idTemplate);
+				WFRelease releaseEmail = new WFRelease();
+				releaseEmail.convertReleaseToWFRelease(release);
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailActor(releaseEmail, emailActor);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
+
+			releaseService.requestRelease(release);
+
 			return "redirect:/release/summary-" + release.getId();
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error en la carga de la pagina resumen release." + getErrorFormat(e));
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 
 		return "redirect:/";
@@ -769,6 +715,9 @@ public class ReleaseController extends BaseController {
 
 			if (systemConfiguration.getGeneralInfo())
 				errors = rc.validGeneralInformation(rc, errors);
+
+			if (systemConfiguration.getObservations())
+				errors = rc.validObservations(rc, errors);
 
 			if (systemConfiguration.getSolutionInfo())
 				errors = rc.validInformationSolution(rc, errors);
@@ -814,10 +763,45 @@ public class ReleaseController extends BaseController {
 				errors = rc.validEnvironmentObservations(rc, errors);
 			}
 		} catch (Exception e) {
-			logs("RELEASE_ERROR", "Error en la validacion de secciones. " + getErrorFormat(e));
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return errors;
 
+	}
+
+	public void loadCountsRelease(HttpServletRequest request, String name) {
+		List<SystemUser> systems = systemService.listSystemByUser(name);
+		Map<String, Integer> userC = new HashMap<String, Integer>();
+		userC.put("draft", releaseService.countByType(name, "Borrador", 1, null));
+		userC.put("requested", releaseService.countByType(name, "Solicitado", 1, null));
+		userC.put("completed", releaseService.countByType(name, "Completado", 1, null));
+		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+		request.setAttribute("userC", userC);
+
+		Object[] ids = systemService.myTeams(name);
+		Map<String, Integer> teamC = new HashMap<String, Integer>();
+
+		if (systems.size() == 0) {
+			teamC.put("draft", 0);
+			teamC.put("requested", 0);
+			teamC.put("certification", 0);
+			teamC.put("completed", 0);
+			request.setAttribute("userC", userC);
+		} else {
+			teamC.put("draft", releaseService.countByType(name, "Borrador", 2, ids));
+			teamC.put("requested", releaseService.countByType(name, "Solicitado", 2, ids));
+			teamC.put("completed", releaseService.countByType(name, "Completado", 2, ids));
+			teamC.put("all", (teamC.get("draft") + teamC.get("requested") + teamC.get("completed")));
+		}
+		request.setAttribute("teamC", teamC);
+
+		Map<String, Integer> systemC = new HashMap<String, Integer>();
+		systemC.put("draft", releaseService.countByType(name, "Borrador", 3, null));
+		systemC.put("requested", releaseService.countByType(name, "Solicitado", 3, null));
+		systemC.put("completed", releaseService.countByType(name, "Completado", 3, null));
+		systemC.put("all", (systemC.get("draft") + systemC.get("requested") + systemC.get("completed")));
+		request.setAttribute("systemC", systemC);
 	}
 
 }

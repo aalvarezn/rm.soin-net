@@ -6,7 +6,7 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="modalTitle">Modificar usuario</h4>
+				<h4 class="modal-title" id="modalTitle">Usuario</h4>
 			</div>
 			<div class="modal-body">
 				<form id="userForm" action="">
@@ -18,15 +18,15 @@
 							<!-- Nav tabs -->
 							<ul class="nav nav-tabs tab-nav-right" role="tablist">
 								<li role="presentation" class="active"><a
-									href="#home_animation_1" data-toggle="tab">INFORMACIÓN</a></li>
-								<li role="presentation"><a href="#profile_animation_1"
+									href="#tabHome" data-toggle="tab">INFORMACIÓN</a></li>
+								<li role="presentation"><a href="#tabRoles"
 									data-toggle="tab">ROLES</a></li>
 							</ul>
 						</div>
 					</div>
 					<!-- Tab panes -->
 					<div class="tab-content">
-						<div role="tabpanel" class="tab-pane active" id="home_animation_1">
+						<div role="tabpanel" class="tab-pane active" id="tabHome">
 							<div class="row m-t-20">
 								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 									<label for="name">Nombre de usuario</label>
@@ -87,7 +87,7 @@
 								</div>
 							</div>
 						</div>
-						<div role="tabpanel" class="tab-pane" id="profile_animation_1">
+						<div role="tabpanel" class="tab-pane" id="tabRoles">
 							<div class="row m-t-20">
 								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 									<select id='userGroups' multiple='multiple'>
@@ -99,8 +99,6 @@
 							</div>
 						</div>
 					</div>
-
-
 				</form>
 			</div>
 			<div class="modal-footer">

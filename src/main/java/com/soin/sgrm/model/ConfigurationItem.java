@@ -4,11 +4,20 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
 @Entity
@@ -22,10 +31,19 @@ public class ConfigurationItem implements Serializable, Cloneable {
 	private int id;
 
 	@Column(name = "NOMBRE")
+	@NotEmpty(message = Constant.EMPTY)
+	@Size(max = 50, message = "Máximo 50 caracteres.")
 	private String name;
 
-	@Column(name = "SISTEMA_ID")
-	private int system_id;
+	@Column(name = "DESCRIPCION")
+	private String description;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "SISTEMA_ID", nullable = true)
+	private SystemInfo system;
+
+	@Transient
+	private Integer systemId;
 
 	public int getId() {
 		return id;
@@ -43,12 +61,28 @@ public class ConfigurationItem implements Serializable, Cloneable {
 		this.name = name;
 	}
 
-	public int getSystem_id() {
-		return system_id;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setSystem_id(int system_id) {
-		this.system_id = system_id;
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public SystemInfo getSystem() {
+		return system;
+	}
+
+	public void setSystem(SystemInfo system) {
+		this.system = system;
+	}
+
+	public Integer getSystemId() {
+		return systemId;
+	}
+
+	public void setSystemId(Integer systemId) {
+		this.systemId = systemId;
 	}
 
 	@Override

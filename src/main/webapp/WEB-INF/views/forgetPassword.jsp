@@ -126,9 +126,6 @@
 	<script
 		src="<c:url value='/static/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js'/>"></script>
 
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
-
 	<!-- Custom Js -->
 	<script src="<c:url value='/static/js/pages/examples/sign-in.js'/>"></script>
 	<script src="<c:url value='/static/js/admin.js'/>"></script>

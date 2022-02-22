@@ -10,6 +10,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.SystemConfiguration;
 
 @Repository
@@ -52,11 +53,16 @@ public class SystemConfigurationDaoImpl implements SystemConfigurationDao {
 			transObj.commit();
 			return systemConfig;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "configuration");
 			transObj.rollback();
 			throw e;
 		} finally {
 			sessionObj.close();
 		}
+	}
+
+	@Override
+	public void save(SystemConfiguration systemConfig) {
+		sessionFactory.getCurrentSession().save(systemConfig);
 	}
 }

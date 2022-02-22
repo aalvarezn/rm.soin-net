@@ -52,9 +52,9 @@
 							<label for="">&nbsp;</label>
 							<div class="form-group m-b-0i">
 								<div class="form-line">
-									<input type="text" id="typeText" name="typeText" maxlength="50"
+									<input type="text" id="typeText" name="typeText" maxlength="250"
 										value="" class="form-control" placeholder="Ingrese un valor..">
-										<div class="help-info">M&aacute;x. 50 caracteres</div>
+										<div class="help-info">M&aacute;x. 250 caracteres</div>
 								</div>
 							</div>
 						</div>

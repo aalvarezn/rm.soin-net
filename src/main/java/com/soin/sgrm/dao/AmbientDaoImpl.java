@@ -8,15 +8,12 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.soin.sgrm.model.DocsTemplate;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Ambient;
-import com.soin.sgrm.model.Request;
 
 @Repository
 public class AmbientDaoImpl implements AmbientDao {
@@ -62,7 +59,7 @@ public class AmbientDaoImpl implements AmbientDao {
 
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "ambient");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -87,7 +84,7 @@ public class AmbientDaoImpl implements AmbientDao {
 
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "ambient");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -104,6 +101,42 @@ public class AmbientDaoImpl implements AmbientDao {
 		crit.add(Restrictions.eq("system.code", system));
 		Ambient ambient = (Ambient) crit.uniqueResult();
 		return ambient;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Ambient> list() {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Ambient.class);
+		List<Ambient> list = crit.list();
+		return list;
+	}
+
+	@Override
+	public Ambient findById(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Ambient.class);
+		crit.add(Restrictions.eq("id", id));
+		return (Ambient) crit.uniqueResult();
+	}
+
+	@Override
+	public void save(Ambient ambient) {
+		sessionFactory.getCurrentSession().save(ambient);
+	}
+
+	@Override
+	public void update(Ambient ambient) {
+		try {
+			sessionFactory.getCurrentSession().update(ambient);
+		} catch (Exception e) {
+			Sentry.capture(e, "ambient");
+		}
+		
+	}
+
+	@Override
+	public void delete(Integer id) {
+		Ambient ambient = findById(id);
+		sessionFactory.getCurrentSession().delete(ambient);
 	}
 
 }

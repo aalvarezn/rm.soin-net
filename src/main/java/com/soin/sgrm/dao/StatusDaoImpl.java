@@ -8,7 +8,6 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.Status;
 
 @Repository
@@ -20,8 +19,8 @@ public class StatusDaoImpl implements StatusDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Status> list() {
-		List<Status> releaseStatusList = sessionFactory.getCurrentSession().createQuery("from ReleaseStatus").list();
-		return releaseStatusList;
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Status.class);
+		return crit.list();
 	}
 
 	@Override

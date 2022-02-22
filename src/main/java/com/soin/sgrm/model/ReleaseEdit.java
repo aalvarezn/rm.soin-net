@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -21,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -263,6 +265,19 @@ public class ReleaseEdit implements Serializable, Cloneable {
 
 	@Column(name = "NUMEROVERSION")
 	private String versionNumber;
+
+	@Value("${retries:0}")
+	@Column(name = "REINTENTOS", nullable = false)
+	private Integer retries;
+
+	@Column(name = "OPERADOR")
+	private String operator;
+
+	@Column(name = "MOTIVO")
+	private String motive;
+
+	@Transient
+	private String dateChange;
 
 	public int getId() {
 		return id;
@@ -755,11 +770,8 @@ public class ReleaseEdit implements Serializable, Cloneable {
 
 	public boolean existObject(ReleaseObjectEdit obj) {
 		for (ReleaseObject object : releaseObjects) {
-			if (object.getName().equals(obj.getName())
-					&& object.getConfigurationItem().getId() == obj.getItemConfiguration()
-					&& object.getTypeObject().getId() == obj.getTypeObject()) {
+			if (object.getName().equals(obj.getName()))
 				return true;
-			}
 		}
 		return false;
 	}
@@ -790,4 +802,46 @@ public class ReleaseEdit implements Serializable, Cloneable {
 			this.releaseObjects.add(copy);
 		}
 	}
+
+	public boolean existDependency(Integer id) {
+		Iterator<Dependency> itr = this.dependencies.iterator();
+		while (itr.hasNext()) {
+			if (itr.next().getId() == id)
+				return true;
+		}
+		return false;
+	}
+
+	public Integer getRetries() {
+		return retries;
+	}
+
+	public void setRetries(Integer retries) {
+		this.retries = retries;
+	}
+
+	public String getOperator() {
+		return operator;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
+	}
+
+	public String getDateChange() {
+		return dateChange;
+	}
+
+	public void setDateChange(String dateChange) {
+		this.dateChange = dateChange;
+	}
+
+	public String getMotive() {
+		return motive;
+	}
+
+	public void setMotive(String motive) {
+		this.motive = motive;
+	}
+
 }

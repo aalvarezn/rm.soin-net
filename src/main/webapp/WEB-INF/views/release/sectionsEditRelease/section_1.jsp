@@ -12,6 +12,8 @@
 			<div class="form-line disabled">
 				<input type="text" disabled id="systemCode" name="systemCode"
 					value="${release.system.code}" class="form-control" placeholder="">
+				<input type="hidden" id="systemId" name="systemId"
+					value="${release.system.id}">
 			</div>
 		</div>
 	</div>
@@ -104,13 +106,27 @@
 		<div class="form-group m-b-0i">
 			<div class="form-line">
 				<textarea rows="2" cols="" id="description" name="description"
-					maxlength="4000" class="form-control"
+					class="form-control"
 					placeholder="Ingrese una descripci&oacute;n..." style="">${release.description}</textarea>
 			</div>
 			<label id="description_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 	</div>
+	<c:if test="${systemConfiguration.observations}">
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<label for="email_address">Observaciones</label>
+			<div class="form-group m-b-0i">
+				<div class="form-line">
+					<textarea rows="2" cols="" id="observations" name="observations"
+						class="form-control"
+						placeholder="Ingrese una observaci&oacute;n..." style="">${release.observations}</textarea>
+				</div>
+				<label id="observations_error" class="error fieldError" for="name"
+					style="visibility: hidden;">Campo Requerido.</label>
+			</div>
+		</div>
+	</c:if>
 	<c:if test="${systemConfiguration.solutionInfo}">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<label for="email_address">Soluci&oacute;n T&eacute;cnica</label>
@@ -140,23 +156,10 @@
 			<label for="email_address">Consecuencias si no se instala</label>
 			<div class="form-group m-b-0i">
 				<div class="form-line">
-					<textarea rows="2" cols="" id="notInstalling"
-						name="notInstalling" class="form-control"
-						placeholder="Consecuencias..." style="">${release.notInstalling}</textarea>
+					<textarea rows="2" cols="" id="notInstalling" name="notInstalling"
+						class="form-control" placeholder="Consecuencias..." style="">${release.notInstalling}</textarea>
 				</div>
 				<label id="notInstalling_error" class="error fieldError" for="name"
-					style="visibility: hidden;">Campo Requerido.</label>
-			</div>
-		</div>
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<label for="email_address">Observaciones</label>
-			<div class="form-group m-b-0i">
-				<div class="form-line">
-					<textarea rows="2" cols="" id="observations" name="observations"
-					 class="form-control"
-						placeholder="Ingrese una observaci&oacute;n..." style="">${release.observations}</textarea>
-				</div>
-				<label id="observations_error" class="error fieldError" for="name"
 					style="visibility: hidden;">Campo Requerido.</label>
 			</div>
 		</div>
@@ -172,7 +175,7 @@
 					<textarea rows="2" cols="" id="versionNumber" name="versionNumber"
 						maxlength="20" class="form-control"
 						placeholder="Ingrese una versi&oacute;n" style="">${release.versionNumber}</textarea>
-						<div class="help-info">M&aacute;x. 20 caracteres</div>
+					<div class="help-info">M&aacute;x. 20 caracteres</div>
 				</div>
 			</div>
 		</div>

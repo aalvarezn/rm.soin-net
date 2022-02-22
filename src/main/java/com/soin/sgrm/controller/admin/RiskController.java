@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,10 +23,14 @@ import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.service.RiskService;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/admin/risk")
 public class RiskController extends BaseController {
+
+	public static final Logger logger = Logger.getLogger(RiskController.class);
 
 	@Autowired
 	RiskService riskService;
@@ -44,7 +49,8 @@ public class RiskController extends BaseController {
 			Risk risk = riskService.findById(id);
 			return risk;
 		} catch (Exception e) {
-			logs("ADMIN_ERROR", "Error findRisk. " + getErrorFormat(e));
+			Sentry.capture(e, "risk");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
 	}
@@ -69,10 +75,10 @@ public class RiskController extends BaseController {
 				res.setObj(risk);
 			}
 		} catch (Exception e) {
+			Sentry.capture(e, "risk");
 			res.setStatus("exception");
 			res.setException("Error al crear riesgo: " + e.toString());
-			logs("ADMIN_ERROR", "Error al crear riesgo: " + getErrorFormat(e));
-			e.printStackTrace();
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -97,9 +103,10 @@ public class RiskController extends BaseController {
 				res.setObj(risk);
 			}
 		} catch (Exception e) {
+			Sentry.capture(e, "risk");
 			res.setStatus("exception");
 			res.setException("Error al modificar riesgo: " + e.toString());
-			logs("ADMIN_ERROR", "Error al modificar riesgo: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -115,8 +122,12 @@ public class RiskController extends BaseController {
 			res.setStatus("exception");
 			res.setException("Error al eliminar riesgo: " + e.getCause().getCause().getCause().getMessage() + ":"
 					+ e.getMessage());
-			logs("ADMIN_ERROR", "Error al eliminar riesgo: " + getErrorFormat(e));
-			e.printStackTrace();
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar riesgo: Existen referencias que debe eliminar antes");
+			} else {
+				Sentry.capture(e, "risk");
+			}
 		}
 		return res;
 	}

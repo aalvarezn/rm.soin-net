@@ -23,6 +23,8 @@ import com.soin.sgrm.model.Status;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.utils.JsonResponse;
 
+import com.soin.sgrm.exception.Sentry;
+
 @Controller
 @RequestMapping("/admin/status")
 public class StatusController extends BaseController{
@@ -44,7 +46,7 @@ public class StatusController extends BaseController{
 			Status status = statusService.findById(id);
 			return status;
 		} catch (Exception e) {
-			logs("ADMIN_ERROR", "Error findStatus. " + getErrorFormat(e));
+			Sentry.capture(e, "status");
 			return null;
 		}
 	}
@@ -57,7 +59,6 @@ public class StatusController extends BaseController{
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-
 			if (errors.hasErrors()) {
 				for (FieldError error : errors.getFieldErrors()) {
 					res.addError(error.getField(), error.getDefaultMessage());
@@ -65,14 +66,15 @@ public class StatusController extends BaseController{
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
+				status.setFinished(false);
+				status.setInProgress(false);
 				statusService.save(status);
 				res.setObj(status);
 			}
 		} catch (Exception e) {
 			res.setStatus("exception");
-			res.setException("Error al crear riesgo: " + e.toString());
-			logs("ADMIN_ERROR", "Error al crear riesgo: " + getErrorFormat(e));
-			e.printStackTrace();
+			res.setException("Error al crear estado: " + e.toString());
+			Sentry.capture(e, "status");
 		}
 		return res;
 	}
@@ -98,8 +100,8 @@ public class StatusController extends BaseController{
 			}
 		} catch (Exception e) {
 			res.setStatus("exception");
-			res.setException("Error al modificar riesgo: " + e.toString());
-			logs("ADMIN_ERROR", "Error al modificar riesgo: " + getErrorFormat(e));
+			res.setException("Error al modificar estado: " + e.toString());
+			Sentry.capture(e, "status");
 		}
 		return res;
 	}
@@ -113,10 +115,14 @@ public class StatusController extends BaseController{
 			res.setObj(id);
 		} catch (Exception e) {
 			res.setStatus("exception");
-			res.setException("Error al eliminar riesgo: " + e.getCause().getCause().getCause().getMessage() + ":"
+			res.setException("Error al eliminar estado: " + e.getCause().getCause().getCause().getMessage() + ":"
 					+ e.getMessage());
-			logs("ADMIN_ERROR", "Error al eliminar riesgo: " + getErrorFormat(e));
-			e.printStackTrace();
+			
+			if(e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar estado: Existen referencias que debe eliminar antes");
+			}else {
+				Sentry.capture(e, "status");
+			}
 		}
 		return res;
 	}

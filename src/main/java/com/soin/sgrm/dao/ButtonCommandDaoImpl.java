@@ -12,6 +12,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ButtonCommand;
 import com.soin.sgrm.model.DetailButtonCommand;
 
@@ -43,7 +44,7 @@ public class ButtonCommandDaoImpl implements ButtonCommandDao {
 			transObj.commit();
 			return button;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "buttonCommand");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -65,7 +66,7 @@ public class ButtonCommandDaoImpl implements ButtonCommandDao {
 			sessionObj.delete(button);
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "buttonCommand");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -102,7 +103,7 @@ public class ButtonCommandDaoImpl implements ButtonCommandDao {
 			transObj.commit();
 			return button;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "buttonCommand");
 			transObj.rollback();
 			throw e;
 		} finally {

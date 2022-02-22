@@ -12,10 +12,6 @@
 	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Waves Effect Css -->
-<link href="<c:url value='/static/plugins/node-waves/waves.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Animation Css -->
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
@@ -29,17 +25,9 @@
 	href="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- <!-- Bootstrap Select Css -->
-<!-- <link rel="stylesheet" -->
-<!-- 	href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css"> -->
-
 <!-- Sweetalert Css -->
 <link href="<c:url value='/static/plugins/sweetalert/sweetalert.css'/>"
 	rel="stylesheet" />
-
-<!-- Materialize Css -->
-<%-- <link href="<c:url value='/static/plugins/materialize-css/css/materialize.css'/>" --%>
-<!-- 	rel="stylesheet" /> -->
 
 <!-- Custom Css -->
 <link href="<c:url value='/static/css/style.css'/>" rel="stylesheet"
@@ -57,9 +45,17 @@
 <link href="<c:url value='/static/css/themes/all-themes.css'/>"
 	rel="stylesheet" type="text/css">
 
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 </head>
 <body class="theme-grey">
 	<input type="text" id="postMSG" name="postMSG" value="${data}">
+	<c:forEach items="${userInfo.authorities}" var="authority">
+		<c:if test="${authority.name == 'Desarrolladores'}">
+			<input type="text" id="isDeveloper" name="isDeveloper" value="true">
+		</c:if>
+	</c:forEach>
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
@@ -84,6 +80,7 @@
 				<!-- #addReleaseSection#  -->
 				<%@include file="../release/addRelease.jsp"%>
 				<%@include file="../release/changeUserModal.jsp"%>
+				<%@include file="../release/trackingReleaseModal.jsp"%>
 				<!-- #addReleaseSection#-->
 
 				<!-- #tableSection#-->
@@ -98,22 +95,22 @@
 						<div role="tabpanel" class="tab-pane  active" id="releases">
 							<div class="row clearfix">
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-cyan hover-expand-effect">
+									<div class="info-box bg-light-green hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">school</i>
+											<i class="material-icons default">dashboard</i>
 										</div>
 										<div class="content">
-											<div class="text">CERTIFICACI&Oacute;N</div>
+											<div class="text">TODOS</div>
 											<div class="number count-to" data-from="0"
-												data-to="${userC['certification']}" data-speed="1000"
+												data-to="${userC['all']}" data-speed="1000"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
 								</div>
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-orange hover-expand-effect">
+									<div class="info-box bg-cyan hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">priority_high</i>
+											<i class="material-icons default">drafts</i>
 										</div>
 										<div class="content">
 											<div class="text">BORRADOR</div>
@@ -124,14 +121,14 @@
 									</div>
 								</div>
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-light-green hover-expand-effect">
+									<div class="info-box bg-orange hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">check_box</i>
+											<i class="material-icons default">priority_high</i>
 										</div>
 										<div class="content">
-											<div class="text">EN REVISI&Oacute;N</div>
+											<div class="text">SOLICITADOS</div>
 											<div class="number count-to" data-from="0"
-												data-to="${userC['review']}" data-speed="1000"
+												data-to="${userC['requested']}" data-speed="1000"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
@@ -139,7 +136,7 @@
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 									<div class="info-box bg-pink hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">flag</i>
+											<i class="material-icons default">flag</i>
 										</div>
 										<div class="content">
 											<div class="text">COMPLETADOS</div>
@@ -154,22 +151,22 @@
 						<div role="tabpanel" class="tab-pane " id="equipos">
 							<div class="row clearfix">
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-cyan hover-expand-effect">
+									<div class="info-box bg-light-green hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">school</i>
+											<i class="material-icons default">dashboard</i>
 										</div>
 										<div class="content">
-											<div class="text">CERTIFICACI&Oacute;N</div>
+											<div class="text">TODOS</div>
 											<div class="number count-to" data-from="0"
-												data-to="${teamC['certification']}" data-speed="1000"
+												data-to="${teamC['all']}" data-speed="1000"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
 								</div>
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-orange hover-expand-effect">
+									<div class="info-box bg-cyan hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">priority_high</i>
+											<i class="material-icons default">drafts</i>
 										</div>
 										<div class="content">
 											<div class="text">BORRADOR</div>
@@ -180,14 +177,14 @@
 									</div>
 								</div>
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-light-green hover-expand-effect">
+									<div class="info-box bg-orange hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">check_box</i>
+											<i class="material-icons default">priority_high</i>
 										</div>
 										<div class="content">
-											<div class="text">EN REVISI&Oacute;N</div>
+											<div class="text">SOLICITADOS</div>
 											<div class="number count-to" data-from="0"
-												data-to="${teamC['review']}" data-speed="1000"
+												data-to="${teamC['requested']}" data-speed="1000"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
@@ -195,7 +192,7 @@
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 									<div class="info-box bg-pink hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">flag</i>
+											<i class="material-icons default">flag</i>
 										</div>
 										<div class="content">
 											<div class="text">COMPLETADOS</div>
@@ -210,22 +207,22 @@
 						<div role="tabpanel" class="tab-pane " id="sistemas">
 							<div class="row clearfix">
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-cyan hover-expand-effect">
+									<div class="info-box bg-light-green hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">school</i>
+											<i class="material-icons default">dashboard</i>
 										</div>
 										<div class="content">
-											<div class="text">CERTIFICACI&Oacute;N</div>
+											<div class="text">TODOS</div>
 											<div class="number count-to" data-from="0"
-												data-to="${systemC['certification']}" data-speed="1000"
+												data-to="${systemC['all']}" data-speed="1000"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
 								</div>
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-orange hover-expand-effect">
+									<div class="info-box bg-cyan hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">priority_high</i>
+											<i class="material-icons default">drafts</i>
 										</div>
 										<div class="content">
 											<div class="text">BORRADOR</div>
@@ -236,14 +233,14 @@
 									</div>
 								</div>
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-light-green hover-expand-effect">
+									<div class="info-box bg-orange hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">check_box</i>
+											<i class="material-icons default">priority_high</i>
 										</div>
 										<div class="content">
-											<div class="text">EN REVISI&Oacute;N</div>
+											<div class="text">SOLICITADOS</div>
 											<div class="number count-to" data-from="0"
-												data-to="${systemC['review']}" data-speed="1000"
+												data-to="${systemC['requested']}" data-speed="1000"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
@@ -251,7 +248,7 @@
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 									<div class="info-box bg-pink hover-expand-effect">
 										<div class="icon">
-											<i class="material-icons">flag</i>
+											<i class="material-icons default">flag</i>
 										</div>
 										<div class="content">
 											<div class="text">COMPLETADOS</div>
@@ -282,15 +279,57 @@
 								</ul>
 							</div>
 						</div>
-						<!-- #END# TAB COUNTS -->
+					</div>
+					<!-- #END# TAB COUNTS -->
 
-						<!-- Basic Examples -->
-
-						<div id="tableSection"
-							class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-
-							<div class="body">
-								<div class="body table-responsive" style="margin-top: 20px;">
+					<!-- tableFilters -->
+					<div id="tableFilters" class="row clearfix m-t-20">
+						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+							<label>Rango de Fechas</label>
+							<div class="input-group">
+								<span class="input-group-addon"> <i
+									class="material-icons">date_range</i>
+								</span>
+								<div class="form-line">
+									<input type="text" class="form-control" name="daterange"
+										value="" />
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+							<label>Sistema</label>
+							<div class="form-group m-b-0">
+								<select id="systemId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="0">-- Todos --</option>
+									<c:forEach items="${systems}" var="system">
+										<option value="${system.id }">${system.code }</option>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+							<label>Estado</label>
+							<div class="form-group m-b-0">
+								<select id="statusId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="0">-- Todos --</option>
+									<c:forEach items="${statuses}" var="status">
+										<c:if test="${status.name ne 'Anulado'}">
+											<option value="${status.id }">${status.name }</option>
+										</c:if>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
+					</div>
+					<!-- #tableFilters# -->
+					<div id="tableSection" class="row clearfix">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="body ">
+								<div class="body table-responsive">
 									<table id="dtReleases"
 										class="table table-bordered table-striped table-hover dataTable">
 										<thead>
@@ -298,11 +337,11 @@
 												<th>ID</th>
 												<th>Sistema</th>
 												<th>Número</th>
-												<th >Descripción</th>
+												<th>Descripción</th>
 												<th>Observación</th>
 												<th>Release</th>
 												<th>Solicitante</th>
-												<th>Creado</th>
+												<th>Modificado</th>
 												<th>Estado</th>
 												<th>Acciones</th>
 											</tr>
@@ -311,82 +350,26 @@
 									</table>
 								</div>
 							</div>
-
 						</div>
 					</div>
 				</div>
 				<!-- #tableSection# -->
-
 			</div>
-
-
 		</div>
-		<a id="buttonAddRelease" type="button"
-			class="btn btn-primary btn-fab waves-effect fixedDown"
-			<%-- href="<c:url value='/release/release-generate'/>"> --%>
+		<c:forEach items="${userInfo.authorities}" var="authority">
+			<c:if test="${authority.name == 'Desarrolladores'}">
+				<a id="buttonAddRelease" type="button"
+					class="btn btn-primary btn-fab waves-effect fixedDown"
+					<%-- href="<c:url value='/release/release-generate'/>"> --%>
  			onclick="openAddReleaseSection()">
-			<i class="material-icons lh-1-8">add</i>
-		</a>
-
+					<i class="material-icons lh-1-8">add</i>
+				</a>
+			</c:if>
+		</c:forEach>
 	</section>
 
-	<!-- Jquery Core Js -->
-	<script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
-	<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<%@include file="../plantilla/footer.jsp"%>
 
-	<script type="text/javascript"
-		src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
-
-	<!-- Bootstrap Core Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap/js/bootstrap.js'/>"></script>
-
-	<!-- Select Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-select/js/bootstrap-select.js'/>"></script>
-
-	<!-- Slimscroll Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
-
-	<!-- Jquery CountTo Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-countto/jquery.countTo.js'/>"></script>
-
-	<!-- Autosize Plugin Js -->
-	<script src="<c:url value='/static/plugins/autosize/autosize.js'/>"></script>
-
-	<!-- Jquery DataTable Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/fnFindCellRowIndexes.js'/>"></script>
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
-
-	<!-- Bootstrap Notify Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-notify/bootstrap-notify.js'/>"></script>
-
-	<!-- SweetAlert Plugin Js -->
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
-	<!-- Moment Plugin Js -->
-	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
-
-	<!-- BlockUI Plugin Js -->
-	<script src="<c:url value='/static/plugins/blockPage/blockUI.js'/>"></script>
-
-	<!-- Bootstrap Material Datetime Picker Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
-
-	<!-- Custom Js -->
-
-	<script src="<c:url value='/static/js/admin.js?v=${jsVersion}'/>"></script>
 	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
 	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
 	<script

@@ -16,7 +16,7 @@ public class MyLevel extends Level {
 	public static final int SYSTEM_ERROR_INT = 40003;
 	public static final int RELEASE_ERROR_INT = 40004;
 	public static final int FILE_READ_INT = 40005;
-	public static final int ADMIN_ERROR_INT = 40006;
+	public static final int ADMIN_ERROR_INT = 40007;
 
 	public static final Level WEBSERVICE = new MyLevel(WEBSERVICE_INT, "WEBSERVICE", 10);
 	public static final Level CONFIG = new MyLevel(CONFIG_INT, "CONFIG", 10);

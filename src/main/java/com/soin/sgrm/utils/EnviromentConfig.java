@@ -7,11 +7,13 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import com.soin.sgrm.exception.Sentry;
+
 public class EnviromentConfig {
-	
+
 	public EnviromentConfig() {
 	}
-	
+
 	public String getEntry(String nameEnv) {
 		String returnStr = null;
 		try {
@@ -19,31 +21,31 @@ public class EnviromentConfig {
 			Context envCtx = (Context) context.lookup("java:comp/env");
 			returnStr = (String) envCtx.lookup(nameEnv);
 		} catch (NamingException e) {
-			e.printStackTrace();
+			Sentry.capture(e, "environmentConfig");
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "environmentConfig");
 		}
 		return returnStr;
 	}
-	
-	public Map getEntryProperties(String nameEnv) {
-		
+
+	public Map<String, String> getEntryProperties(String nameEnv) {
+
 		Map<String, String> properties = new HashMap<String, String>();
 		String chain = null;
 		try {
 			Context context = new InitialContext();
 			Context envCtx = (Context) context.lookup("java:comp/env");
 			chain = (String) envCtx.lookup(nameEnv);
-			
-			for(String keyValue : chain.split(" *; *")) {
-			   String[] pairs = keyValue.split(" *= *", 2);
-			   properties.put(pairs[0], pairs.length == 1 ? "" : pairs[1]);
+
+			String[] chainProperties = chain.split(";");
+
+			for(String keyValue : chainProperties) {
+				properties.put(keyValue.split("=")[0].trim(),keyValue.split("=")[1].trim());
 			}
-				
 		} catch (NamingException e) {
-			e.printStackTrace();
+			Sentry.capture(e, "environmentConfig");
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "environmentConfig");
 		}
 		return properties;
 	}

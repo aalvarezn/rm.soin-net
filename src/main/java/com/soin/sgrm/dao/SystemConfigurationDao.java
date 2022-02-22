@@ -13,4 +13,6 @@ public interface SystemConfigurationDao {
 	List<SystemConfiguration> list();
 
 	SystemConfiguration update(SystemConfiguration systemConfig);
+	
+	void save(SystemConfiguration systemConfig);
 }

@@ -25,19 +25,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/static/**").permitAll().antMatchers("/admin/**").hasRole("Admin")
-				.antMatchers("/forgetPassword","/recoverPassword").permitAll().anyRequest().authenticated()// any other request just need
-				.and().formLogin().loginPage("/login").failureUrl("/login?error=true")
-				// .usernameParameter("username").passwordParameter("password")
-				.defaultSuccessUrl("/").permitAll().and().logout()// default logout handling
+		http.authorizeRequests().antMatchers("/static/**").permitAll().antMatchers("/admin/**", "/info/")
+				.hasRole("Admin").antMatchers("/management/**", "/info/").hasRole("Release Manager")
+				.antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel").permitAll().anyRequest()
+				.authenticated().and().formLogin().loginPage("/login").failureUrl("/login?error=true")
+				.defaultSuccessUrl("/successLogin").permitAll().and().logout()// default logout handling
 				.logoutSuccessUrl("/login")// our new logout success url, we are not replacing other defaults.
 				.permitAll().and().headers().frameOptions().sameOrigin();
-
 	}
 
 	@Autowired
 	public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication().withUser("bill").password("abc123").roles("USER");
 		auth.userDetailsService(userDetailsService);
 		auth.authenticationProvider(authenticationProvider());
 	}

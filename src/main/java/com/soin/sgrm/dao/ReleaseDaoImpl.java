@@ -1,6 +1,9 @@
 package com.soin.sgrm.dao;
 
+import java.util.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +19,11 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
-import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
-import com.soin.sgrm.model.Risk;
-import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.UserInfo;
@@ -75,42 +77,17 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public JsonSheet listByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch) throws SQLException {
+	public JsonSheet listByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
 
+		Criteria crit = criteriaByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,
+				statusId);
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
-		crit.createAlias("system", "system");
-		crit.createAlias("status", "status");
-		crit.createAlias("user", "user");
-
-		Criterion user = Restrictions.eq("user.username", name);
-		Criterion statusNotIn = Restrictions.not(Restrictions.in("status.name", Constant.FILTRED));
-
-		// Valores de busqueda en la tabla
-		Criterion restDesc = Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restNum = Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restStat = Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restUser = Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restSys = Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase();
-
-		crit.add(user);
-		crit.add(statusNotIn);
-		crit.add(Restrictions.or(restDesc, restNum, restStat, restUser, restSys));
-
-		crit.addOrder(Order.desc("createDate"));
-
-		Criteria critCount = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
-		critCount.createAlias("system", "system");
-		critCount.createAlias("user", "user");
-		critCount.createAlias("status", "status");
-
-		critCount.add(user);
-		critCount.add(statusNotIn);
-		critCount.add(Restrictions.or(restDesc, restNum, restStat, restUser, restSys));
-
+		Criteria critCount = criteriaByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,
+				statusId);
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
@@ -120,46 +97,21 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
 		json.setData(aaData);
-
 		return json;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public JsonSheet listByTeams(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			Object[] ids) throws SQLException {
+			Object[] ids, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		Criteria crit = criteriaByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch, ids, dateRange, systemId,
+				statusId);
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
-		crit.createAlias("system", "system");
-		crit.createAlias("status", "status");
-		crit.createAlias("user", "user");
-
-		Criterion systId = Restrictions.in("system.id", ids);
-		Criterion notStatus = Restrictions.not(Restrictions.in("status.name", Constant.FILTRED));
-		// Valores de busqueda en la tabla
-		Criterion restDesc = Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restNum = Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restStat = Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restUser = Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restSys = Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase();
-
-		crit.add(systId);
-		crit.add(notStatus);
-		crit.add(Restrictions.or(restDesc, restNum, restStat, restUser, restSys));
-		crit.addOrder(Order.desc("createDate"));
-
-		Criteria critCount = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
-		critCount.createAlias("system", "system");
-		critCount.createAlias("status", "status");
-		critCount.createAlias("user", "user");
-
-		critCount.add(systId);
-		critCount.add(notStatus);
-		critCount.add(Restrictions.or(restDesc, restNum, restStat, restUser, restSys));
-
+		Criteria critCount = criteriaByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch, ids, dateRange,
+				systemId, statusId);
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
@@ -174,37 +126,18 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public JsonSheet listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch) throws SQLException {
+	public JsonSheet listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
+			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		Criteria crit = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
-		crit.createAlias("system", "system");
-		crit.createAlias("status", "status");
-		crit.createAlias("user", "user");
-
-		Criterion notStatus = Restrictions.not(Restrictions.in("status.name", Constant.FILTRED));
-		// Valores de busqueda en la tabla
-		Criterion restDesc = Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restNum = Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restStat = Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restUser = Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase();
-		Criterion restSys = Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase();
-
-		crit.add(notStatus);
-		crit.add(Restrictions.or(restDesc, restNum, restStat, restUser, restSys));
-
-		crit.addOrder(Order.desc("createDate"));
-
-		Criteria critCount = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
-		critCount.createAlias("system", "system");
-		critCount.createAlias("status", "status");
-		critCount.createAlias("user", "user");
-
-		critCount.add(notStatus);
-		critCount.add(Restrictions.or(restDesc, restNum, restStat, restUser, restSys));
+		Criteria critCount = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -256,7 +189,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			}
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "release");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -288,7 +221,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	}
 
 	@Override
-	public void cancelRelease(ReleaseEdit release) throws Exception {
+	public void updateStatusRelease(ReleaseEdit release) throws Exception {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		String sql = "";
@@ -296,14 +229,23 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		try {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
-			sql = String.format("update releases_release set estado_id = %s where id = %s", release.getStatus().getId(),
+
+			String dateChange = (release.getDateChange() != null && !release.getDateChange().equals("")
+					? "to_date('" + release.getDateChange() + "', 'DD-MM-YYYY HH:MI PM')"
+					: "sysdate");
+
+			sql = String.format(
+					"update releases_release set estado_id = %s , reintentos = %s , operador = '%s' , motivo = '%s' , fecha_creacion = "
+							+ dateChange + "  where id = %s",
+					release.getStatus().getId(), release.getRetries(), release.getOperator(), release.getMotive(),
 					release.getId());
+
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();
 
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "release");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -343,7 +285,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "release");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -360,14 +302,16 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		try {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
-			sql = String.format("update releases_release set estado_id = %s where id = %s", release.getStatus().getId(),
-					release.getId());
+			sql = String.format(
+					"update releases_release set estado_id = %s , nodo_id = %s , operador = '%s' , motivo = '%s' , fecha_creacion = sysdate where id = %s",
+					release.getStatus().getId(), (release.getNode() != null ? release.getNode().getId() : null),
+					release.getOperator(), release.getMotive(), release.getId());
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();
 
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "release");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -394,7 +338,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			}
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "release");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -427,7 +371,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			}
 			transObj.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "release");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -445,8 +389,8 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			release.setUser(user);
 			sessionObj.update(release);
 			transObj.commit();
-		}  catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -460,5 +404,132 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		ReleaseUser release = (ReleaseUser) sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class)
 				.add(Restrictions.eq("id", id)).uniqueResult();
 		return release;
+	}
+
+	@SuppressWarnings("deprecation")
+	public Criteria criteriaByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] dateRange, Integer systemId, Integer statusId) throws ParseException {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		crit.createAlias("system", "system");
+		crit.createAlias("status", "status");
+		crit.createAlias("user", "user");
+
+		crit.add(Restrictions.eq("user.username", name));
+		crit.add(Restrictions.not(Restrictions.in("status.name", Constant.FILTRED)));
+
+		// Valores de busqueda en la tabla
+		if (sSearch != null && !((sSearch.trim()).equals("")))
+			crit.add(Restrictions.or(Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+
+		if (dateRange != null) {
+			if (dateRange.length > 1) {
+				Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
+				Date end = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[1]);
+				end.setHours(23);
+				end.setMinutes(59);
+				end.setSeconds(59);
+				crit.add(Restrictions.ge("createDate", start));
+				crit.add(Restrictions.le("createDate", end));
+			}
+		}
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		if (statusId != 0) {
+			crit.add(Restrictions.eq("status.id", statusId));
+		}
+		crit.addOrder(Order.desc("createDate"));
+
+		return crit;
+	}
+
+	@SuppressWarnings({ "deprecation" })
+	public Criteria criteriaByTeams(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Object[] ids, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException {
+
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		crit.createAlias("system", "system");
+		crit.createAlias("status", "status");
+		crit.createAlias("user", "user");
+
+		crit.add(Restrictions.in("system.id", ids));
+		crit.add(Restrictions.not(Restrictions.in("status.name", Constant.FILTRED)));
+
+		// Valores de busqueda en la tabla
+		if (sSearch != null && !((sSearch.trim()).equals("")))
+			crit.add(Restrictions.or(Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+
+		if (dateRange != null) {
+			if (dateRange.length > 1) {
+				Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
+				Date end = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[1]);
+				end.setHours(23);
+				end.setMinutes(59);
+				end.setSeconds(59);
+				crit.add(Restrictions.ge("createDate", start));
+				crit.add(Restrictions.le("createDate", end));
+			}
+		}
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		if (statusId != 0) {
+			crit.add(Restrictions.eq("status.id", statusId));
+		}
+		crit.addOrder(Order.desc("createDate"));
+
+		return crit;
+	}
+
+	@SuppressWarnings({ "deprecation" })
+	public Criteria criteriaBySystems(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
+			throws SQLException, ParseException {
+
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		crit.createAlias("system", "system");
+		crit.createAlias("status", "status");
+		crit.createAlias("user", "user");
+
+		if (filtred != null) {
+			crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
+		}
+
+		// Valores de busqueda en la tabla
+		if (sSearch != null && !((sSearch.trim()).equals("")))
+			crit.add(Restrictions.or(Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+
+		if (dateRange != null) {
+			if (dateRange.length > 1) {
+				Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
+				Date end = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[1]);
+				end.setHours(23);
+				end.setMinutes(59);
+				end.setSeconds(59);
+				crit.add(Restrictions.ge("createDate", start));
+				crit.add(Restrictions.le("createDate", end));
+			}
+		}
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		if (statusId != 0) {
+			crit.add(Restrictions.eq("status.id", statusId));
+		}
+		crit.addOrder(Order.desc("createDate"));
+
+		return crit;
 	}
 }

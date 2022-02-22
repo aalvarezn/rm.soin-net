@@ -1,30 +1,21 @@
 package com.soin.sgrm.dao;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.soin.sgrm.model.User;
 import com.soin.sgrm.utils.JsonSheet;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.SystemModule;
 import com.soin.sgrm.model.SystemUser;
+import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.System;
 
 @Repository
 public class SystemDaoImpl implements SystemDao {
@@ -37,8 +28,9 @@ public class SystemDaoImpl implements SystemDao {
 	public List<SystemUser> listSystemByUser(String name) {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(SystemUser.class);
-//		crit.setProjection(Projections.distinct(Projections.property("code")));
-		crit.createCriteria("user").add(Restrictions.eq("username", name));
+		crit.createAlias("user", "user");
+		crit.createAlias("managers", "managers");
+		crit.add(Restrictions.or(Restrictions.eq("user.username", name), Restrictions.eq("managers.username", name)));
 		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		List<SystemUser> systemList = crit.list();
 
@@ -49,8 +41,11 @@ public class SystemDaoImpl implements SystemDao {
 	@Override
 	public Object[] myTeams(String name) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(SystemUser.class);
-		crit.createCriteria("user").add(Restrictions.eq("username", name));
+		crit.createAlias("user", "user");
+		crit.createAlias("managers", "managers");
+		crit.add(Restrictions.or(Restrictions.eq("user.username", name), Restrictions.eq("managers.username", name)));
 		crit.setProjection(Projections.property("id"));
+		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		List systemList = crit.list();
 
 		if (systemList.size() == 0) {
@@ -60,7 +55,7 @@ public class SystemDaoImpl implements SystemDao {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public JsonSheet<?> listSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch) {
 		JsonSheet json = new JsonSheet();
@@ -91,12 +86,12 @@ public class SystemDaoImpl implements SystemDao {
 			SystemInfo systemInfo = (SystemInfo) crit.uniqueResult();
 			return systemInfo;
 		} catch (Exception e) {
+			Sentry.capture(e, "system");
 			throw new Exception("No se encontro el Systema solicitado para el release");
 		}
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public SystemUser findSystemDocumentInfo(Integer systemId) throws Exception {
 		try {
@@ -105,6 +100,7 @@ public class SystemDaoImpl implements SystemDao {
 			SystemUser systemInfo = (SystemUser) crit.uniqueResult();
 			return systemInfo;
 		} catch (Exception e) {
+			Sentry.capture(e, "system");
 			throw new Exception("No se encontro el Systema solicitado para el release");
 		}
 	}
@@ -117,15 +113,94 @@ public class SystemDaoImpl implements SystemDao {
 			SystemModule systemInfo = (SystemModule) crit.uniqueResult();
 			return systemInfo;
 		} catch (Exception e) {
+			Sentry.capture(e, "system");
 			throw new Exception("No se encontro el Systema solicitado para el release");
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<SystemInfo> listAll() {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class);
 		List<SystemInfo> systemInfo = crit.list();
 		return systemInfo;
+	}
+
+	@Override
+	public SystemInfo findById(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class);
+		crit.add(Restrictions.eq("id", id));
+		return (SystemInfo) crit.uniqueResult();
+	}
+
+	@Override
+	public SystemUser findSystemUserById(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(SystemUser.class);
+		crit.add(Restrictions.eq("id", id));
+		return (SystemUser) crit.uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<System> list() {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		return crit.list();
+	}
+
+	@Override
+	public System findSystemById(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.add(Restrictions.eq("id", id));
+		return (System) crit.uniqueResult();
+	}
+
+	@Override
+	public void save(System system) {
+		sessionFactory.getCurrentSession().save(system);
+	}
+
+	@Override
+	public void update(System system) {
+		sessionFactory.getCurrentSession().update(system);
+	}
+
+	@Override
+	public void delete(Integer id) {
+		System system = findSystemById(id);
+		sessionFactory.getCurrentSession().delete(system);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<SystemUser> listSystemUser() {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(SystemUser.class);
+		return crit.list();
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public Object[] myTeamsProyect(String name) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(SystemUser.class);
+		crit.createAlias("user", "user");
+		crit.createAlias("managers", "managers");
+		crit.add(Restrictions.or(Restrictions.eq("user.username", name), Restrictions.eq("managers.username", name)));
+		crit.setProjection(Projections.property("proyectId"));
+		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		List systemList = crit.list();
+
+		if (systemList.size() == 0) {
+			systemList.add(0);
+		}
+		Object[] list = systemList.toArray();
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<SystemUser> listSystemUserByIds(Object[] ids) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(SystemUser.class);
+		crit.add(Restrictions.in("id", ids));
+		return crit.list();
 	}
 
 }

@@ -15,10 +15,6 @@
 	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Waves Effect Css -->
-<link href="<c:url value='/static/plugins/node-waves/waves.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Animation Css -->
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
@@ -133,8 +129,7 @@
 						<h5 class="font-20 greyLigth">Nuevo Release</h5>
 					</div>
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
-						<div
-							class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
 								<span>Release: </span>${release.releaseNumber} <input
 									type="hidden" id="release_id" value="${release.id}"> <input
@@ -147,18 +142,18 @@
 
 							<button type="button" class="btn btn-default setIcon"
 								onclick="previewRelease()" title="RESUMEN"
-								style="background-color: #c1c1c1 !important; color: #ffffff; border: none !important;">
+								style="background-color: #00294c !important; color: #ffffff; border: none !important;">
 								<span>VER RESUMEN</span><span style="margin-left: 10px;"><i
-									class="material-icons" style="font-size: 28px;margin-top: -3px;">pageview</i></span>
+									class="material-icons"
+									style="font-size: 28px; margin-top: -3px;">pageview</i></span>
 							</button>
 
-							<button type="button" class="btn btn-default setIcon"
+							<button type="button" id="btnSave" class="btn btn-default setIcon"
 								onclick="sendRelease()" title="GUARDAR"
 								style="background-color: #00294c !important; color: #fff; border: none !important;">
-								<span>GUARDAR</span><span style="margin-left: 10px;"><i
-									class="material-icons m-t--2"  >check_box</i></span>
+								<span id="btnText">GUARDAR</span><span style="margin-left: 10px;"><i id="btnIcon"
+									class="material-icons m-t--2">check_box</i></span>
 							</button>
-
 						</div>
 					</div>
 				</div>
@@ -176,7 +171,7 @@
 									<div class="connecting-line"></div>
 									<ul class="nav nav-tabs stepper" role="tablist">
 
-										<li role="presentation" class="active without-line"><a
+										<li id="1" role="presentation" class="active without-line"><a
 											class="hideLineTab" href="#step1" data-toggle="tab"
 											aria-controls="step1" role="tab" title=""> <span
 												class="round-tab"> 1 </span> <span id="step1Errors"
@@ -185,28 +180,28 @@
 											</span>
 										</a></li>
 
-										<li role="presentation" class="without-line "><a
+										<li id="2" role="presentation" class="without-line "><a
 											href="#step2" data-toggle="tab" aria-controls="step2"
 											role="tab" title=""> <span class="round-tab"> 2 </span> <span
 												id="step2Errors" style="visibility: hidden;"
 												class="labelCount_Error"><i
 													class="material-icons spanError">warning</i></span>
 										</a></li>
-										<li role="presentation" class="without-line "><a
+										<li id="3" role="presentation" class="without-line "><a
 											href="#step3" data-toggle="tab" aria-controls="step3"
 											role="tab" title=""> <span class="round-tab"> 3 </span> <span
 												id="step3Errors" style="visibility: hidden;"
 												class="labelCount_Error"><i
 													class="material-icons spanError">warning</i></span>
 										</a></li>
-										<li role="presentation" class="without-line "><a
+										<li id="4" role="presentation" class="without-line "><a
 											href="#step4" data-toggle="tab" aria-controls="step4"
 											role="tab" title=""> <span class="round-tab"> 4 </span> <span
 												id="step4Errors" style="visibility: hidden;"
 												class="labelCount_Error"><i
 													class="material-icons spanError">warning</i></span>
 										</a></li>
-										<li role="presentation" class="without-line"><a
+										<li id="5" role="presentation" class="without-line"><a
 											href="#step5" data-toggle="tab" aria-controls="step5"
 											role="tab" title=""> <span class="round-tab"> 5 </span>
 										</a></li>
@@ -282,10 +277,10 @@
 										</div>
 										<div class="button-demo flr p-t-20">
 											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
-											<c:if test="${release.status.name == 'Borrador'}">
+<%-- 											<c:if test="${release.status.name == 'Borrador'}"> --%>
 												<button id="applyFor" onclick="requestRelease()"
 													type="button" class="btn btn-primary">SOLICITAR</button>
-											</c:if>
+<%-- 											</c:if> --%>
 										</div>
 									</div>
 									<!--#Step_5 -->
@@ -474,9 +469,6 @@
 	<!-- Slimscroll Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
 
 	<!-- Jquery CountTo Plugin Js -->
 	<script

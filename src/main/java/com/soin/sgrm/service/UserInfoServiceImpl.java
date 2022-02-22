@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.UserInfoDao;
+import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
 
 @Transactional("transactionManager")
@@ -65,6 +66,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public void delete(Integer id) {
 		dao.delete(id);
+	}
+
+	@Override
+	public User findUserById(Integer id) {
+		return dao.findUserById(id);
 	}
 
 }

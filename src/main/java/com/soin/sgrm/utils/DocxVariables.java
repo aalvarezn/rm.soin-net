@@ -2,6 +2,8 @@ package com.soin.sgrm.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import com.soin.sgrm.model.Ambient;
@@ -50,8 +52,8 @@ public class DocxVariables {
 	 * @author: Esteban Bogantes H.
 	 * @return: Variables generales de un release.
 	 **/
+	@SuppressWarnings("rawtypes")
 	public void generalInfo(ReleaseSummary release, SystemService systemService) throws Exception {
-		SystemUser system = systemService.findSystemDocumentInfo(release.getSystem().getId());
 		SystemModule module = systemService.findModuleBySystem(release.getSystem().getId());
 		String user = release.getUser().getFullName();
 		String timeStamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(release.getCreateDate());
@@ -62,13 +64,21 @@ public class DocxVariables {
 		addVariable("{{modulo}}", module.getName());
 
 		if (release.getRequestList().size() > 0) {
-			addVariable("{{gestor}}", release.getManager());
+			String manager = release.getManager();
+			addVariable("{{gestor}}", (manager != null ? manager : ""));
 		} else {
-			if (release.getIncidents() != null) {
-				addVariable("{{gestor}}", "Randall Sanchez");
-			}
-			if (release.getOperativeSupport() != null) {
-				addVariable("{{gestor}}", "Soporte Operativo");
+			if (release.getSystem().getManager() != null) {
+				addVariable("{{gestor}}", release.getSystem().getManager());
+			} else {
+				if (release.getIncidents() != null) {
+					addVariable("{{gestor}}", "Randall Sanchez");
+				} else {
+					if (release.getOperativeSupport() != null) {
+						addVariable("{{gestor}}", "Soporte Operativo");
+					} else {
+						addVariable("{{gestor}}", "");
+					}
+				}
 			}
 		}
 
@@ -102,6 +112,32 @@ public class DocxVariables {
 			addVariable("{{prioridad}}", "");
 		}
 
+		String typeRequest = "TPO:";
+		String requestName = "";
+		Iterator iter = null;
+
+		if (!release.getRequestList().isEmpty()) {
+			iter = release.getRequestList().iterator();
+			typeRequest = ((((Request) iter.next()).getCode_soin().contains("TPO")) ? "TPO:" : "BT:");
+			requestName = release.getTPO_BT();
+		}
+
+		if (release.getIncidents() != null) {
+			typeRequest = "Incidente (IN):";
+			requestName = release.getIncidents();
+		}
+
+		if (release.getProblems() != null) {
+			typeRequest = "Problema (PR):";
+			requestName = release.getProblems();
+		}
+
+		if (release.getServiceRequests() != null) {
+			typeRequest = "Solicitud de servicio (SS):";
+			requestName = release.getServiceRequests();
+		}
+		addVariable("{{typeRequest}}", typeRequest);
+		addVariable("{{requestName}}", requestName);
 		addVariable("{{TPOs}}", (release.getTPO_BT() != null ? release.getTPO_BT() : ""));
 		addVariable("{{incidentes}}", (release.getIncidents() != null ? release.getIncidents() : ""));
 		addVariable("{{problemas}}", (release.getProblems() != null ? release.getProblems() : ""));
@@ -189,9 +225,9 @@ public class DocxVariables {
 		for (ReleaseObject object : release.getObjects()) {
 			if (!bd) {
 				objectName.add(new TextVariable("{{r object.nombre}}", object.getName()));
-				objectType.add(new TextVariable("{{r object.tipo}}", object.getConfigurationItem().getName()));
+				objectType.add(new TextVariable("{{r object.tipo}}", object.getTypeObject().getName()));
 				objectVersion.add(new TextVariable("{{r object.versiones}}",
-						object.getRevision_SVN() + " | " + sp.format(object.getRevision_Date())));
+						object.getRevision_SVN() + " / " + sp.format(object.getRevision_Date())));
 				objectDescription.add(new TextVariable("{{r object.descripcion}}", object.getDescription()));
 
 				if (release.getHas_changes_in_bd()) {
@@ -199,7 +235,8 @@ public class DocxVariables {
 						sqlName.add(new TextVariable("{{r sql.nombre}}", object.getName()));
 						sqlExecute
 								.add(new TextVariable("{{r sql.ejecutar}}", (object.getExecute() == 1) ? "Si" : "No"));
-						sqlScheme.add(new TextVariable("{{r sql.esquema}}", object.getDbScheme()));
+						sqlScheme.add(new TextVariable("{{r sql.esquema}}",
+								(object.getDbScheme() != null ? object.getDbScheme() : "")));
 						sqlExecutePlan
 								.add(new TextVariable("{{r sql.plan}}", (object.getExecutePlan() == 1) ? "Si" : "No"));
 					}
@@ -207,9 +244,9 @@ public class DocxVariables {
 			} else {
 				if (object.getConfigurationItem().getName().equalsIgnoreCase("Base Datos")) {
 					objectName.add(new TextVariable("{{r object.nombre}}", object.getName()));
-					objectType.add(new TextVariable("{{r object.tipo}}", object.getConfigurationItem().getName()));
+					objectType.add(new TextVariable("{{r object.tipo}}", object.getTypeObject().getName()));
 					objectVersion.add(new TextVariable("{{r object.versiones}}",
-							object.getRevision_SVN() + " | " + sp.format(object.getRevision_Date())));
+							object.getRevision_SVN() + " / " + sp.format(object.getRevision_Date())));
 					objectDescription.add(new TextVariable("{{r object.descripcion}}", object.getDescription()));
 					sqlName.add(new TextVariable("{{r sql.nombre}}", object.getName()));
 					sqlExecute.add(new TextVariable("{{r sql.ejecutar}}", (object.getExecute() == 1) ? "Si" : "No"));
@@ -264,10 +301,12 @@ public class DocxVariables {
 			List<Variable> ambEnvironment = new ArrayList<Variable>();
 			List<Variable> ambAction = new ArrayList<Variable>();
 			for (ReleaseAction action : release.getActions()) {
-				ambObservation.add(new TextVariable("{{r amb.observacion}}", action.getObservation()));
-				ambTime.add(new TextVariable("{{r amb.tiempo}}", action.getTime()));
-				ambEnvironment.add(new TextVariable("{{r amb.entorno}}", action.getEnvironment().getName()));
-				ambAction.add(new TextVariable("{{r amb.accion}}", action.getAction().getName()));
+				ambObservation
+						.add(new TextVariable("{{r amb.observacion}}", getValueDefaultEmpty(action.getObservation())));
+				ambTime.add(new TextVariable("{{r amb.tiempo}}", getValueDefaultEmpty(action.getTime())));
+				ambEnvironment.add(
+						new TextVariable("{{r amb.entorno}}", getValueDefaultEmpty(action.getEnvironment().getName())));
+				ambAction.add(new TextVariable("{{r amb.accion}}", getValueDefaultEmpty(action.getAction().getName())));
 			}
 			tableAmbient.addVariable(ambObservation);
 			tableAmbient.addVariable(ambTime);
@@ -295,16 +334,19 @@ public class DocxVariables {
 
 		for (ReleaseAction action : release.getActions()) {
 			if (action.getEnvironment().getExternal()) {
-				envExternalName
-						.add(new TextVariable("{{r bajar_entornos_externos}}", action.getEnvironment().getName()));
+				envExternalName.add(new TextVariable("{{r bajar_entornos_externos}}",
+						getValueDefaultEmpty(action.getEnvironment().getName())));
 
-				envExternalObs.add(new TextVariable("{{r bajar_entornos_observaciones}}", action.getObservation()));
+				envExternalObs.add(new TextVariable("{{r bajar_entornos_observaciones}}",
+						getValueDefaultEmpty(action.getObservation())));
 
 				envExternalCheck.add(new TextVariable("{{e fila_equis}}", "X"));
 			} else {
-				envName.add(new TextVariable("{{r bajar_entornos}}", action.getEnvironment().getName()));
+				envName.add(new TextVariable("{{r bajar_entornos}}",
+						getValueDefaultEmpty(action.getEnvironment().getName())));
 
-				envObs.add(new TextVariable("{{r bajar_observaciones}}", action.getEnvironment().getName()));
+				envObs.add(new TextVariable("{{r bajar_observaciones}}",
+						getValueDefaultEmpty(action.getEnvironment().getName())));
 
 				envCheck.add(new TextVariable("{{i fila_equis}}", "X"));
 			}
@@ -353,7 +395,7 @@ public class DocxVariables {
 			List<Variable> ambName = new ArrayList<Variable>();
 			List<Variable> ambCheck = new ArrayList<Variable>();
 			for (Ambient ambient : release.getAmbients()) {
-				ambName.add(new TextVariable("{{r fila_ambientes}}", ambient.getName()));
+				ambName.add(new TextVariable("{{r fila_ambientes}}", getValueDefaultEmpty(ambient.getName())));
 				ambCheck.add(new TextVariable("{{a fila_equis}}", "X"));
 			}
 			tableAmbients.addVariable(ambName);
@@ -381,12 +423,12 @@ public class DocxVariables {
 		variables
 				.addTextVariable(new TextVariable("{{comp_modif_mds}}", ((release.existComponent("MDS")) ? "X" : " ")));
 
-		if ((release.existComponent("JMS")) || (release.existComponent("MQ")) || (release.existComponent("AQ"))) {
-			variables.addTextVariable(new TextVariable("{{comp_modif_jms}}", "X"));
-		} else {
-			variables.addTextVariable(new TextVariable("{{comp_modif_jms}}", " "));
-		}
+		variables
+				.addTextVariable(new TextVariable("{{comp_modif_jms}}", ((release.existComponent("JMS")) ? "X" : " ")));
 
+		variables.addTextVariable(new TextVariable("{{comp_modif_mq}}", ((release.existComponent("MQ")) ? "X" : " ")));
+
+		variables.addTextVariable(new TextVariable("{{comp_modif_aq}}", ((release.existComponent("AQ")) ? "X" : " ")));
 	}
 
 	/**
@@ -509,6 +551,13 @@ public class DocxVariables {
 
 	public String getBoolean(boolean value) {
 		return (value) ? "Si" : "No";
+	}
+
+	public String getValueDefaultEmpty(String value) {
+		if (value == null)
+			return "";
+		else
+			return value;
 	}
 
 }

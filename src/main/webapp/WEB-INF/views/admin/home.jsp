@@ -13,10 +13,6 @@
 	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Waves Effect Css -->
-<link href="<c:url value='/static/plugins/node-waves/waves.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Animation Css -->
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
@@ -96,14 +92,10 @@
 	<!-- Select Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/bootstrap-select/js/bootstrap-select.js'/>"></script>
-	-->
 
 	<!-- Slimscroll Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Waves Effect Plugin Js -->
-	<script src="<c:url value='/static/plugins/node-waves/waves.js'/>"></script>
 
 	<!-- Jquery CountTo Plugin Js -->
 	<script
@@ -128,6 +120,13 @@
 	<!-- Moment Plugin Js -->
 	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
 
+	<!-- Vis Plugin Js -->
+	<script src="<c:url value='/static/plugins/vis/vis-network.js'/>"></script>
+
+	<!-- 	<script type="text/javascript" -->
+	<!-- 		src="https://unpkg.com/alea@1.0.0/alea.js"></script> -->
+	<%-- 	<script src="<c:url value='/static/plugins/vis/exampleUtil.js'/>"></script> --%>
+
 	<!-- Bootstrap Material Datetime Picker Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
@@ -141,6 +140,10 @@
 		src="<c:url value='/static/js/pages/forms/basic-form-elements.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
+
+	<script type="text/javascript">
+		
+	</script>
 </body>
 
 </html>

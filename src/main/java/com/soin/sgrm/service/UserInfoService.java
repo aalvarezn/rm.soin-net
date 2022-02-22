@@ -3,6 +3,7 @@ package com.soin.sgrm.service;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
 
 public interface UserInfoService {
@@ -26,4 +27,6 @@ public interface UserInfoService {
 	void saveUserInfo(UserInfo userInfo);
 
 	boolean uniqueUsername(UserInfo userInfo);
+	
+	User findUserById(Integer id);
 }

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,10 +23,14 @@ import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.exception.Sentry;
 
 @Controller
 @RequestMapping("/admin/priority")
 public class PriorityController extends BaseController {
+
+	public static final Logger logger = Logger.getLogger(PriorityController.class);
 
 	@Autowired
 	PriorityService priorityService;
@@ -44,7 +49,8 @@ public class PriorityController extends BaseController {
 			Priority priority = priorityService.findById(id);
 			return priority;
 		} catch (Exception e) {
-			logs("ADMIN_ERROR", "Error findPriority. " + getErrorFormat(e));
+			Sentry.capture(e, "priority");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
 	}
@@ -69,10 +75,10 @@ public class PriorityController extends BaseController {
 				res.setObj(priority);
 			}
 		} catch (Exception e) {
+			Sentry.capture(e, "priority");
 			res.setStatus("exception");
 			res.setException("Error al crear prioridad: " + e.toString());
-			logs("ADMIN_ERROR", "Error al crear prioridad: " + getErrorFormat(e));
-			e.printStackTrace();
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -98,9 +104,10 @@ public class PriorityController extends BaseController {
 				res.setObj(priority);
 			}
 		} catch (Exception e) {
+			Sentry.capture(e, "priority");
 			res.setStatus("exception");
 			res.setException("Error al modificar prioridad: " + e.toString());
-			logs("ADMIN_ERROR", "Error al modificar prioridad: " + getErrorFormat(e));
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
@@ -116,8 +123,12 @@ public class PriorityController extends BaseController {
 			res.setStatus("exception");
 			res.setException("Error al eliminar prioridad: " + e.getCause().getCause().getCause().getMessage() + ":"
 					+ e.getMessage());
-			logs("ADMIN_ERROR", "Error al eliminar prioridad: " + getErrorFormat(e));
-			e.printStackTrace();
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar prioridad: Existen referencias que debe eliminar antes");
+			} else {
+				Sentry.capture(e, "priority");
+			}
 		}
 		return res;
 	}

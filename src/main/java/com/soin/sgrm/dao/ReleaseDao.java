@@ -1,6 +1,7 @@
 package com.soin.sgrm.dao;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +19,14 @@ import com.soin.sgrm.utils.ReleaseCreate;
 
 public interface ReleaseDao {
 	/* Creado para visualizar la paginacion por ajax de 10 items */
-	JsonSheet<?> listByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch) throws SQLException;
+	JsonSheet<?> listByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
 
 	JsonSheet<?> listByTeams(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			Object[] ids) throws SQLException;
+			Object[] ids, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
 
-	JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch) throws SQLException;
+	JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
 	/* #Paginacion por ajax de 10 items# */
 
 	Integer countByType(String name, String type, int query, Object[] ids);
@@ -42,7 +45,7 @@ public interface ReleaseDao {
 
 	List<ReleaseUser> list(String search, String release_id);
 
-	void cancelRelease(ReleaseEdit release) throws Exception;
+	void updateStatusRelease(ReleaseEdit release) throws Exception;
 
 	Release findReleaseById(Integer id);
 
@@ -53,5 +56,5 @@ public interface ReleaseDao {
 	void requestRelease(Release release);
 
 	ArrayList<ReleaseObjectEdit> saveReleaseObjects(Integer release_id, ArrayList<ReleaseObjectEdit> objects);
-	
+
 }

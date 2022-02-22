@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ReleaseObject;
 
 public class ReleaseCreate {
@@ -224,7 +225,7 @@ public class ReleaseCreate {
 			this.dependenciesFunctionals = jsonList;
 		} catch (Exception e) {
 			this.dependenciesFunctionals = null;
-			e.printStackTrace();
+			Sentry.capture(e, "releaseCreate");
 		}
 	}
 
@@ -240,7 +241,7 @@ public class ReleaseCreate {
 			this.dependenciesTechnical = jsonList;
 		} catch (Exception e) {
 			this.dependenciesTechnical = null;
-			e.printStackTrace();
+			Sentry.capture(e, "releaseCreate");
 		}
 	}
 
@@ -264,7 +265,7 @@ public class ReleaseCreate {
 			this.ambient = jsonList;
 		} catch (Exception e) {
 			this.ambient = null;
-			e.printStackTrace();
+			Sentry.capture(e, "releaseCreate");
 		}
 	}
 
@@ -280,7 +281,7 @@ public class ReleaseCreate {
 			this.modifiedComponent = jsonList;
 		} catch (Exception e) {
 			this.modifiedComponent = null;
-			e.printStackTrace();
+			Sentry.capture(e, "releaseCreate");
 		}
 	}
 
@@ -392,7 +393,7 @@ public class ReleaseCreate {
 			this.actions = jsonList;
 		} catch (Exception e) {
 			this.actions = null;
-			e.printStackTrace();
+			Sentry.capture(e, "releaseCreate");
 		}
 	}
 
@@ -441,7 +442,7 @@ public class ReleaseCreate {
 			this.objectItemConfiguration = jsonList;
 		} catch (Exception e) {
 			this.objectItemConfiguration = null;
-			e.printStackTrace();
+			Sentry.capture(e, "releaseCreate");
 		}
 	}
 
@@ -471,7 +472,15 @@ public class ReleaseCreate {
 		return errors;
 	}
 
-	// Se valida technicalSolution, functionalSolution, notInstalling y observations
+	// Se valida observations
+	public ArrayList<MyError> validObservations(ReleaseCreate rc, ArrayList<MyError> errors) {
+		if (rc.getObservations().equals(""))
+			errors.add(new MyError("observations", "Valor requerido."));
+		
+		return errors;
+	}
+
+	// Se valida technicalSolution, functionalSolution, notInstalling
 	public ArrayList<MyError> validInformationSolution(ReleaseCreate rc, ArrayList<MyError> errors) {
 
 		if (rc.getTechnicalSolution().equals(""))
@@ -482,9 +491,6 @@ public class ReleaseCreate {
 
 		if (rc.getNotInstalling().equals(""))
 			errors.add(new MyError("notInstalling", "Valor requerido."));
-
-		if (rc.getObservations().equals(""))
-			errors.add(new MyError("observations", "Valor requerido."));
 
 		return errors;
 	}

@@ -6,6 +6,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
 @Entity
@@ -17,6 +22,8 @@ public class Authority  implements Serializable{
 	private int id;
 
 	@Column(name = "NAME")
+	@NotEmpty(message = Constant.EMPTY)
+	@Size(max = 50, message = "Máximo 50 caracteres.")
 	private String name;
 
 	public int getId() {

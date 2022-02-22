@@ -17,6 +17,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.NotEmpty;
 import com.soin.sgrm.model.User;
 
@@ -60,21 +62,19 @@ public class SystemUser implements Serializable {
 	private String is_aia;
 
 	@Column(name = "PROYECTO_ID")
-	private String proyectId;
+	private Integer proyectId;
 
 	@ManyToMany(fetch = FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "SISTEMAS_SISTEMA_EQUIPO_TR2580", joinColumns = {
 			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
 	private Set<User> user = new HashSet<User>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "SISTEMAS_SISTEMA_GESTORES", joinColumns = {
 			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
 	private Set<User> managers = new HashSet<User>();
-
-//    @ManyToOne(fetch = FetchType.EAGER)
-//	@JoinColumn(name = "SOLICITADO_POR_ID", nullable = true)
-//	private User zsd;
 
 	public int getId() {
 		return id;
@@ -164,11 +164,11 @@ public class SystemUser implements Serializable {
 		this.is_aia = is_aia;
 	}
 
-	public String getProyectId() {
+	public Integer getProyectId() {
 		return proyectId;
 	}
 
-	public void setProyectId(String proyectId) {
+	public void setProyectId(Integer proyectId) {
 		this.proyectId = proyectId;
 	}
 

@@ -3811,7 +3811,7 @@ none
 	/*  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);*/
 	height: 70px;
 	display: flex;
-	cursor: pointer;
+/* 	cursor: pointer; */
 	background-color: #fff;
 	position: relative;
 	overflow: hidden;
@@ -10859,7 +10859,7 @@ to {
 }
 
 .sidebar .menu .list .ml-menu li a {
-	padding-left: 55px;
+	padding-left: 40px;
 	padding-top: 7px;
 	padding-bottom: 7px;
 }
@@ -11596,9 +11596,22 @@ important
 
 
 }
-.bootstrap-select .dropdown-menu {
+@media screen and (-webkit-min-device-pixel-ratio:0)
+  and (min-resolution:.001dpcm) {
+    .bootstrap-select .dropdown-menu {
 	min-width: 100% !important;
+	overflow: inherit !important;
+	}
 }
+@-moz-document url-prefix() {
+  .bootstrap-select .dropdown-menu {
+	min-width: 100% !important;
+	overflow: hidden !important;
+	}
+}
+.bootstrap-select.btn-group .dropdown-menu.inner{
+  overflow-y: auto !important;
+  }
 
 ul.ui-autocomplete {
 	z-index: 1100;
@@ -11674,6 +11687,8 @@ table tbody tr:hover {
 	/* 	max-height: 40px; */
 	overflow: hidden;
 	text-overflow: ellipsis;
+	margin-right: 5px;
+	margin-bottom: 5px;
 }
 
 .ui-menu-item-wrapper {
@@ -12318,4 +12333,180 @@ table {
 
 .lbtxt {
 	line-height: 30px;
+}
+
+.multSelect .btn-group > .btn:first-child{
+	display: none;
+}
+
+.multSelect .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+	width: 100%
+}
+
+.alias {cursor: alias;}
+.all-scroll {cursor: all-scroll;}
+.auto {cursor: auto;}
+.cell {cursor: cell;}
+.context-menu {cursor: context-menu;}
+.col-resize {cursor: col-resize;}
+.copy {cursor: copy;}
+.crosshair {cursor: crosshair;}
+.default {cursor: default;}
+.e-resize {cursor: e-resize;}
+.ew-resize {cursor: ew-resize;}
+.grab {cursor: grab;}
+.grabbing {cursor: grabbing;}
+.help {cursor: help;}
+.move {cursor: move;}
+.n-resize {cursor: n-resize;}
+.ne-resize {cursor: ne-resize;}
+.nesw-resize {cursor: nesw-resize;}
+.ns-resize {cursor: ns-resize;}
+.nw-resize {cursor: nw-resize;}
+.nwse-resize {cursor: nwse-resize;}
+.no-drop {cursor: no-drop;}
+.none {cursor: none;}
+.not-allowed {cursor: not-allowed;}
+.pointer {cursor: pointer;}
+.progress {cursor: progress;}
+.row-resize {cursor: row-resize;}
+.s-resize {cursor: s-resize;}
+.se-resize {cursor: se-resize;}
+.sw-resize {cursor: sw-resize;}
+.text {cursor: text;}
+.url {cursor: url(myBall.cur),auto;}
+.w-resize {cursor: w-resize;}
+.wait {cursor: wait;}
+.zoom-in {cursor: zoom-in;}
+.zoom-out {cursor: zoom-out;}
+
+
+textarea {
+	resize: vertical;
+	min-height: 60px;
+}
+
+
+.topArrow{
+	display: none;
+	padding: 5px;
+	background: linear-gradient(135deg, rgba(1, 46, 82, 1) 0%, rgba(1, 30, 63, 1) 100%);
+	font-size: 10px;
+	color: white;
+	cursor: pointer;
+	position: fixed;
+	bottom: 15px;
+	right: 15px;
+	z-index: 9999;
+}
+
+.topArrow:hover{
+	cursor: pointer;
+}
+
+.inputFile {
+	border: 1px solid #c3c3c3;
+	padding-left: 5px;
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	height: calc(1.5em + 0.75rem + 2px);
+	margin: 0px 0px 0px 0px;
+	opacity: 0;
+	border-color: 1px solid red !important;
+}
+
+.custom-file-label {
+	position: absolute;
+	top: 30px;
+	right: 10px;
+	left: 15px;
+	z-index: 1;
+	height: calc(1.5em + 0.75rem + 2px);
+	padding: .375rem .75rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #495057;
+	background-color: #fff;
+	border: 1px solid #ced4da;
+	border-radius: .25rem;
+}
+
+.custom-file-label::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    display: block;
+    height: calc(1.5em + 0.75rem);
+    padding: .375rem .75rem;
+    line-height: 1.5;
+    color: #495057;
+    content: "Browse";
+    background-color: #e9ecef;
+    border-left: inherit;
+    border-radius: 0 .25rem .25rem 0;
+}
+
+.custom-file-label::after {
+    content: "Elegir";
+}
+
+.bg-normal-blue{
+	background-color: #1F91F3 !important;
+	color: #fff;
+}
+
+/* The whole thing */
+.node-menu {
+    display: none;
+    z-index: 1000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    font-family: sans-serif;
+    background: #FFF;
+    color: #333;
+    border-radius: 5px;
+    padding: 0;
+}
+
+/* Each of the items in the list */
+.node-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+    list-style-type: none;
+    transition: all .3s ease;
+    user-select: none;
+}
+
+.node-menu li:hover {
+    background-color: #DEF;
+}
+
+.round-step {
+	color: #fff;
+    background-color: #226bdd;
+	width: 20px;
+	height: 20px;
+	line-height: 26px;
+	display: inline-block;
+	border-radius: 100px;
+	background: #fff;
+	background-color: rgb(255, 255, 255);
+	text-align: center;
+	font-size: 20px;
+	margin-left: 5px;
+	margin-bottom: -6px;
+}
+
+#trackingTable tbody tr td {
+	padding: 2px !important;
+}
+
+.filterMS{
+	width: 100%;
+	padding-left: 15px;
 }

@@ -37,10 +37,10 @@ public class DetailButtonCommand implements Serializable {
 	private String description;
 
 	@Column(name = "ES_REQUERIDO")
-	private boolean isRequired;
+	private Boolean isRequired;
 
 	@Column(name = "COMILLAS")
-	private boolean quotationMarks;
+	private Boolean quotationMarks;
 
 	@SuppressWarnings("deprecation")
 	@Cascade({ CascadeType.MERGE, CascadeType.DETACH, CascadeType.EVICT })
@@ -83,19 +83,19 @@ public class DetailButtonCommand implements Serializable {
 		this.description = description;
 	}
 
-	public boolean getIsRequired() {
+	public Boolean getIsRequired() {
 		return isRequired;
 	}
 
-	public void setIsRequired(boolean isRequired) {
+	public void setIsRequired(Boolean isRequired) {
 		this.isRequired = isRequired;
 	}
 
-	public boolean getQuotationMarks() {
+	public Boolean getQuotationMarks() {
 		return quotationMarks;
 	}
 
-	public void setQuotationMarks(boolean quotationMarks) {
+	public void setQuotationMarks(Boolean quotationMarks) {
 		this.quotationMarks = quotationMarks;
 	}
 
@@ -107,7 +107,7 @@ public class DetailButtonCommand implements Serializable {
 		this.button = buttonCommand;
 	}
 
-	public void setRequired(boolean isRequired) {
+	public void setRequired(Boolean isRequired) {
 		this.isRequired = isRequired;
 	}
 
