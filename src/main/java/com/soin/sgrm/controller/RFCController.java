@@ -17,7 +17,9 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.pos.PPriority;
+import com.soin.sgrm.model.pos.PStatus;
 import com.soin.sgrm.service.pos.PriorityService;
+import com.soin.sgrm.service.pos.StatusService;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
@@ -26,7 +28,10 @@ public class RFCController extends BaseController {
 
 	@Autowired
 	PriorityService priority;
-
+	
+	@Autowired
+	StatusService status;
+	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -34,8 +39,10 @@ public class RFCController extends BaseController {
 			String name = getUserLogin().getUsername();
 
 			List<PPriority> priorities = priority.findAll();
+			List<PStatus> statuses= status.findAll();
+			
 			model.addAttribute("priorities", priorities);
-
+			model.addAttribute("statuses", statuses);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

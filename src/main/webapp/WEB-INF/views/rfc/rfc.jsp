@@ -285,10 +285,8 @@
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
-									<c:forEach items="${statuses}" var="status">
-										<c:if test="${status.name ne 'Anulado'}">
-											<option value="${status.id }">${status.name }</option>
-										</c:if>
+									<c:forEach items="${priorities}" var="priority">
+										<option value="${priority.id }">${priority.name }</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -308,7 +306,7 @@
 								</select>
 							</div>
 						</div>
-						
+
 					</div>
 					<!-- #tableFilters# -->
 					<div id="tableSection" class="row clearfix">
@@ -354,8 +352,7 @@
 		src="<c:url value='/static/js/pages/forms/basic-form-elements.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
-	<script
-		src="<c:url value='/static/js/rfc/rfc.js?v=${jsVersion}'/>"></script>
+	<script src="<c:url value='/static/js/rfc/rfc.js?v=${jsVersion}'/>"></script>
 </body>
 
 </html>
