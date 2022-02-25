@@ -56,6 +56,9 @@
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">
 					<span>Perfil de usuario</span>
 			</a></li>
+						<li><a id="rfcItem" href="<c:url value='/rfc/'/> ">
+					<span>RFC</span>
+			</a></li>
 			<!---- 	#Seccion de reportes ---->
 			<li class=""><a id="ambientItem" href="javascript:void(0);"
 				class="menu-toggle"> <span>Reportes</span>
@@ -63,6 +66,7 @@
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/report/releases/'/>">Releases</a></li>
 				</ul></li>
+
 		</ul>
 	</div>
 	<!-- #Menu -->

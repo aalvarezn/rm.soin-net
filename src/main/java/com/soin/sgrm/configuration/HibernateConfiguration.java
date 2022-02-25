@@ -114,6 +114,7 @@ public class HibernateConfiguration {
 		return dataSource;
 	}
 
+	
 	@Bean(name = "transactionManagerCorp")
 	@Autowired
 	public HibernateTransactionManager transactionManagerCorp(@Qualifier("sessionFactoryCorp") SessionFactory s) {
@@ -121,7 +122,36 @@ public class HibernateConfiguration {
 		txManager.setSessionFactory(s);
 		return txManager;
 	}
+	
+	/*DatasourcePostgres*/
+	
+	@Bean(name = "sessionFactoryPos")
+	public LocalSessionFactoryBean sessionFactoryPos() {
+		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+		sessionFactory.setDataSource(dataSourceCorp());
+		sessionFactory.setPackagesToScan(new String[] { "com.soin.sgrm.model.migrate" });
+		sessionFactory.setHibernateProperties(hibernateProperties());
+		return sessionFactory;
+	}
 
+	@Bean(name = "dataSourcePos")
+	public DataSource dataSourcePos() {
+		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+		dataSource.setDriverClassName(env.getProperty("ds.pos.database-driverClassName"));
+		dataSource.setUrl(env.getProperty("ds.pos.url"));
+		dataSource.setUsername(env.getProperty("ds.pos.username"));
+		dataSource.setPassword(env.getProperty("ds.pos.password"));
+		return dataSource;
+	}
+
+	
+	@Bean(name = "transactionManagerPos")
+	@Autowired
+	public HibernateTransactionManager transactionManagerPos(@Qualifier("sessionFactoryPos") SessionFactory s) {
+		HibernateTransactionManager txManager = new HibernateTransactionManager();
+		txManager.setSessionFactory(s);
+		return txManager;
+	}
 	private Properties hibernateProperties() {
 		Properties properties = new Properties();
 		String[] _properties = new String[] { "hibernate.dialect", "hibernate.show_sql", "hibernate.SQL",
