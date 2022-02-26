@@ -536,3 +536,43 @@ let optionLanguaje = {
 		"infoEmpty" : "Mostrando 0 a 0 de 0 registros",
 		"infoFiltered" : "",
 };
+
+let optionRangePicker =  {
+		"autoUpdateInput": false,
+		"opens": 'left',
+		"orientation": 'right',
+		"locale": {
+			"format": "DD/MM/YYYY",
+			"separator": " - ",
+			"applyLabel": "Aplicar",
+			"cancelLabel": "Cancelar",
+			"fromLabel": "Desde",
+			"toLabel": "Hasta",
+			"customRangeLabel": "Custom",
+			"daysOfWeek": [
+				"Do",
+				"Lu",
+				"Ma",
+				"Mi",
+				"Ju",
+				"Vi",
+				"Sa"
+				],
+				"monthNames": [
+					"Enero",
+					"Febrero",
+					"Marzo",
+					"Abril",
+					"Mayo",
+					"Junio",
+					"Julio",
+					"Agosto",
+					"Septiembre",
+					"Octubre",
+					"Noviembre",
+					"Deciembre"
+					],
+					"firstDay": 1
+		}
+};
+
