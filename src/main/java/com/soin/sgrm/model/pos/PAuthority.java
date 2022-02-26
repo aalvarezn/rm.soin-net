@@ -11,8 +11,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "PRIORIDAD")
-public class PPriority implements Serializable {
+@Table(name = "ROL")
+public class PAuthority implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -22,11 +22,11 @@ public class PPriority implements Serializable {
 	@Column(name = "ID")
 	private Long id;
 
+	@Column(name = "CODIGO")
+	private String code;
+
 	@Column(name = "NOMBRE")
 	private String name;
-
-	@Column(name = "DESCRIPCION")
-	private String description;
 
 	public Long getId() {
 		return id;
@@ -36,20 +36,20 @@ public class PPriority implements Serializable {
 		this.id = id;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 }

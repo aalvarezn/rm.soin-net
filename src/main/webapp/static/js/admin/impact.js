@@ -1,212 +1,213 @@
+var $dtImpact;
+var $mdImpact = $('#impactModal');
+var $fmImpact = $('#impactModalForm');
+
 $(function() {
-	activeItemMenu("releaseItem", true);
-});
-var $impactTable = $('#impactTable').DataTable({
-	"language" : {
-		"emptyTable" : "No existen registros",
-		"zeroRecords" : "No existen registros"
-	},
-	"ordering" : true,
-	"searching" : true,
-	"paging" : true
+	activeItemMenu("catalogueItem", true);
+	initDataTable();
+	initImpactFormValidation();
 });
 
-var $impactModal = $('#impactModal');
-var $impactModalForm = $('#impactModalForm');
 
-function openImpactModal() {
-	resetErrors();
-	$impactModalForm[0].reset();
-	$('#btnUpdateImpact').hide();
-	$('#btnSaveImpact').show();
-	$impactModal.modal('show');
+function initDataTable() {
+	$dtImpact = $('#impactTable')
+	.DataTable(
+			{
+				lengthMenu : [ [ 10, 25, 50, -1 ],
+					[ '10', '25', '50', 'Mostrar todo' ] ],
+					"iDisplayLength" : 10,
+					"language" : optionLanguaje,
+					"iDisplayStart" : 0,
+					"sAjaxSource" : getCont() + "admin/impact/list",
+					"fnServerParams" : function(aoData) {
+					},
+					"aoColumns" : [
+						{
+							"mDataProp" : 'name'
+						},
+						{
+							"mDataProp" : 'description'
+						},
+						{
+							render : function(data, type, row, meta) {
+								var options = '<div class="iconLine">';
+
+								options += '<a onclick="showImpact('
+									+ meta.row
+									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
+
+								options += '<a onclick="deleteImpact('
+									+ meta.row
+									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
+
+								options += ' </div>';
+
+								return options;
+							}
+						} ],
+						ordering : false,
+			});
 }
 
-function saveImpact() {
-	blockUI();
-	$.ajax({
-		type : "POST",
-		url : getCont() + "admin/impact/" + "saveImpact",
-		data : {
-			// Informacion impactos
-			id : 0,
-			name : $impactModalForm.find('#name').val(),
-			description : $impactModalForm.find('#description').val()
-		},
-		success : function(response) {
-			ajaxSaveImpact(response)
-		},
-		error : function(x, t, m) {
-			console.log(x);
-			console.log(t);
-			console.log(m);
-			unblockUI();
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function ajaxSaveImpact(response) {
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!", "Impacto creado correctamente.", "success", 2000)
-		break;
-	case 'fail':
-		unblockUI();
-		showImpactErrors(response.errors, $impactModalForm);
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "error")
-		break;
-	default:
-		console.log(response.status);
-		unblockUI();
-	}
-}
-
-function updateImpactModal(index) {
-	resetErrors();
-	$('#btnUpdateImpact').show();
-	$('#btnSaveImpact').hide();
-	blockUI();
-	$.ajax({
-		type : "GET",
-		url : getCont() + "admin/" + "impact/findImpact/" + index,
-		timeout : 60000,
-		data : {},
-		success : function(response) {
-			unblockUI();
-			$impactModalForm.find('#impactId').val(index);
-			$impactModalForm.find('#name').val(response.name);
-			$impactModalForm.find('#description').val(response.description);
-			$impactModal.modal('show');
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function closeImpactModal() {
-	$impactModalForm[0].reset();
-	$impactModal.modal('hide');
+function showImpact(index){
+	$fmImpact.validate().resetForm();
+	$fmImpact[0].reset();
+	var obj = $dtImpact.row(index).data();
+	$fmImpact.find('#iId').val(obj.id);
+	$fmImpact.find('#iName').val(obj.name);
+	$fmImpact.find('#iDescription').val(obj.description);
+	$mdImpact.find('#update').show();
+	$mdImpact.find('#save').hide();
+	$mdImpact.modal('show');
 }
 
 function updateImpact() {
-	blockUI();
-	$.ajax({
-		type : "POST",
-		url : getCont() + "admin/impact/" + "updateImpact",
-		data : {
-			// Informacion impacto
-			id : $impactModalForm.find('#impactId').val(),
-			name : $impactModalForm.find('#name').val(),
-			description : $impactModalForm.find('#description').val()
-		},
-		success : function(response) {
-			ajaxUpdateImpact(response)
-		},
-		error : function(x, t, m) {
-			console.log(x);
-			console.log(t);
-			console.log(m);
-			unblockUI();
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function ajaxUpdateImpact(response) {
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!", "Impacto modificado correctamente.", "success", 2000)
-		break;
-	case 'fail':
-		unblockUI();
-		showImpactErrors(response.errors, $impactModalForm);
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "error")
-		break;
-	default:
-		console.log(response.status);
-		unblockUI();
-	}
-}
-
-function confirmDeleteImpact(element) {
+	if (!$fmImpact.valid())
+		return;
 	Swal.fire({
-		  title: '\u00BFEst\u00e1s seguro que desea eliminar?',
-		  text: "Esta acci\u00F3n no se puede reversar.",
-		  icon: 'question',
-		  showCancelButton: true,
-		  customClass: 'swal-wide',
-		  cancelButtonText: 'Cancelar',
-		  cancelButtonColor: '#f14747',
-		  confirmButtonColor: '#3085d6',
-		  confirmButtonText: 'Aceptar',
-		}).then((result) => {
-			if(result.value){
-				deleteImpact(element);
-			}		
-		});
-}
-
-function deleteImpact(element){
-	blockUI();
-	$.ajax({
-		type : "DELETE",
-		url : getCont() + "admin/" + "impact/deleteImpact/" + element,
-		timeout : 60000,
-		data : {},
-		success : function(response) {
-			ajaxDeleteImpact(response);
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
+		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "PUT",
+				url : getCont() + "admin/impact/" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					id : $fmImpact.find('#iId').val(),
+					name : $fmImpact.find('#iName').val(),
+					description : $fmImpact.find('#iDescription').val(),
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtImpact.ajax.reload();
+					$mdImpact.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
 		}
 	});
 }
 
-function ajaxDeleteImpact(response){
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!", "El impacto ha sido eliminado exitosamente.",
-				"success", 2000)
-		break;
-	case 'fail':
-		swal("Error!", response.exception, "error")
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "warning")
-		break;
-	default:
-		location.reload();
-	}
-}
 
-function resetErrors() {
-	$(".fieldError").css("visibility", "hidden");
-	$(".fieldError").attr("class", "error fieldError");
-	$(".fieldErrorLine").attr("class", "form-line");
-}
-
-function showImpactErrors(error, $form) {
-	resetErrors();// Eliminamos las etiquetas de errores previas
-	for (var i = 0; i < error.length; i++) {
-		// Se modifica el texto de la advertencia y se agrega la de activeError
-		$form.find(" #" + error[i].key + "_error").text(error[i].message);
-		$form.find(" #" + error[i].key + "_error").css("visibility", "visible");
-		$form.find(" #" + error[i].key + "_error").attr("class",
-				"error fieldError activeError");
-		// Si es input||textarea se marca el line en rojo
-		if ($form.find(" #" + error[i].key).is("input")
-				|| $form.find(" #" + error[i].key).is("textarea")) {
-			$form.find(" #" + error[i].key).parent().attr("class",
-					"form-line error focused fieldErrorLine");
+function saveImpact() {
+	if (!$fmImpact.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "POST",
+				url : getCont() + "admin/impact/" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					name : $fmImpact.find('#iName').val(),
+					description : $fmImpact.find('#iDescription').val(),
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtImpact.ajax.reload();
+					$mdImpact.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
 		}
-	}
+	});
+}
+
+function deleteImpact(index) {
+	var obj = $dtImpact.row(index).data();
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "DELETE",
+				url : getCont() + "admin/impact/"+obj.id ,
+				timeout : 60000,
+				data : {},
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtImpact.ajax.reload();
+					$mdImpact.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
+	});
+}
+
+function addImpact(){
+	$fmImpact.validate().resetForm();
+	$fmImpact[0].reset();
+	$mdImpact.find('#save').show();
+	$mdImpact.find('#update').hide();
+	$mdImpact.modal('show');
+}
+
+function closeImpact(){
+	$mdImpact.modal('hide');
+}
+
+function initImpactFormValidation() {
+	$fmImpact.validate({
+		rules : {
+			'iName' : {
+				required : true,
+				minlength : 3,
+				maxlength : 100
+			},
+			'iDescription' : {
+				required : true,
+				minlength : 1,
+				maxlength : 50,
+			},
+		},
+		messages : {
+			'iName' : {
+				required :  "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de 50 caracteres"
+			},
+			'iDescription' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de 100 caracteres"
+			},
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
+	});
 }

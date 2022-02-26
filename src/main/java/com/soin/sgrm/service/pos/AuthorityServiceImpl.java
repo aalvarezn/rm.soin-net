@@ -7,44 +7,44 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.dao.pos.PriorityDao;
-import com.soin.sgrm.model.pos.PPriority;
+import com.soin.sgrm.dao.pos.AuthorityDao;
+import com.soin.sgrm.model.pos.PAuthority;
 
-@Service("priorityService")
+@Service("authorityService")
 @Transactional("transactionManagerPos")
-public class PriorityServiceImpl implements PriorityService {
+public class AuthorityServiceImpl implements AuthorityService {
 
 	@Autowired
-	PriorityDao dao;
+	AuthorityDao dao;
 
 	@Override
-	public PPriority findById(Long id) {
+	public PAuthority findById(Long id) {
 		return dao.getById(id);
 	}
 
 	@Override
-	public PPriority findByKey(String name, String value) {
+	public PAuthority findByKey(String name, String value) {
 		return dao.getByKey(name, value);
 	}
 
 	@Override
-	public List<PPriority> findAll() {
+	public List<PAuthority> findAll() {
 		return dao.findAll();
 	}
 
 	@Override
-	public void save(PPriority model) {
+	public void save(PAuthority model) {
 		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		PPriority model = findById(id);
+		PAuthority model = findById(id);
 		dao.delete(model);
 	}
 
 	@Override
-	public void update(PPriority model) {
+	public void update(PAuthority model) {
 		dao.update(model);
 	}
 

@@ -11,8 +11,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "PRIORIDAD")
-public class PPriority implements Serializable {
+@Table(name = "IMPACTO")
+public class PImpact implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

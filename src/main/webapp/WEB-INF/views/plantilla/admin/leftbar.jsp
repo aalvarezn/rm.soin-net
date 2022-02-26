@@ -52,8 +52,8 @@
 							Archivo</a></li>
 				</ul></li>
 			<!---- 	#Seccion de releases ---->
-			<li class=""><a id="releaseItem" href="javascript:void(0);"
-				class="menu-toggle"> <span>Releases</span>
+			<li class=""><a id="catalogueItem" href="javascript:void(0);"
+				class="menu-toggle"> <span>Catálogos</span>
 			</a>
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>

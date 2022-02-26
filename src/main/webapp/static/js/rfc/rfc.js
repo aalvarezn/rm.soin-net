@@ -63,10 +63,26 @@ function initRFCTable() {
 }
 
 function changeSlide() {
-	$("#tableSection").toggle("slide");
-	$("#buttonAddRFC").hide();
-	$("#addRFCSection").show('slide', {
-		direction : 'right'
+	let change = $("#buttonAddRFC").is(":visible");
+	$("#buttonAddRFC").toggle();
+	let hide = change ? '#tableSection': '#addRFCSection';
+	let show = !change ? '#tableSection': '#addRFCSection';
+	$(hide).toggle("slide");
+	$(show).show('slide', {
+		direction : (change? 'right': 'left' )
 	}, 500);
-	$("#addRFCSection").insertAfter("#tableSection");
+	if(change)
+		$("#addRFCSection").insertAfter("#tableSection");
+	else
+		$("#tableSection").insertAfter("#addRFCSection")
+}
+
+
+function addRFCSection() {
+	changeSlide();
+}
+
+
+function closeRFCSection(){
+	changeSlide();
 }

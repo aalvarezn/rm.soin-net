@@ -1,50 +1,48 @@
 package com.soin.sgrm.service.pos;
 
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.dao.pos.PriorityDao;
-import com.soin.sgrm.model.pos.PPriority;
+import com.soin.sgrm.dao.pos.ImpactDao;
+import com.soin.sgrm.model.pos.PImpact;
 
-@Service("priorityService")
+@Service("impactService")
 @Transactional("transactionManagerPos")
-public class PriorityServiceImpl implements PriorityService {
+public class ImpactServiceImpl implements ImpactService {
 
 	@Autowired
-	PriorityDao dao;
+	ImpactDao dao;
 
 	@Override
-	public PPriority findById(Long id) {
+	public PImpact findById(Long id) {
 		return dao.getById(id);
 	}
 
 	@Override
-	public PPriority findByKey(String name, String value) {
+	public PImpact findByKey(String name, String value) {
 		return dao.getByKey(name, value);
 	}
 
 	@Override
-	public List<PPriority> findAll() {
+	public List<PImpact> findAll() {
 		return dao.findAll();
 	}
 
 	@Override
-	public void save(PPriority model) {
+	public void save(PImpact model) {
 		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		PPriority model = findById(id);
+		PImpact model = findById(id);
 		dao.delete(model);
 	}
 
 	@Override
-	public void update(PPriority model) {
+	public void update(PImpact model) {
 		dao.update(model);
 	}
 

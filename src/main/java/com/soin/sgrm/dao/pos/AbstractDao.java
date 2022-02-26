@@ -51,9 +51,13 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public T getByKey(PK key, String value) {
-		return (T) getSession().createCriteria(persistentClass).add(Restrictions.eq((String) key, value))
-				.uniqueResult();
+	public T getByKey(String key, String value) {
+		return (T) getSession().createCriteria(persistentClass).add(Restrictions.eq(key, value)).uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	public T getById(Long id) {
+		return (T) getSession().createCriteria(persistentClass).add(Restrictions.eq("id", id)).uniqueResult();
 	}
 
 	public void persist(T entity) {
@@ -84,7 +88,7 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 		getSession().clear();
 	}
 
-	public void deleteByKey(PK key, String value) {
+	public void deleteByKey(String key, String value) {
 		T entity = getByKey(key, value);
 		delete(entity);
 	}

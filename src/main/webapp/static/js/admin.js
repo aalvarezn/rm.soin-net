@@ -576,3 +576,74 @@ let optionRangePicker =  {
 		}
 };
 
+var highlight = function(input) {
+	$(input).parents('.form-line').addClass('error');
+};
+var unhighlight = function(input) {
+	$(input).parents('.form-line').removeClass('error');
+};
+var errorPlacement = function(error, element) {
+	$(element).parents('.form-group').append(error);;
+};
+
+var swalDefault = {
+		icon: 'question',
+		showCancelButton: true,
+		customClass: 'swal-wide',
+		cancelButtonText: 'Cancelar',
+		cancelButtonColor: '#f14747',
+		confirmButtonColor: '#3085d6',
+		confirmButtonText: 'Aceptar',
+};
+
+
+function notifyMs(message, status) {
+	switch (status) {
+	case 'success':
+		Swal.fire({
+			icon: status,
+			title: 'Correcto',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	case 'error':
+		Swal.fire({
+			icon: status,
+			title: 'Error',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	case 'warning':
+		Swal.fire({
+			icon: status,
+			title: 'Precaución',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	case 'info':
+		Swal.fire({
+			icon: status,
+			title: 'Información',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	default:
+		Swal.fire({
+			icon: status,
+			title: 'Error',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	}
+}
+

@@ -227,7 +227,7 @@
 		<a id="buttonAddRFC" type="button"
 			class="btn btn-primary btn-fab waves-effect fixedDown"
 			<%-- href="<c:url value='/release/release-generate'/>"> --%>
- 			onclick="openAddRFCSection()">
+ 			onclick="addRFCSection()">
 			<i class="material-icons lh-1-8">add</i>
 		</a>
 	</section>
