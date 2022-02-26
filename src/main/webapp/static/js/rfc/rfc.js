@@ -33,7 +33,10 @@ function initRFCTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return row.numRequest;
+							if(row.priority)
+								return row.priority.name;
+							else
+								return '';
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
@@ -45,11 +48,14 @@ function initRFCTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return '--';
+							if(row.status)
+								return row.status.name;
+							else
+								return '';
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return row.numRequest;
+							return "---";
 						},
 					} ],
 					ordering : false,

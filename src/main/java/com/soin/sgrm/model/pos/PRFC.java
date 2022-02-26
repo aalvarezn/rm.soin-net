@@ -5,7 +5,10 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,6 +31,14 @@ public class PRFC implements Serializable {
 
 	@Column(name = "REQUIERE_BD")
 	private Boolean requiredBD;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "\"ID_PRIORIDAD\"", nullable = true)
+	private PPriority priority;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "\"ID_ESTADO\"", nullable = false)
+	private PStatus status;
 
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
@@ -71,6 +82,22 @@ public class PRFC implements Serializable {
 
 	public void setRequestDate(Timestamp requestDate) {
 		this.requestDate = requestDate;
+	}
+
+	public PPriority getPriority() {
+		return priority;
+	}
+
+	public void setPriority(PPriority priority) {
+		this.priority = priority;
+	}
+
+	public PStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(PStatus status) {
+		this.status = status;
 	}
 
 }
