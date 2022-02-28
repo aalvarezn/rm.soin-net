@@ -22,6 +22,50 @@ public class PStatus implements Serializable {
 
 	@Column(name = "DESCRIPCION")
 	private String description;
+	
+	@Column(name = "EN_PROGRESO")
+	private int in_progress;
+	
+	@Column(name = "FINALIZADO")
+	private int finished;
+	
+	@Column(name = "MOTIVO")
+	private String reasen;
+	
+	@Column(name = "CODE")
+	private String code;
+	
+	public int getIn_progress() {
+		return in_progress;
+	}
+
+	public void setIn_progress(int in_progress) {
+		this.in_progress = in_progress;
+	}
+
+	public int getFinished() {
+		return finished;
+	}
+
+	public void setFinished(int finished) {
+		this.finished = finished;
+	}
+
+	public String getReasen() {
+		return reasen;
+	}
+
+	public void setReasen(String reasen) {
+		this.reasen = reasen;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public Long getId() {
 		return id;
