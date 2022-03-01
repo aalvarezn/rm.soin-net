@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.beans.factory.annotation.Value;
+
 @Entity
 @Table(name = "ESTADO")
 public class PStatus implements Serializable {
@@ -23,40 +25,42 @@ public class PStatus implements Serializable {
 	@Column(name = "DESCRIPCION")
 	private String description;
 	
+	@Value("${inProgress:false}")
 	@Column(name = "EN_PROGRESO")
-	private int in_progress;
-	
+	private Boolean inProgress;
+
+	@Value("${finished:false}")
 	@Column(name = "FINALIZADO")
-	private int finished;
-	
+	private Boolean finished;
+
 	@Column(name = "MOTIVO")
-	private String reasen;
+	private String motive;
 	
-	@Column(name = "CODE")
+	@Column(name = "CODIGO")
 	private String code;
-	
-	public int getIn_progress() {
-		return in_progress;
+
+	public Boolean getInProgress() {
+		return inProgress;
 	}
 
-	public void setIn_progress(int in_progress) {
-		this.in_progress = in_progress;
+	public void setInProgress(Boolean inProgress) {
+		this.inProgress = inProgress;
 	}
 
-	public int getFinished() {
+	public Boolean getFinished() {
 		return finished;
 	}
 
-	public void setFinished(int finished) {
+	public void setFinished(Boolean finished) {
 		this.finished = finished;
 	}
 
-	public String getReasen() {
-		return reasen;
+	public String getMotive() {
+		return motive;
 	}
 
-	public void setReasen(String reasen) {
-		this.reasen = reasen;
+	public void setMotive(String motive) {
+		this.motive = motive;
 	}
 
 	public String getCode() {
