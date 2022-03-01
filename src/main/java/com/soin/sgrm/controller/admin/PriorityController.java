@@ -39,14 +39,14 @@ public class PriorityController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<PPriority> rfcs = new JsonSheet<>();
+		JsonSheet<PPriority> list = new JsonSheet<>();
 		try {
-			rfcs.setData(priority.findAll());
+			list.setData(priority.findAll());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return rfcs;
+		return list;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)

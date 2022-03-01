@@ -18,7 +18,7 @@
 							<div class="form-group">
 								<div class="form-line">
 									<input type="text" class="form-control" id="pName" name="pName"
-										maxlength="50" placeholder="Ingrese un nombre"
+										maxlength="50" placeholder="Ingrese un valor"
 										style="height: 60px;">
 									<div class="help-info">Máx. 50 caracteres</div>
 								</div>
@@ -30,7 +30,7 @@
 								<div class="form-line">
 									<input type="text" class="form-control" id="pDescription"
 										name="pDescription" maxlength="250"
-										placeholder="Ingrese un nombre" style="height: 60px;">
+										placeholder="Ingrese un valor" style="height: 60px;">
 								</div>
 							</div>
 						</div>

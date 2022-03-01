@@ -1,474 +1,221 @@
+/** Declaración de variables globales del contexto * */
+var $dtUser;
+let $mdUser = $('#userModal');
+let $fmUser = $('#userModalForm');
+let $mdUserPassword = $('#userPasswordModal');
+let $fmUserPassword = $('#userPasswordModalForm');
+
 $(function() {
 	activeItemMenu("userItem", true);
-});
-var $userTable = $('#userTable').DataTable({
-	"language" : {
-		"emptyTable" : "No existen registros",
-		"zeroRecords" : "No existen registros"
-	},
-	"ordering" : true,
-	"searching" : true,
-	"paging" : true
+	initRoles();
+	initUserFormValidation();
+	initDataTable();
 });
 
-let $userModal = $('#userModal');
-let $userForm = $('#userForm');
-
-let $userPasswordModal = $('#userPasswordModal');
-let $userPasswordForm = $('#userPasswordForm');
-
-$(function() {
-	$('#userGroups').multiSelect(
-			{
-			  selectableHeader: "<div class='custom-header'>Roles</div>",
-			  selectionHeader: "<div class='custom-header'>Roles asignados</div>",
-			  afterSelect : function(values) {
-				$userForm.find("#userGroups option[id='" + values + "']").attr("selected", "selected");
-			  },
-			  afterDeselect : function(values) {
-				$userForm.find("#userGroups option[id='" + values + "']").removeAttr('selected');
-			  }
-			});
-	$userForm.find("#ms-userGroups").find(".ms-selectable").before('<label for="name">Roles</label>');
-	$userForm.find("#ms-userGroups").find(".ms-selection").before('<label for="name">Roles Asignados</label>');
+$("#tableFilters #fStatus").change(function() {
+	$dtUser.ajax.reload();
 });
 
-function changeBtnModal(index){
-	if(index == 1){
-		$userModal.find('#modalTitle').text('Crear Usuario');
-		$userModal.find('#btnSave').show();
-		$userModal.find('#btnUpdate').hide();
-	}else{
-		$userModal.find('#modalTitle').text('Modificar Usuario');
-		$userModal.find('#btnUpdate').show();
-		$userModal.find('#btnSave').hide();
-	}
-}
 
-// ------ Create User ------
-function createUser(){
-	clearUserModal();
-	changeBtnModal(1);
-	$('#userGroups').multiSelect("refresh");
-	resetErrors();
-	$userModal.modal('show');
-}
-
-function saveUser(){
-	blockUI();
-	let groupIds = getGroupsId($userForm, "#userGroups");
-	$.ajax({
-		type : "POST",
-		url : getCont() + "admin/user/" + "saveUser",
-		data : {
-			username: $userForm.find('#username').val(),
-			shortName: $userForm.find('#shortName').val(),
-			fullName: $userForm.find('#fullName').val(),
-			emailAddress: $userForm.find('#emailAddress').val(),
-			rolesId: JSON.stringify(groupIds)
-		},
-		success : function(response) {
-			responseAjaxSaveUser(response)
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-		}
+function showUser(index){
+	$fmUser.validate().resetForm();
+	$fmUser[0].reset();
+	$('.nav-tabs a[href="#tabHome"]').tab('show');
+	var obj = $dtUser.row(index).data();
+	$fmUser.find('#uId').val(obj.id);
+	$fmUser.find('#uUserName').val(obj.userName);
+	$fmUser.find('#uName').val(obj.name);
+	$fmUser.find('#uEmail').val(obj.email);
+	$('#userGroups').multiSelect('deselect_all');
+	obj.roles.forEach(function (element) {
+		$('#userGroups').multiSelect('select', element.code);
 	});
-}
-
-function responseAjaxSaveUser(response){
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!","Usuario creado exitosamente.","success", 2000)
-		break;
-	case 'fail':
-		unblockUI();
-//		$( "#tabs" ).tabs({ active: # });
-		showUserErrors(response.errors, $userForm);
-		break;
-	case 'exception':
-		swal("Exception!", response.exception, "warning")
-		break;
-	default:
-		location.reload();
-	}
-}
-
-// ------ #Create User ------
-
-// ------ Update User ------
-function editUser(index) {
-	clearUserModal();
-	blockUI();
-	$.ajax({
-		type : "GET",
-		url : getCont() + "admin/user/" + "findUser/" + index,
-		data : {},
-		success : function(response) {
-			if (response == null) {
-				swal("Error!", "El Usuario seleccionado no existe.", "error");
-			} else {
-				unblockUI();
-				ajaxEditUser(response);
-			}
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function ajaxEditUser(obj) {
-	$userForm.find('#userId').val(obj.id);
-	$userForm.find('#fullName').val(obj.fullName);
-	$userForm.find('#username').val(obj.username);
-	$userForm.find('#shortName').val(obj.shortName);
-	$userForm.find('#emailAddress').val(obj.emailAddress);
-	$userForm.find('#shortName').val(obj.shortName);
-
-	for (var i = 0, l = obj.authorities.length; i < l; i++) {
-		$userForm.find('#userGroups option').each(
-				function(index, element) {
-					if (element.id == obj.authorities[i].id) {
-						$userForm.find(
-								"#userGroups option[id='" + element.id + "']")
-								.attr("selected", "selected");
-					}
-				});
-	}
 	$('#userGroups').multiSelect("refresh");
-	resetErrors();
-	changeBtnModal(2);
-	$userModal.find('a[href="#tabHome"]').click();
-	$userModal.modal('show');
+	$mdUser.find('#update').show();
+	$mdUser.find('#save').hide();
+	$mdUser.modal('show');
 }
 
-function closeUserModal() {
-	clearUserModal();
-	$userModal.modal('hide');
-}
-
-function clearUserModal() {
-	$userForm[0].reset();
-	$userForm.find('#active').val(0);
-	$userForm.find('#userGroups option').each(
-			function(index, element) {
-				$userForm.find("#userGroups option[id='" + element.id + "']")
-						.removeAttr('selected');
-			});
-}
 
 function updateUser() {
-	blockUI();
-	let groupIds = getGroupsId($userForm, "#userGroups");
-	$.ajax({
-		type : "POST",
-		url : getCont() + "admin/user/" + "updateUser",
-		data : {
-			id: $userForm.find('#userId').val(),
-			username: $userForm.find('#username').val(),
-			shortName: $userForm.find('#shortName').val(),
-			fullName: $userForm.find('#fullName').val(),
-			emailAddress: $userForm.find('#emailAddress').val(),
-			rolesId: JSON.stringify(groupIds)
-		},
-		success : function(response) {
-			responseAjaxUpdateUser(response)
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function responseAjaxUpdateUser(response) {
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!","Usuario actualizado exitosamente.","success", 2000)
-		break;
-	case 'fail':
-		unblockUI();
-		showUserErrors(response.errors, $userForm);
-		break;
-	case 'exception':
-		swal("Exception!", response.exception, "warning")
-		break;
-	default:
-		location.reload();
-	}
-}
-// ------ #Update User ------
-
-
-// ------ Soft-Delete User ------
-function confirmDeleteUser(index, active) {	
-	let textTittle = (active) ? 'desactivar':'activar';
-	let textMessage = (active) ? 'activado':'desactivado';
-	
+	if (!$fmUser.valid())
+		return;
 	Swal.fire({
-		  title: '\u00BFEst\u00e1s seguro que desea '+textTittle+' al usuario?',
-		  text: "El usuario puede ser "+textMessage+" nuevamente.",
-		  icon: 'question',
-		  showCancelButton: true,
-		  customClass: 'swal-wide',
-		  cancelButtonText: 'Cancelar',
-		  cancelButtonColor: '#f14747',
-		  confirmButtonColor: '#3085d6',
-		  confirmButtonText: 'Aceptar',
-		}).then((result) => {
-			if(result.value){
-				deleteUser(index)
-			}		
-		});
-}
-
-function deleteUser(index) {
-	let cont = getCont();
-	let form = $userPasswordForm;
-	$.ajax({
-		async : false,
-		type : "POST",
-		url : cont + "/admin/user/" + "softDelete",
-		timeout : 60000,
-		data : {
-			userId : index
-		},
-		success : function(response) {
-			answerDeleteUser(response, index);
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
+		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "PUT",
+				url : getCont() + "admin/user/" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					id : $fmUser.find('#uId').val(),
+					code : $fmUser.find('#uUserName').val(),
+					name : $fmUser.find('#uName').val(),
+					email : $fmUser.find('#uEmail').val(),
+					strRoles : $fmUser.find('#userGroups').val()
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtUser.ajax.reload();
+					$mdUser.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
 		}
 	});
 }
 
-function answerDeleteUser(response, index) {
-	switch (response.status) {
-	case 'success':
-		$('#userTable').find('#softDeleteUser_'+index).attr("onclick",'confirmDeleteUser('+index+','+response.obj+')');
-		if(response.obj == true){
-			$('#userTable').find('#softDeleteUser_'+index).text('check_circle');
-			swal("Correcto!", "Usuario activado correctamente.", "success", 2000)
-		}else{
-			$('#userTable').find('#softDeleteUser_'+index).text('cancel');
-			swal("Correcto!", "Usuario desactivado correctamente.", "success", 2000)
-		}
-		break;
-	case 'fail':
-		swal("Error!", response.exception, "error")
-		break;
-	case 'exception':
-		swal("Exception!", response.exception, "warning")
-		break;
-	default:
-		location.reload();
-	}
-}
-// ------ #Soft-Delete User ------
-
-
-// ------ Remove User ------
-function confirmRemoveUser(element) {
-	Swal.fire({
-		  title: '\u00BFEst\u00e1s seguro que desea eliminar?',
-		  text: "Esta acci\u00F3n no se puede reversar.",
-		  icon: 'question',
-		  showCancelButton: true,
-		  customClass: 'swal-wide',
-		  cancelButtonText: 'Cancelar',
-		  cancelButtonColor: '#f14747',
-		  confirmButtonColor: '#3085d6',
-		  confirmButtonText: 'Aceptar',
-		}).then((result) => {
-			if(result.value){
-				removeUser(element);
-			}		
-		});
+function createUser(){
+	$fmUser.validate().resetForm();
+	$fmUser[0].reset();
+	$('.nav-tabs a[href="#tabHome"]').tab('show');
+	$('#userGroups').multiSelect('deselect_all');
+	$('#userGroups').multiSelect("refresh");
+	$mdUser.find('#update').hide();
+	$mdUser.find('#save').show();
+	$mdUser.modal('show');
 }
 
-function removeUser(index){
-	blockUI();
-	$.ajax({
-		type : "DELETE",
-		url : getCont() + "admin/" + "user/removeUser/" + index,
-		timeout : 60000,
-		data : {},
-		success : function(response) {
-			ajaxRemoveUser(response);
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
+function setRoles(){}
 
-function ajaxRemoveUser(response){
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!", "El usuario ha sido eliminado exitosamente.",
-				"success", 2000)
-		break;
-	case 'fail':
-		swal("Error!", response.exception, "error")
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "warning")
-		break;
-	default:
-		location.reload();
-	}
+function closeUser(){
+	$mdUser.modal('hide');
 }
 
 
-// ------ #Remove User ------
-
-// ------ Change password ------
-function changePasswordModal(index) {
-	clearPasswordModal();
-	$userPasswordForm.find('#userId').val(index);
-	$userPasswordModal.modal('show');
+function initRoles(){
+	$('#userGroups').multiSelect(
+			{
+				selectableHeader: "<div class='custom-header'>Roles</div>",
+				selectionHeader: "<div class='custom-header'>Roles asignados</div>",
+				afterSelect : function(values) {
+					$fmUser.find("#userGroups option[id='" + values + "']").attr("selected","selected");
+				},
+				afterDeselect : function(values) {
+					$fmUser.find("#userGroups option[id='" + values +"']").removeAttr('selected');
+				}
+			});
+	$fmUser.find("#ms-userGroups").find(".ms-selectable").before('<label for="name">Roles</label>');
+	$fmUser.find("#ms-userGroups").find(".ms-selection").before('<label for="name">Roles Asignados</label>');
 }
 
-function closePasswordModal() {
-	clearPasswordModal();
-	$userPasswordModal.modal('hide');
+function initDataTable() {
+	$dtUser = $('#userTable')
+	.DataTable(
+			{
+				lengthMenu : [ [ 10, 25, 50, -1 ],
+					[ '10', '25', '50', 'Mostrar todo' ] ],
+					"iDisplayLength" : 10,
+					"language" : optionLanguaje,
+					"iDisplayStart" : 0,
+					"processing" : true,
+					"serverSide" : true,
+					"sAjaxSource" : getCont() + "admin/user/list",
+					"fnServerParams" : function(aoData) {
+						aoData.push({
+							"name" : "sStatus",
+							"value" : $('#tableFilters #fStatus').val()
+						});
+					},
+					"aoColumns" : [
+						{
+							"mDataProp" : "name"
+						},
+						{
+							"mDataProp" : "userName"
+						},
+						{
+							"mDataProp" : "email"
+						},
+						{
+							"mRender" : function(data, type, row, meta) {
+								if (row.lastLogin)
+									return moment(row.lastLogin)
+									.format(
+									'DD/MM/YYYY h:mm:ss a');
+								else
+									return '';
+							},
+						},
+						{
+							"mRender" : function(data, type, row, meta) {
+								return '<div class="iconLine align-center">'
+								+ '<i onclick="softDelete('
+								+ meta.row
+								+ ')" class="material-icons gris" style="font-size: 30px;">'
+								+ (row.active ? 'check_circle'
+										: 'cancel')
+										+ '</i></div>';
+							},
+						},
+						{
+							"mRender" : function(data, type, row, meta) {
+								let options = '';
+								options += '<i onclick="showUser('
+									+ meta.row
+									+ ')" class="material-icons gris" style="font-size: 30px;">mode_edit</i>';
+
+								options += '<i onclick="changePassword('
+									+ meta.row
+									+ ')" class="material-icons gris" style="font-size: 30px;">lock</i>';
+
+								return options;
+							},
+						} ],
+						ordering : false,
+			});
 }
 
-function clearPasswordModal() {
-	$userPasswordForm[0].reset();
-	$userPasswordForm.find(".fieldError").hide();
-	$userPasswordForm.find(".form-line").attr("class", "form-line");
-}
-
-function updatePassword() {
-	let cont = getCont();
-	let form = $userPasswordForm;
-	if (validUpdatePassword()) {
-		$.ajax({
-			async : false,
-			type : "POST",
-			url : cont + "/admin/user/" + "changePassword",
-			timeout : 60000,
-			data : {
-				userId : form.find("#userId").val(),
-				newPassword : form.find("#newPassword").val(),
-				confirmPassword : form.find("#confirmPassword").val(),
+function initUserFormValidation() {
+	$fmUser.validate({
+		rules : {
+			'uUserName' : {
+				required : true,
+				minlength : 1,
+				maxlength : 50,
 			},
-			success : function(response) {
-				answerUpdatePassword(response);
+			'uName' : {
+				required : true,
+				minlength : 1,
+				maxlength : 100
 			},
-			error : function(x, t, m) {
-				notifyAjaxError(x, t, m);
-			}
-		});
-	}
-}
-
-function answerUpdatePassword(response) {
-	switch (response.status) {
-	case 'success':
-		closePasswordModal();
-		swal("Correcto!",
-				"Tu contrase\u00f1a a sido actualizada exitosamente.",
-				"success")
-		break;
-	case 'fail':
-		swal("Error!", response.exception, "error")
-		break;
-	case 'exception':
-		swal("Exception!", response.exception, "warning")
-		break;
-	default:
-		location.reload();
-	}
-}
-
-function validUpdatePassword() {
-	let answer = true;
-	let form = $userPasswordForm;
-	let $newPassword = form.find("#newPassword");
-	let $newPassword_field = form.find("#newPassword_field");
-	let $confirmPassword = form.find("#confirmPassword");
-	let $confirmPassword_field = form.find("#confirmPassword_field");
-
-	if ($newPassword.val().trim().length <= 7) {
-		$newPassword_field.text('Requere al menos 8 caracteres.');
-		$newPassword.parent().attr("class", "form-line focused error");
-		$newPassword_field.show();
-		answer = false;
-	} else {
-		$newPassword_field.hide();
-		$newPassword.parent().attr("class", "form-line focused");
-	}
-	if ($confirmPassword.val().trim().length <= 7) {
-		$confirmPassword_field.text('Requere al menos 8 caracteres.');
-		$confirmPassword.parent().attr("class", "form-line focused error");
-		$confirmPassword_field.show();
-		answer = false;
-	} else {
-		$confirmPassword_field.hide();
-		$confirmPassword.parent().attr("class", "form-line focused");
-	}
-
-	if ($.isNumeric($newPassword.val())) {
-		$newPassword_field.text('No puede contener solo n\u00FAmeros.');
-		$newPassword.parent().attr("class", "form-line focused error");
-		$newPassword_field.show();
-		answer = false;
-	}
-	if ($.isNumeric($confirmPassword.val())) {
-		$confirmPassword_field.text('No puede contener solo n\u00FAmeros.');
-		$confirmPassword.parent().attr("class", "form-line focused error");
-		$confirmPassword_field.show();
-		answer = false;
-	}
-	return answer;
-}
-// ------ #Change password ------
-
-function listGroupRoles() {
-	var list = [];
-	$userForm.find("#userGroups > option").each(function() {
-		if ($(this).is(':selected')) {
-			list.push(Number($(this).attr('id')));
-			// alert(this.text + ' ' + this.value);
-		}
+			'uEmail' : {
+				required : true,
+				minlength : 1,
+				maxlength : 250
+			},
+		},
+		messages : {
+			'uUserName' : {
+				required :  "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de 50 caracteres"
+			},
+			'uName' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de 100 caracteres"
+			},
+			'uEmail' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de 250 caracteres"
+			},
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
 	});
-	return list;
-}
-
-
-function getGroupsId(form, name){
-	let list = [];
-	form.find(name).children("option:selected").each(function(j) {
-		list.push(Number($(this).attr('id')));
-	});
-	return list;
-	
-}
-
-function resetErrors() {
-	$(".fieldError").css("visibility", "hidden");
-	$(".fieldError").attr("class", "error fieldError");
-	$(".fieldErrorLine").attr("class", "form-line");
-}
-
-function showUserErrors(error, $form) {
-	resetErrors();// Eliminamos las etiquetas de errores previas
-	for (var i = 0; i < error.length; i++) {
-		// Se modifica el texto de la advertencia y se agrega la de activeError
-		$form.find(" #" + error[i].key + "_error").text(error[i].message);
-		$form.find(" #" + error[i].key + "_error").css("visibility", "visible");
-		$form.find(" #" + error[i].key + "_error").attr("class",
-				"error fieldError activeError");
-		// Si es input||textarea se marca el line en rojo
-		if ($form.find(" #" + error[i].key).is("input")
-				|| $form.find(" #" + error[i].key).is("textarea")) {
-			$form.find(" #" + error[i].key).parent().attr("class",
-					"form-line error focused fieldErrorLine");
-		}
-	}
 }

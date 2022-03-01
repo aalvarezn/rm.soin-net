@@ -47,3 +47,8 @@
 	href="<c:url value='/static/plugins/summernote/css/summernote.min.css'/>"
 	rel="stylesheet" type="text/css">
 
+
+<!-- Bootstrap Select Css -->
+<link
+	href="<c:url value='/static/plugins/bootstrap-select/css/bootstrap-select.css'/>"
+	rel="stylesheet" type="text/css">

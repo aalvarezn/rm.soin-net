@@ -39,13 +39,13 @@ public class StatusController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<PStatus> rfcs = new JsonSheet<>();
+		JsonSheet<PStatus> list = new JsonSheet<>();
 		try {
-			rfcs.setData(status.findAll());
+			list.setData(status.findAll());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return rfcs;
+		return list;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)

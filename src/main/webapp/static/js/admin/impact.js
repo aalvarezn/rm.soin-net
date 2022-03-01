@@ -185,13 +185,13 @@ function initImpactFormValidation() {
 		rules : {
 			'iName' : {
 				required : true,
-				minlength : 3,
-				maxlength : 100
+				minlength : 1,
+				maxlength : 50
 			},
 			'iDescription' : {
 				required : true,
 				minlength : 1,
-				maxlength : 50,
+				maxlength : 250,
 			},
 		},
 		messages : {
@@ -203,7 +203,7 @@ function initImpactFormValidation() {
 			'iDescription' : {
 				required : "Ingrese un valor",
 				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de 100 caracteres"
+				maxlength : "No puede poseer mas de 250 caracteres"
 			},
 		},
 		highlight,

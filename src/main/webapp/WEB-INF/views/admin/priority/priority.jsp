@@ -60,19 +60,6 @@
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${prioritys}" var="priority">
-									<tr id="${priority.id}">
-										<td>${priority.name}</td>
-										<td>${priority.description}</td>
-										<td><div class="iconLineC">
-												<a onclick="updatePriorityModal(${priority.id})"><i
-													class="material-icons gris" style="font-size: 30px;">mode_edit</i></a>
-
-												<a onclick="confirmDeletePriority(${priority.id})"><i
-													class="material-icons gris" style="font-size: 30px;">delete</i></a>
-											</div></td>
-									</tr>
-								</c:forEach>
 							</tbody>
 						</table>
 					</div>
