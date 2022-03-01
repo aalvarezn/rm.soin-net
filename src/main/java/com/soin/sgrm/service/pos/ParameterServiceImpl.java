@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.soin.sgrm.model.pos.PParameter;
 
-public class PParameterServiceImpl implements PParameterService {
+public class ParameterServiceImpl implements ParameterService {
 	@Autowired
-	PParameterService dao;
+	ParameterService dao;
 	@Override
 	public PParameter findById(Long id) {
 		// TODO Auto-generated method stub

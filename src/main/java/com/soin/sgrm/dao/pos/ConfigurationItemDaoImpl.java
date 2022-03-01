@@ -3,41 +3,39 @@ package com.soin.sgrm.dao.pos;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 
-import com.soin.sgrm.model.pos.PParameter;
-import com.soin.sgrm.model.pos.PPriority;
+import com.soin.sgrm.model.pos.PConfigurationItem;
 import com.soin.sgrm.response.JsonSheet;
 
-public class PParameterDaoImpl extends AbstractDao<Long, PParameter> implements PParameterDao {
+public class ConfigurationItemDaoImpl extends AbstractDao<Long, PConfigurationItem> implements ConfigurationItemDao{
 
 	@Override
-	public PParameter getByKey(Long key, String value) {
+	public PConfigurationItem getByKey(Long key, String value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void save(PParameter model) {
+	public void save(PConfigurationItem model) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void merge(PParameter model) {
+	public void merge(PConfigurationItem model) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void saveOrUpdate(PParameter model) {
+	public void saveOrUpdate(PConfigurationItem model) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void update(PParameter model) {
+	public void update(PConfigurationItem model) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -61,38 +59,36 @@ public class PParameterDaoImpl extends AbstractDao<Long, PParameter> implements 
 	}
 
 	@Override
-	public void delete(PParameter model) {
+	public void delete(PConfigurationItem model) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public JsonSheet<PParameter> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+	public JsonSheet<PConfigurationItem> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			Map<String, Object> columns, Criterion qSrch) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JsonSheet<PParameter> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+	public JsonSheet<PConfigurationItem> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			Map<String, Object> columns, Criterion qSrch, List<String> fetchs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public JsonSheet<PParameter> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+	public JsonSheet<PConfigurationItem> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<PParameter> findAll() {
-		Criteria crit = getSession().createCriteria(PParameter.class);
-		List<PParameter> list = crit.list();
-		return list;
+	public List<PConfigurationItem> findAll() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
