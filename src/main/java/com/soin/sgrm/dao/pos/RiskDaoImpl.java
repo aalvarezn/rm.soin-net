@@ -14,6 +14,7 @@ public class RiskDaoImpl extends AbstractDao<Long, PRisk> implements RiskDao {
 	@Override
 	public List<PRisk> findAll() {
 		Criteria crit = createEntityCriteria();
+
 		List<PRisk> list = crit.list();
 		return list;
 	}

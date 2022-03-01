@@ -109,7 +109,7 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 		return findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, null);
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unused", "unchecked" })
 	public JsonSheet<T> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias) {
 		JsonSheet<T> sheet = new JsonSheet<T>();

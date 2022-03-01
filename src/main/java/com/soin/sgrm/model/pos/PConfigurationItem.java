@@ -4,31 +4,23 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
-
 @Entity
-@Table(name = "RIESGO")
-public class PRisk implements Serializable {
-
+@Table(name = "CONFIGURACIONITEM")
+public class PConfigurationItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
-
 	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "NOMBRE")
-	private String name;
-
 	@Column(name = "DESCRIPCION")
 	private String description;
+	
+	@Column(name = "EXTENSION")
+	private String extension;
 
 	public Long getId() {
 		return id;
@@ -38,19 +30,19 @@ public class PRisk implements Serializable {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getDescription() {
 		return description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getExtension() {
+		return extension;
+	}
+
+	public void setExtension(String extension) {
+		this.extension = extension;
 	}
 }

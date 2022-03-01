@@ -18,11 +18,14 @@ public class RiskServiceImpl implements RiskService {
 	@Override
 	public PRisk findById(Long id) {
 		return dao.getById(id);
+
 	}
 
 	@Override
 	public PRisk findByKey(String name, String value) {
+
 		return dao.getByKey(name, value);
+
 	}
 
 	@Override
@@ -33,17 +36,20 @@ public class RiskServiceImpl implements RiskService {
 	@Override
 	public void save(PRisk model) {
 		dao.save(model);
+
 	}
 
 	@Override
 	public void delete(Long id) {
 		PRisk model = findById(id);
 		dao.delete(model);
+
 	}
 
 	@Override
 	public void update(PRisk model) {
 		dao.update(model);
+
 	}
 
 }

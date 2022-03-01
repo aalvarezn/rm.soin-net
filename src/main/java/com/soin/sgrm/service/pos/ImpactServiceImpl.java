@@ -18,11 +18,13 @@ public class ImpactServiceImpl implements ImpactService {
 	@Override
 	public PImpact findById(Long id) {
 		return dao.getById(id);
+
 	}
 
 	@Override
 	public PImpact findByKey(String name, String value) {
 		return dao.getByKey(name, value);
+
 	}
 
 	@Override
@@ -44,6 +46,7 @@ public class ImpactServiceImpl implements ImpactService {
 	@Override
 	public void update(PImpact model) {
 		dao.update(model);
+
 	}
 
 }
