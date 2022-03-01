@@ -5,13 +5,7 @@
 			value="" />
 		<div class="m-l-15">
 
-			<div id="system_idDiv" class=" row clearfix ">
-				<div
-					class=" col-lg-12 col-md-12 col-sm-12 col-xs-10 align-left p-l-10 m-b-10">
-					<a onclick="closeAddReleaseSection()"><i
-						class="material-icons active_icons font-50">
-							keyboard_arrow_left</i> </a>
-				</div>
+			<div  class=" row clearfix ">
 				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
 					<label>Sistema</label>
 					<div class="form-group m-b-0">
@@ -99,29 +93,16 @@
 					<ul class="list-group">
 					</ul>
 				</div>
-
-				<div id="divAddObjectOption" class="col-sm-12">
-					<label>Incluir Objetos</label>
-					<div class="switch">
-						<label>NO<input id="addObjectOption" type="checkbox"
-							value="0"><span class="lever"></span>S&Iacute;
-						</label>
-					</div>
-				</div>
 			</div>
-
 		</div>
 	</form>
 
 	<div class="button-demo flr">
 		<button type="button" class="btn btn-default"
-			onclick="closeAddReleaseSection()">CANCELAR</button>
-		<button id="copyRelease" type="button"
-			class="btn btn-primary waves-effect" onclick="createCopyRelease()">CREAR
-			COPIA</button>
-		<button id="createRelease" type="button"
+			onclick="closeRFCSection()">CANCELAR</button>
+		<button id="createRFC" type="button"
 			class="btn btn-primary waves-effect" onclick="createRelease()">CREAR
-			RELEASE</button>
+			RFC</button>
 	</div>
 
 </div>

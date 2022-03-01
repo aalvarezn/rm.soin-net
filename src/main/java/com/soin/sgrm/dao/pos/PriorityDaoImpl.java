@@ -13,7 +13,7 @@ public class PriorityDaoImpl extends AbstractDao<Long, PPriority> implements Pri
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<PPriority> findAll() {
-		Criteria crit = getSession().createCriteria(PPriority.class);
+		Criteria crit = createEntityCriteria();
 		List<PPriority> list = crit.list();
 		return list;
 	}

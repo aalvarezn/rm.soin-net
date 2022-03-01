@@ -6,26 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import com.soin.sgrm.dao.pos.StatusDao;
 import com.soin.sgrm.model.pos.PStatus;
 
 @Service("statusService")
 @Transactional("transactionManagerPos")
 public class StatusServiceImpl implements StatusService {
-	
+
 	@Autowired
 	StatusDao dao;
+
 	@Override
 	public PStatus findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getById(id);
 	}
 
 	@Override
 	public PStatus findByKey(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getByKey(name, value);
 	}
 
 	@Override
@@ -35,20 +33,18 @@ public class StatusServiceImpl implements StatusService {
 
 	@Override
 	public void save(PStatus model) {
-		// TODO Auto-generated method stub
-		
+		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
-		
+		PStatus model = dao.getById(id);
+		dao.delete(model);
 	}
 
 	@Override
 	public void update(PStatus model) {
-		// TODO Auto-generated method stub
-		
+		dao.update(model);
 	}
 
 }

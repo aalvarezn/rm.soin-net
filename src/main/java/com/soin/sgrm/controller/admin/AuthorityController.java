@@ -4,25 +4,20 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
-import com.soin.sgrm.controller.ReleaseRequestController;
-import com.soin.sgrm.model.Authority;
-import com.soin.sgrm.service.AuthorityService;
+import com.soin.sgrm.model.pos.PAuthority;
+import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.pos.AuthorityService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
@@ -34,101 +29,72 @@ public class AuthorityController extends BaseController {
 	public static final Logger logger = Logger.getLogger(AuthorityController.class);
 
 	@Autowired
-	AuthorityService authorityService;
+	AuthorityService authority;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("authoritys", authorityService.list());
-		model.addAttribute("authority", new Authority());
 		return "/admin/authority/authority";
 	}
 
-	@RequestMapping(value = "/findAuthority/{id}", method = RequestMethod.GET)
-	public @ResponseBody Authority findAuthority(@PathVariable Integer id, HttpServletRequest request, Locale locale,
-			Model model, HttpSession session) {
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
+		JsonSheet<PAuthority> rfcs = new JsonSheet<>();
 		try {
-			Authority authority = authorityService.findById(id);
-			return authority;
+			rfcs.setData(authority.findAll());
 		} catch (Exception e) {
-			Sentry.capture(e, "authority");
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			return null;
+			e.printStackTrace();
 		}
+
+		return rfcs;
 	}
 
-	@RequestMapping(path = "/saveAuthority", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse saveAuthority(HttpServletRequest request,
-
-			@Valid @ModelAttribute("Authority") Authority authority, BindingResult errors, ModelMap model,
-			Locale locale, HttpSession session) {
+	@RequestMapping(path = "", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveAuthority(HttpServletRequest request, @RequestBody PAuthority addAuthority) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
+			authority.save(addAuthority);
 
-			if (errors.hasErrors()) {
-				for (FieldError error : errors.getFieldErrors()) {
-					res.addError(error.getField(), error.getDefaultMessage());
-				}
-				res.setStatus("fail");
-			}
-			if (res.getStatus().equals("success")) {
-				authorityService.save(authority);
-				res.setObj(authority);
-			}
+			res.setMessage("Rol agregado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "authority");
 			res.setStatus("exception");
-			res.setException("Error al crear role: " + e.toString());
+			res.setMessage("Error al agregar role!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
-	@RequestMapping(value = "/updateAuthority", method = RequestMethod.POST)
+	@RequestMapping(value = "/", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse updateAuthority(HttpServletRequest request,
-			@Valid @ModelAttribute("Authority") Authority authority, BindingResult errors, ModelMap model,
-			Locale locale, HttpSession session) {
+			@RequestBody PAuthority uptAuthority) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			if (errors.hasErrors()) {
-				for (FieldError error : errors.getFieldErrors()) {
-					res.addError(error.getField(), error.getDefaultMessage());
-				}
-				res.setStatus("fail");
-			}
-			if (res.getStatus().equals("success")) {
-				Authority authorityOrigin = authorityService.findById(authority.getId());
-				authorityOrigin.setName(authority.getName());
-				authorityService.update(authorityOrigin);
-				res.setObj(authority);
-			}
+			authority.update(uptAuthority);
+
+			res.setMessage("Rol modificado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "authority");
 			res.setStatus("exception");
-			res.setException("Error al modificar role: " + e.toString());
+			res.setMessage("Error al modificar role!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
-	@RequestMapping(value = "/deleteAuthority/{id}", method = RequestMethod.DELETE)
-	public @ResponseBody JsonResponse deleteAuthority(@PathVariable Integer id, Model model) {
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteAuthority(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			authorityService.delete(id);
 			res.setStatus("success");
-			res.setObj(id);
+			authority.delete(id);
+			res.setMessage("Rol eliminado!");
 		} catch (Exception e) {
+			Sentry.capture(e, "authority");
 			res.setStatus("exception");
-			res.setException("Error al eliminar role: " + e.getCause().getCause().getCause().getMessage() + ":"
-					+ e.getMessage());
-
-			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
-				res.setException("Error al eliminar role: Existen referencias que debe eliminar antes");
-			} else {
-				Sentry.capture(e, "authority");
-			}
+			res.setMessage("Error al eliminar role!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;

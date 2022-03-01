@@ -11,8 +11,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "ESTADO")
-public class PStatus implements Serializable {
+@Table(name = "ROL")
+public class PAuthority implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,12 +27,6 @@ public class PStatus implements Serializable {
 
 	@Column(name = "NOMBRE")
 	private String name;
-
-	@Column(name = "DESCRIPCION")
-	private String description;
-
-	@Column(name = "MOTIVO")
-	private String motive;
 
 	public Long getId() {
 		return id;
@@ -56,22 +50,6 @@ public class PStatus implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getMotive() {
-		return motive;
-	}
-
-	public void setMotive(String motive) {
-		this.motive = motive;
 	}
 
 }

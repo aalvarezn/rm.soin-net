@@ -9,7 +9,9 @@ import com.soin.sgrm.response.JsonSheet;
 
 public interface BaseDao<PK, T> {
 
-	T getByKey(PK key, String value);
+	T getByKey(String key, String value);
+	
+	T getById(Long id);
 
 	void save(T model);
 
@@ -23,7 +25,7 @@ public interface BaseDao<PK, T> {
 
 	void clear();
 
-	void deleteByKey(PK key, String value);
+	void deleteByKey(String key, String value);
 
 	void delete(T model);
 

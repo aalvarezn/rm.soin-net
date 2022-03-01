@@ -19,14 +19,12 @@ public class PriorityServiceImpl implements PriorityService {
 
 	@Override
 	public PPriority findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getById(id);
 	}
 
 	@Override
 	public PPriority findByKey(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getByKey(name, value);
 	}
 
 	@Override
@@ -36,20 +34,18 @@ public class PriorityServiceImpl implements PriorityService {
 
 	@Override
 	public void save(PPriority model) {
-		// TODO Auto-generated method stub
-
+		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
-
+		PPriority model = findById(id);
+		dao.delete(model);
 	}
 
 	@Override
 	public void update(PPriority model) {
-		// TODO Auto-generated method stub
-
+		dao.update(model);
 	}
 
 }

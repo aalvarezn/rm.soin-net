@@ -91,7 +91,7 @@
 
 					<!-- Tab PANELS -->
 					<div class="tab-content">
-						<div role="tabpanel" class="tab-pane  active" id="releases">
+						<div role="tabpanel" class="tab-pane  active">
 							<div class="row clearfix">
 								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
 									<div class="info-box bg-light-green hover-expand-effect">
@@ -101,7 +101,7 @@
 										<div class="content">
 											<div class="text">TODOS</div>
 											<div class="number count-to" data-from="0"
-												data-to="${userC['all']}" data-speed="1000"
+												data-to="0" data-speed="1000"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
@@ -114,7 +114,7 @@
 										<div class="content">
 											<div class="text">BORRADOR</div>
 											<div class="number count-to" data-from="0"
-												data-to="${userC['draft']}" data-speed="1000"
+												data-to="0" data-speed="1000"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
@@ -127,7 +127,7 @@
 										<div class="content">
 											<div class="text">SOLICITADOS</div>
 											<div class="number count-to" data-from="0"
-												data-to="${userC['requested']}" data-speed="1000"
+												data-to="0" data-speed="1000"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
@@ -140,119 +140,7 @@
 										<div class="content">
 											<div class="text">COMPLETADOS</div>
 											<div class="number count-to" data-from="0"
-												data-to="${userC['completed']}" data-speed="15"
-												data-fresh-interval="20"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div role="tabpanel" class="tab-pane " id="equipos">
-							<div class="row clearfix">
-								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-light-green hover-expand-effect">
-										<div class="icon">
-											<i class="material-icons default">dashboard</i>
-										</div>
-										<div class="content">
-											<div class="text">TODOS</div>
-											<div class="number count-to" data-from="0"
-												data-to="${teamC['all']}" data-speed="1000"
-												data-fresh-interval="20"></div>
-										</div>
-									</div>
-								</div>
-								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-cyan hover-expand-effect">
-										<div class="icon">
-											<i class="material-icons default">drafts</i>
-										</div>
-										<div class="content">
-											<div class="text">BORRADOR</div>
-											<div class="number count-to" data-from="0"
-												data-to="${teamC['draft']}" data-speed="1000"
-												data-fresh-interval="20"></div>
-										</div>
-									</div>
-								</div>
-								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-orange hover-expand-effect">
-										<div class="icon">
-											<i class="material-icons default">priority_high</i>
-										</div>
-										<div class="content">
-											<div class="text">SOLICITADOS</div>
-											<div class="number count-to" data-from="0"
-												data-to="${teamC['requested']}" data-speed="1000"
-												data-fresh-interval="20"></div>
-										</div>
-									</div>
-								</div>
-								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-pink hover-expand-effect">
-										<div class="icon">
-											<i class="material-icons default">flag</i>
-										</div>
-										<div class="content">
-											<div class="text">COMPLETADOS</div>
-											<div class="number count-to" data-from="0"
-												data-to="${teamC['completed']}" data-speed="15"
-												data-fresh-interval="20"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div role="tabpanel" class="tab-pane " id="sistemas">
-							<div class="row clearfix">
-								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-light-green hover-expand-effect">
-										<div class="icon">
-											<i class="material-icons default">dashboard</i>
-										</div>
-										<div class="content">
-											<div class="text">TODOS</div>
-											<div class="number count-to" data-from="0"
-												data-to="${systemC['all']}" data-speed="1000"
-												data-fresh-interval="20"></div>
-										</div>
-									</div>
-								</div>
-								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-cyan hover-expand-effect">
-										<div class="icon">
-											<i class="material-icons default">drafts</i>
-										</div>
-										<div class="content">
-											<div class="text">BORRADOR</div>
-											<div class="number count-to" data-from="0"
-												data-to="${systemC['draft']}" data-speed="1000"
-												data-fresh-interval="20"></div>
-										</div>
-									</div>
-								</div>
-								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-orange hover-expand-effect">
-										<div class="icon">
-											<i class="material-icons default">priority_high</i>
-										</div>
-										<div class="content">
-											<div class="text">SOLICITADOS</div>
-											<div class="number count-to" data-from="0"
-												data-to="${systemC['requested']}" data-speed="1000"
-												data-fresh-interval="20"></div>
-										</div>
-									</div>
-								</div>
-								<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-									<div class="info-box bg-pink hover-expand-effect">
-										<div class="icon">
-											<i class="material-icons default">flag</i>
-										</div>
-										<div class="content">
-											<div class="text">COMPLETADOS</div>
-											<div class="number count-to" data-from="0"
-												data-to="${systemC['completed']}" data-speed="15"
+												data-to="0" data-speed="15"
 												data-fresh-interval="20"></div>
 										</div>
 									</div>
@@ -313,7 +201,7 @@
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<div class="body ">
 								<div class="body table-responsive">
-									<table id="dtReleases"
+									<table id="dtRFCs"
 										class="table table-bordered table-striped table-hover dataTable">
 										<thead>
 											<tr>
@@ -339,7 +227,7 @@
 		<a id="buttonAddRFC" type="button"
 			class="btn btn-primary btn-fab waves-effect fixedDown"
 			<%-- href="<c:url value='/release/release-generate'/>"> --%>
- 			onclick="openAddRFCSection()">
+ 			onclick="addRFCSection()">
 			<i class="material-icons lh-1-8">add</i>
 		</a>
 	</section>
