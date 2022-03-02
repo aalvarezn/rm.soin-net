@@ -7,7 +7,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -18,14 +17,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.soin.sgrm.controller.BaseController;
-import com.soin.sgrm.model.Parameter;
-import com.soin.sgrm.service.ParameterService;
+
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.pos.PParameter;
+import com.soin.sgrm.service.pos.ParameterService;
 
 @Controller
 @RequestMapping("/admin/parameter")
@@ -38,15 +39,15 @@ public class ParameterController extends BaseController {
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("parameters", parameterService.listAll());
+		model.addAttribute("parameters", parameterService.findAll());
 		return "/admin/parameter/parameter";
 	}
 
 	@RequestMapping(value = "/findParameter/{id}", method = RequestMethod.GET)
-	public @ResponseBody Parameter findParameter(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+	public @ResponseBody PParameter findParameter(@PathVariable Long id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {
 		try {
-			Parameter param = parameterService.findById(id);
+			PParameter param = parameterService.findById(id);
 			return param;
 		} catch (Exception e) {
 			Sentry.capture(e, "parameter");
@@ -57,7 +58,7 @@ public class ParameterController extends BaseController {
 
 	@RequestMapping(value = "/updateParameter", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateParameter(HttpServletRequest request,
-			@Valid @ModelAttribute("Parameter") Parameter param, BindingResult errors, ModelMap model, Locale locale,
+			@Valid @ModelAttribute("Parameter") PParameter param, BindingResult errors, ModelMap model, Locale locale,
 			HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
@@ -69,11 +70,11 @@ public class ParameterController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				Parameter parameter = parameterService.findById(param.getId());
+				PParameter parameter = parameterService.findById(param.getId());
 				parameter.setDescription(param.getDescription());
 				parameter.setParamValue(param.getParamValue());
 				parameter.setDate(CommonUtils.getSystemTimestamp());
-				parameterService.updateParameter(parameter);
+				parameterService.update(parameter);
 				res.setObj(parameter);
 			}
 

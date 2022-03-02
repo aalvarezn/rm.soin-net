@@ -3,22 +3,29 @@ package com.soin.sgrm.service.pos;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.soin.sgrm.dao.pos.ParameterDao;
 import com.soin.sgrm.model.pos.PParameter;
 
+
+@Service("parameterService")
+@Transactional("transactionManagerPos")
 public class ParameterServiceImpl implements ParameterService {
+	
 	@Autowired
-	ParameterService dao;
+	ParameterDao dao;
+	
 	@Override
 	public PParameter findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getById(id);
 	}
 
 	@Override
 	public PParameter findByKey(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getByKey(name, value);
+
 	}
 
 	@Override
@@ -28,20 +35,19 @@ public class ParameterServiceImpl implements ParameterService {
 
 	@Override
 	public void save(PParameter model) {
-		// TODO Auto-generated method stub
-		
+		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
+		PParameter model = findById(id);
+		dao.delete(model);
 		
 	}
 
 	@Override
 	public void update(PParameter model) {
-		// TODO Auto-generated method stub
-		
+		dao.update(model);
 	}
 
 }
