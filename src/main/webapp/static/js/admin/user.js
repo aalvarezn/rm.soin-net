@@ -9,6 +9,7 @@ $(function() {
 	activeItemMenu("userItem", true);
 	initRoles();
 	initUserFormValidation();
+	initUserPasswordFormValidation();
 	initDataTable();
 });
 
@@ -26,6 +27,7 @@ function showUser(index){
 	$fmUser.find('#uUserName').val(obj.userName);
 	$fmUser.find('#uName').val(obj.name);
 	$fmUser.find('#uEmail').val(obj.email);
+	$fmUser.find('#uIsActive').prop('checked', obj.active)
 	$('#userGroups').multiSelect('deselect_all');
 	obj.roles.forEach(function (element) {
 		$('#userGroups').multiSelect('select', element.code);
@@ -34,6 +36,33 @@ function showUser(index){
 	$mdUser.find('#update').show();
 	$mdUser.find('#save').hide();
 	$mdUser.modal('show');
+}
+
+function createUser(){
+	$fmUser.validate().resetForm();
+	$fmUser[0].reset();
+	$('.nav-tabs a[href="#tabHome"]').tab('show');
+	$('#userGroups').multiSelect('deselect_all');
+	$('#userGroups').multiSelect("refresh");
+	$mdUser.find('#update').hide();
+	$mdUser.find('#save').show();
+	$mdUser.modal('show');
+}
+
+
+function changePassword(index){
+	$fmUserPassword[0].reset()
+	var obj = $dtUser.row(index).data();
+	$fmUserPassword.find('#uId').val(obj.id);
+	$mdUserPassword.modal('show');
+}
+
+function closeUser(){
+	$mdUser.modal('hide');
+}
+
+function closeUserPassword(){
+	$mdUser.modal('hide');
 }
 
 
@@ -55,9 +84,10 @@ function updateUser() {
 				timeout : 60000,
 				data : JSON.stringify({
 					id : $fmUser.find('#uId').val(),
-					code : $fmUser.find('#uUserName').val(),
+					userName : $fmUser.find('#uUserName').val(),
 					name : $fmUser.find('#uName').val(),
 					email : $fmUser.find('#uEmail').val(),
+					active: $fmUser.find('#uIsActive').is(':checked'),
 					strRoles : $fmUser.find('#userGroups').val()
 				}),
 				success : function(response) {
@@ -77,21 +107,82 @@ function updateUser() {
 	});
 }
 
-function createUser(){
-	$fmUser.validate().resetForm();
-	$fmUser[0].reset();
-	$('.nav-tabs a[href="#tabHome"]').tab('show');
-	$('#userGroups').multiSelect('deselect_all');
-	$('#userGroups').multiSelect("refresh");
-	$mdUser.find('#update').hide();
-	$mdUser.find('#save').show();
-	$mdUser.modal('show');
+function saveUser() {
+	if (!$fmUser.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "POST",
+				url : getCont() + "admin/user/" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					userName : $fmUser.find('#uUserName').val(),
+					name : $fmUser.find('#uName').val(),
+					email : $fmUser.find('#uEmail').val(),
+					active: $fmUser.find('#uIsActive').is(':checked'),
+					strRoles : $fmUser.find('#userGroups').val()
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtUser.ajax.reload();
+					$mdUser.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
+	});
 }
 
-function setRoles(){}
-
-function closeUser(){
-	$mdUser.modal('hide');
+function updateUserPassword(){
+	if (!$fmUserPassword.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "PUT",
+				url : getCont() + "admin/user/password" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					id : $fmUserPassword.find('#uId').val(),
+					newPassword : $fmUserPassword.find('#newPassword').val(),
+					confirmPassword : $fmUserPassword.find('#confirmPassword').val()
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtUser.ajax.reload();
+					$mdUserPassword.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
+	});
 }
 
 
@@ -152,9 +243,7 @@ function initDataTable() {
 						{
 							"mRender" : function(data, type, row, meta) {
 								return '<div class="iconLine align-center">'
-								+ '<i onclick="softDelete('
-								+ meta.row
-								+ ')" class="material-icons gris" style="font-size: 30px;">'
+								+ '<i class="material-icons gris" style="font-size: 30px;">'
 								+ (row.active ? 'check_circle'
 										: 'cancel')
 										+ '</i></div>';
@@ -213,6 +302,46 @@ function initUserFormValidation() {
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de 250 caracteres"
 			},
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
+	});
+}
+
+//$.validator.addMethod('comparePass', function (value, element, param) {
+//	return value === $fmUserPassword.find('#'+param).val();
+//});
+
+function initUserPasswordFormValidation() {
+	$fmUserPassword.validate({
+		rules : {
+			'newPassword' : {
+				required : true,
+				minlength : 8,
+				maxlength : 12,
+				equalTo : '#confirmPassword'
+			},
+			'confirmPassword' : {
+				required : true,
+				minlength : 8,
+				maxlength : 12,
+				equalTo : '#newPassword'
+			}
+		},
+		messages : {
+			'newPassword' : {
+				required :  "Ingrese un valor",
+				minlength : "No puede poseer menos de 8 caracteres",
+				maxlength : "No puede poseer mas de 12 caracteres",
+				equalTo: "Contrase\u00F1as no coinciden"
+			},
+			'confirmPassword' : {
+				required :  "Ingrese un valor",
+				minlength : "No puede poseer menos de 8 caracteres",
+				maxlength : "No puede poseer mas de 12 caracteres",
+				equalTo: "Contrase\u00F1as no coinciden"
+			}
 		},
 		highlight,
 		unhighlight,
