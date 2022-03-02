@@ -32,7 +32,7 @@ public class PStatus implements Serializable {
 	private String description;
 
 	@Column(name = "MOTIVO")
-	private String motive;
+	private String reason;
 
 	public Long getId() {
 		return id;
@@ -66,12 +66,12 @@ public class PStatus implements Serializable {
 		this.description = description;
 	}
 
-	public String getMotive() {
-		return motive;
+	public String getReason() {
+		return reason;
 	}
 
-	public void setMotive(String motive) {
-		this.motive = motive;
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 
 }

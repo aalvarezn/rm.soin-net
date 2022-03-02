@@ -59,8 +59,6 @@ public class RFCController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		UserLogin user = getUserLogin();
-
 		JsonSheet<PRFC> rfcs = new JsonSheet<>();
 		try {
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));

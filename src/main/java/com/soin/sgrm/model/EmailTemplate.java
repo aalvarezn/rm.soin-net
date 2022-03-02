@@ -60,7 +60,7 @@ public class EmailTemplate implements Serializable {
 	private Integer state;
 
 	@Column(name = "USERMODIFY")
-	private Integer usermodify;
+	private Long usermodify;
 
 	public int getId() {
 		return id;
@@ -142,11 +142,11 @@ public class EmailTemplate implements Serializable {
 		this.state = state;
 	}
 
-	public Integer getUsermodify() {
+	public Long getUsermodify() {
 		return usermodify;
 	}
 
-	public void setUsermodify(Integer usermodify) {
+	public void setUsermodify(Long usermodify) {
 		this.usermodify = usermodify;
 	}
 

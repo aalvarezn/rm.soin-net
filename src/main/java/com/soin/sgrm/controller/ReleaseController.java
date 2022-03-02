@@ -42,6 +42,7 @@ import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.security.UserLogin;
@@ -293,7 +294,7 @@ public class ReleaseController extends BaseController {
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		ReleaseEdit release = new ReleaseEdit();
 		SystemConfiguration systemConfiguration = new SystemConfiguration();
-		UserLogin user = getUserLogin();
+		PUser user = getUserLogin();
 		try {
 			if (id == null) {
 				return "redirect:/";
@@ -362,7 +363,7 @@ public class ReleaseController extends BaseController {
 			@RequestParam(value = "addObject", required = true) Boolean addObject) {
 		JsonResponse res = new JsonResponse();
 		try {
-			UserInfo user = loginService.findUserInfoById(getUserLogin().getId());
+			UserInfo user = loginService.findUserInfoById(Integer.parseInt(getUserLogin().getId().toString()));
 			String number_release = "";
 			ReleaseEdit release = releaseService.findEditById(Integer.parseInt(idRelease));
 
@@ -431,7 +432,7 @@ public class ReleaseController extends BaseController {
 		String number_release = "";
 		Release release = new Release();
 		Module module = new Module();
-		User user = loginService.findUserById(getUserLogin().getId());
+		User user = loginService.findUserById(Integer.parseInt(getUserLogin().getId().toString()));
 		try {
 			res.setStatus("success");
 			if (!requeriment.equals("TPO/BT")) {
@@ -466,7 +467,7 @@ public class ReleaseController extends BaseController {
 			release.setNotBilledCalls(false);
 
 			release.setMotive("Inicio de release");
-			release.setOperator(getUserLogin().getFullName());
+			release.setOperator(getUserLogin().getName());
 
 			if (requeriment.equals("IN"))
 				release.setIncident((!requirement_name.substring(0, 2).toString().toUpperCase().equals("IN"))
@@ -517,7 +518,7 @@ public class ReleaseController extends BaseController {
 					Status status = statusService.findByName("Anulado");
 					release.setStatus(status);
 					release.setMotive(status.getMotive());
-					release.setOperator(getUserLogin().getFullName());
+					release.setOperator(getUserLogin().getName());
 					releaseService.updateStatusRelease(release);
 				} else {
 					res.setStatus("fail");
@@ -661,7 +662,7 @@ public class ReleaseController extends BaseController {
 
 			release.setStatus(status);
 			release.setMotive(status.getMotive());
-			release.setOperator(getUserLogin().getFullName());
+			release.setOperator(getUserLogin().getName());
 
 			if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {

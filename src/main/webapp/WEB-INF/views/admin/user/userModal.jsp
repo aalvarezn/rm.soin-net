@@ -11,15 +11,15 @@
 			<div class="modal-body">
 				<form id="userModalForm" action="">
 					<input type="hidden" name="${_csrf.parameterName}"
-						value="${_csrf.token}" /> <input type="hidden" id="uId"
-						value="" />
+						value="${_csrf.token}" /> <input type="hidden" id="uId" value="" />
+					<input type="hidden" id="uActive" value="" />
 					<div class="row">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<!-- Nav tabs -->
 							<ul class="nav nav-tabs tab-nav-right" role="tablist">
-								<li role="presentation" class="active"><a
-									href="#tabHome" data-toggle="tab">INFORMACIÓN</a></li>
-								<li  role="presentation"><a href="#tabRoles"
+								<li role="presentation" class="active"><a href="#tabHome"
+									data-toggle="tab">INFORMACIÓN</a></li>
+								<li role="presentation"><a href="#tabRoles"
 									data-toggle="tab">ROLES</a></li>
 							</ul>
 						</div>
@@ -44,24 +44,29 @@
 									<div class="form-group">
 										<div class="form-line">
 											<input type="text" maxlength="200" class="form-control"
-												id="uName" name="uName" 
-												placeholder="Ingrese un valor" style="height: 60px;">
+												id="uName" name="uName" placeholder="Ingrese un valor"
+												style="height: 60px;">
 											<div class="help-info">Máx. 200 caracteres</div>
 										</div>
 									</div>
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
 									<label for="name">Correo</label>
 									<div class="form-group">
 										<div class="form-line">
 											<input type="text" maxlength="250" class="form-control"
-												id="uEmail" name="uEmail"
-												placeholder="Ingrese un valor" style="height: 60px;">
+												id="uEmail" name="uEmail" placeholder="Ingrese un valor"
+												style="height: 60px;">
 											<div class="help-info">Máx. 250 caracteres</div>
 										</div>
 									</div>
+								</div>
+								<div
+									class="demo-checkbox col-lg-2 col-md-2 col-sm-12 col-xs-12 align-left m-t-60">
+									<input type="checkbox" id="uIsActive" class="filled-in">
+									<label for="uIsActive">Activo</label>
 								</div>
 							</div>
 						</div>
@@ -84,8 +89,8 @@
 					onclick="closeUser()">CANCELAR</button>
 				<button type="button" id="save" class="btn btn-primary waves-effect"
 					onclick="saveUser()">GUARDAR</button>
-				<button type="button" id="update" class="btn btn-primary waves-effect"
-					onclick="updateUser()">ACTUALIZAR</button>
+				<button type="button" id="update"
+					class="btn btn-primary waves-effect" onclick="updateUser()">ACTUALIZAR</button>
 			</div>
 		</div>
 	</div>

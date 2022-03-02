@@ -20,18 +20,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	@Qualifier("customUserDetailsService")
+	@Qualifier("userService")
 	UserDetailsService userDetailsService;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/static/**").permitAll().antMatchers("/admin/**", "/info/")
-				.hasRole("Admin").antMatchers("/management/**", "/info/").hasRole("Release Manager")
-				.antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel").permitAll().anyRequest()
-				.authenticated().and().formLogin().loginPage("/login").failureUrl("/login?error=true")
-				.defaultSuccessUrl("/successLogin").permitAll().and().logout()// default logout handling
-				.logoutSuccessUrl("/login")// our new logout success url, we are not replacing other defaults.
-				.permitAll().and().headers().frameOptions().sameOrigin();
+		http.authorizeRequests().antMatchers("/static/**").permitAll()
+		.antMatchers("/admin/**", "/info/").hasRole("ADMIN")
+		.antMatchers("/management/**", "/info/").hasRole("MANAGER")
+		.antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel").permitAll().anyRequest()
+		.authenticated()
+		.and()
+			.formLogin()
+				.loginPage("/login").failureUrl("/login?error=true")
+				.defaultSuccessUrl("/successLogin").permitAll().and().logout()
+				.logoutSuccessUrl("/login").permitAll()
+		.and()
+			.headers().frameOptions().sameOrigin();
 	}
 
 	@Autowired
