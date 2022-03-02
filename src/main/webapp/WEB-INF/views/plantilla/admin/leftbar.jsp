@@ -32,6 +32,16 @@
 							de ambiente</a></li>
 					<li><a href="<c:url value='/admin/ambient/'/>">Ambientes</a></li>
 				</ul></li>
+			<!---- 	#Seccion de Catálogos ---->
+			<li class=""><a id="catalogueItem" href="javascript:void(0);"
+				class="menu-toggle"> <span>Catálogos</span>
+			</a>
+				<ul class="ml-menu">
+					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
+					<li><a href="<c:url value='/admin/impact/'/>">Impacto</a></li>
+					<li><a href="<c:url value='/admin/priority/'/>">Prioridad</a></li>
+					<li><a href="<c:url value='/admin/risk/'/>">Riesgo</a></li>
+				</ul></li>
 			<!---- 	#Seccion de configuracion ---->
 			<li class=""><a id="configurationItem"
 				href="javascript:void(0);" class="menu-toggle"> <span>Configuración</span>
@@ -50,16 +60,6 @@
 							Release</a></li>
 					<li><a href="<c:url value='/admin/docFile/'/>">Plantilla
 							Archivo</a></li>
-				</ul></li>
-			<!---- 	#Seccion de releases ---->
-			<li class=""><a id="catalogueItem" href="javascript:void(0);"
-				class="menu-toggle"> <span>Catálogos</span>
-			</a>
-				<ul class="ml-menu">
-					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
-					<li><a href="<c:url value='/admin/impact/'/>">Impacto</a></li>
-					<li><a href="<c:url value='/admin/priority/'/>">Prioridad</a></li>
-					<li><a href="<c:url value='/admin/risk/'/>">Riesgo</a></li>
 				</ul></li>
 			<!---- 	#Seccion de requerimientos ---->
 			<li class=""><a id="requestItem" href="javascript:void(0);"

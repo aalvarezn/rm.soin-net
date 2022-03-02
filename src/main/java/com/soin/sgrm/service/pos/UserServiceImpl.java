@@ -12,6 +12,10 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +25,14 @@ import com.soin.sgrm.response.JsonSheet;
 
 @Service("userService")
 @Transactional("transactionManagerPos")
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
 	@Autowired
 	UserDao dao;
 
 	@Override
 	public PUser findByKey(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getByKey(name, value);
 	}
 
 	@Override
@@ -39,26 +42,23 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void save(PUser model) {
-		// TODO Auto-generated method stub
-
+		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
-
+		PUser model = findById(id);
+		dao.delete(model);
 	}
 
 	@Override
 	public void update(PUser model) {
-		// TODO Auto-generated method stub
-
+		dao.update(model);
 	}
 
 	@Override
 	public PUser findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getById(id);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -98,11 +98,19 @@ public class UserServiceImpl implements UserService {
 
 		JsonSheet<PUser> list = dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
 
-		for (PUser user : list.getData()) 
+		for (PUser user : list.getData())
 			user.setPassword("******");
-		
 
 		return list;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		PUser user = findByKey("userName", username);
+		if (user == null) {
+			throw new BadCredentialsException("Usuario o contraseña incorrecto");
+		}
+		return user;
 	}
 
 }

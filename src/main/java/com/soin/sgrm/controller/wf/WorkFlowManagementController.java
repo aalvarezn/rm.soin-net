@@ -102,7 +102,7 @@ public class WorkFlowManagementController extends BaseController {
 			node.getStatus().setMotive(motive);
 			release.setNode(node);
 			release.setStatus(node.getStatus());
-			release.setOperator(getUserLogin().getFullName());
+			release.setOperator(getUserLogin().getName());
 			wfReleaseService.wfStatusRelease(release);
 
 			// Si esta marcado para enviar correo

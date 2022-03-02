@@ -2,9 +2,13 @@ package com.soin.sgrm.model.pos;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,10 +24,16 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import com.soin.sgrm.model.Authority;
+
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "USUARIO")
-public class PUser implements Serializable {
+public class PUser implements UserDetails, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,7 +62,7 @@ public class PUser implements Serializable {
 	@Column(name = "ULTIMO_LOGUEO")
 	private Timestamp lastLogin;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.MERGE })
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "\"USUARIO_ROL\"", joinColumns = { @JoinColumn(name = "\"USUARIO_ID\"") }, inverseJoinColumns = {
 			@JoinColumn(name = "\"ROL_ID\"") })
@@ -60,6 +70,12 @@ public class PUser implements Serializable {
 
 	@Transient
 	private String[] strRoles;
+
+	@Transient
+	private String newPassword;
+
+	@Transient
+	private String confirmPassword;
 
 	public Long getId() {
 		return id;
@@ -131,6 +147,56 @@ public class PUser implements Serializable {
 
 	public void setStrRoles(String[] strRoles) {
 		this.strRoles = strRoles;
+	}
+
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
+	}
+
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+		for (PAuthority authority : this.getRoles()) {
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + authority.getCode()));
+		}
+		return authorities;
+	}
+
+	@Override
+	public String getUsername() {
+		return this.userName;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return this.active;
 	}
 
 }

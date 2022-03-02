@@ -48,4 +48,9 @@ public class AuthorityServiceImpl implements AuthorityService {
 		dao.update(model);
 	}
 
+	@Override
+	public List<PAuthority> findByCode(String[] roles) {
+		return dao.findByCode(roles);
+	}
+
 }
