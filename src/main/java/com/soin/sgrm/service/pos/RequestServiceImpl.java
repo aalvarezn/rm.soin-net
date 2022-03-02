@@ -5,32 +5,32 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.model.pos.PEnvironment;
+import com.soin.sgrm.model.pos.PRequest;
 
-@Service("environmentService")
+@Service("requestService")
 @Transactional("transactionManagerPos")
-public class EnvironmentServiceImpl implements EnvironmentService {
+public class RequestServiceImpl implements RequestService {
 
 	@Override
-	public PEnvironment findById(Long id) {
+	public PRequest findById(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public PEnvironment findByKey(String name, String value) {
+	public PRequest findByKey(String name, String value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<PEnvironment> findAll() {
+	public List<PRequest> findAll() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void save(PEnvironment model) {
+	public void save(PRequest model) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -42,7 +42,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	}
 
 	@Override
-	public void update(PEnvironment model) {
+	public void update(PRequest model) {
 		// TODO Auto-generated method stub
 		
 	}
