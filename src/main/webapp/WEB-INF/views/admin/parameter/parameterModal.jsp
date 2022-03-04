@@ -24,9 +24,6 @@
 										placeholder="Ingrese un nombre" style="height: 60px;">
 									<div class="help-info">Máx. 50 caracteres</div>
 								</div>
-								<label id="description_error" class="error fieldError"
-									for="description" style="visibility: hidden">Campo
-									Requerido.</label>
 							</div>
 						</div>
 						<div
@@ -39,9 +36,6 @@
 										placeholder="Ingrese un nombre" style="height: 60px;">
 									<div class="help-info">Máx. 100 caracteres</div>
 								</div>
-								<label id="paramValue_error" class="error fieldError"
-									for="paramValue" style="visibility: hidden">Campo
-									Requerido.</label>
 							</div>
 						</div>
 					</form>
@@ -49,9 +43,11 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closeParameterModal()">CANCELAR</button>
-				<button type="button" class="btn btn-primary waves-effect"
-					onclick="updateParameter()">ACTUALIZAR</button>
+					onclick="closeParameter()">CANCELAR</button>
+				<button id="save" type="button" class="btn btn-primary waves-effect"
+					onclick="saveParameter()">GUARDAR</button>
+				<button id="update" type="button"
+					class="btn btn-primary waves-effect" onclick="updateParameter()">ACTUALIZAR</button>
 			</div>
 		</div>
 	</div>
