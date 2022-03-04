@@ -2,7 +2,8 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<div class="modal fade" id="typeRequestModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="typeRequestModal" tabindex="-1"
+	role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -12,8 +13,8 @@
 				<div class="row clearfix">
 					<form id="typeRequestModalForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="typeRequestId"
-							value="" />
+							value="${_csrf.token}" /> <input type="hidden"
+							id="typeRequestId" value="" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="name">Código</label>
 							<div class="form-group">
@@ -23,8 +24,6 @@
 										style="height: 60px;">
 									<div class="help-info">Máx. 50 caracteres</div>
 								</div>
-								<label id="code_error" class="error fieldError" for="name"
-									style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
 						<div
@@ -36,9 +35,6 @@
 										name="description" placeholder="Ingrese un nombre"
 										style="height: 60px;">
 								</div>
-								<label id="description_error" class="error fieldError"
-									for="description" style="visibility: hidden">Campo
-									Requerido.</label>
 							</div>
 						</div>
 					</form>
@@ -46,10 +42,10 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closeTypeRequestModal()">CANCELAR</button>
-				<button id="btnSaveTypeRequest" type="button"
-					class="btn btn-primary waves-effect" onclick="saveTypeRequest()">GUARDAR</button>
-				<button id="btnUpdateTypeRequest" type="button"
+					onclick="closeTypeRequest()">CANCELAR</button>
+				<button id="save" type="button" class="btn btn-primary waves-effect"
+					onclick="saveTypeRequest()">GUARDAR</button>
+				<button id="update" type="button"
 					class="btn btn-primary waves-effect" onclick="updateTypeRequest()">ACTUALIZAR</button>
 			</div>
 		</div>

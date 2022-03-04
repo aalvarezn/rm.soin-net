@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.soin.sgrm.controller.BaseController;
-
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
@@ -58,6 +58,7 @@ public class ParameterController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
+			uptParameter.setDate(CommonUtils.getSystemTimestamp());
 			parameterService.update(uptParameter);
 
 			res.setMessage("Parametro modificado!");

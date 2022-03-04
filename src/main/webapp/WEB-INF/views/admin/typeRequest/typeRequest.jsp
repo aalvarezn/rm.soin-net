@@ -103,19 +103,6 @@
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${typeRequests}" var="typeRequest">
-									<tr id="${typeRequest.id}">
-										<td>${typeRequest.code}</td>
-										<td>${typeRequest.description}</td>
-										<td><div class="iconLineC">
-												<a onclick="updateTypeRequestModal(${typeRequest.id})"><i
-													class="material-icons gris" style="font-size: 30px;">mode_edit</i></a>
-
-												<a onclick="confirmDeleteTypeRequest(${typeRequest.id})"><i
-													class="material-icons gris" style="font-size: 30px;">delete</i></a>
-											</div></td>
-									</tr>
-								</c:forEach>
 							</tbody>
 						</table>
 					</div>
@@ -124,66 +111,15 @@
 		</div>
 		<a id="buttonAddTypeRequest" type="button"
 			class="btn btn-primary btn-fab waves-effect fixedDown"
-			onclick="openTypeRequestModal()"> <i class="material-icons lh-1-8">add</i>
+			onclick="addTypeRequest()"> <i class="material-icons lh-1-8">add</i>
 		</a>
 	</section>
 
-	<!-- Jquery Core Js -->
-	<script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
-	<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-	<script type="text/javascript"
-		src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
-
-	<!-- Bootstrap Core Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap/js/bootstrap.js'/>"></script>
-
-	<!-- Slimscroll Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Jquery CountTo Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-countto/jquery.countTo.js'/>"></script>
-
-	<!-- Autosize Plugin Js -->
-	<script src="<c:url value='/static/plugins/autosize/autosize.js'/>"></script>
-
-	<!-- Jquery DataTable Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
-
-	<!-- Bootstrap Notify Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-notify/bootstrap-notify.js'/>"></script>
-
-	<!-- SweetAlert Plugin Js -->
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
-	<!-- Moment Plugin Js -->
-	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
-
-	<!-- Bootstrap Material Datetime Picker Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
-
-	<!-- summernote -->
-	<script
-		src="<c:url value='/static/plugins/summernote/summernote.min.js'/>"></script>
-
-	<!-- summernote -->
-	<script
-		src="<c:url value='/static/plugins/summernote/lang/summernote-es-ES.js'/>"></script>
-
-	<!-- TagInput Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
-
-	<!-- Custom Js -->
-	<script src="<c:url value='/static/js/admin.js?v=${jsVersion}'/>"></script>
+	<!-- Script Section -->
+	<%@include file="../../plantilla/scriptSection.jsp"%>
+	<!-- #END# Script Section -->
+	
 	<script src="<c:url value='/static/js/admin/typeRequest.js?v=${jsVersion}'/>"></script>
 	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
 	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
