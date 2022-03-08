@@ -33,12 +33,12 @@ function initDataTable(){
 						},
 						{
 							"mDataProp" : 'date',render:function(data){
-							      return moment(data).format('DD/MM/YYYY HH:mm:ss');
+							      return moment(data).format('DD/MM/YYYY h:mm:ss a');
 							}
 						},
 						{
 							render : function(data, type, row, meta) {
-								var options = '<div class="iconLine">';
+								var options = '<div class="iconLineC">';
 
 								options += '<a onclick="showParameter('
 									+ meta.row
@@ -59,9 +59,9 @@ function showParameter(index){
 	$fmParameter.validate().resetForm();
 	$fmParameter[0].reset();
 	obj=$dtParameter.row(index).data();
-	$fmParameter.find('#paramId').val(obj.id);
-	$fmParameter.find('#description').val(obj.description);
-	$fmParameter.find('#paramValue').val(obj.paramValue);
+	$fmParameter.find('#pId').val(obj.id);
+	$fmParameter.find('#pDescription').val(obj.description);
+	$fmParameter.find('#pValue').val(obj.paramValue);
 	$mdParameter.find('#update').show();
 	$mdParameter.find('#save').hide();
 	$mdParameter.modal('show');
@@ -84,9 +84,9 @@ function updateParameter(){
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					id : $fmParameter.find('#paramId').val(),
-					description : $fmParameter.find('#description').val(),
-					paramValue : $fmParameter.find('#paramValue').val(),
+					id : $fmParameter.find('#pId').val(),
+					description : $fmParameter.find('#pDescription').val(),
+					paramValue : $fmParameter.find('#pValue').val(),
 					code: obj.code,
 				}),
 				success : function(response) {
@@ -115,24 +115,24 @@ function closeParameter(){
 function initParameterFormValidation() {
 	$fmParameter.validate({
 		rules : {
-			'description' : {
+			'pDescription' : {
 				required : true,
 				minlength : 1,
 				maxlength : 50,
 			},
-			'paramValue' : {
+			'pValue' : {
 				required : true,
 				minlength : 1,
 				maxlength : 100
 			},
 		},
 		messages : {
-			'description' : {
+			'pDescription' : {
 				required :  "Ingrese un valor",
 				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de 50 caracteres"
+				maxlength : "No puede poseer mas de {0} caracteres"
 			},
-			'paramValue' : {
+			'pValue' : {
 				required : "Ingrese un valor",
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de 100 caracteres"
