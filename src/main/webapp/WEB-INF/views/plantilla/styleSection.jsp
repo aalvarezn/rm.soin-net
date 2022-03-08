@@ -52,3 +52,6 @@
 <link
 	href="<c:url value='/static/plugins/bootstrap-select/css/bootstrap-select.css'/>"
 	rel="stylesheet" type="text/css">
+	
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />

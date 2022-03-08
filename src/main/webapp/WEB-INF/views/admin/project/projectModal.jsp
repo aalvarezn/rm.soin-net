@@ -12,19 +12,17 @@
 				<div class="row clearfix">
 					<form id="projectModalForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="projectId"
+							value="${_csrf.token}" /> <input type="hidden" id="pId"
 							value="" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="code">Código</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="code"
-										maxlength="50" name="code" placeholder="Ingrese un nombre"
+									<input type="text" class="form-control" id="pCode"
+										maxlength="50" name="pCode" placeholder="Ingrese un valor"
 										style="height: 60px;">
 									<div class="help-info">Máx. 50 caracteres</div>
 								</div>
-								<label id="code_error" class="error fieldError" for="code"
-									style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
 						<div
@@ -32,13 +30,10 @@
 							<label for="description">Descripción</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="description"
-										name="description" placeholder="Ingrese un nombre"
+									<input type="text" class="form-control" id="pDescription"
+										name="dpDescription" placeholder="Ingrese un nombre"
 										style="height: 60px;">
 								</div>
-								<label id="description_error" class="error fieldError"
-									for="description" style="visibility: hidden">Campo
-									Requerido.</label>
 							</div>
 						</div>
 					</form>
@@ -46,10 +41,10 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closeProjectModal()">CANCELAR</button>
-				<button id="btnSaveProject" type="button"
+					onclick="closeProject()">CANCELAR</button>
+				<button id="save" type="button"
 					class="btn btn-primary waves-effect" onclick="saveProject()">GUARDAR</button>
-				<button id="btnUpdateProject" type="button"
+				<button id="update" type="button"
 					class="btn btn-primary waves-effect" onclick="updateProject()">ACTUALIZAR</button>
 			</div>
 		</div>

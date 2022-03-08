@@ -25,16 +25,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/static/**").permitAll()
-		.antMatchers("/admin/**", "/info/").hasRole("ADMIN")
-		.antMatchers("/management/**", "/info/").hasRole("MANAGER")
-		.antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel").permitAll().anyRequest()
-		.authenticated()
+		http.authorizeRequests()
+		.antMatchers("/static/**").permitAll().antMatchers("/admin/**").hasRole("ADMIN")
+		.antMatchers("/management/**", "/info/").hasRole("RM")
+		.antMatchers("/manager/**").hasRole("MANAGER")
+		.antMatchers("/forgetPassword", "/recoverPassword", "/500", "/login","/logout", "/info").permitAll()
+		.anyRequest().authenticated()
 		.and()
-			.formLogin()
-				.loginPage("/login").failureUrl("/login?error=true")
-				.defaultSuccessUrl("/successLogin").permitAll().and().logout()
-				.logoutSuccessUrl("/login").permitAll()
+			.formLogin().loginPage("/login").failureUrl("/login?error=true")
+						.defaultSuccessUrl("/successLogin").permitAll()
+		.and().logout()
+			.logoutSuccessUrl("/login").permitAll()
 		.and()
 			.headers().frameOptions().sameOrigin();
 	}

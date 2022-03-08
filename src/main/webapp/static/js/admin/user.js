@@ -290,17 +290,17 @@ function initUserFormValidation() {
 			'uUserName' : {
 				required :  "Ingrese un valor",
 				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de 50 caracteres"
+				maxlength : "No puede poseer mas de {0} caracteres"
 			},
 			'uName' : {
 				required : "Ingrese un valor",
 				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de 100 caracteres"
+				maxlength : "No puede poseer mas de {0} caracteres"
 			},
 			'uEmail' : {
 				required : "Ingrese un valor",
 				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de 250 caracteres"
+				maxlength : "No puede poseer mas de {0} caracteres"
 			},
 		},
 		highlight,
@@ -308,10 +308,6 @@ function initUserFormValidation() {
 		errorPlacement
 	});
 }
-
-//$.validator.addMethod('comparePass', function (value, element, param) {
-//	return value === $fmUserPassword.find('#'+param).val();
-//});
 
 function initUserPasswordFormValidation() {
 	$fmUserPassword.validate({
