@@ -1,9 +1,6 @@
 package com.soin.sgrm.service.pos;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,8 +74,9 @@ public class SystemServiceImpl implements SystemService {
 
 		List<String> fetchs = new ArrayList<String>();
 
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+		JsonSheet<PSystem> list = dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
 
+		return list;
 	}
 
 }
