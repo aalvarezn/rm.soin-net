@@ -105,19 +105,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${parameters}" var="parameter">
-									<tr id="${parameter.id}">
-										<td>${parameter.code}</td>
-										<td>${parameter.description}</td>
-										<td>${parameter.paramValue}</td>
-										<td><fmt:formatDate value="${parameter.date}"
-												pattern="dd/MM/YYYY HH:mm:ss" /></td>
-										<td><div class="iconLineC">
-												<a onclick="openParameterModal(${parameter.id})"><i
-													class="material-icons gris" style="font-size: 30px;">mode_edit</i></a>
-											</div></td>
-									</tr>
-								</c:forEach>
+
 							</tbody>
 						</table>
 					</div>
@@ -125,63 +113,9 @@
 			</div>
 		</div>
 	</section>
-
-	<!-- Jquery Core Js -->
-	<script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
-	<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-	<script type="text/javascript"
-		src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
-
-	<!-- Bootstrap Core Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap/js/bootstrap.js'/>"></script>
-
-	<!-- Slimscroll Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Jquery CountTo Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-countto/jquery.countTo.js'/>"></script>
-
-	<!-- Autosize Plugin Js -->
-	<script src="<c:url value='/static/plugins/autosize/autosize.js'/>"></script>
-
-	<!-- Jquery DataTable Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
-
-	<!-- Bootstrap Notify Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-notify/bootstrap-notify.js'/>"></script>
-
-	<!-- SweetAlert Plugin Js -->
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
-	<!-- Moment Plugin Js -->
-	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
-
-	<!-- Bootstrap Material Datetime Picker Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
-
-	<!-- summernote -->
-	<script
-		src="<c:url value='/static/plugins/summernote/summernote.min.js'/>"></script>
-
-	<!-- summernote -->
-	<script
-		src="<c:url value='/static/plugins/summernote/lang/summernote-es-ES.js'/>"></script>
-
-	<!-- TagInput Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
-
-	<!-- Custom Js -->
-	<script src="<c:url value='/static/js/admin.js?v=${jsVersion}'/>"></script>
+	<!-- Script Section -->
+	<%@include file="../../plantilla/scriptSection.jsp"%>
+	<!-- #END# Script Section -->
 	<script
 		src="<c:url value='/static/js/admin/parameter.js?v=${jsVersion}'/>"></script>
 	<script src="<c:url value='/static/js/pages/index.js'/>"></script>

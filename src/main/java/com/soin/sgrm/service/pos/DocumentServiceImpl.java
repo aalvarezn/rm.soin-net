@@ -5,32 +5,32 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.model.pos.PEnvironment;
+import com.soin.sgrm.model.pos.PDocument;
 
-@Service("environmentService")
+@Service("documentService")
 @Transactional("transactionManagerPos")
-public class EnvironmentServiceImpl implements EnvironmentService {
+public class DocumentServiceImpl implements DocumentService{
 
 	@Override
-	public PEnvironment findById(Long id) {
+	public PDocument findById(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public PEnvironment findByKey(String name, String value) {
+	public PDocument findByKey(String name, String value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<PEnvironment> findAll() {
+	public List<PDocument> findAll() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void save(PEnvironment model) {
+	public void save(PDocument model) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -42,7 +42,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	}
 
 	@Override
-	public void update(PEnvironment model) {
+	public void update(PDocument model) {
 		// TODO Auto-generated method stub
 		
 	}
