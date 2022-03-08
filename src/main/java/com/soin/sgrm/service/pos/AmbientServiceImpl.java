@@ -3,10 +3,14 @@ package com.soin.sgrm.service.pos;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.pos.AmbientDao;
 import com.soin.sgrm.model.pos.PAmbient;
 
+@Service("ambientService")
+@Transactional("transactionManagerPos")
 public class AmbientServiceImpl implements AmbientService{
 
 	@Autowired
@@ -14,14 +18,13 @@ public class AmbientServiceImpl implements AmbientService{
 	
 	@Override
 	public PAmbient findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getById(id);
 	}
 
 	@Override
 	public PAmbient findByKey(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+	
+		return dao.getByKey(name, value);
 	}
 
 	@Override
@@ -32,20 +35,20 @@ public class AmbientServiceImpl implements AmbientService{
 
 	@Override
 	public void save(PAmbient model) {
-		// TODO Auto-generated method stub
+		dao.save(model);
 		
 	}
 
 	@Override
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
+		PAmbient model= findById(id);
+		dao.delete(model);
 		
 	}
 
 	@Override
 	public void update(PAmbient model) {
-		// TODO Auto-generated method stub
-		
+		dao.update(model);
 	}
 
 }

@@ -4,6 +4,9 @@
 <script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
 <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
+	<script type="text/javascript"
+		src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+
 <!-- Validate Core Js -->
 <script
 	src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
