@@ -42,6 +42,13 @@
 <!-- Moment Plugin Js -->
 <script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
 
+<!-- DateRange Plugin Js -->
+<script type="text/javascript"
+	src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<script
+	src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
+
 <!-- Bootstrap Material Datetime Picker Plugin Js -->
 <script
 	src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
@@ -57,6 +64,10 @@
 <!-- TagInput Js -->
 <script
 	src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
+	
+<!-- Quicksearch Js -->
+	<script
+		src="<c:url value='/static/plugins/quicksearch/quicksearch.js'/>"></script>
 
 <!-- MultiSelect Js -->
 <script

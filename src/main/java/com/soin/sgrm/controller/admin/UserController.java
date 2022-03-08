@@ -51,7 +51,7 @@ public class UserController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		PUser user = getUserLogin();
+		PUser userLogin = getUserLogin();
 
 		JsonSheet<PUser> list = new JsonSheet<>();
 		try {
@@ -64,8 +64,7 @@ public class UserController extends BaseController {
 			String sSearch = request.getParameter("sSearch");
 			String dateRange = request.getParameter("dateRange");
 
-			list = userService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, sStatus, dateRange);
-			list.getData().removeIf(ele -> (ele.getUserName().toLowerCase()).equals(user.getUsername()));
+			list = userService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, sStatus, dateRange, userLogin);
 
 		} catch (Exception e) {
 			e.printStackTrace();

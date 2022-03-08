@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	@SuppressWarnings("deprecation")
 	@Override
 	public JsonSheet<PUser> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
-			Integer sStatus, String dateRange) {
+			Integer sStatus, String dateRange, PUser userLogin) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
@@ -87,6 +87,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		if (sStatus != null)
 			columns.put("active", Restrictions.eq("active", (sStatus == 1 ? true : false)));
 
+		if (userLogin != null)
+			columns.put("userName", Restrictions.ne("userName", userLogin.getUserName()));
+
 		Criterion qSrch = null;
 		if (sSearch != null && sSearch.length() > 0) {
 			qSrch = Restrictions.or(Restrictions.like("userName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
@@ -97,10 +100,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		List<String> fetchs = new ArrayList<String>();
 
 		JsonSheet<PUser> list = dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
-
-		for (PUser user : list.getData())
-			user.setPassword("******");
-
 		return list;
 	}
 
@@ -111,6 +110,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			throw new BadCredentialsException("Usuario o contraseña incorrecto");
 		}
 		return user;
+	}
+
+	@Override
+	public List<PUser> findAllColumns(String[] columns) {
+		return dao.findAllColumns(columns);
+	}
+
+	@Override
+	public List<PUser> findbyUserName(String[] userNames) {
+		return dao.findbyUserName(userNames);
 	}
 
 }

@@ -81,34 +81,6 @@
 								</tr>
 							</thead>
 							<tbody>
-								<%-- 								<c:forEach items="${listUser}" var="user"> --%>
-								<%-- 									<tr id="${user.id}"> --%>
-								<%-- 										<td>${user.username}</td> --%>
-								<%-- 										<td>${user.fullName}</td> --%>
-								<%-- 										<td>${user.shortName}</td> --%>
-								<%-- 										<td>${user.emailAddress}</td> --%>
-								<!-- 										<td><div class="iconLine align-center"> -->
-								<%-- 												<c:if test="${!user.active}"> --%>
-								<%-- 													<i id="softDeleteUser_${user.id}" --%>
-								<%-- 														onclick="confirmDeleteUser(${user.id}, ${user.active})" --%>
-								<!-- 														class="material-icons gris" style="font-size: 30px;">cancel</i> -->
-								<%-- 												</c:if> --%>
-								<%-- 												<c:if test="${user.active}"> --%>
-								<%-- 													<i id="softDeleteUser_${user.id}" --%>
-								<%-- 														onclick="confirmDeleteUser(${user.id},${user.active})" --%>
-								<!-- 														class="material-icons gris" style="font-size: 30px;">check_circle</i> -->
-								<%-- 												</c:if> --%>
-								<!-- 											</div></td> -->
-								<!-- 										<td><div class="iconLine"> -->
-								<%-- 												<i onclick="editUser(${user.id})" --%>
-								<!-- 													class="material-icons gris" style="font-size: 30px;">mode_edit</i> -->
-								<%-- 												<i onclick="removeUser(${user.id})" --%>
-								<!-- 													class="material-icons gris" style="font-size: 30px;">delete</i> -->
-								<%-- 												<i onclick="changePasswordModal(${user.id})" --%>
-								<!-- 													class="material-icons gris" style="font-size: 30px;">lock</i> -->
-								<!-- 											</div></td> -->
-								<!-- 									</tr> -->
-								<%-- 								</c:forEach> --%>
 							</tbody>
 						</table>
 					</div>

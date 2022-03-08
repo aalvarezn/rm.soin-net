@@ -28,6 +28,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.soin.sgrm.model.Authority;
 
 @SuppressWarnings("unused")
@@ -46,6 +47,7 @@ public class PUser implements UserDetails, Serializable {
 	@Column(name = "USUARIO")
 	private String userName;
 
+	@JsonIgnore
 	@Column(name = "PASSWORD")
 	private String password;
 
@@ -62,7 +64,7 @@ public class PUser implements UserDetails, Serializable {
 	@Column(name = "ULTIMO_LOGUEO")
 	private Timestamp lastLogin;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.MERGE })
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "\"USUARIO_ROL\"", joinColumns = { @JoinColumn(name = "\"USUARIO_ID\"") }, inverseJoinColumns = {
 			@JoinColumn(name = "\"ROL_ID\"") })

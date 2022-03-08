@@ -647,3 +647,9 @@ function notifyMs(message, status) {
 	}
 }
 
+//add the rule here
+jQuery.validator.addMethod("selectOption",function(value,element,param) {
+	console.log(element);
+	return elementValue != param;
+},
+"Value cannot be {0}");

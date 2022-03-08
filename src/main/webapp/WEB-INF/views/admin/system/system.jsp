@@ -6,57 +6,9 @@
 <head>
 <%@include file="../../plantilla/header.jsp"%>
 
-<!-- Bootstrap Core Css -->
-<link
-	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
-	rel="stylesheet" type="text/css">
-
-<!-- Animation Css -->
-<link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
-	rel="stylesheet" type="text/css">
-
-<!-- Morris Chart Css-->
-<link href="<c:url value='/static/plugins/morrisjs/morris.css'/>"
-	rel="stylesheet" type="text/css">
-
-<!-- JQuery DataTable Css -->
-<link
-	href="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css'/>"
-	rel="stylesheet" type="text/css">
-
-<!-- Sweetalert Css -->
-<link href="<c:url value='/static/plugins/sweetalert/sweetalert.css'/>"
-	rel="stylesheet" />
-
-<!-- Custom Css -->
-<link href="<c:url value='/static/css/style.css'/>" rel="stylesheet"
-	type="text/css">
-
-<!-- Bootstrap Select Css -->
-<link
-	href="<c:url value='/static/plugins/bootstrap-select/css/bootstrap-select.css'/>"
-	rel="stylesheet" type="text/css">
-
-<link rel="stylesheet"
-	href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-
-<!-- TagInput Js -->
-<link
-	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
-	rel="stylesheet" type="text/css">
-
-<!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
-<link href="<c:url value='/static/css/themes/all-themes.css'/>"
-	rel="stylesheet" type="text/css">
-
-<link
-	href="<c:url value='/static/plugins/multi-select/css/multi-select.css'/>"
-	rel="stylesheet" type="text/css">
-
-<!-- Custom Css -->
-<link
-	href="<c:url value='/static/plugins/summernote/css/summernote.min.css'/>"
-	rel="stylesheet" type="text/css">
+<!-- Style Section -->
+<%@include file="../../plantilla/styleSection.jsp"%>
+<!-- #END# Style Section -->
 
 </head>
 <body class="theme-grey">
@@ -94,6 +46,20 @@
 					<hr>
 				</div>
 			</div>
+			<div id="tableFilters" class="row clearfix m-t-20">
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+					<label>Projecto</label>
+					<div class="form-group m-b-0">
+						<select id="fProject" class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="">-- Todos --</option>
+							<c:forEach items="${projects}" var="project">
+								<option value="${project.code }">${project.description }</option>
+							</c:forEach>
+						</select>
+					</div>
+				</div>
+			</div>
 			<div class="row clearfix">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="table-responsive m-b-20">
@@ -110,23 +76,6 @@
 								</tr>
 							</thead>
 							<tbody>
-								<c:forEach items="${systems}" var="system">
-									<tr id="${system.id}">
-										<td>${system.code}</td>
-										<td>${system.name}</td>
-										<td>${system.leader.fullName}</td>
-										<td>${system.proyect.code}</td>
-										<td><div class="iconLineC">
-<!-- 												<a onclick="alert('Hola Mundo')" title="Asignar correo"><i -->
-<!-- 													class="material-icons gris" style="font-size: 30px;">email</i></a> -->
-												<a onclick="updateSystemModal(${system.id})" title="Editar"><i
-													class="material-icons gris" style="font-size: 30px;">mode_edit</i></a>
-
-												<a onclick="confirmDeleteSystem(${system.id})" title="Eliminar"><i
-													class="material-icons gris" style="font-size: 30px;">delete</i></a>
-											</div></td>
-									</tr>
-								</c:forEach>
 							</tbody>
 						</table>
 					</div>
@@ -135,81 +84,15 @@
 		</div>
 		<a id="buttonAddSystem" type="button"
 			class="btn btn-primary btn-fab waves-effect fixedDown"
-			onclick="openSystemModal()"> <i class="material-icons lh-1-8">add</i>
+			onclick="addSystem()"> <i class="material-icons lh-1-8">add</i>
 		</a>
 	</section>
 
-	<!-- Jquery Core Js -->
-	<script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
-	<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<!-- Script Section -->
+	<%@include file="../../plantilla/scriptSection.jsp"%>
+	<!-- #END# Script Section -->
 
-	<script type="text/javascript"
-		src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
-
-	<!-- Bootstrap Core Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap/js/bootstrap.js'/>"></script>
-
-	<!-- Select Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-select/js/bootstrap-select.js'/>"></script>
-
-	<!-- Slimscroll Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Jquery CountTo Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-countto/jquery.countTo.js'/>"></script>
-
-	<!-- Autosize Plugin Js -->
-	<script src="<c:url value='/static/plugins/autosize/autosize.js'/>"></script>
-
-	<!-- Jquery DataTable Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
-
-	<!-- Bootstrap Notify Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-notify/bootstrap-notify.js'/>"></script>
-
-	<!-- SweetAlert Plugin Js -->
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
-	<!-- Moment Plugin Js -->
-	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
-
-	<!-- Bootstrap Material Datetime Picker Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
-
-	<!-- summernote -->
-	<script
-		src="<c:url value='/static/plugins/summernote/summernote.min.js'/>"></script>
-
-	<!-- summernote -->
-	<script
-		src="<c:url value='/static/plugins/summernote/lang/summernote-es-ES.js'/>"></script>
-
-	<!-- TagInput Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
-		
-	<!-- Quicksearch Js -->
-	<script
-		src="<c:url value='/static/plugins/quicksearch/quicksearch.js'/>"></script>
-
-	<!-- Custom Js -->
-	<script src="<c:url value='/static/js/admin.js?v=${jsVersion}'/>"></script>
-	<script
-		src="<c:url value='/static/js/admin/system.js?v=${jsVersion}'/>"></script>
-	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
-	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
-
-	<script
-		src="<c:url value='/static/plugins/multi-select/js/jquery.multi-select.js'/>"></script>
+	<script src="<c:url value='/static/js/admin/system.js'/>"></script>
 
 </body>
 
