@@ -19,8 +19,8 @@
 							<label for="name">Código</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="code"
-										maxlength="50" name="name" placeholder="Ingrese un nombre"
+									<input type="text" class="form-control" id="tCode"
+										maxlength="50" name="tCode" placeholder="Ingrese un nombre"
 										style="height: 60px;">
 									<div class="help-info">Máx. 50 caracteres</div>
 								</div>
@@ -31,8 +31,8 @@
 							<label for="description">Descripción</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="description"
-										name="description" placeholder="Ingrese un nombre"
+									<input type="text" class="form-control" id="tDescription"
+										name="tDescription" placeholder="Ingrese un nombre"
 										style="height: 60px;">
 								</div>
 							</div>
