@@ -1,5 +1,6 @@
 package com.soin.sgrm.controller.admin;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +41,9 @@ public class EmailController extends BaseController {
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
 		JsonSheet<PEmailTemplate> rfcs = new JsonSheet<>();
 		try {
+			
 			rfcs.setData(emailService.findAll());
+			System.out.print(emailService.findAll().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -54,7 +57,7 @@ public class EmailController extends BaseController {
 		try {
 			res.setStatus("success");
 			emailService.save(addEmailTemplate);
-
+         
 			res.setMessage("Plantilla agregada!");
 		} catch (Exception e) {
 			Sentry.capture(e, "emailTemplate");
@@ -66,14 +69,14 @@ public class EmailController extends BaseController {
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody PEmailTemplate uptEmailTemplate) {
+	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody PEmailTemplate uptEmailTemplate) throws IOException {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
 			emailService.update(uptEmailTemplate);
 
 			res.setMessage("Plantilla modificada!");
-		} catch (Exception e) {
+		}catch (Exception e) {
 			Sentry.capture(e, "emailTemplate");
 			res.setStatus("exception");
 			res.setMessage("Error al modificar plantilla!");

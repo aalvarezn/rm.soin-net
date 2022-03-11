@@ -53,9 +53,9 @@ function showTypeRequest(index){
 	$fmTypeRequest.validate().resetForm();
 	$fmTypeRequest[0].reset();
 	var obj = $dtTypeRequest.row(index).data();
-	$fmTypeRequest.find('#typeRequestId').val(obj.id);
-	$fmTypeRequest.find('#code').val(obj.code);
-	$fmTypeRequest.find('#description').val(obj.description);
+	$fmTypeRequest.find('#tId').val(obj.id);
+	$fmTypeRequest.find('#tCode').val(obj.code);
+	$fmTypeRequest.find('#tDescription').val(obj.description);
 	$mdTypeRequest.find('#update').show();
 	$mdTypeRequest.find('#save').hide();
 	$mdTypeRequest.modal('show');
@@ -78,9 +78,9 @@ function updateTypeRequest() {
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					id : $fmTypeRequest.find('#typeRequestId').val(),
-					code : $fmTypeRequest.find('#code').val(),
-					description : $fmTypeRequest.find('#description').val(),
+					id : $fmTypeRequest.find('#tId').val(),
+					code : $fmTypeRequest.find('#tCode').val(),
+					description : $fmTypeRequest.find('#tDescription').val(),
 				}),
 				success : function(response) {
 					unblockUI();
@@ -117,8 +117,8 @@ function saveTypeRequest() {
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					code : $fmTypeRequest.find('#code').val(),
-					description : $fmTypeRequest.find('#description').val(),
+					code : $fmTypeRequest.find('#tCode').val(),
+					description : $fmTypeRequest.find('#tDescription').val(),
 				}),
 				success : function(response) {
 					unblockUI();
@@ -183,24 +183,24 @@ function closeTypeRequest(){
 function initTypeRequestFormValidation() {
 	$fmTypeRequest.validate({
 		rules : {
-			'code' : {
+			'tCode' : {
 				required : true,
 				minlength : 1,
 				maxlength : 50,
 			},
-			'description' : {
+			'tDescription' : {
 				required : true,
 				minlength : 1,
 				maxlength : 100
 			},
 		},
 		messages : {
-			'code' : {
+			'tCode' : {
 				required :  "Ingrese un valor",
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de 50 caracteres"
 			},
-			'description' : {
+			'tDescription' : {
 				required : "Ingrese un valor",
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de 100 caracteres"
