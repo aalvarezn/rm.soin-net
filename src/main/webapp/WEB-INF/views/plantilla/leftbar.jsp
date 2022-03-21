@@ -53,8 +53,11 @@
 			</c:if>
 
 			<c:if test="${ isManager}">
-				<li><a id="releasesItem" href="<c:url value='/release/'/> ">
+				<li><a id="managerReleasesItem" href="<c:url value='/release/'/> ">
 						<span>Gestión Releases</span>
+				</a></li>
+				<li><a id="managerRFCItem" href="<c:url value='/rfc/'/> ">
+						<span>Gestión RFCs</span>
 				</a></li>
 			</c:if>
 

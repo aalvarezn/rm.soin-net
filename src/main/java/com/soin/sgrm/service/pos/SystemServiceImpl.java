@@ -79,4 +79,9 @@ public class SystemServiceImpl implements SystemService {
 		return list;
 	}
 
+	@Override
+	public List<PSystem> listWithProject() {
+		return dao.listWithProject();
+	}
+
 }

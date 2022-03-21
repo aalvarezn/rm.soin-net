@@ -6,7 +6,7 @@ var formChangeUser = $('#changeUserForm');
 var trackingReleaseForm = $('#trackingReleaseForm');
 
 $(function() {
-	activeItemMenu("rfcItem");
+	activeItemMenu("managerRFCItem");
 	$("#addRFCSection").hide();
 	$('input[name="daterange"]').daterangepicker(optionRangePicker);
 	initRFCTable();
