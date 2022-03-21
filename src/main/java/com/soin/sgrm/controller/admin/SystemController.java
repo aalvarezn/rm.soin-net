@@ -1,32 +1,37 @@
 package com.soin.sgrm.controller.admin;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.common.collect.Sets;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.pos.PAuthority;
-import com.soin.sgrm.model.pos.PProject;
-import com.soin.sgrm.model.pos.PSystem;
-import com.soin.sgrm.model.pos.PUser;
-import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.pos.ProjectService;
-import com.soin.sgrm.service.pos.SystemService;
-import com.soin.sgrm.service.pos.UserService;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Project;
+import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
@@ -40,123 +45,201 @@ public class SystemController extends BaseController {
 	SystemService systemService;
 
 	@Autowired
+	UserInfoService userService;
+
+	@Autowired
 	ProjectService projectService;
 
 	@Autowired
-	UserService userService;
+	EmailTemplateService emailService;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("projects", projectService.findAll());
-		String[] columns = { "id", "userName", "name" };
-		List<PUser> users = userService.findAllColumns(columns);
-		model.addAttribute("users", users);
+		model.addAttribute("systems", systemService.list());
+		model.addAttribute("system", new System());
+		model.addAttribute("users", userService.list());
+		model.addAttribute("user", new UserInfo());
+		model.addAttribute("projects", projectService.listAll());
+		model.addAttribute("project", new Project());
+		model.addAttribute("emails", emailService.listAll());
+		model.addAttribute("email", new EmailTemplate());
 		return "/admin/system/system";
 	}
 
-	@SuppressWarnings({ "rawtypes", "unused" })
-	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-
-		JsonSheet<PSystem> list = new JsonSheet<>();
+	@RequestMapping(value = "/findSystem/{id}", method = RequestMethod.GET)
+	public @ResponseBody System findSystem(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
 		try {
-			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
-			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
-			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
-			String sProject = request.getParameter("sProject");
-
-			String sSearch = request.getParameter("sSearch");
-			String dateRange = request.getParameter("dateRange");
-			list = systemService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, sProject);
-
+			System system = systemService.findSystemById(id);
+			return system;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "system");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
 		}
-
-		return list;
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody PSystem uptSystem) {
+	@RequestMapping(path = "/saveSystem", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveSystem(HttpServletRequest request,
+			@Valid @ModelAttribute("System") System system, BindingResult errors, ModelMap model, Locale locale,
+			HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			PSystem system = systemService.findById(uptSystem.getId());
-			system.setCode(uptSystem.getCode());
-			system.setName(uptSystem.getName());
 
-			PProject project = projectService.findByKey("code", uptSystem.getProjectCode());
-			system.setProject(project);
-			PUser leader = userService.findByKey("userName", uptSystem.getLeaderUserName());
-			system.setLeader(leader);
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}
 
-			system.setImportObjects(uptSystem.getImportObjects());
-			system.setCustomCommands(uptSystem.getCustomCommands());
+			if (system.getLeaderId() == null) {
+				res.setStatus("fail");
+				res.addError("leaderId", "Seleccione una opción");
+			}
 
-			List<PUser> managers = new ArrayList<PUser>();
-			if (uptSystem.getStrManagers() != null)
-				managers = userService.findbyUserName(uptSystem.getStrManagers());
-			system.setManagers(Sets.newHashSet(managers));
+			if (system.getProyectId() == null) {
+				res.setStatus("fail");
+				res.addError("proyectId", "Seleccione una opción");
+			}
 
-			List<PUser> team = new ArrayList<PUser>();
-			if (uptSystem.getStrTeam() != null)
-				team = userService.findbyUserName(uptSystem.getStrTeam());
-			system.setTeam(Sets.newHashSet(team));
+			if (res.getStatus().equals("success")) {
+				system.setProyect(projectService.findById(system.getProyectId()));
+				system.setLeader(userService.findUserById(system.getLeaderId()));
 
-			systemService.update(system);
-			res.setMessage("Sistema modificado!");
+				// se agregan los usuarios de equipo
+				User temp = null;
+				Set<User> usersNews = new HashSet<>();
+				for (Integer index : system.getUserTeamId()) {
+					temp = userService.findUserById(index);
+					if (temp != null)
+						usersNews.add(temp);
+				}
+				// se agregan los usuarios de gestion
+				temp = null;
+				Set<User> managersNews = new HashSet<>();
+				for (Integer index : system.getManagersId()) {
+					temp = userService.findUserById(index);
+					if (temp != null)
+						managersNews.add(temp);
+				}
+
+				if (system.getEmailId() != null) {
+					EmailTemplate email = emailService.findById(system.getEmailId());
+					system.changeEmail(email);
+				} else {
+					system.changeEmail(null);
+				}
+
+				systemService.save(system);
+				res.setObj(system);
+			}
 		} catch (Exception e) {
 			Sentry.capture(e, "system");
 			res.setStatus("exception");
-			res.setMessage("Error al modificar sistema!");
+			res.setException("Error al crear sistema: " + e.toString());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody PSystem addSystem) {
+	@RequestMapping(value = "/updateSystem", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse updateSystem(HttpServletRequest request,
+			@Valid @ModelAttribute("System") System system, BindingResult errors, ModelMap model, Locale locale,
+			HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}
 
-			PProject project = projectService.findByKey("code", addSystem.getProjectCode());
-			addSystem.setProject(project);
-			PUser leader = userService.findByKey("userName", addSystem.getLeaderUserName());
-			addSystem.setLeader(leader);
+			if (system.getLeaderId() == null) {
+				res.setStatus("fail");
+				res.addError("leaderId", "Seleccione una opción");
+			}
 
-			List<PUser> managers = new ArrayList<PUser>();
-			if (addSystem.getStrManagers() != null)
-				managers = userService.findbyUserName(addSystem.getStrManagers());
-			addSystem.setManagers(Sets.newHashSet(managers));
+			if (system.getProyectId() == null) {
+				res.setStatus("fail");
+				res.addError("proyectId", "Seleccione una opción");
+			}
 
-			List<PUser> team = new ArrayList<PUser>();
-			if (addSystem.getStrTeam() != null)
-				team = userService.findbyUserName(addSystem.getStrTeam());
-			addSystem.setTeam(Sets.newHashSet(team));
+			if (res.getStatus().equals("success")) {
+				System systemOrigin = systemService.findSystemById(system.getId());
+				systemOrigin.setName(system.getName());
+				systemOrigin.setCode(system.getCode());
+				systemOrigin.setNomenclature(system.getNomenclature());
+				systemOrigin.setImportObjects(system.getImportObjects());
+				systemOrigin.setIsBO(system.getIsBO());
+				systemOrigin.setIsAIA(system.getIsAIA());
+				systemOrigin.setCustomCommands(system.getCustomCommands());
+				systemOrigin.setInstallationInstructions(system.getInstallationInstructions());
+				systemOrigin.setAdditionalObservations(system.getAdditionalObservations());
 
-			systemService.save(addSystem);
-			res.setMessage("Sistema agregado!");
+				systemOrigin.setProyect(projectService.findById(system.getProyectId()));
+				systemOrigin.setLeader(userService.findUserById(system.getLeaderId()));
+
+				if (system.getEmailId() != null) {
+					EmailTemplate email = emailService.findById(system.getEmailId());
+					systemOrigin.changeEmail(email);
+				} else {
+					systemOrigin.changeEmail(null);
+				}
+
+				// se agregan los usuarios de equipo
+				User temp = null;
+				Set<User> usersNews = new HashSet<>();
+				for (Integer index : system.getUserTeamId()) {
+					temp = userService.findUserById(index);
+					if (temp != null)
+						usersNews.add(temp);
+				}
+				systemOrigin.checkTeamsExists(usersNews);
+
+				// se agregan los usuarios de gestion
+				temp = null;
+				Set<User> managersNews = new HashSet<>();
+				for (Integer index : system.getManagersId()) {
+					temp = userService.findUserById(index);
+					if (temp != null)
+						managersNews.add(temp);
+				}
+				systemOrigin.checkManagersExists(managersNews);
+
+				systemService.update(systemOrigin);
+				res.setObj(system);
+			}
 		} catch (Exception e) {
 			Sentry.capture(e, "system");
 			res.setStatus("exception");
-			res.setMessage("Error al agregar sistema!");
+			res.setException("Error al modificar sistema: " + e.toString());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public @ResponseBody JsonResponse deleteAuthority(@PathVariable Long id, Model model) {
+	@RequestMapping(value = "/deleteSystem/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteSystem(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			res.setStatus("success");
 			systemService.delete(id);
-			res.setMessage("Sistema eliminado!");
+			res.setStatus("success");
+			res.setObj(id);
 		} catch (Exception e) {
-			Sentry.capture(e, "system");
 			res.setStatus("exception");
-			res.setMessage("Error al eliminar sistema!");
+			res.setException("Error al eliminar sistema: " + e.getCause().getCause().getCause().getMessage() + ":"
+					+ e.getMessage());
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar sistema: Existen referencias que debe eliminar antes");
+			} else {
+				Sentry.capture(e, "system");
+			}
+
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;

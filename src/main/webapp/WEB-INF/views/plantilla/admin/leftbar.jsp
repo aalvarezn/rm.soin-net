@@ -24,18 +24,13 @@
 				href="<c:url value='/admin/tree/'/>"> <span>Árbol dependencias</span>
 			</a></li>
 			<!---- 	#Seccion de ambientes ---->
-			<li class=""><a id="ambientItem"
-				href="<c:url value='/admin/ambient/'/>"> <span> Ambientes</span>
-			</a></li>
-			<!---- 	#Seccion de Catálogos ---->
-			<li class=""><a id="catalogueItem" href="javascript:void(0);"
-				class="menu-toggle"> <span>Catálogos</span>
+			<li class=""><a id="ambientItem" href="javascript:void(0);"
+				class="menu-toggle"> <span>Ambientes</span>
 			</a>
 				<ul class="ml-menu">
-					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
-					<li><a href="<c:url value='/admin/impact/'/>">Impacto</a></li>
-					<li><a href="<c:url value='/admin/priority/'/>">Prioridad</a></li>
-					<li><a href="<c:url value='/admin/risk/'/>">Riesgo</a></li>
+					<li><a href="<c:url value='/admin/typeAmbient/'/>">Tipos
+							de ambiente</a></li>
+					<li><a href="<c:url value='/admin/ambient/'/>">Ambientes</a></li>
 				</ul></li>
 			<!---- 	#Seccion de configuracion ---->
 			<li class=""><a id="configurationItem"
@@ -55,6 +50,16 @@
 							Release</a></li>
 					<li><a href="<c:url value='/admin/docFile/'/>">Plantilla
 							Archivo</a></li>
+				</ul></li>
+			<!---- 	#Seccion de releases ---->
+			<li class=""><a id="releaseItem" href="javascript:void(0);"
+				class="menu-toggle"> <span>Releases</span>
+			</a>
+				<ul class="ml-menu">
+					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
+					<li><a href="<c:url value='/admin/impact/'/>">Impacto</a></li>
+					<li><a href="<c:url value='/admin/priority/'/>">Prioridad</a></li>
+					<li><a href="<c:url value='/admin/risk/'/>">Riesgo</a></li>
 				</ul></li>
 			<!---- 	#Seccion de requerimientos ---->
 			<li class=""><a id="requestItem" href="javascript:void(0);"

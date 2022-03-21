@@ -6,7 +6,6 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,35 +122,6 @@ public class HibernateConfiguration {
 		return txManager;
 	}
 
-	/* DatasourcePostgres */
-
-	@Bean(name = "sessionFactoryPos")
-	public LocalSessionFactoryBean sessionFactoryPos() {
-		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-		sessionFactory.setDataSource(dataSourcePos());
-		sessionFactory.setPackagesToScan(new String[] { "com.soin.sgrm.model.pos" });
-		sessionFactory.setHibernateProperties(hibernatePropertiesPos());
-		return sessionFactory;
-	}
-
-	@Bean(name = "dataSourcePos")
-	public DataSource dataSourcePos() {
-		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setDriverClassName(env.getProperty("ds.pos.database.driverClassName"));
-		dataSource.setUrl(env.getProperty("ds.pos.url"));
-		dataSource.setUsername(env.getProperty("ds.pos.username"));
-		dataSource.setPassword(env.getProperty("ds.pos.password"));
-		return dataSource;
-	}
-
-	@Bean(name = "transactionManagerPos")
-	@Autowired
-	public HibernateTransactionManager transactionManagerPos(@Qualifier("sessionFactoryPos") SessionFactory s) {
-		HibernateTransactionManager txManager = new HibernateTransactionManager();
-		txManager.setSessionFactory(s);
-		return txManager;
-	}
-
 	private Properties hibernateProperties() {
 		Properties properties = new Properties();
 		String[] _properties = new String[] { "hibernate.dialect", "hibernate.show_sql", "hibernate.SQL",
@@ -162,21 +132,6 @@ public class HibernateConfiguration {
 			if (property != null)
 				properties.put(_properties[i], property);
 		}
-		return properties;
-	}
-
-	private Properties hibernatePropertiesPos() {
-		Properties properties = new Properties();
-		String[] _properties = new String[] { "hibernate.default_schema", "hibernate.format_sql",
-				"hibernate.connection.CharSet", "hibernate.connection.characterEncoding",
-				"hibernate.connection.useUnicode", "hibernate.naming.implicit-strategy",
-				"hibernate.naming.physical-strategy", "hibernate.globally_quoted_identifiers" };
-		for (int i = 0; i < _properties.length; i++) {
-			String property = appProperties.getProperty(_properties[i]);
-			if (property != null)
-				properties.put(_properties[i], property);
-		}
-		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
 		return properties;
 	}
 

@@ -1,145 +1,111 @@
-var $dtParameter;
-var $mdParameter = $('#parameterModal');
-var $fmParameter = $('#parameterModalForm');
-var obj;
-
 $(function() {
 	activeItemMenu("configurationItem", true);
-	initDataTable();
-	initParameterFormValidation();
+});
+var $parameterTable = $('#parameterTable').DataTable({
+	"language" : {
+		"emptyTable" : "No existen registros",
+		"zeroRecords" : "No existen registros"
+	},
+	"ordering" : true,
+	"searching" : true,
+	"paging" : true
 });
 
+var $parameterModal = $('#parameterModal');
+var $parameterModalForm = $('#parameterModalForm');
 
-function initDataTable(){
-	$dtParameter= $('#parameterTable')
-	.DataTable(
-			{
-				lenghtMenu:[[10,25,50,-1], 
-					['10','25','50','Mostrar todo']],
-					"language" : optionLanguaje,
-					"iDisplayStart" : 0,
-					"sAjaxSource" : getCont() + "admin/parameter/list",
-					"fnServerParams" : function(aoData) {
-					},
-					"aoColumns" : [
-						{
-							"mDataProp" : 'code'
-						},
-						{
-							"mDataProp" : 'description'
-						},
-						{
-							"mDataProp" : 'paramValue'
-						},
-						{
-							"mDataProp" : 'date',render:function(data){
-							      return moment(data).format('DD/MM/YYYY h:mm:ss a');
-							}
-						},
-						{
-							render : function(data, type, row, meta) {
-								var options = '<div class="iconLineC">';
-
-								options += '<a onclick="showParameter('
-									+ meta.row
-									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
-
-
-								options += ' </div>';
-
-								return options;
-							}
-						} ],
-						ordering : false,
-				
-	});
-}
-
-function showParameter(index){
-	$fmParameter.validate().resetForm();
-	$fmParameter[0].reset();
-	obj=$dtParameter.row(index).data();
-	$fmParameter.find('#pId').val(obj.id);
-	$fmParameter.find('#pDescription').val(obj.description);
-	$fmParameter.find('#pValue').val(obj.paramValue);
-	$mdParameter.find('#update').show();
-	$mdParameter.find('#save').hide();
-	$mdParameter.modal('show');
-}
-
-function updateParameter(){
-	if(!$fmParameter.valid())
-		return;
-	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
-		text: 'Esta acci\u00F3n no se puede reversar.',
-		...swalDefault
-	}).then((result) => {
-		if(result.value){
-			blockUI();
-			$.ajax({
-				type : "PUT",
-				url : getCont() + "admin/parameter/" ,
-				dataType : "json",
-				contentType: "application/json; charset=utf-8",
-				timeout : 60000,
-				data : JSON.stringify({
-					id : $fmParameter.find('#pId').val(),
-					description : $fmParameter.find('#pDescription').val(),
-					paramValue : $fmParameter.find('#pValue').val(),
-					code: obj.code,
-				}),
-				success : function(response) {
-					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtParameter.ajax.reload();
-					$mdParameter.modal('hide');
-				},
-				error : function(x, t, m) {
-					unblockUI();
-					console.log(x);
-					console.log(t);
-					console.log(m);
-				}
-			});
+function openParameterModal(index) {
+	resetErrors();
+	blockUI();
+	$.ajax({
+		type : "GET",
+		url : getCont() + "admin/" + "parameter/findParameter/" + index,
+		timeout : 60000,
+		data : {},
+		success : function(response) {
+			unblockUI();
+			$parameterModalForm.find('#paramId').val(index);
+			$parameterModalForm.find('#description').val(response.description);
+			$parameterModalForm.find('#paramValue').val(response.paramValue);
+			$parameterModal.modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
 		}
 	});
-	
+
 }
 
-
-function closeParameter(){
-	$mdParameter.modal('hide');
+function closeParameterModal() {
+	$parameterModalForm[0].reset();
+	$parameterModal.modal('hide');
 }
 
-function initParameterFormValidation() {
-	$fmParameter.validate({
-		rules : {
-			'pDescription' : {
-				required : true,
-				minlength : 1,
-				maxlength : 50,
-			},
-			'pValue' : {
-				required : true,
-				minlength : 1,
-				maxlength : 100
-			},
+function updateParameter() {
+	resetErrors();
+	blockUI();
+	$.ajax({
+		type : "POST",
+		url : getCont() + "admin/parameter/" + "updateParameter",
+		data : {
+			// Informacion parametros
+			id : $parameterModalForm.find('#paramId').val(),
+			description : $parameterModalForm.find('#description').val(),
+			paramValue : $parameterModalForm.find('#paramValue').val()
 		},
-		messages : {
-			'pDescription' : {
-				required :  "Ingrese un valor",
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
-			'pValue' : {
-				required : "Ingrese un valor",
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de 100 caracteres"
-			},
+		success : function(response) {
+			ajaxUpdateParameter(response)
 		},
-		highlight,
-		unhighlight,
-		errorPlacement
+		error : function(x, t, m) {
+			console.log(x);
+			console.log(t);
+			console.log(m);
+			unblockUI();
+			notifyAjaxError(x, t, m);
+		}
 	});
+}
+
+function ajaxUpdateParameter(response) {
+	switch (response.status) {
+	case 'success':
+		location.reload();
+		swal("Correcto!", "Par\u00E1metro modificado correctamente.", "success",
+				2000)
+		break;
+	case 'fail':
+		unblockUI();
+		showParameterErrors(response.errors, $parameterModalForm);
+		
+		break;
+	case 'exception':
+		swal("Error!", response.exception, "error")
+		break;
+	default:
+		console.log(response.status);
+		unblockUI();
+	}
+}
+
+function resetErrors() {
+	$(".fieldError").css("visibility", "hidden");
+	$(".fieldError").attr("class", "error fieldError");
+	$(".fieldErrorLine").attr("class", "form-line");
+}
+
+function showParameterErrors(error, $form) {
+	resetErrors();// Eliminamos las etiquetas de errores previas
+	for (var i = 0; i < error.length; i++) {
+		// Se modifica el texto de la advertencia y se agrega la de activeError
+		$form.find(" #" + error[i].key + "_error").text(error[i].message);
+		$form.find(" #" + error[i].key + "_error").css("visibility", "visible");
+		$form.find(" #" + error[i].key + "_error").attr("class",
+				"error fieldError activeError");
+		// Si es input||textarea se marca el line en rojo
+		if ($form.find(" #" + error[i].key).is("input")
+				|| $form.find(" #" + error[i].key).is("textarea")) {
+			$form.find(" #" + error[i].key).parent().attr("class",
+					"form-line error focused fieldErrorLine");
+		}
+	}
 }

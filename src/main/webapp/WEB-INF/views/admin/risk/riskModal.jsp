@@ -12,26 +12,33 @@
 				<div class="row clearfix">
 					<form id="riskModalForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="rId" value="" />
+							value="${_csrf.token}" /> <input type="hidden" id="riskId"
+							value="" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="name">Nombre</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="rName"
-										maxlength="50" name="rName" placeholder="Ingrese un valor"
+									<input type="text" class="form-control" id="name"
+										maxlength="50" name="name" placeholder="Ingrese un nombre"
 										style="height: 60px;">
-									<div class="help-info">Máx. 50 caracteres</div>
+									<div class="help-info">Mï¿½x. 50 caracteres</div>
 								</div>
+								<label id="name_error" class="error fieldError" for="name"
+									style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<label for="description">Descripción</label>
+						<div
+							class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t--20 m-b--20">
+							<label for="description">Descripciï¿½n</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="rDescription"
-										name="rDescription" placeholder="Ingrese un valor"
-										maxlength="250" style="height: 60px;">
+									<input type="text" class="form-control" id="description"
+										name="description" placeholder="Ingrese un nombre"
+										style="height: 60px;">
 								</div>
+								<label id="description_error" class="error fieldError"
+									for="description" style="visibility: hidden">Campo
+									Requerido.</label>
 							</div>
 						</div>
 					</form>
@@ -39,10 +46,10 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closeRisk()">CANCELAR</button>
-				<button id="save" type="button" class="btn btn-primary waves-effect"
-					onclick="saveRisk()">GUARDAR</button>
-				<button id="update" type="button"
+					onclick="closeRiskModal()">CANCELAR</button>
+				<button id="btnSaveRisk" type="button"
+					class="btn btn-primary waves-effect" onclick="saveRisk()">GUARDAR</button>
+				<button id="btnUpdateRisk" type="button"
 					class="btn btn-primary waves-effect" onclick="updateRisk()">ACTUALIZAR</button>
 			</div>
 		</div>

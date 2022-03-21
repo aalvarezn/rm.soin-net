@@ -12,17 +12,20 @@
 			</div>
 			<div class="modal-body">
 				<div class="row clearfix">
-					<form id="userPasswordModalForm" action="" autocomplete="off">
+					<form id="userPasswordForm" action="" autocomplete="off">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="uId" value="" />
+							value="${_csrf.token}" /> <input type="hidden" id="userId"
+							value="" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="name">Contraseña</label>
 							<div class="form-group">
 								<div class="form-line">
 									<input type="password" class="form-control" id="newPassword"
-										maxlength="12" name="newPassword"
-										placeholder="Ingrese un valor" style="height: 60px;">
+										name="newPassword" placeholder="Ingrese un nombre"
+										style="height: 60px;">
 								</div>
+								<label id="newPassword_field" class="error fieldError"
+									for="name" style="display: none">Campo Requerido.</label>
 							</div>
 						</div>
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -30,9 +33,11 @@
 							<div class="form-group">
 								<div class="form-line">
 									<input type="password" class="form-control"
-										id="confirmPassword" name="confirmPassword" maxlength="12"
-										placeholder="Ingrese un valor" style="height: 60px;">
+										id="confirmPassword" name="confirmPassword"
+										placeholder="Ingrese un nombre" style="height: 60px;">
 								</div>
+								<label id="confirmPassword_field" class="error fieldError"
+									for="name" style="display: none">Campo Requerido.</label>
 							</div>
 						</div>
 					</form>
@@ -40,17 +45,17 @@
 				<div class="row clearfix">
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 blueBgc">
 						<p class="p-t-10">
-							No debe contener más de 12 caractéres. <br /> La contraseña no
-							puede ser completamente numérica.<br />
+							Debe contener más de 8 caractéres. <br /> La contraseña no puede
+							ser completamente numérica.<br />
 						</p>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closeUserPassword()">CANCELAR</button>
+					onclick="closePasswordModal()">CANCELAR</button>
 				<button type="button" class="btn btn-primary waves-effect"
-					onclick="updateUserPassword()">GUARDAR</button>
+					onclick="updatePassword()">GUARDAR</button>
 			</div>
 		</div>
 	</div>

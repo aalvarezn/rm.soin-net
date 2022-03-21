@@ -4,20 +4,24 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
-import com.soin.sgrm.model.pos.PRisk;
-import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.pos.RiskService;
+import com.soin.sgrm.model.Risk;
+import com.soin.sgrm.service.RiskService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
@@ -29,72 +33,101 @@ public class RiskController extends BaseController {
 	public static final Logger logger = Logger.getLogger(RiskController.class);
 
 	@Autowired
-	RiskService risk;
+	RiskService riskService;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		model.addAttribute("risks", riskService.list());
+		model.addAttribute("risk", new Risk());
 		return "/admin/risk/risk";
 	}
 
-	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<PRisk> list = new JsonSheet<>();
+	@RequestMapping(value = "/findRisk/{id}", method = RequestMethod.GET)
+	public @ResponseBody Risk findRisk(@PathVariable Integer id, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session) {
 		try {
-			list.setData(risk.findAll());
+			Risk risk = riskService.findById(id);
+			return risk;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Sentry.capture(e, "risk");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
 		}
-
-		return list;
 	}
 
-	@RequestMapping(path = "", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody PRisk addRisk) {
+	@RequestMapping(path = "/saveRisk", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveRisk(HttpServletRequest request,
+
+			@Valid @ModelAttribute("Risk") Risk risk, BindingResult errors, ModelMap model, Locale locale,
+			HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			risk.save(addRisk);
 
-			res.setMessage("Riesgo agregado!");
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}
+			if (res.getStatus().equals("success")) {
+				riskService.save(risk);
+				res.setObj(risk);
+			}
 		} catch (Exception e) {
 			Sentry.capture(e, "risk");
 			res.setStatus("exception");
-			res.setMessage("Error al agregar riesgo!");
+			res.setException("Error al crear riesgo: " + e.toString());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody PRisk uptRisk) {
+	@RequestMapping(value = "/updateRisk", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse updateRisk(HttpServletRequest request, @Valid @ModelAttribute("Risk") Risk risk,
+			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			risk.update(uptRisk);
-
-			res.setMessage("Riesgo modificada!");
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}
+			if (res.getStatus().equals("success")) {
+				Risk riskOrigin = riskService.findById(risk.getId());
+				riskOrigin.setName(risk.getName());
+				riskOrigin.setDescription(risk.getDescription());
+				riskService.update(riskOrigin);
+				res.setObj(risk);
+			}
 		} catch (Exception e) {
 			Sentry.capture(e, "risk");
 			res.setStatus("exception");
-			res.setMessage("Error al modificar riesgo!");
+			res.setException("Error al modificar riesgo: " + e.toString());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public @ResponseBody JsonResponse delete(@PathVariable Long id, Model model) {
+	@RequestMapping(value = "/deleteRisk/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteRisk(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
+			riskService.delete(id);
 			res.setStatus("success");
-			risk.delete(id);
-			res.setMessage("Priridad eliminada!");
+			res.setObj(id);
 		} catch (Exception e) {
-			Sentry.capture(e, "risk");
 			res.setStatus("exception");
-			res.setMessage("Error al eliminar riesgo!");
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			res.setException("Error al eliminar riesgo: " + e.getCause().getCause().getCause().getMessage() + ":"
+					+ e.getMessage());
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar riesgo: Existen referencias que debe eliminar antes");
+			} else {
+				Sentry.capture(e, "risk");
+			}
 		}
 		return res;
 	}
