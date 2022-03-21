@@ -12,33 +12,48 @@
 				<div class="row clearfix">
 					<form id="statusModalForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="statusId"
-							value="" />
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							value="${_csrf.token}" /> <input type="hidden" id="sId" value="" />
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+							<label for="name">Código</label>
+							<div class="form-group">
+								<div class="form-line">
+									<input type="text" class="form-control" id="sCode" name="sCode"
+										maxlength="30" placeholder="Ingrese un valor">
+									<div class="help-info">Máx. 30 caracteres</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<label for="name">Nombre</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="name"
-										maxlength="25" name="name" placeholder="Ingrese un nombre"
-										style="height: 60px;">
+									<input type="text" class="form-control" id="sName" name="sName"
+										maxlength="25" placeholder="Ingrese un valor">
 									<div class="help-info">Máx. 25 caracteres</div>
 								</div>
-								<label id="name_error" class="error fieldError" for="name"
-									style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
-						<div
-							class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t--20 m-b--20">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
 							<label for="description">Descripción</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="description"
-										name="description" placeholder="Ingrese un nombre"
-										style="height: 60px;">
+									<input type="text" class="form-control" id="sDescription"
+										maxlength="150" name="sDescription"
+										placeholder="Ingrese un valor" style="height: 40px;">
+									<div class="help-info">Máx. 150 caracteres</div>
 								</div>
-								<label id="description_error" class="error fieldError"
-									for="description" style="visibility: hidden">Campo
-									Requerido.</label>
+							</div>
+						</div>
+
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<label for="description">Motivo</label>
+							<div class="form-group">
+								<div class="form-line">
+									<input type="text" class="form-control" id="sReason"
+										maxlength="200" name="sReason" placeholder="Ingrese un valor"
+										style="height: 40px;">
+									<div class="help-info">Máx. 200 caracteres</div>
+								</div>
 							</div>
 						</div>
 					</form>
@@ -46,10 +61,10 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closeStatusModal()">CANCELAR</button>
-				<button id="btnSaveStatus" type="button"
-					class="btn btn-primary waves-effect" onclick="saveStatus()">GUARDAR</button>
-				<button id="btnUpdateStatus" type="button"
+					onclick="closeStatus()">CANCELAR</button>
+				<button id="save" type="button" class="btn btn-primary waves-effect"
+					onclick="saveStatus()">GUARDAR</button>
+				<button id="update" type="button"
 					class="btn btn-primary waves-effect" onclick="updateStatus()">ACTUALIZAR</button>
 			</div>
 		</div>
