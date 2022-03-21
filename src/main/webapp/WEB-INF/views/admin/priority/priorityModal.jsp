@@ -12,33 +12,26 @@
 				<div class="row clearfix">
 					<form id="priorityModalForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="priorityId"
-							value="" />
+							value="${_csrf.token}" /> <input type="hidden" id="pId" value="" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="name">Nombre</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="name"
-										maxlength="50" name="name" placeholder="Ingrese un nombre"
+									<input type="text" class="form-control" id="pName" name="pName"
+										maxlength="50" placeholder="Ingrese un valor"
 										style="height: 60px;">
 									<div class="help-info">Máx. 50 caracteres</div>
 								</div>
-								<label id="name_error" class="error fieldError" for="name"
-									style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
-						<div
-							class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t--20 m-b--20">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="description">Descripción</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="description"
-										name="description" placeholder="Ingrese un nombre"
-										style="height: 60px;">
+									<input type="text" class="form-control" id="pDescription"
+										name="pDescription" maxlength="250"
+										placeholder="Ingrese un valor" style="height: 60px;">
 								</div>
-								<label id="description_error" class="error fieldError"
-									for="description" style="visibility: hidden">Campo
-									Requerido.</label>
 							</div>
 						</div>
 					</form>
@@ -46,10 +39,10 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closePriorityModal()">CANCELAR</button>
-				<button id="btnSavePriority" type="button"
-					class="btn btn-primary waves-effect" onclick="savePriority()">GUARDAR</button>
-				<button id="btnUpdatePriority" type="button"
+					onclick="closePriority()">CANCELAR</button>
+				<button id="save" type="button" class="btn btn-primary waves-effect"
+					onclick="savePriority()">GUARDAR</button>
+				<button id="update" type="button"
 					class="btn btn-primary waves-effect" onclick="updatePriority()">ACTUALIZAR</button>
 			</div>
 		</div>

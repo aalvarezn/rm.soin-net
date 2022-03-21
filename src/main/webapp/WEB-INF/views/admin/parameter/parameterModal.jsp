@@ -13,35 +13,29 @@
 				<div class="row clearfix">
 					<form id="parameterModalForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="paramId"
+							value="${_csrf.token}" /> <input type="hidden" id="pId"
 							value="" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="description">Descripción</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="description"
-										maxlength="50" name="description"
+									<input type="text" class="form-control" id="pDescription"
+										maxlength="50" name="pDescription"
 										placeholder="Ingrese un nombre" style="height: 60px;">
 									<div class="help-info">Máx. 50 caracteres</div>
 								</div>
-								<label id="description_error" class="error fieldError"
-									for="description" style="visibility: hidden">Campo
-									Requerido.</label>
 							</div>
 						</div>
 						<div
 							class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t--20 m-b--20">
-							<label for="paramValue">Valor</label>
+							<label for="pValue">Valor</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="paramValue"
-										maxlength="100" name="paramValue"
+									<input type="text" class="form-control" id="pValue"
+										maxlength="100" name="pValue"
 										placeholder="Ingrese un nombre" style="height: 60px;">
 									<div class="help-info">Máx. 100 caracteres</div>
 								</div>
-								<label id="paramValue_error" class="error fieldError"
-									for="paramValue" style="visibility: hidden">Campo
-									Requerido.</label>
 							</div>
 						</div>
 					</form>
@@ -49,9 +43,11 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closeParameterModal()">CANCELAR</button>
-				<button type="button" class="btn btn-primary waves-effect"
-					onclick="updateParameter()">ACTUALIZAR</button>
+					onclick="closeParameter()">CANCELAR</button>
+				<button id="save" type="button" class="btn btn-primary waves-effect"
+					onclick="saveParameter()">GUARDAR</button>
+				<button id="update" type="button"
+					class="btn btn-primary waves-effect" onclick="updateParameter()">ACTUALIZAR</button>
 			</div>
 		</div>
 	</div>

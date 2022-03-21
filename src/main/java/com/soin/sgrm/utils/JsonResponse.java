@@ -7,6 +7,7 @@ import com.soin.sgrm.utils.MyError;
 
 public class JsonResponse {
 	private String status = null;
+	private String message = null;
 	private String exception = null;
 	private ArrayList<MyError> errors = new ArrayList<MyError>();
 	private String data;
@@ -63,6 +64,14 @@ public class JsonResponse {
 
 	public void setButton(ButtonCommand button) {
 		this.button = button;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 }
