@@ -2,6 +2,7 @@ package com.soin.sgrm.model.pos;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -58,6 +60,9 @@ public class PSystem implements Serializable {
 	@JoinTable(name = "\"SISTEMA_EQUIPO_TRABAJO\"", joinColumns = {
 			@JoinColumn(name = "\"SISTEMA_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"USUARIO_ID\"") })
 	private Set<PUser> team = new HashSet<>();
+
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "system")
+	private Set<PSystemProject> projectCodes = new HashSet<>();
 
 	// PLANTILLA_ID
 
@@ -181,6 +186,14 @@ public class PSystem implements Serializable {
 
 	public void setProjectCode(String projectCode) {
 		this.projectCode = projectCode;
+	}
+
+	public Set<PSystemProject> getProjectCodes() {
+		return projectCodes;
+	}
+
+	public void setProjectCodes(Set<PSystemProject> projectCodes) {
+		this.projectCodes = projectCodes;
 	}
 
 }

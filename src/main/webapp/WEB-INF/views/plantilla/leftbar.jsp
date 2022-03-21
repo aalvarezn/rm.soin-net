@@ -57,7 +57,10 @@
 						<span>Gestión Releases</span>
 				</a></li>
 			</c:if>
-
+	
+			<li><a id="rfcItem" href="<c:url value='/rfc/'/> ">
+						<span>RFC</span>
+				</a></li>
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">
 					<span>Perfil de usuario</span>
 			</a></li>

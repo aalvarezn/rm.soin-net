@@ -23,7 +23,9 @@ import com.soin.sgrm.service.pos.PriorityService;
 import com.soin.sgrm.service.pos.RFCService;
 
 import com.soin.sgrm.model.pos.PStatus;
+import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.service.pos.StatusService;
+import com.soin.sgrm.service.pos.SystemService;
 
 @Controller
 @RequestMapping(value = "/rfc")
@@ -38,17 +40,23 @@ public class RFCController extends BaseController {
 	@Autowired
 	StatusService status;
 
+	@Autowired
+	SystemService systemService;
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
-			String name = getUserLogin().getUsername();
-
 			List<PPriority> priorities = priority.findAll();
 			List<PStatus> statuses = status.findAll();
-
+			List<PSystem> systems = systemService.listWithProject();
+			
+			for(PSystem system: systems) {
+				System.out.println(system);
+			}
 			model.addAttribute("priorities", priorities);
 			model.addAttribute("statuses", statuses);
+			model.addAttribute("systems", systems);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

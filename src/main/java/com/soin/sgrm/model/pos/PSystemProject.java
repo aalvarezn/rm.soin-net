@@ -1,17 +1,24 @@
 package com.soin.sgrm.model.pos;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-@Table(name = "DOCUMENTO")
-public class PDocument implements Serializable{
-	
+@Table(name = "SISTEMA_PROYECTO")
+public class PSystemProject implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -20,18 +27,13 @@ public class PDocument implements Serializable{
 	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "NOMBRE")
-	private String name;
-	
 	@Column(name = "CODIGO")
 	private String code;
-	
-	@Column(name = "GENERADOR_WORD")
-	private String wordGenerator;
-	
-	@Column(name = "SUFIJO")
-	private String sufix;
-	
+
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = false)
+	private PSystem system;
 
 	public Long getId() {
 		return id;
@@ -39,14 +41,6 @@ public class PDocument implements Serializable{
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getCode() {
@@ -57,20 +51,12 @@ public class PDocument implements Serializable{
 		this.code = code;
 	}
 
-	public String getWordGenerator() {
-		return wordGenerator;
+	public PSystem getSystem() {
+		return system;
 	}
 
-	public void setWordGenerator(String wordGenerator) {
-		this.wordGenerator = wordGenerator;
+	public void setSystem(PSystem system) {
+		this.system = system;
 	}
 
-	public String getSufix() {
-		return sufix;
-	}
-
-	public void setSufix(String sufix) {
-		this.sufix = sufix;
-	}
-	
 }

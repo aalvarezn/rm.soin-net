@@ -13,33 +13,29 @@
 
 				<form id="docTemplateModalForm" action="">
 					<input type="hidden" name="${_csrf.parameterName}"
-						value="${_csrf.token}" /> <input type="hidden" id="docTemplateId"
+						value="${_csrf.token}" /> <input type="hidden" id="dId"
 						value="" />
 					<div class="row clearfix">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<label for="name">Nombre</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="name"
-										maxlength="100" name="name" placeholder="Ingrese un nombre"
+									<input type="text" class="form-control" id="dCode"
+										maxlength="100" name="dCode" placeholder="Ingrese un nombre"
 										style="height: 60px;">
 									<div class="help-info">Máx. 100 caracteres</div>
 								</div>
-								<label id="name_error" class="error fieldError" for="name"
-									style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<label for="name">Plantilla</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="templateName"
-										maxlength="100" name="name" placeholder="Ingrese un nombre"
+									<input type="text" class="form-control" id="dName"
+										maxlength="100" name="dName" placeholder="Ingrese un nombre"
 										style="height: 60px;">
 									<div class="help-info">Máx. 100 caracteres</div>
 								</div>
-								<label id="templateName_error" class="error fieldError"
-									for="name" style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
 
@@ -49,29 +45,27 @@
 							<label for="name">Componente generador</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="componentGenerator"
-										maxlength="100" name="name" placeholder="Ingrese un nombre"
+									<input type="text" class="form-control" id="dComponentGenerator"
+										maxlength="100" name="dComponentGenerator" placeholder="Ingrese un nombre"
 										style="height: 60px;">
 									<div class="help-info">Máx. 100 caracteres</div>
 								</div>
-								<label id="componentGenerator_error" class="error fieldError"
-									for="name" style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 							<label for="name">Sufijo</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="sufix"
-										maxlength="50" name="name" placeholder="Ingrese un nombre"
+									<input type="text" class="form-control" id="dSufix"
+										maxlength="50" name="dSufix" placeholder="Ingrese un nombre"
 										style="height: 60px;">
 									<div class="help-info">Máx. 50 caracteres</div>
 								</div>
-								<label id="sufix_error" class="error fieldError" for="name"
-									style="visibility: hidden">Campo Requerido.</label>
+
 							</div>
 						</div>
 					</div>
+					<!---
 					<div class="row clearfix">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<label>Sistema</label>
@@ -89,14 +83,17 @@
 							</div>
 						</div>
 					</div>
+					-->
 				</form>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closeDocTemplateModal()">CANCELAR</button>
-				<button id="btnSaveDocTemplate" type="button"
+					onclick="closeDocTemplate()">CANCELAR</button>
+				<button id="save" type="button"
+					id="save"
 					class="btn btn-primary waves-effect" onclick="saveDocTemplate()">GUARDAR</button>
-				<button id="btnUpdateDocTemplate" type="button"
+				<button id="update" type="button"
+				
 					class="btn btn-primary waves-effect" onclick="updateDocTemplate()">ACTUALIZAR</button>
 			</div>
 		</div>

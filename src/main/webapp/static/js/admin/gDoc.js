@@ -1,221 +1,235 @@
-$(function() {
+var $dtGDoc;
+var $mdGDoc = $('#gDocModal');
+var $fmGDoc = $('#gDocModalForm');
+$(document).ready(function () {
+	
 	activeItemMenu("documentItem", true);
-});
-var $gDocTable = $('#gDocTable').DataTable({
-	"language" : {
-		"emptyTable" : "No existen registros",
-		"zeroRecords" : "No existen registros"
-	},
-	"ordering" : true,
-	"searching" : true,
-	"paging" : true
+	initDataTable();
+	initGDoc();
 });
 
-var $gDocModal = $('#gDocModal');
-var $gDocModalForm = $('#gDocModalForm');
 
-function openGDocModal() {
-	resetErrors();
-	$gDocModalForm[0].reset();
-	$gDocModalForm.find("#proyectId").selectpicker('val', '');
-	$('#btnUpdateGDoc').hide();
-	$('#btnSaveGDoc').show();
-	$gDocModal.modal('show');
+
+function initDataTable() {
+	$dtGDoc = $('#gDocTable')
+	.DataTable(
+			{
+				lengthMenu : [ [ 10, 25, 50, -1 ],
+					[ '10', '25', '50', 'Mostrar todo' ] ],
+					"iDisplayLength" : 10,
+					"language" : optionLanguaje,
+					"iDisplayStart" : 0,
+					"sAjaxSource" : getCont() + "admin/gDoc/list",
+					"fnServerParams" : function(aoData) {
+					},
+					"aoColumns" : [
+						{
+							"mDataProp" : 'name'
+						},
+						{
+							"mDataProp" : 'project.description'
+						},
+						{
+							render : function(data, type, row, meta) {
+								var options = '<div class="iconLine">';
+
+								options += '<a onclick="showGDoc('
+									+ meta.row
+									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
+
+								options += '<a onclick="deleteGDoc('
+									+ meta.row
+									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
+
+								options += ' </div>';
+
+								return options;
+							}
+						} ],
+						ordering : false,
+			});
 }
 
-function saveGDoc() {
-	blockUI();
-	$.ajax({
-		type : "POST",
-		url : getCont() + "admin/gDoc/" + "saveGDoc",
-		data : {
-			// Informacion gDocs
-			id : 0,
-			description: $gDocModalForm.find('#description').val(),
-			credentials: $gDocModalForm.find('#credentials').val(),
-			spreadSheet: $gDocModalForm.find('#spreadSheet').val(),
-			proyectId: $gDocModalForm.find("#proyectId").children("option:selected").val()
-		},
-		success : function(response) {
-			ajaxSaveGDoc(response)
-		},
-		error : function(x, t, m) {
-			console.log(x);
-			console.log(t);
-			console.log(m);
-			unblockUI();
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function ajaxSaveGDoc(response) {
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		$gDocModal.modal('hide');
-		swal("Correcto!", "GDoc creado correctamente.", "success", 2000)
-		break;
-	case 'fail':
-		unblockUI();
-		showGDocErrors(response.errors, $gDocModalForm);
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "error")
-		break;
-	default:
-		console.log(response.status);
-	unblockUI();
-	}
-}
-
-function updateGDocModal(index) {
-	resetErrors();
-	$('#btnUpdateGDoc').show();
-	$('#btnSaveGDoc').hide();
-	blockUI();
-	$.ajax({
-		type : "GET",
-		url : getCont() + "admin/" + "gDoc/findGDoc/" + index,
-		timeout : 60000,
-		data : {},
-		success : function(response) {
-			unblockUI();
-			$gDocModalForm.find('#gDocId').val(index);
-			$gDocModalForm.find('#description').val(response.description);
-			$gDocModalForm.find('#credentials').val(response.credentials);
-			$gDocModalForm.find('#spreadSheet').val(response.spreadSheet);
-			$gDocModalForm.find("#proyectId").selectpicker('val', response.proyect.id);
-			$gDocModal.modal('show');
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function closeGDocModal() {
-	$gDocModalForm[0].reset();
-	$gDocModal.modal('hide');
+function showGDoc(index){
+	$fmGDoc.validate().resetForm();
+	$fmGDoc[0].reset();
+	var obj = $dtGDoc.row(index).data();
+	$fmGDoc.find('#gId').val(obj.id);
+	$fmGDoc.find('#gDescription').val(obj.name);
+	$fmGDoc.find('#gSpreadSheet').val(obj.spreadSheet);
+	$fmGDoc.find('#gCredentials').val(obj.credentials);
+	$fmGDoc	.find('#pId').selectpicker('val',obj.project.id);
+	$mdGDoc.find('#update').show();
+	$mdGDoc.find('#save').hide();
+	$mdGDoc.modal('show');
 }
 
 function updateGDoc() {
-	blockUI();
-	$.ajax({
-		type : "POST",
-		url : getCont() + "admin/gDoc/" + "updateGDoc",
-		data : {
-			// Informacion gDoc
-			id: $gDocModalForm.find('#gDocId').val(),
-			description: $gDocModalForm.find('#description').val(),
-			credentials: $gDocModalForm.find('#credentials').val(),
-			spreadSheet: $gDocModalForm.find('#spreadSheet').val(),
-			proyectId: $gDocModalForm.find("#proyectId").children("option:selected").val()
-		},
-		success : function(response) {
-			ajaxUpdateGDoc(response)
-		},
-		error : function(x, t, m) {
-			console.log(x);
-			console.log(t);
-			console.log(m);
-			unblockUI();
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function ajaxUpdateGDoc(response) {
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		$gDocModal.modal('hide');
-		swal("Correcto!", "GDoc modificado correctamente.", "success", 2000)
-		break;
-	case 'fail':
-		unblockUI();
-		showGDocErrors(response.errors, $gDocModalForm);
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "error")
-		break;
-	default:
-		console.log(response.status);
-	unblockUI();
-	}
-}
-
-function confirmDeleteGDoc(element) {
+	if (!$fmGDoc.valid())
+		return;
 	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea eliminar?',
-		text: "Esta acci\u00F3n no se puede reversar.",
-		icon: 'question',
-		showCancelButton: true,
-		customClass: 'swal-wide',
-		cancelButtonText: 'Cancelar',
-		cancelButtonColor: '#f14747',
-		confirmButtonColor: '#3085d6',
-		confirmButtonText: 'Aceptar',
+		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
 	}).then((result) => {
 		if(result.value){
-			deleteGDoc(element);
-		}		
+			blockUI();
+			$.ajax({
+				type : "PUT",
+				url : getCont() + "admin/gDoc/" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					 id : $fmGDoc.find('#gId').val(),
+					 name:	$fmGDoc.find('#gDescription').val(),
+					 spreadSheet: $fmGDoc.find('#gSpreadSheet').val(),
+					 credentials: $fmGDoc.find('#gCredentials').val(),
+					 projectId: $fmGDoc.find('#pId').val()
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtGDoc.ajax.reload();
+					$mdGDoc.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
 	});
 }
 
-function deleteGDoc(element){
-	blockUI();
-	$.ajax({
-		type : "DELETE",
-		url : getCont() + "admin/" + "gDoc/deleteGDoc/" + element,
-		timeout : 60000,
-		data : {},
-		success : function(response) {
-			ajaxDeleteGDoc(response);
+
+function saveGDoc() {
+	if (!$fmGDoc.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "POST",
+				url : getCont() + "admin/gDoc/" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					 name:	$fmGDoc.find('#gDescription').val(),
+					 spreadSheet: $fmGDoc.find('#gSpreadSheet').val(),
+					 credentials: $fmGDoc.find('#gCredentials').val(),
+					 projectId: $fmGDoc.find('#pId').val()
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtGDoc.ajax.reload();
+					$mdGDoc.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
+	});
+}
+
+function deleteGDoc(index) {
+	var obj = $dtGDoc.row(index).data();
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "DELETE",
+				url : getCont() + "admin/gDoc/"+obj.id ,
+				timeout : 60000,
+				data : {},
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtGDoc.ajax.reload();
+					$mdGDoc.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
+	});
+}
+
+function addGDoc(){
+	$fmGDoc.validate().resetForm();
+	$fmGDoc[0].reset();
+	$fmGDoc	.find('#pId').selectpicker('val',"");
+	$mdGDoc.find('#save').show();
+	$mdGDoc.find('#update').hide();
+	$mdGDoc.modal('show');
+}
+
+function closeGDoc(){
+	$mdGDoc.modal('hide');
+}
+
+function initGDoc() {
+	$fmGDoc.validate({
+		rules : {
+			'gDescription' : {
+				required : true,
+				minlength : 1,
+				maxlength : 200,
+			},
+			'gSpreadSheet' : {
+				required : true,
+				minlength : 1,
+				maxlength : 500
+			},
+			'pId' : {
+				required : true,
+			},
+			'gCredentials' : {
+				required : true,
+				minlength : 1
+			},
 		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-		}
+		messages : {
+			'gDescription' : {
+				required :  "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+			'gSpreadSheet' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+			'pId' : {
+				required : "Ingrese un valor",
+			},
+			'gCredentials' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+			},
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
 	});
-}
-
-function ajaxDeleteGDoc(response){
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!", "El gDoc ha sido eliminado exitosamente.",
-				"success", 2000)
-				break;
-	case 'fail':
-		swal("Error!", response.exception, "error")
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "warning")
-		break;
-	default:
-		location.reload();
-	}
-}
-
-function resetErrors() {
-	$(".fieldError").css("visibility", "hidden");
-	$(".fieldError").attr("class", "error fieldError");
-	$(".fieldErrorLine").attr("class", "form-line");
-}
-
-function showGDocErrors(error, $form) {
-	resetErrors();// Eliminamos las etiquetas de errores previas
-	for (var i = 0; i < error.length; i++) {
-		// Se modifica el texto de la advertencia y se agrega la de activeError
-		$form.find(" #" + error[i].key + "_error").text(error[i].message);
-		$form.find(" #" + error[i].key + "_error").css("visibility", "visible");
-		$form.find(" #" + error[i].key + "_error").attr("class",
-		"error fieldError activeError");
-		// Si es input||textarea se marca el line en rojo
-		if ($form.find(" #" + error[i].key).is("input")
-				|| $form.find(" #" + error[i].key).is("textarea")) {
-			$form.find(" #" + error[i].key).parent().attr("class",
-			"form-line error focused fieldErrorLine");
-		}
-	}
 }

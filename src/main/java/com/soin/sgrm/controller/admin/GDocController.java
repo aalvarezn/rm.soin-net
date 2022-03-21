@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.pos.PGDocConfiguration;
+import com.soin.sgrm.model.pos.PProject;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.service.pos.GDocConfigurationService;
@@ -62,6 +63,9 @@ public class GDocController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
+			PProject project =projectService.findById(addGDoc.getProjectId());
+			addGDoc.setProject(project);
+			
 			gDocService.save(addGDoc);
 
 			res.setMessage("Configuracion agregada!");
@@ -79,6 +83,8 @@ public class GDocController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
+			PProject project =projectService.findById(uptGDoc.getProjectId());
+			uptGDoc.setProject(project);
 			gDocService.update(uptGDoc);
 
 			res.setMessage("Configuracion modificado!");

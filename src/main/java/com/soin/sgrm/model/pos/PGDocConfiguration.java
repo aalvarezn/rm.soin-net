@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -28,13 +29,13 @@ public class PGDocConfiguration implements Serializable{
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Long id;
 
 	@Column(name = "NOMBRE")
 	@NotEmpty(message = Constant.EMPTY)
 	private String name;
 
-	@Column(name = "CREDENTIAL_JSON")
+	@Column(name = "CREDENCIAL_JSON")
 	@NotEmpty(message = Constant.EMPTY)
 	private String credentials;
 
@@ -46,15 +47,17 @@ public class PGDocConfiguration implements Serializable{
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"PROYECTO_ID\"")
-	private PProject proyect;
+	private PProject project;
 
-
-	public int getId() {
+	@Transient
+	private Long projectId;
+	
+	public Long getId() {
 		return id;
 	}
 
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -89,12 +92,18 @@ public class PGDocConfiguration implements Serializable{
 	}
 
 
-	public PProject getProyect() {
-		return proyect;
+	public PProject getProject() {
+		return project;
 	}
 
 
-	public void setProyect(PProject proyect) {
-		this.proyect = proyect;
+	public void setProject(PProject project) {
+		this.project = project;
+	}
+	public Long getProjectId() {
+		return projectId;
+	}
+	public void setProjectId(Long projectId) {
+		this.projectId=projectId;
 	}
 }
