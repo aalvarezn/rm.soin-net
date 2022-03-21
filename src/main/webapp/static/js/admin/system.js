@@ -1,358 +1,392 @@
-/** Declaración de variables globales del contexto * */
-var $dtSystem;
-let $mdSystem = $('#systemModal');
-let $fmSystem = $('#systemModalForm');
-let $mdSystemPassword = $('#systemPasswordModal');
-let $fmSystemPassword = $('#systemPasswordModalForm');
-
-
 $(function() {
 	activeItemMenu("systemItem", true);
-	initDataTable();
-	initMultiSelect();
-	initSystemFormValidation();
+});
+var $systemTable = $('#systemTable').DataTable({
+	"language" : {
+		"emptyTable" : "No existen registros",
+		"zeroRecords" : "No existen registros"
+	},
+	"ordering" : true,
+	"searching" : true,
+	"paging" : true
 });
 
-$("#tableFilters #fProject").change(function() {
-	$dtSystem.ajax.reload();
-});
+var $systemModal = $('#systemModal');
+var $systemModalForm = $('#systemModalForm');
 
+$(function() {
+	$systemModal.find('#managers').multiSelect({
+		selectableHeader: "<div class='custom-header'>Usuarios</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+		selectionHeader: "<div class='custom-header'>Usuarios gestores</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+		afterInit: function(ms){
+			var that = this,
+			$selectableSearch = that.$selectableUl.prev(),
+			$selectionSearch = that.$selectionUl.prev(),
+			selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+			selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
 
-function showSystem(index){
-	$fmSystem.validate().resetForm();
-	$fmSystem[0].reset();
-	$('.nav-tabs a[href="#tabHome"]').tab('show');
-	var obj = $dtSystem.row(index).data();
-	$fmSystem.find('#sId').val(obj.id);
-	$fmSystem.find('#sName').val(obj.name);
-	$fmSystem.find('#sCode').val(obj.code);
-	$fmSystem.find('#sLeader').selectpicker('val', obj.leader.userName);
-	$fmSystem.find('#sProject').selectpicker('val',  obj.project.code);
-
-	$('#sTeam').multiSelect('deselect_all');
-	obj.team.forEach(function (element) {
-		$('#sTeam').multiSelect('select', element.userName);
-	});
-	$('#sTeam').multiSelect("refresh");
-
-	$('#sManagers').multiSelect('deselect_all');
-	obj.managers.forEach(function (element) {
-		$('#sManagers').multiSelect('select', element.userName);
-	});
-	$('#sManagers').multiSelect("refresh");
-
-	$fmSystem.find('#sImportObjects').prop('checked', obj.importObjects);
-	$fmSystem.find('#sCustomCommands').prop('checked', obj.customCommands);
-
-	$mdSystem.find('#update').show();
-	$mdSystem.find('#save').hide();
-	$mdSystem.modal('show');
-}
-
-function addSystem(){
-	$fmSystem.validate().resetForm();
-	$fmSystem[0].reset();
-	$('.nav-tabs a[href="#tabHome"]').tab('show');
-
-	$fmSystem.find('#sLeader').selectpicker('val', "");
-	$fmSystem.find('#sProject').selectpicker('val',  "");
-
-	$('#sTeam').multiSelect('deselect_all');
-	$('#sTeam').multiSelect("refresh");
-
-	$('#sManagers').multiSelect('deselect_all');
-	$('#sManagers').multiSelect("refresh");
-
-	$mdSystem.find('#save').show();
-	$mdSystem.find('#update').hide();
-	$mdSystem.modal('show');
-}
-
-function closeSystem(){
-	$mdSystem.modal('hide');
-}
-
-function updateSystem() {
-	if (!$fmSystem.valid())
-		return;
-	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
-		text: 'Esta acci\u00F3n no se puede reversar.',
-		...swalDefault
-	}).then((result) => {
-		if(result.value){
-			blockUI();
-			$.ajax({
-				type : "PUT",
-				url : getCont() + "admin/system/" ,
-				dataType : "json",
-				contentType: "application/json; charset=utf-8",
-				timeout : 60000,
-				data : JSON.stringify({
-					id : $fmSystem.find('#sId').val(),
-					name : $fmSystem.find('#sName').val(),
-					code : $fmSystem.find('#sCode').val(),
-					leaderUserName : $fmSystem.find('#sLeader').val(),
-					projectCode : $fmSystem.find('#sProject').val(),
-					importObjects: $fmSystem.find('#sImportObjects').is(':checked'),
-					customCommands: $fmSystem.find('#sCustomCommands').is(':checked'),
-					strTeam : $fmSystem.find('#sTeam').val(),
-					strManagers : $fmSystem.find('#sManagers').val()
-				}),
-				success : function(response) {
-					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtSystem.ajax.reload();
-					$mdSystem.modal('hide');
-				},
-				error : function(x, t, m) {
-					unblockUI();
-					console.log(x);
-					console.log(t);
-					console.log(m);
+			that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+			.on('keydown', function(e){
+				if (e.which === 40){
+					that.$selectableUl.focus();
+					return false;
 				}
 			});
+
+			that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+			.on('keydown', function(e){
+				if (e.which == 40){
+					that.$selectionUl.focus();
+					return false;
+				}
+			});
+		},
+		afterSelect : function(values) {
+			$systemModal.find("#managers option[id='" + values + "']").attr("selected", "selected");
+		},
+		afterDeselect : function(values) {
+			$systemModal.find("#managers option[id='" + values + "']").removeAttr('selected');
 		}
 	});
+	$systemModal.find('#team').multiSelect({
+		selectableHeader: "<div class='custom-header'>Usuarios</div> <input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+		selectionHeader: "<div class='custom-header'>Equipo usuarios</div> <input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+		afterInit: function(ms){
+			var that = this,
+			$selectableSearch = that.$selectableUl.prev(),
+			$selectionSearch = that.$selectionUl.prev(),
+			selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+			selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+			that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+			.on('keydown', function(e){
+				if (e.which === 40){
+					that.$selectableUl.focus();
+					return false;
+				}
+			});
+
+			that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+			.on('keydown', function(e){
+				if (e.which == 40){
+					that.$selectionUl.focus();
+					return false;
+				}
+			});
+		},
+		afterSelect : function(values) {
+			$systemModal.find("#team option[id='" + values + "']").attr("selected", "selected");
+		},
+		afterDeselect : function(values) {
+			$systemModal.find("#team option[id='" + values + "']").removeAttr('selected');
+		}
+	});
+
+	$systemModal.find('input[type="checkbox"]').change(function() {
+		if (this.checked) {
+			$(this).val(1);
+		} else {
+			$(this).val(0);
+		}
+	});
+});
+
+function getSelectIds(form, name){
+	let list = [];
+	form.find(name).children("option:selected").each(function(j) {
+		list.push(Number($(this).attr('id')));
+	});
+	return list;
+
+}
+
+function openSystemModal() {
+	resetErrors();
+	$systemModalForm.find('a[href="#tabHome"]').click();
+	$systemModalForm.find('input[type="checkbox"]').val('0');
+	$systemModalForm[0].reset();
+	$systemModalForm.find("#leaderId").selectpicker('val', '');
+	$systemModalForm.find("#proyectId").selectpicker('val', '');
+	$systemModalForm.find('input[type="checkbox"]').val('0');
+
+	$systemModalForm.find('#team option').removeAttr('selected');
+	$systemModalForm.find('#managers option').removeAttr('selected');
+	$systemModalForm.find('#team').multiSelect("refresh");
+	$systemModalForm.find('#managers').multiSelect("refresh");
+	$('#btnUpdateSystem').hide();
+	$('#btnSaveSystem').show();
+	$systemModal.modal('show');
 }
 
 function saveSystem() {
-	if (!$fmSystem.valid())
-		return;
-	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea agregar el registro?',
-		text: 'Esta acci\u00F3n no se puede reversar.',
-		...swalDefault
-	}).then((result) => {
-		if(result.value){
-			blockUI();
-			$.ajax({
-				type : "POST",
-				url : getCont() + "admin/system/" ,
-				dataType : "json",
-				contentType: "application/json; charset=utf-8",
-				timeout : 60000,
-				data : JSON.stringify({
-					name : $fmSystem.find('#sName').val(),
-					code : $fmSystem.find('#sCode').val(),
-					leaderUserName : $fmSystem.find('#sLeader').val(),
-					projectCode : $fmSystem.find('#sProject').val(),
-					importObjects: $fmSystem.find('#sImportObjects').is(':checked'),
-					customCommands: $fmSystem.find('#sCustomCommands').is(':checked'),
-					strTeam : $fmSystem.find('#sTeam').val(),
-					strManagers : $fmSystem.find('#sManagers').val()
-				}),
-				success : function(response) {
-					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtSystem.ajax.reload();
-					$mdSystem.modal('hide');
-				},
-				error : function(x, t, m) {
-					unblockUI();
-					console.log(x);
-					console.log(t);
-					console.log(m);
-				}
-			});
+	blockUI();
+	let userTeamId = getSelectIds($systemModalForm, "#team");
+	let managersId = getSelectIds($systemModalForm, "#managers");
+	$.ajax({
+		type : "POST",
+		url : getCont() + "admin/system/" + "saveSystem",
+		data : {
+			// Informacion sistemas
+			id : 0,
+			name : $systemModalForm.find('#name').val(),
+			code : $systemModalForm.find('#code').val(),
+			nomenclature : boolean($systemModalForm.find('#nomenclature').val()),
+			importObjects : boolean($systemModalForm.find('#importObjects').val()),
+			isBO : boolean($systemModalForm.find('#isBO').val()),
+			isAIA : boolean($systemModalForm.find('#isAIA').val()),
+			customCommands : boolean($systemModalForm.find('#customCommands').val()),
+			installationInstructions : boolean($systemModalForm.find('#installationInstructions').val()),
+			additionalObservations : boolean($systemModalForm.find('#additionalObservations').val()),
+			proyectId: $systemModalForm.find("#proyectId").children("option:selected").val(),
+			leaderId: $systemModalForm.find("#leaderId").children("option:selected").val(),
+			userTeamId: JSON.stringify(userTeamId),
+			managersId: JSON.stringify(managersId),
+			emailId: $systemModalForm.find("#emailId").children("option:selected").val()
+		},
+		success : function(response) {
+			ajaxSaveSystem(response)
+		},
+		error : function(x, t, m) {
+			console.log(x);
+			console.log(t);
+			console.log(m);
+			unblockUI();
+			notifyAjaxError(x, t, m);
 		}
 	});
 }
 
-function deleteSystem (index) {
-	var obj = $dtSystem.row(index).data();
-	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
-		text: 'Esta acci\u00F3n no se puede reversar.',
-		...swalDefault
-	}).then((result) => {
-		if(result.value){
-			blockUI();
-			$.ajax({
-				type : "DELETE",
-				url : getCont() + "admin/system/"+obj.id ,
-				timeout : 60000,
-				data : {},
-				success : function(response) {
-					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtSystem.ajax.reload();
-					$mdSystem.modal('hide');
-				},
-				error : function(x, t, m) {
-					unblockUI();
-					console.log(x);
-					console.log(t);
-					console.log(m);
-				}
-			});
+function ajaxSaveSystem(response) {
+	switch (response.status) {
+	case 'success':
+		location.reload();
+		swal("Correcto!", "Sistema creado correctamente.", "success", 2000)
+		break;
+	case 'fail':
+		unblockUI();
+		$systemModalForm.find('a[href="#tabHome"]').click();
+		showSystemErrors(response.errors, $systemModalForm);
+		break;
+	case 'exception':
+		swal("Error!", response.exception, "error")
+		break;
+	default:
+		console.log(response.status);
+	unblockUI();
+	}
+}
+
+function updateSystemModal(index) {
+	resetErrors();
+	$systemModalForm.find('a[href="#tabHome"]').click();
+	$systemModalForm.find('input[type="checkbox"]').val('0');
+	$systemModalForm.find('#team option').removeAttr('selected');
+	$systemModalForm.find('#managers option').removeAttr('selected');
+	$('#btnUpdateSystem').show();
+	$('#btnSaveSystem').hide();
+	blockUI();
+	$.ajax({
+		type : "GET",
+		url : getCont() + "admin/" + "system/findSystem/" + index,
+		timeout : 60000,
+		data : {},
+		success : function(response) {
+			if (response == null) {
+				swal("Error!", "El Sistema seleccionado no existe.", "error");
+			} else {
+				unblockUI();
+				ajaxEditSystem(response);
+			}
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
 		}
 	});
 }
 
+function ajaxEditSystem(obj) {
+	$systemModalForm.find('#systemId').val(obj.id);
+	$systemModalForm.find('#name').val(obj.name);
+	$systemModalForm.find('#code').val(obj.code);
+	$systemModalForm.find("#leaderId").selectpicker('val', obj.leader.id);
+	$systemModalForm.find("#proyectId").selectpicker('val', obj.proyect.id);
+	if(obj.emailTemplate.length > 0)
+		$systemModalForm.find("#emailId").selectpicker('val', obj.emailTemplate[0].id);
+	
+	if (obj.nomenclature)
+		activeInputCheckbox($systemModalForm, 'nomenclature');
+	if (obj.importObjects)
+		activeInputCheckbox($systemModalForm, 'importObjects');
+	if (obj.isBO)
+		activeInputCheckbox($systemModalForm, 'isBO');
+	if (obj.isAIA)
+		activeInputCheckbox($systemModalForm, 'isAIA');
+	if (obj.customCommands)
+		activeInputCheckbox($systemModalForm, 'customCommands');
+	if (obj.additionalObservations)
+		activeInputCheckbox($systemModalForm, 'additionalObservations');
+	if (obj.installationInstructions)
+		activeInputCheckbox($systemModalForm, 'installationInstructions');
 
-function initMultiSelect(){
-	$('#sTeam').multiSelect(
-			{
-				selectableHeader: "<div class='custom-header'>Usuarios</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
-				selectionHeader: "<div class='custom-header'>Usuarios Equipo</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
-				afterInit: function(ms){
-					var that = this,
-					$selectableSearch = that.$selectableUl.prev(),
-					$selectionSearch = that.$selectionUl.prev(),
-					selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
-					selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
-					that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-					.on('keydown', function(e){
-						if (e.which === 40){
-							that.$selectableUl.focus();
-							return false;
-						}
-					});
-
-					that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-					.on('keydown', function(e){
-						if (e.which == 40){
-							that.$selectionUl.focus();
-							return false;
-						}
-					});
-				},
-				afterSelect : function(values) {
-					$fmSystem.find("#sTeam option[id='" + values + "']").attr("selected","selected");
-				},
-				afterDeselect : function(values) {
-					$fmSystem.find("#sTeam option[id='" + values +"']").removeAttr('selected');
-				}
-			});
-	$('#sManagers').multiSelect(
-			{
-				selectableHeader: "<div class='custom-header'>Usuarios</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
-				selectionHeader: "<div class='custom-header'>Usuarios Gestores</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
-				afterInit: function(ms){
-					var that = this,
-					$selectableSearch = that.$selectableUl.prev(),
-					$selectionSearch = that.$selectionUl.prev(),
-					selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
-					selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
-					that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-					.on('keydown', function(e){
-						if (e.which === 40){
-							that.$selectableUl.focus();
-							return false;
-						}
-					});
-
-					that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-					.on('keydown', function(e){
-						if (e.which == 40){
-							that.$selectionUl.focus();
-							return false;
-						}
-					});
-				},
-				afterSelect : function(values) {
-					$fmSystem.find("#sManagers option[id='" + values + "']").attr("selected","selected");
-				},
-				afterDeselect : function(values) {
-					$fmSystem.find("#sManagers option[id='" + values +"']").removeAttr('selected');
-				}
-			});
+	var userTeam = [];
+	for (var i = 0, l = obj.userTeam.length; i < l; i++) {
+		$systemModalForm.find('#team option').each(
+				function(index, element) {
+					if (element.id == obj.userTeam[i].id) {
+						userTeam.push((obj.userTeam[i].id).toString());
+					}
+				});
+	}
+	var managers = [];
+	for (var i = 0, l = obj.managers.length; i < l; i++) {
+		$systemModalForm.find('#managers option').each(
+				function(index, element) {
+					if (element.id == obj.managers[i].id) {
+						managers.push((obj.managers[i].id).toString());
+					}
+				});
+	}
+	$systemModal.find('#managers').multiSelect('select',managers);
+	$systemModal.find('#team').multiSelect('select', userTeam);
+	$systemModal.modal('show');
 }
 
-function initDataTable() {
-	$dtSystem = $('#systemTable')
-	.DataTable(
-			{
-				lengthMenu : [ [ 10, 25, 50, -1 ],
-					[ '10', '25', '50', 'Mostrar todo' ] ],
-					"iDisplayLength" : 10,
-					"language" : optionLanguaje,
-					"iDisplayStart" : 0,
-					"processing" : true,
-					"serverSide" : true,
-					"sAjaxSource" : getCont() + "admin/system/list",
-					"fnServerParams" : function(aoData) {
-						aoData.push({
-							"name" : "sProject",
-							"value" : $('#tableFilters #fProject').val()
-						});
-					},
-					"aoColumns" : [
-						{
-							"mDataProp" : "code"
-						},
-						{
-							"mDataProp" : "name"
-						},
-						{
-							"mDataProp" : "leader.name"
-						},
-						{
-							"mDataProp" : "project.description"
-						},
-						{
-							render : function(data, type, row, meta) {
-								var options = '<div class="iconLine">';
-
-								options += '<a onclick="showSystem('
-									+ meta.row
-									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
-
-								options += '<a onclick="deleteSystem('
-									+ meta.row
-									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
-
-								options += ' </div>';
-
-								return options;
-							}
-						} ],
-						ordering : false,
-			});
+function closeSystemModal() {
+	$systemModalForm[0].reset();
+	$systemModal.find('#managers').multiSelect("deselect_all");
+	$systemModal.find('#team').multiSelect("deselect_all");
+	$systemModal.modal('hide');
 }
 
-function initSystemFormValidation() {
-	$fmSystem.validate({
-		ignore: ":hidden:not(.selectpicker)",
-		rules : {
-			'sCode' : {
-				required : true,
-				minlength : 1,
-				maxlength : 10
-			},
-			'sName' : {
-				required : true,
-				minlength : 1,
-				maxlength : 50
-			},
-			'sLeader' : {
-				required : true,
-			},
-			'sProject' : {
-				required : true,
-			},
+function updateSystem() {
+	blockUI();
+	let userTeamId = getSelectIds($systemModalForm, "#team");
+	let managersId = getSelectIds($systemModalForm, "#managers");
+	$.ajax({
+		type : "POST",
+		url : getCont() + "admin/system/" + "updateSystem",
+		data : {
+			// Informacion sistema
+			id : $systemModalForm.find('#systemId').val(),
+			name : $systemModalForm.find('#name').val(),
+			code : $systemModalForm.find('#code').val(),
+			nomenclature : boolean($systemModalForm.find('#nomenclature').val()),
+			importObjects : boolean($systemModalForm.find('#importObjects').val()),
+			isBO : boolean($systemModalForm.find('#isBO').val()),
+			isAIA : boolean($systemModalForm.find('#isAIA').val()),
+			customCommands : boolean($systemModalForm.find('#customCommands').val()),
+			installationInstructions : boolean($systemModalForm.find('#installationInstructions').val()),
+			additionalObservations : boolean($systemModalForm.find('#additionalObservations').val()),
+			proyectId: $systemModalForm.find("#proyectId").children("option:selected").val(),
+			leaderId: $systemModalForm.find("#leaderId").children("option:selected").val(),
+			userTeamId: JSON.stringify(userTeamId),
+			managersId: JSON.stringify(managersId),
+			emailId: $systemModalForm.find("#emailId").children("option:selected").val()
 		},
-		messages : {
-			'sCode' : {
-				required :  "Ingrese un valor",
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
-			'sName' : {
-				required : "Ingrese un valor",
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
-			'sLeader' : {
-				required : "Ingrese un valor",
-			},
-			'sProject' : {
-				required : "Ingrese un valor",
-			},
+		success : function(response) {
+			ajaxUpdateSystem(response)
 		},
-		highlight,
-		unhighlight,
-		errorPlacement
+		error : function(x, t, m) {
+			console.log(x);
+			console.log(t);
+			console.log(m);
+			unblockUI();
+			notifyAjaxError(x, t, m);
+		}
 	});
+}
+
+function ajaxUpdateSystem(response) {
+	switch (response.status) {
+	case 'success':
+		location.reload();
+		swal("Correcto!", "Sistema modificado correctamente.", "success", 2000)
+		break;
+	case 'fail':
+		unblockUI();
+		$systemModalForm.find('a[href="#tabHome"]').click();
+		showSystemErrors(response.errors, $systemModalForm);
+		break;
+	case 'exception':
+		swal("Error!", response.exception, "error")
+		break;
+	default:
+		console.log(response.status);
+	unblockUI();
+	}
+}
+
+function confirmDeleteSystem(element) {
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea eliminar?',
+		text: "Esta acci\u00F3n no se puede reversar.",
+		icon: 'question',
+		showCancelButton: true,
+		customClass: 'swal-wide',
+		cancelButtonText: 'Cancelar',
+		cancelButtonColor: '#f14747',
+		confirmButtonColor: '#3085d6',
+		confirmButtonText: 'Aceptar',
+	}).then((result) => {
+		if(result.value){
+			deleteSystem(element);
+		}		
+	});
+}
+
+function deleteSystem(element){
+	blockUI();
+	$.ajax({
+		type : "DELETE",
+		url : getCont() + "admin/" + "system/deleteSystem/" + element,
+		timeout : 60000,
+		data : {},
+		success : function(response) {
+			ajaxDeleteSystem(response);
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+}
+
+function ajaxDeleteSystem(response){
+	switch (response.status) {
+	case 'success':
+		location.reload();
+		swal("Correcto!", "El sistema ha sido eliminado exitosamente.",
+				"success", 2000)
+				break;
+	case 'fail':
+		swal("Error!", response.exception, "error")
+		break;
+	case 'exception':
+		swal("Error!", response.exception, "warning")
+		break;
+	default:
+		location.reload();
+	}
+}
+
+function resetErrors() {
+	$(".fieldError").css("visibility", "hidden");
+	$(".fieldError").attr("class", "error fieldError");
+	$(".fieldErrorLine").attr("class", "form-line");
+}
+
+function showSystemErrors(error, $form) {
+	resetErrors();// Eliminamos las etiquetas de errores previas
+	for (var i = 0; i < error.length; i++) {
+		// Se modifica el texto de la advertencia y se agrega la de activeError
+		$form.find(" #" + error[i].key + "_error").text(error[i].message);
+		$form.find(" #" + error[i].key + "_error").css("visibility", "visible");
+		$form.find(" #" + error[i].key + "_error").attr("class",
+		"error fieldError activeError");
+		// Si es input||textarea se marca el line en rojo
+		if ($form.find(" #" + error[i].key).is("input")
+				|| $form.find(" #" + error[i].key).is("textarea")) {
+			$form.find(" #" + error[i].key).parent().attr("class",
+			"form-line error focused fieldErrorLine");
+		}
+	}
 }

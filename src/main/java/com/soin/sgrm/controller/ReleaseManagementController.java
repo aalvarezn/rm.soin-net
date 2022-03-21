@@ -90,7 +90,7 @@ public class ReleaseManagementController extends BaseController {
 			ReleaseEdit release = releaseService.findEditById(idRelease);
 			Status status = statusService.findByName("Anulado");
 			release.setStatus(status);
-			release.setOperator(getUserLogin().getName());
+			release.setOperator(getUserLogin().getFullName());
 			release.setMotive(status.getMotive());
 			releaseService.updateStatusRelease(release);
 			res.setStatus("success");
@@ -123,7 +123,7 @@ public class ReleaseManagementController extends BaseController {
 					release.setRetries(release.getRetries() + 1);
 			}
 			release.setStatus(status);
-			release.setOperator(getUserLogin().getName());
+			release.setOperator(getUserLogin().getFullName());
 
 			release.setDateChange(dateChange);
 			release.setMotive(motive);
