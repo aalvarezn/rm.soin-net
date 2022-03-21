@@ -48,7 +48,7 @@
 			</div>
 			<div id="tableFilters" class="row clearfix m-t-20">
 				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-					<label>Projecto</label>
+					<label>Proyecto</label>
 					<div class="form-group m-b-0">
 						<select id="fProject" class="form-control show-tick selectpicker"
 							data-live-search="true">

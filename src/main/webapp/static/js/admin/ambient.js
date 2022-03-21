@@ -79,9 +79,9 @@ function updateAmbient() {
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					id : $fmAuthority.find('#aId').val(),
-					code : $fmAuthority.find('#aCode').val(),
-					name : $fmAuthority.find('#aName').val(),
+					id : $fmAmbient.find('#aId').val(),
+					code : $fmAmbient.find('#aCode').val(),
+					name : $fmAmbient.find('#aName').val(),
 				}),
 				success : function(response) {
 					unblockUI();

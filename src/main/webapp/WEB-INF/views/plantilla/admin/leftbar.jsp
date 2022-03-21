@@ -24,14 +24,9 @@
 				href="<c:url value='/admin/tree/'/>"> <span>Árbol dependencias</span>
 			</a></li>
 			<!---- 	#Seccion de ambientes ---->
-			<li class=""><a id="ambientItem" href="javascript:void(0);"
-				class="menu-toggle"> <span>Ambientes</span>
-			</a>
-				<ul class="ml-menu">
-					<li><a href="<c:url value='/admin/typeAmbient/'/>">Tipos
-							de ambiente</a></li>
-					<li><a href="<c:url value='/admin/ambient/'/>">Ambientes</a></li>
-				</ul></li>
+			<li class=""><a id="ambientItem"
+				href="<c:url value='/admin/ambient/'/>"> <span> Ambientes</span>
+			</a></li>
 			<!---- 	#Seccion de Catálogos ---->
 			<li class=""><a id="catalogueItem" href="javascript:void(0);"
 				class="menu-toggle"> <span>Catálogos</span>

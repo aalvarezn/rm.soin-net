@@ -54,6 +54,7 @@ public class AmbientController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
+			addAmbient.setCode(addAmbient.getCode().toUpperCase());
 			ambientService.save(addAmbient);
 
 			res.setMessage("Ambiente agregado!");
