@@ -5,9 +5,27 @@
 			value="" />
 		<div class="m-l-15">
 
-			<div  class=" row clearfix ">
+			<div class=" row clearfix ">
 				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
 					<label>Sistema</label>
+					<div class="form-group m-b-0">
+						<select id="system_id" name="system_id"
+							class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="">-- Seleccione una opci&oacute;n --</option>
+							<c:forEach items="${systems}" var="system">
+								<option value="${system.code }">${system.code }</option>
+							</c:forEach>
+						</select> <label id="system_id_error" class="error" for="name"
+							style="visibility: hidden">Campo Requerido.</label>
+					</div>
+
+				</div>
+				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+					<label>Proyecto</label>
+					<c:forEach items="${systems}" var="system">
+						<label>${system.projectCodes}"</label>
+					</c:forEach>
 					<div class="form-group m-b-0">
 						<select id="system_id" name="system_id"
 							class="form-control show-tick selectpicker"
