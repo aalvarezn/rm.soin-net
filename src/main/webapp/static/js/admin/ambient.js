@@ -1,214 +1,228 @@
-
-var $dtAmbient;
-var $mdAmbient = $('#ambientModal');
-var $fmAmbient = $('#ambientModalForm');
-
 $(function() {
 	activeItemMenu("ambientItem", true);
-	initDataTable();
-	initAmbientFormValidation();
+});
+var $ambientTable = $('#ambientTable').DataTable({
+	"language" : {
+		"emptyTable" : "No existen registros",
+		"zeroRecords" : "No existen registros"
+	},
+	"ordering" : true,
+	"searching" : true,
+	"paging" : true
 });
 
+var $ambientModal = $('#ambientModal');
+var $ambientModalForm = $('#ambientModalForm');
 
-function initDataTable() {
-	$dtAmbient = $('#ambientTable')
-	.DataTable(
-			{
-				lengthMenu : [ [ 10, 25, 50, -1 ],
-					[ '10', '25', '50', 'Mostrar todo' ] ],
-					"iDisplayLength" : 10,
-					"language" : optionLanguaje,
-					"iDisplayStart" : 0,
-					"sAjaxSource" : getCont() + "admin/ambient/list",
-					"fnServerParams" : function(aoData) {
-					},
-					"aoColumns" : [
-						{
-							"mDataProp" : 'code'
-						},
-						{
-							"mDataProp" : 'name'
-						},
-						{
-							render : function(data, type, row, meta) {
-								var options = '<div class="iconLine">';
-
-								options += '<a onclick="showAmbient('
-									+ meta.row
-									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
-
-								options += '<a onclick="deleteAmbient('
-									+ meta.row
-									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
-
-								options += ' </div>';
-
-								return options;
-							}
-						} ],
-						ordering : false,
-			});
+function openAmbientModal() {
+	resetErrors();
+	$ambientModalForm[0].reset();
+	$ambientModalForm.find("#systemId").val(""),
+	$ambientModalForm.find("#typeAmbientId").val("")
+	$('.selectpicker').selectpicker('refresh');
+	$('#btnUpdateAmbient').hide();
+	$('#btnSaveAmbient').show();
+	$ambientModal.modal('show');
 }
 
-function showAmbient(index){
-	$fmAmbient.validate().resetForm();
-	$fmAmbient[0].reset();
-	var obj = $dtAmbient.row(index).data();
-	$fmAmbient.find('#aId').val(obj.id);
-	$fmAmbient.find('#aCode').val(obj.code);
-	$fmAmbient.find('#aName').val(obj.name);
-	$mdAmbient.find('#update').show();
-	$mdAmbient.find('#save').hide();
-	$mdAmbient.modal('show');
+function saveAmbient() {
+	blockUI();
+	$.ajax({
+		type : "POST",
+		url : getCont() + "admin/ambient/" + "saveAmbient",
+		data : {
+			// Informacion ambientes
+			id : 0,
+			code : $ambientModalForm.find('#code').val(),
+			name : $ambientModalForm.find('#name').val(),
+			details : $ambientModalForm.find('#details').val(),
+			serverName : $ambientModalForm.find('#serverName').val(),
+			systemId: $ambientModalForm.find("#systemId").children("option:selected").val(),
+			typeAmbientId: $ambientModalForm.find("#typeAmbientId").children("option:selected").val()
+		},
+		success : function(response) {
+			ajaxSaveAmbient(response)
+		},
+		error : function(x, t, m) {
+			console.log(x);
+			console.log(t);
+			console.log(m);
+			unblockUI();
+			notifyAjaxError(x, t, m);
+		}
+	});
+}
+
+function ajaxSaveAmbient(response) {
+	switch (response.status) {
+	case 'success':
+		location.reload();
+		swal("Correcto!", "Ambiente creado correctamente.", "success", 2000)
+		break;
+	case 'fail':
+		unblockUI();
+		showAmbientErrors(response.errors, $ambientModalForm);
+		break;
+	case 'exception':
+		swal("Error!", response.exception, "error")
+		break;
+	default:
+		console.log(response.status);
+		unblockUI();
+	}
+}
+
+function updateAmbientModal(index) {
+	resetErrors();
+	$('#btnUpdateAmbient').show();
+	$('#btnSaveAmbient').hide();
+	blockUI();
+	$.ajax({
+		type : "GET",
+		url : getCont() + "admin/" + "ambient/findAmbient/" + index,
+		timeout : 60000,
+		data : {},
+		success : function(response) {
+			unblockUI();
+			$ambientModalForm.find('#ambientId').val(index);
+			$ambientModalForm.find('#systemId').val(response.system.id);
+			$ambientModalForm.find('#typeAmbientId').val(response.typeAmbient.id);
+			$ambientModalForm.find('#code').val(response.code);
+			$ambientModalForm.find('#name').val(response.name);
+			$ambientModalForm.find('#details').val(response.details);
+			$ambientModalForm.find('#serverName').val(response.serverName);
+			$('.selectpicker').selectpicker('refresh');
+			$ambientModal.modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+}
+
+function closeAmbientModal() {
+	$ambientModalForm[0].reset();
+	$ambientModal.modal('hide');
 }
 
 function updateAmbient() {
-	if (!$fmAmbient.valid())
-		return;
-	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
-		text: 'Esta acci\u00F3n no se puede reversar.',
-		...swalDefault
-	}).then((result) => {
-		if(result.value){
-			blockUI();
-			$.ajax({
-				type : "PUT",
-				url : getCont() + "admin/ambient/" ,
-				dataType : "json",
-				contentType: "application/json; charset=utf-8",
-				timeout : 60000,
-				data : JSON.stringify({
-					id : $fmAmbient.find('#aId').val(),
-					code : $fmAmbient.find('#aCode').val(),
-					name : $fmAmbient.find('#aName').val(),
-				}),
-				success : function(response) {
-					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtAmbient.ajax.reload();
-					$mdAmbient.modal('hide');
-				},
-				error : function(x, t, m) {
-					unblockUI();
-					console.log(x);
-					console.log(t);
-					console.log(m);
-				}
-			});
-		}
-	});
-}
-
-
-function saveAmbient() {
-	if (!$fmAmbient.valid())
-		return;
-	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
-		text: 'Esta acci\u00F3n no se puede reversar.',
-		...swalDefault
-	}).then((result) => {
-		if(result.value){
-			blockUI();
-			$.ajax({
-				type : "POST",
-				url : getCont() + "admin/ambient/" ,
-				dataType : "json",
-				contentType: "application/json; charset=utf-8",
-				timeout : 60000,
-				data : JSON.stringify({
-					code : $fmAmbient.find('#aCode').val(),
-					name : $fmAmbient.find('#aName').val(),
-				}),
-				success : function(response) {
-					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtAmbient.ajax.reload();
-					$mdAmbient.modal('hide');
-				},
-				error : function(x, t, m) {
-					unblockUI();
-					console.log(x);
-					console.log(t);
-					console.log(m);
-				}
-			});
-		}
-	});
-}
-
-function deleteAmbient(index) {
-	var obj = $dtAmbient.row(index).data();
-	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
-		text: 'Esta acci\u00F3n no se puede reversar.',
-		...swalDefault
-	}).then((result) => {
-		if(result.value){
-			blockUI();
-			$.ajax({
-				type : "DELETE",
-				url : getCont() + "admin/ambient/"+obj.id ,
-				timeout : 60000,
-				data : {},
-				success : function(response) {
-					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtAmbient.ajax.reload();
-					$mdAmbient.modal('hide');
-				},
-				error : function(x, t, m) {
-					unblockUI();
-					console.log(x);
-					console.log(t);
-					console.log(m);
-				}
-			});
-		}
-	});
-}
-
-function addAmbient(){
-	$fmAmbient.validate().resetForm();
-	$fmAmbient[0].reset();
-	$mdAmbient.find('#save').show();
-	$mdAmbient.find('#update').hide();
-	$mdAmbient.modal('show');
-}
-
-function closeAmbient(){
-	$mdAmbient.modal('hide');
-}
-
-function initAmbientFormValidation() {
-	$fmAmbient.validate({
-		rules : {
-			'aCode' : {
-				required : true,
-				minlength : 1,
-				maxlength : 50,
-			},
-			'aName' : {
-				required : true,
-				minlength : 1,
-				maxlength : 100
-			},
+	blockUI();
+	$.ajax({
+		type : "POST",
+		url : getCont() + "admin/ambient/" + "updateAmbient",
+		data : {
+			// Informacion ambiente
+			id : $ambientModalForm.find('#ambientId').val(),
+			code : $ambientModalForm.find('#code').val(),
+			name : $ambientModalForm.find('#name').val(),
+			details : $ambientModalForm.find('#details').val(),
+			serverName : $ambientModalForm.find('#serverName').val(),
+			systemId: Number($ambientModalForm.find("#systemId").children("option:selected").val()),
+			typeAmbientId: Number($ambientModalForm.find("#typeAmbientId").children("option:selected").val())
 		},
-		messages : {
-			'aCode' : {
-				required :  "Ingrese un valor",
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
-			'aName' : {
-				required : "Ingrese un valor",
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
+		success : function(response) {
+			ajaxUpdateAmbient(response)
 		},
-		highlight,
-		unhighlight,
-		errorPlacement
+		error : function(x, t, m) {
+			console.log(x);
+			console.log(t);
+			console.log(m);
+			unblockUI();
+			notifyAjaxError(x, t, m);
+		}
 	});
+}
+
+function ajaxUpdateAmbient(response) {
+	switch (response.status) {
+	case 'success':
+		location.reload();
+		swal("Correcto!", "Ambiente modificado correctamente.", "success", 2000)
+		break;
+	case 'fail':
+		unblockUI();
+		showAmbientErrors(response.errors, $ambientModalForm);
+		break;
+	case 'exception':
+		swal("Error!", response.exception, "error")
+		break;
+	default:
+		console.log(response.status);
+		unblockUI();
+	}
+}
+
+function confirmDeleteAmbient(element) {
+	Swal.fire({
+		  title: '\u00BFEst\u00e1s seguro que desea eliminar?',
+		  text: "Esta acci\u00F3n no se puede reversar.",
+		  icon: 'question',
+		  showCancelButton: true,
+		  customClass: 'swal-wide',
+		  cancelButtonText: 'Cancelar',
+		  cancelButtonColor: '#f14747',
+		  confirmButtonColor: '#3085d6',
+		  confirmButtonText: 'Aceptar',
+		}).then((result) => {
+			if(result.value){
+				deleteAmbient(element);
+			}		
+		});
+}
+
+function deleteAmbient(element){
+	blockUI();
+	$.ajax({
+		type : "DELETE",
+		url : getCont() + "admin/" + "ambient/deleteAmbient/" + element,
+		timeout : 60000,
+		data : {},
+		success : function(response) {
+			ajaxDeleteAmbient(response);
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+}
+
+function ajaxDeleteAmbient(response){
+	switch (response.status) {
+	case 'success':
+		location.reload();
+		swal("Correcto!", "El ambiente ha sido eliminado exitosamente.",
+				"success", 2000)
+		break;
+	case 'fail':
+		swal("Error!", response.exception, "error")
+		break;
+	case 'exception':
+		swal("Error!", response.exception, "warning")
+		break;
+	default:
+		location.reload();
+	}
+}
+
+function resetErrors() {
+	$(".fieldError").css("visibility", "hidden");
+	$(".fieldError").attr("class", "error fieldError");
+	$(".fieldErrorLine").attr("class", "form-line");
+}
+
+function showAmbientErrors(error, $form) {
+	resetErrors();// Eliminamos las etiquetas de errores previas
+	for (var i = 0; i < error.length; i++) {
+		// Se modifica el texto de la advertencia y se agrega la de activeError
+		$form.find(" #" + error[i].key + "_error").text(error[i].message);
+		$form.find(" #" + error[i].key + "_error").css("visibility", "visible");
+		$form.find(" #" + error[i].key + "_error").attr("class",
+				"error fieldError activeError");
+		// Si es input||textarea se marca el line en rojo
+		if ($form.find(" #" + error[i].key).is("input")
+				|| $form.find(" #" + error[i].key).is("textarea")) {
+			$form.find(" #" + error[i].key).parent().attr("class",
+					"form-line error focused fieldErrorLine");
+		}
+	}
 }

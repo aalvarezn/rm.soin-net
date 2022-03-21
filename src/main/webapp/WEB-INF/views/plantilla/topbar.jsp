@@ -5,7 +5,7 @@
 <input type="hidden" id="systemContent" name="systemContent"
 	value="<c:url value='/'/>" />
 <input type="hidden" id="userInfo_username" name="userInfo_username"
-	value="${userInfo.userName}" />
+	value="${userInfo.username}" />
 <input type="hidden" id="userInfo_Id" name="userInfo_Id"
 	value="${userInfo.id}" />
 <nav class="navbar">
@@ -20,7 +20,7 @@
 			<ul class="nav navbar-nav navbar-right">
 
 				<li><a href="<c:url value='/profile/'/> "><i class="material-icons">person_outline</i>
-						<p style="float: right; padding-top: 3px; padding-left: 5px">${userInfo.name}</p></a></li>
+						<p style="float: right; padding-top: 3px; padding-left: 5px">${name }</p></a></li>
 
 				<!-- Notifications -->
 				<li class="dropdown"><a href="javascript:void(0);"

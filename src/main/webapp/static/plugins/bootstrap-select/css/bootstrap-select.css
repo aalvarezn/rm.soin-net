@@ -44,7 +44,7 @@ select.selectpicker {
   width: auto !important;
 }
 .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
-  width: 100%;
+  width: 220px;
 }
 .bootstrap-select .dropdown-toggle:focus {
   outline: thin dotted #333333 !important;
@@ -280,7 +280,3 @@ select.selectpicker {
   float: none;
 }
 /*# sourceMappingURL=bootstrap-select.css.map */
-
-.multiselect button {
-	display: none;
-}

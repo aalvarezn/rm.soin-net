@@ -5,9 +5,54 @@
 <html>
 <head>
 <%@include file="../../plantilla/header.jsp"%>
-<!-- Style Section -->
-<%@include file="../../plantilla/styleSection.jsp"%>
-<!-- #END# Style Section -->
+
+<!-- Bootstrap Core Css -->
+<link
+	href="<c:url value='/static/plugins/bootstrap/css/bootstrap.css'/>"
+	rel="stylesheet" type="text/css">
+
+<!-- Animation Css -->
+<link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
+	rel="stylesheet" type="text/css">
+
+<!-- Morris Chart Css-->
+<link href="<c:url value='/static/plugins/morrisjs/morris.css'/>"
+	rel="stylesheet" type="text/css">
+
+<!-- JQuery DataTable Css -->
+<link
+	href="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css'/>"
+	rel="stylesheet" type="text/css">
+
+<!-- Sweetalert Css -->
+<link href="<c:url value='/static/plugins/sweetalert/sweetalert.css'/>"
+	rel="stylesheet" />
+
+<!-- Custom Css -->
+<link href="<c:url value='/static/css/style.css'/>" rel="stylesheet"
+	type="text/css">
+
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+
+<!-- TagInput Js -->
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
+
+<!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
+<link href="<c:url value='/static/css/themes/all-themes.css'/>"
+	rel="stylesheet" type="text/css">
+
+<link
+	href="<c:url value='/static/plugins/multi-select/css/multi-select.css'/>"
+	rel="stylesheet" type="text/css">
+
+<!-- Custom Css -->
+<link
+	href="<c:url value='/static/plugins/summernote/css/summernote.min.css'/>"
+	rel="stylesheet" type="text/css">
+
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
@@ -60,7 +105,19 @@
 								</tr>
 							</thead>
 							<tbody>
-
+								<c:forEach items="${parameters}" var="parameter">
+									<tr id="${parameter.id}">
+										<td>${parameter.code}</td>
+										<td>${parameter.description}</td>
+										<td>${parameter.paramValue}</td>
+										<td><fmt:formatDate value="${parameter.date}"
+												pattern="dd/MM/YYYY HH:mm:ss" /></td>
+										<td><div class="iconLineC">
+												<a onclick="openParameterModal(${parameter.id})"><i
+													class="material-icons gris" style="font-size: 30px;">mode_edit</i></a>
+											</div></td>
+									</tr>
+								</c:forEach>
 							</tbody>
 						</table>
 					</div>
@@ -68,9 +125,63 @@
 			</div>
 		</div>
 	</section>
-	<!-- Script Section -->
-	<%@include file="../../plantilla/scriptSection.jsp"%>
-	<!-- #END# Script Section -->
+
+	<!-- Jquery Core Js -->
+	<script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
+	<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<script type="text/javascript"
+		src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+
+	<!-- Bootstrap Core Js -->
+	<script
+		src="<c:url value='/static/plugins/bootstrap/js/bootstrap.js'/>"></script>
+
+	<!-- Slimscroll Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
+
+	<!-- Jquery CountTo Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/jquery-countto/jquery.countTo.js'/>"></script>
+
+	<!-- Autosize Plugin Js -->
+	<script src="<c:url value='/static/plugins/autosize/autosize.js'/>"></script>
+
+	<!-- Jquery DataTable Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
+
+	<!-- Bootstrap Notify Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/bootstrap-notify/bootstrap-notify.js'/>"></script>
+
+	<!-- SweetAlert Plugin Js -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+	<!-- Moment Plugin Js -->
+	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
+
+	<!-- Bootstrap Material Datetime Picker Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
+
+	<!-- summernote -->
+	<script
+		src="<c:url value='/static/plugins/summernote/summernote.min.js'/>"></script>
+
+	<!-- summernote -->
+	<script
+		src="<c:url value='/static/plugins/summernote/lang/summernote-es-ES.js'/>"></script>
+
+	<!-- TagInput Js -->
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
+
+	<!-- Custom Js -->
+	<script src="<c:url value='/static/js/admin.js?v=${jsVersion}'/>"></script>
 	<script
 		src="<c:url value='/static/js/admin/parameter.js?v=${jsVersion}'/>"></script>
 	<script src="<c:url value='/static/js/pages/index.js'/>"></script>

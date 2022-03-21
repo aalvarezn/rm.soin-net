@@ -12,16 +12,19 @@
 				<div class="row clearfix">
 					<form id="impactModalForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="iId" value="" />
+							value="${_csrf.token}" /> <input type="hidden" id="impactId"
+							value="" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="name">Nombre</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="iName" name="iName"
-										maxlength="50" placeholder="Ingrese un valor"
+									<input type="text" class="form-control" id="name"
+										maxlength="50" name="name" placeholder="Ingrese un nombre"
 										style="height: 60px;">
 									<div class="help-info">Máx. 50 caracteres</div>
 								</div>
+								<label id="name_error" class="error fieldError" for="name"
+									style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
 						<div
@@ -29,11 +32,13 @@
 							<label for="description">Descripción</label>
 							<div class="form-group">
 								<div class="form-line">
-									<input type="text" class="form-control" id="iDescription"
-										maxlength="250" name="iDescription"
-										placeholder="Ingrese un nombre" style="height: 60px;">
-									<div class="help-info">Máx. 50 caracteres</div>
+									<input type="text" class="form-control" id="description"
+										name="description" placeholder="Ingrese un nombre"
+										style="height: 60px;">
 								</div>
+								<label id="description_error" class="error fieldError"
+									for="description" style="visibility: hidden">Campo
+									Requerido.</label>
 							</div>
 						</div>
 					</form>
@@ -41,10 +46,10 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
-					onclick="closeImpact()">CANCELAR</button>
-				<button id="save" type="button" class="btn btn-primary waves-effect"
-					onclick="saveImpact()">GUARDAR</button>
-				<button id="update" type="button"
+					onclick="closeImpactModal()">CANCELAR</button>
+				<button id="btnSaveImpact" type="button"
+					class="btn btn-primary waves-effect" onclick="saveImpact()">GUARDAR</button>
+				<button id="btnUpdateImpact" type="button"
 					class="btn btn-primary waves-effect" onclick="updateImpact()">ACTUALIZAR</button>
 			</div>
 		</div>

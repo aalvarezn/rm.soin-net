@@ -49,46 +49,46 @@ public class ProfileController extends BaseController {
 		return "/profile/profile";
 	}
 
-//	@RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-//	public @ResponseBody JsonResponse changePassword(HttpServletResponse response,
-//			@ModelAttribute("Password") Password p, BindingResult errors, ModelMap model) {
-//		JsonResponse res = new JsonResponse();
-//		try {
-//			UserInfo user = userInfoService.findUserInfoById(getUserLogin().getId());
-//			res.setStatus("success");
-//
-//			if (!p.getNewPassword().equals(p.getConfirmPassword())) {
-//				res.setStatus("fail");
-//				res.setException("Las nuevas contraseñas no coinciden.");
-//				return res;
-//			}
-//
-//			if (!encoder.matches(p.getOldPassword(), user.getPassword())) {
-//				res.setStatus("fail");
-//				res.setException("La contraseña anterior es incorrecta.");
-//				return res;
-//			}
-//			if (CommonUtils.isNumeric(p.getNewPassword())) {
-//				res.setStatus("fail");
-//				res.setException("La contraseña no puede contener sólo números.");
-//				return res;
-//			}
-//
-//			if (res.getStatus().equals("success")) {
-//				String newPassword = encoder.encode(p.getNewPassword());
-//				user.setPassword(newPassword);
-//				userInfoService.changePassword(user);
-//			}
-//		} catch (SQLException ex) {
-//			Sentry.capture(ex, "profile");
-//			res.setStatus("exception");
-//			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
-//		} catch (Exception e) {
-//			Sentry.capture(e, "profile");
-//			res.setStatus("exception");
-//			res.setException(e.getMessage());
-//		}
-//		return res;
-//	}
+	@RequestMapping(value = "/changePassword", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse changePassword(HttpServletResponse response,
+			@ModelAttribute("Password") Password p, BindingResult errors, ModelMap model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			UserInfo user = userInfoService.findUserInfoById(getUserLogin().getId());
+			res.setStatus("success");
+
+			if (!p.getNewPassword().equals(p.getConfirmPassword())) {
+				res.setStatus("fail");
+				res.setException("Las nuevas contraseñas no coinciden.");
+				return res;
+			}
+
+			if (!encoder.matches(p.getOldPassword(), user.getPassword())) {
+				res.setStatus("fail");
+				res.setException("La contraseña anterior es incorrecta.");
+				return res;
+			}
+			if (CommonUtils.isNumeric(p.getNewPassword())) {
+				res.setStatus("fail");
+				res.setException("La contraseña no puede contener sólo números.");
+				return res;
+			}
+
+			if (res.getStatus().equals("success")) {
+				String newPassword = encoder.encode(p.getNewPassword());
+				user.setPassword(newPassword);
+				userInfoService.changePassword(user);
+			}
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "profile");
+			res.setStatus("exception");
+			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "profile");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+		}
+		return res;
+	}
 
 }
