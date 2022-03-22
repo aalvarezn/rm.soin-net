@@ -1,10 +1,6 @@
 package com.soin.sgrm.model;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,6 +15,7 @@ import javax.persistence.Table;
 import javax.validation.Valid;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -37,8 +34,9 @@ public class Crontab implements Serializable {
 	@Column(name = "ID")
 	private int id;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinColumn(name = "RELEASE_ID", nullable = false)
+	@SuppressWarnings("deprecation")
+	@Cascade({ CascadeType.MERGE, CascadeType.DETACH, CascadeType.EVICT })
+	@ManyToOne(fetch = FetchType.EAGER)
 	private ReleaseUser release;
 
 	@Column(name = "USUARIO")
@@ -89,10 +87,15 @@ public class Crontab implements Serializable {
 	@NotBlank(message = "Seleccione un día")
 	private String weekDays;
 
-	@Valid
-	@OneToOne(cascade = CascadeType.ALL)
+
+	
+	@SuppressWarnings("deprecation")
+	@Cascade({ CascadeType.MERGE, CascadeType.DETACH, CascadeType.EVICT })
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "BOTON_ID", nullable = true)
 	private ButtonCommand button;
+    
+
 
 	public int getId() {
 		return id;

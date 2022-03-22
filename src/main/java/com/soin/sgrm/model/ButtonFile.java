@@ -49,6 +49,12 @@ public class ButtonFile implements Serializable {
 	@NotEmpty(message = Constant.EMPTY)
 	@NotBlank(message = Constant.EMPTY)
 	private String description;
+	
+	@Column(name = "MODULO")
+	@NotEmpty(message = Constant.EMPTY)
+	@NotBlank(message = Constant.EMPTY)
+	private String module;
+
 
 	@Column(name = "HTML_DESCRIPCION")
 	@NotEmpty(message = Constant.EMPTY)
@@ -133,6 +139,13 @@ public class ButtonFile implements Serializable {
 		this.description = description;
 	}
 
+	public String getModule() {
+		return module;
+	}
+
+	public void setModule(String module) {
+		this.module = module;
+	}
 	public String getDescriptionHtml() {
 		return descriptionHtml;
 	}

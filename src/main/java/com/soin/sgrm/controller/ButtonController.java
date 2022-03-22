@@ -118,11 +118,11 @@ public class ButtonController extends BaseController {
 
 			ButtonCommand button = buttonService.findById(id);
 			/* TODO: Hacer la validación por el ContrabID */
-//			if (button.getHaveCrontab()) {
-//				res.setStatus("fail");
-//				res.setException("El Botón esta asociado a un Crontab.");
-//				return res;
-//			}
+			if (button.getHaveCrontab()) {
+	 		res.setStatus("fail");
+				res.setException("El Botón esta asociado a un Crontab.");
+			return res;
+		}
 			buttonService.deleteButton(button);
 			res.setData(id + "");
 		} catch (SQLException ex) {
