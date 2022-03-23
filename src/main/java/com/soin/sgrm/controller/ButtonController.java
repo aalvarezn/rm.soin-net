@@ -22,12 +22,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.soin.sgrm.model.ButtonCommand;
 import com.soin.sgrm.model.ButtonFile;
+import com.soin.sgrm.model.Crontab;
 import com.soin.sgrm.model.DetailButtonCommand;
 import com.soin.sgrm.model.DetailButtonFile;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.TypeDetail;
 import com.soin.sgrm.service.ButtonCommandService;
 import com.soin.sgrm.service.ButtonFileService;
+import com.soin.sgrm.service.CrontabService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.utils.Constant;
@@ -49,6 +51,9 @@ public class ButtonController extends BaseController {
 	ButtonCommandService buttonService;
 	@Autowired
 	ButtonFileService buttonFileService;
+	
+	@Autowired
+	CrontabService crontabService;
 
 	@RequestMapping(value = "/saveButtonCommand-{id}", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveButtonCommand(@PathVariable String id, HttpServletResponse response,
@@ -120,7 +125,9 @@ public class ButtonController extends BaseController {
 			/* TODO: Hacer la validación por el ContrabID */
 			if (button.getHaveCrontab()) {
 	 		res.setStatus("fail");
-				res.setException("El Botón esta asociado a un Crontab.");
+	 			Crontab crontab;
+	 			crontab= crontabService.findByIdButton(button.getId());
+				res.setException("El Botón esta asociado al Crontab "+crontab.getDescriptionCron());
 			return res;
 		}
 			buttonService.deleteButton(button);
