@@ -12,7 +12,9 @@ public interface CrontabService {
 	Crontab updateCrontab(Crontab crontab, ButtonCommand old);
 
 	Crontab findById(Integer id) throws SQLException;
-
+	
+	Crontab findByIdButton(Integer id) throws SQLException;
+	
 	void deleteCrontab(Crontab crontab);
 
 }

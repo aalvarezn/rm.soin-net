@@ -147,6 +147,7 @@ public class CrontabController extends BaseController {
 			Model model, HttpSession session) {
 		Crontab crontab = null;
 		try {
+			
 			crontab = crontabService.findById(id);
 			for (DetailButtonCommand detail : crontab.getButton().getDetailsButtonCommands()) {
 				detail.setButton(null);
