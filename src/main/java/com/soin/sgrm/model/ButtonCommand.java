@@ -30,7 +30,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.utils.Constant;
@@ -46,6 +45,7 @@ public class ButtonCommand implements Serializable {
 	@Column(name = "ID")
 	private int id;
 
+	@SuppressWarnings("deprecation")
 	@Cascade({ CascadeType.MERGE, CascadeType.DETACH, CascadeType.EVICT })
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "RELEASE_ID", nullable = false)
@@ -60,6 +60,11 @@ public class ButtonCommand implements Serializable {
 	@NotEmpty(message = Constant.EMPTY)
 	@NotBlank(message = Constant.EMPTY)
 	private String description;
+	
+	@Column(name = "MODULO")
+	@NotEmpty(message = Constant.EMPTY)
+	@NotBlank(message = Constant.EMPTY)
+	private String module;
 
 	@Column(name = "COMANDO")
 	@NotEmpty(message = Constant.EMPTY)
@@ -83,9 +88,13 @@ public class ButtonCommand implements Serializable {
 
 	@Column(name = "TIENE_SALIDA_HTML")
 	private Boolean haveHTML;
-
+	
+	@Column(name = "TIENE_CRONTAB")
+	private Boolean haveCrontab;
+	
 	@Column(name = "OCULTAR_AL_EJECUTAR")
 	private Boolean hideExecute;
+
 
 	@Column(name = "DISPONIBILIDAD_USERMIN")
 	private Boolean userminAvailability;
@@ -110,8 +119,7 @@ public class ButtonCommand implements Serializable {
 	@OneToMany(mappedBy = "button", orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<DetailButtonCommand> detailsButtonCommands = new ArrayList<DetailButtonCommand>();
 
-	@OneToOne(mappedBy = "button", fetch = FetchType.EAGER)
-	private Crontab crontab;
+
 
 	@Transient
 	private String detailName;
@@ -152,6 +160,14 @@ public class ButtonCommand implements Serializable {
 
 	public String getDescription() {
 		return description;
+	}
+	
+	public String getModule() {
+		return module;
+	}
+
+	public void setModule(String module) {
+		this.module = module;
 	}
 
 	public void setDescription(String description) {
@@ -270,6 +286,14 @@ public class ButtonCommand implements Serializable {
 		this.pageName = pageName;
 	}
 
+	public Boolean getHaveCrontab() {
+		return haveCrontab;
+	}
+
+	public void setHaveCrontab(Boolean haveCrontab) {
+		this.haveCrontab = haveCrontab;
+	}
+
 	public List<DetailButtonCommand> getDetailsButtonCommands() {
 		return detailsButtonCommands;
 	}
@@ -347,12 +371,5 @@ public class ButtonCommand implements Serializable {
 		this.detailRequired = detailRequired;
 	}
 
-	public Crontab getCrontab() {
-		return crontab;
-	}
-
-	public void setCrontab(Crontab crontab) {
-		this.crontab = crontab;
-	}
-
+	
 }
