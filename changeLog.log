@@ -1,0 +1,11 @@
+[SGRM V3.0.1]-2022-03-24
+Incidencias creacion de modulo de boton comando y archivo 
+
+Added
+1-Se agrega directorio para guardar scripts de modificacion de base de datos.
+2-Se agrega el campo modulo a la base de datos,al modelo y a la vista.
+Changed
+1-Se agrego validacion para no eliminar un boton que esta relacionado a un crontab.
+Fixed
+1-Se arreglo un problema con el modelo crontab que producia un ciclo.
+2-Se arreglo problema que no dejaba eliminar crontab con llave foranea Release_ID.
