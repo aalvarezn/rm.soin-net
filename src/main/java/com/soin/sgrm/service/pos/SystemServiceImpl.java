@@ -77,11 +77,9 @@ public class SystemServiceImpl implements SystemService {
 		JsonSheet<PSystem> list = dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
 
 		return list;
+
 	}
 
-	@Override
-	public List<PSystem> listWithProject() {
-		return dao.listWithProject();
-	}
+
 
 }

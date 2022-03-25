@@ -10,5 +10,5 @@ public interface SystemService extends BaseService<Long, PSystem> {
 	JsonSheet<PSystem> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
 			String sProject);
 	
-	List<PSystem> listWithProject();
+
 }

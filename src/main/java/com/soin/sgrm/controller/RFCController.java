@@ -49,14 +49,13 @@ public class RFCController extends BaseController {
 		try {
 			List<PPriority> priorities = priority.findAll();
 			List<PStatus> statuses = status.findAll();
-			List<PSystem> systems = systemService.listWithProject();
+
 			
-			for(PSystem system: systems) {
-				System.out.println(system);
-			}
+	
+
 			model.addAttribute("priorities", priorities);
 			model.addAttribute("statuses", statuses);
-			model.addAttribute("systems", systems);
+			//model.addAttribute("systems", systems);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
