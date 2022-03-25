@@ -10,15 +10,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
-@Table(name = "SISTEMA_PROYECTO")
-public class PSystemProject implements Serializable {
-
+@Table(name = "SISTEMA_SIGES")
+public class PSiges implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -26,14 +24,16 @@ public class PSystemProject implements Serializable {
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private Long id;
-
-	@Column(name = "CODIGO")
-	private String code;
-
-	@JsonIgnore
+	
+	@Column(name = "CODIGOSIGES")
+	private String codeSiges;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = false)
+	@JoinColumn(name = "\"SISTEMA_ID\"")
 	private PSystem system;
+	
+	@Transient
+	private Long systemId;
 
 	public Long getId() {
 		return id;
@@ -43,12 +43,12 @@ public class PSystemProject implements Serializable {
 		this.id = id;
 	}
 
-	public String getCode() {
-		return code;
+	public String getCodeSiges() {
+		return codeSiges;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setCodeSiges(String codeSiges) {
+		this.codeSiges = codeSiges;
 	}
 
 	public PSystem getSystem() {
@@ -59,8 +59,14 @@ public class PSystemProject implements Serializable {
 		this.system = system;
 	}
 
+	public Long getSystemId() {
+		return systemId;
+	}
 
+	public void setSystemId(Long systemId) {
+		this.systemId = systemId;
+	}
+	
+	
+	
 }
-
-
-

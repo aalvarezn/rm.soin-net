@@ -10,7 +10,7 @@ import org.hibernate.criterion.Property;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.model.pos.PSystem;
-import com.soin.sgrm.model.pos.PSystemProject;
+
 import com.soin.sgrm.utils.AliasToBeanNestedResultTransformer;
 
 @Repository("systemDao")
@@ -45,3 +45,6 @@ public class SystemDaoImpl extends AbstractDao<Long, PSystem> implements SystemD
 	}
 
 }
+
+
+

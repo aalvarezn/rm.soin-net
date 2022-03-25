@@ -88,4 +88,8 @@ public class AliasToBeanNestedResultTransformer extends AliasedTupleSubsetResult
 		
 		return root;
 	}
+
 }
+
+
+

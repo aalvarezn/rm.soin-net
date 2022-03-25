@@ -70,7 +70,7 @@
 		</div>
 		<a id="buttonAddEmail" type="button"
 			class="btn btn-primary btn-fab waves-effect fixedDown"
-			onclick="openEmailModal()"> <i class="material-icons lh-1-8">add</i>
+			onclick="openAddEmail()"> <i class="material-icons lh-1-8">add</i>
 		</a>
 	</section>
 	<!-- Script Section -->

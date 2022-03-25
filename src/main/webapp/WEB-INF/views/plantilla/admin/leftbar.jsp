@@ -21,7 +21,8 @@
 						principal</span></a></li>
 			<!---- 	#Seccion de proyectos ---->
 			<li class=""><a id="treeItem"
-				href="<c:url value='/admin/tree/'/>"> <span>Árbol dependencias</span>
+				href="<c:url value='/admin/tree/'/>"> <span>Árbol
+						dependencias</span>
 			</a></li>
 			<!---- 	#Seccion de ambientes ---->
 			<li class=""><a id="ambientItem"
@@ -72,6 +73,7 @@
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/admin/action/'/>">Acciones</a></li>
 					<li><a href="<c:url value='/admin/environment/'/>">Entorno</a></li>
+					<li><a href="<c:url value='/admin/siges/'/>">Código Siges</a></li>
 					<li><a href="<c:url value='/admin/configurationItem/'/>">Item
 							Configuración</a></li>
 					<li><a href="<c:url value='/admin/module/'/>">Modulo</a></li>

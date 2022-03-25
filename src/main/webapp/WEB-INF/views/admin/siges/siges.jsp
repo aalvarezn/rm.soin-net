@@ -8,8 +8,6 @@
 <!-- Style Section -->
 <%@include file="../../plantilla/styleSection.jsp"%>
 <!-- #END# Style Section -->
-
-
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
@@ -27,7 +25,7 @@
 
 	<section>
 		<!-- EmailModal -->
-		<%@include file="../../admin/gDoc/gDocModal.jsp"%>
+		<%@include file="../../admin/siges/sigesModal.jsp"%>
 		<!-- #END# EmailModal -->
 	</section>
 
@@ -41,7 +39,7 @@
 			<div class="row clearfix">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="" style="padding-top: -5pc;">
-						<h2 class="title-Adm m-t-0">GDOC CONFIGURACIÓN</h2>
+						<h2 class="title-Adm m-t-0">CÓDIGOS SIGES</h2>
 					</div>
 					<hr>
 				</div>
@@ -49,39 +47,35 @@
 			<div class="row clearfix">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="table-responsive m-b-20">
-						<table
-							class="table table-bordered table-striped table-hover dataTable"
-							id="gDocTable">
+						<table class="table table-bordered table-striped table-hover"
+							id="sigesTable">
 							<thead>
 								<tr>
-									<th>Descripción</th>
-									<th>Proyecto</th>
+									<th>Código</th>
+									<th>Sistema</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>
 							<tbody>
-
 							</tbody>
 						</table>
 					</div>
 				</div>
 			</div>
 		</div>
-		<a id="buttonAddGDoc" type="button"
+		<a id="buttonAddSiges" type="button"
 			class="btn btn-primary btn-fab waves-effect fixedDown"
-			onclick="addGDoc()"> <i class="material-icons lh-1-8">add</i>
+			onclick="addSiges()"> <i class="material-icons lh-1-8">add</i>
 		</a>
 	</section>
 
 	<!-- Script Section -->
 	<%@include file="../../plantilla/scriptSection.jsp"%>
 	<!-- #END# Script Section -->
-	<script src="<c:url value='/static/js/admin/gDoc.js'/>"></script>
-	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
-	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
-
 	<script
-		src="<c:url value='/static/plugins/multi-select/js/jquery.multi-select.js'/>"></script>
+		src="<c:url value='/static/js/admin/siges.js'/>"></script>
+	
+
 </body>
 
 </html>

@@ -1,13 +1,11 @@
 package com.soin.sgrm.model.pos;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
@@ -33,6 +31,7 @@ public class PDocument implements Serializable{
 	
 	@Column(name = "SUFIJO")
 	private String sufix;
+	
 
 	public Long getId() {
 		return id;

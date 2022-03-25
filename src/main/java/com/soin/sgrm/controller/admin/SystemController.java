@@ -20,10 +20,13 @@ import com.google.common.collect.Sets;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.pos.PAuthority;
+import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PProject;
 import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.pos.EmailService;
+import com.soin.sgrm.service.pos.EmailTemplateService;
 import com.soin.sgrm.service.pos.ProjectService;
 import com.soin.sgrm.service.pos.SystemService;
 import com.soin.sgrm.service.pos.UserService;
@@ -44,13 +47,20 @@ public class SystemController extends BaseController {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired 
+	EmailTemplateService emailService;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		model.addAttribute("projects", projectService.findAll());
+		model.addAttribute("emails",emailService.findAll());
+		
+		
 		String[] columns = { "id", "userName", "name" };
 		List<PUser> users = userService.findAllColumns(columns);
 		model.addAttribute("users", users);
+		
 		return "/admin/system/system";
 	}
 

@@ -45,7 +45,7 @@
 									<div class="form-group">
 										<div class="form-line">
 											<input type="text" maxlength="50" class="form-control"
-												id="sName" name="sName" placeholder="Ingrese un alor"
+												id="sName" name="sName" placeholder="Ingrese un valor"
 												style="height: 49px;">
 											<div class="help-info">Máx. 50 caracteres</div>
 										</div>
@@ -86,7 +86,9 @@
 											class="form-control show-tick selectpicker"
 											data-live-search="true">
 											<option value="">-- Seleccione una opci&oacute;n --</option>
-
+											<c:forEach items="${emails}" var="email">
+												<option value="${email.id }">${email.name }</option>
+											</c:forEach>
 										</select>
 									</div>
 								</div>

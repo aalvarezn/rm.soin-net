@@ -11,6 +11,7 @@ import com.soin.sgrm.dao.RequestDao;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
 
+
 @Transactional("transactionManager")
 @Service("RequestService")
 public class RequestServiceImpl implements RequestService {

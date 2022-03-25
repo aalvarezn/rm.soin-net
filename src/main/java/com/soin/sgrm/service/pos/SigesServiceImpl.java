@@ -6,42 +6,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.dao.pos.RequestDao;
-import com.soin.sgrm.model.pos.PRequest;
+import com.soin.sgrm.dao.pos.SigesDao;
+import com.soin.sgrm.model.pos.PSiges;
 
-@Service("requestService")
+@Service("sigesService")
 @Transactional("transactionManagerPos")
-public class RequestServiceImpl implements RequestService {
+public class SigesServiceImpl implements SigesService {
 	@Autowired
-	RequestDao dao;
+	SigesDao dao;
+	
 	@Override
-	public PRequest findById(Long id) {
+	public PSiges findById(Long id) {
+		
 		return dao.getById(id);
 	}
 
 	@Override
-	public PRequest findByKey(String name, String value) {
+	public PSiges findByKey(String name, String value) {
+		
 		return dao.getByKey(name, value);
 	}
 
 	@Override
-	public List<PRequest> findAll() {
+	public List<PSiges> findAll() {
 		return dao.findAll();
 	}
 
 	@Override
-	public void save(PRequest model) {
+	public void save(PSiges model) {
 		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		PRequest model = findById(id);
+		PSiges model= findById(id);
 		dao.delete(model);
 	}
 
 	@Override
-	public void update(PRequest model) {
+	public void update(PSiges model) {
 		dao.update(model);
 	}
 
