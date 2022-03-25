@@ -1100,6 +1100,7 @@ function updateButtonFile() {
 			id :  $buttonFileForm.find('#button_id').val(),
 			description : $buttonFileForm.find('#description').val(),
 			descriptionHtml : $buttonFileForm.find('#descriptionHtml').val(),
+			module : $buttonFileForm.find('#module').val(),
 			fileEdit : $buttonFileForm.find('#fileEdit').val(),
 			owner : $buttonFileForm.find('#owner').val(),
 			permissions : $buttonFileForm.find('#permissions').val(),
