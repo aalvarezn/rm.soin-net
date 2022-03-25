@@ -83,6 +83,7 @@ function initDataTable() {
 }
 
 function showRequest(index){
+	console.log(index);
 	$fmRequest.validate().resetForm();
 	$fmRequest[0].reset();
 	var obj = $dtRequest.row(index).data();

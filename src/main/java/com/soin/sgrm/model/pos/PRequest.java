@@ -49,6 +49,8 @@ public class PRequest implements Serializable{
 	@Column(name = "GESTOR_ICE")
 	private String managerIce;
 	
+	@Column(name="ESTADO")
+	private String status;
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"TIPO_REQUERIMIENTO_ID\"")
 	private PTypeRequest typeRequest;
@@ -178,6 +180,14 @@ public class PRequest implements Serializable{
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 	
