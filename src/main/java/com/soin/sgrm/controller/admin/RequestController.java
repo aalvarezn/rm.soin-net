@@ -28,6 +28,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -46,13 +47,15 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.GDoc;
 import com.soin.sgrm.model.Project;
-import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
 import com.soin.sgrm.model.UserInfo;
-import com.soin.sgrm.service.GDocService;
-import com.soin.sgrm.service.ProjectService;
-import com.soin.sgrm.service.RequestService;
-import com.soin.sgrm.service.TypeRequestService;
+import com.soin.sgrm.model.pos.PImpact;
+import com.soin.sgrm.model.pos.PRequest;
+import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.pos.GDocConfigurationService;
+import com.soin.sgrm.service.pos.ProjectService;
+import com.soin.sgrm.service.pos.RequestService;
+import com.soin.sgrm.service.pos.TypeRequestService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -73,9 +76,113 @@ public class RequestController extends BaseController {
 	@Autowired
 	TypeRequestService typeRequestService;
 
-	@Autowired
-	GDocService gDocService;
 
+	@Autowired
+	GDocConfigurationService gDocService;
+	
+	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
+	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		model.addAttribute("projects", projectService.findAll());
+		model.addAttribute("project", new Project());
+		model.addAttribute("typeRequests", typeRequestService.findAll());
+		model.addAttribute("typeRequest", new TypeRequest());
+		return "/admin/request/request";
+	}
+
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
+		JsonSheet<PRequest> rfcs = new JsonSheet<>();
+		try {
+			System.out.println(requestService.findAll());
+			rfcs.setData(requestService.findAll());
+		} catch (Exception e) {
+			e.printStackTrace();
+			Sentry.capture(e, "request");
+		}
+
+		return rfcs;
+	}
+
+	@RequestMapping(path = "", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody PRequest addRequest) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			requestService.save(addRequest);
+
+			res.setMessage("Requerimiento agregado!");
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("exception");
+			res.setMessage("Error al agregar requerimiento!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody PRequest uptRequest) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			requestService.update(uptRequest);
+
+			res.setMessage("Requerimiento modificado!");
+		} 
+		
+		catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("exception");
+			res.setMessage("Error al modificar requerimiento!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse delete(@PathVariable Long id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			requestService.delete(id);
+			res.setMessage("Requerimiento eliminado!");
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("exception");
+			res.setMessage("Error al eliminar requerimiento!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/softDelete/{}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse softDelete(@PathVariable Long id,Model model, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		PRequest request;
+		try {
+			request = requestService.findById(id);;
+			request.setActive(!request.getActive());
+			requestService.update(request);
+			res.setStatus("success");
+			String messageActive="";
+			if(request.getActive()) {
+				messageActive="activado correctamente!";
+			}else {
+				messageActive="desactivado correctamente!";
+			}
+			res.setMessage("Requerimiento "+messageActive);
+
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("exception");
+			res.setMessage("Error al cambiar de estado requerimiento!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+/*
 	private static final String APPLICATION_NAME = "sgrm";
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -661,9 +768,8 @@ public class RequestController extends BaseController {
 		return new ArrayList<List<Object>>();
 	}
 
-	/**
-	 * Se crea un objeto de credenciales con la informacion del excel.
-	 */
+	// Se crea un objeto de credenciales con la informacion del excel.
+	 
 	private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT, GDoc config)
 			throws IOException, GeneralSecurityException {
 		String key = config.getCredentials();
@@ -697,5 +803,6 @@ public class RequestController extends BaseController {
 		}
 		return res;
 	}
-
+*/
 }
+

@@ -1,5 +1,6 @@
 var id=$('#eId').val();
 var $fmEmail = $('#emailForm'); 
+var $fmEmail2 = $('#emailForm');
 $(function() {
 	activeItemMenu("configurationItem", true);
 	initEmailFormValidation();
@@ -104,6 +105,12 @@ function saveEmail() {
 
 function sendEmailTest() {
 	//resetErrors();
+	initEmailFormValidation2();
+	if (!$fmEmail2.valid()){
+
+		console.log(!$fmEmail.valid());
+		return;
+	}else{
 	blockUI();
 	$.ajax({
 		type : "POST",
@@ -127,6 +134,7 @@ function sendEmailTest() {
 			
 		}
 	});
+	}
 }
 
 
@@ -162,6 +170,55 @@ function initEmailFormValidation() {
 				maxlength : 30,
 			},
 			'eTo' : {
+				minlength : 1,
+				maxlength : 255
+			},
+			'eCc' : {
+				minlength : 1,
+				maxlength : 350
+			},
+			'eSubject' : {
+				minlength : 1,
+				maxlength : 100
+			},
+
+		},
+		messages : {
+			'eName' : {
+				required :  "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+			'eTo' : {
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+			'eCc' : {
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+			'eSubject' : {
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
+	});
+}
+
+function initEmailFormValidation2() {
+	$fmEmail2.validate({
+		rules : {
+			'eName' : {
+				required : true,
+				minlength : 1,
+				maxlength : 30,
+			},
+			'eTo' : {
+				required:true,
 				minlength : 1,
 				maxlength : 255
 			},

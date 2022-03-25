@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -28,10 +29,13 @@ public class PRequest implements Serializable{
 	private String state;
 	
 	@Column(name = "CODIGO_SOIN")
-	private String code;
+	private String codeSoin;
 	
 	@Column(name = "CODIGO_ICE")
-	private String wordGenerator;
+	private String codeIce;
+	
+	@Column(name= "DESCRIPCION")
+	private String description;
 	
 	@Column(name = "LIDER_TECNICO_SOIN")
 	private String leaderTecSoin;
@@ -50,12 +54,18 @@ public class PRequest implements Serializable{
 	private PTypeRequest typeRequest;
 	
 	@Column(name = "ACTIVO")
-	private String active;
+	private boolean active;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"PROYECTO_ID\"")
 	private PProject project;
-
+	
+	@Transient
+	private Long projectId;
+	
+	@Transient
+	private Long typeRequestId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -72,20 +82,20 @@ public class PRequest implements Serializable{
 		this.state = state;
 	}
 
-	public String getCode() {
-		return code;
+	public String getCodeSoin() {
+		return codeSoin;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
+	public void setCodeSoin(String codeSoin) {
+		this.codeSoin = codeSoin;
 	}
 
-	public String getWordGenerator() {
-		return wordGenerator;
+	public String getCodeIce() {
+		return codeIce;
 	}
 
-	public void setWordGenerator(String wordGenerator) {
-		this.wordGenerator = wordGenerator;
+	public void setCodeIce(String codeIce) {
+		this.codeIce = codeIce;
 	}
 
 	public String getLeaderTecSoin() {
@@ -128,11 +138,13 @@ public class PRequest implements Serializable{
 		this.typeRequest = typeRequest;
 	}
 
-	public String getActive() {
+	
+
+	public boolean getActive() {
 		return active;
 	}
 
-	public void setActive(String active) {
+	public void setActive(boolean active) {
 		this.active = active;
 	}
 
@@ -143,5 +155,31 @@ public class PRequest implements Serializable{
 	public void setProject(PProject project) {
 		this.project = project;
 	}
+
+	public Long getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
+	}
+
+	public Long getTypeRequestId() {
+		return typeRequestId;
+	}
+
+	public void setTypeRequestId(Long typeRequestId) {
+		this.typeRequestId = typeRequestId;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	
 
 }

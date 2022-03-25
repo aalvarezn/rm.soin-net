@@ -1,17 +1,17 @@
-var $dtGDoc;
-var $mdGDoc = $('#gDocModal');
-var $fmGDoc = $('#gDocModalForm');
-$(document).ready(function () {
-	
-	activeItemMenu("documentItem", true);
+
+var $dtSiges;
+var $mdSiges = $('#sigesModal');
+var $fmSiges = $('#sigesModalForm');
+
+$(function() {
+	activeItemMenu("sigesItem", true);
 	initDataTable();
-	initGDoc();
+	initSigesFormValidation();
 });
 
 
-
 function initDataTable() {
-	$dtGDoc = $('#gDocTable')
+	$dtSiges = $('#sigesTable')
 	.DataTable(
 			{
 				lengthMenu : [ [ 10, 25, 50, -1 ],
@@ -19,25 +19,25 @@ function initDataTable() {
 					"iDisplayLength" : 10,
 					"language" : optionLanguaje,
 					"iDisplayStart" : 0,
-					"sAjaxSource" : getCont() + "admin/gDoc/list",
+					"sAjaxSource" : getCont() + "admin/siges/list",
 					"fnServerParams" : function(aoData) {
 					},
 					"aoColumns" : [
 						{
-							"mDataProp" : 'name'
+							"mDataProp" : 'codeSiges'
 						},
 						{
-							"mDataProp" : 'project.description'
+							"mDataProp" : 'system.code'
 						},
 						{
 							render : function(data, type, row, meta) {
-								var options = '<div class="iconLine">';
+								var options = '<div class="iconLineC">';
 
-								options += '<a onclick="showGDoc('
+								options += '<a onclick="showSiges('
 									+ meta.row
 									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
 
-								options += '<a onclick="deleteGDoc('
+								options += '<a onclick="deleteSiges('
 									+ meta.row
 									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
 
@@ -50,22 +50,20 @@ function initDataTable() {
 			});
 }
 
-function showGDoc(index){
-	$fmGDoc.validate().resetForm();
-	$fmGDoc[0].reset();
-	var obj = $dtGDoc.row(index).data();
-	$fmGDoc.find('#gId').val(obj.id);
-	$fmGDoc.find('#gDescription').val(obj.name);
-	$fmGDoc.find('#gSpreadSheet').val(obj.spreadSheet);
-	$fmGDoc.find('#gCredentials').val(obj.credentials);
-	$fmGDoc.find('#pId').selectpicker('val',obj.project.id);
-	$mdGDoc.find('#update').show();
-	$mdGDoc.find('#save').hide();
-	$mdGDoc.modal('show');
+function showSiges(index){
+	$fmSiges.validate().resetForm();
+	$fmSiges[0].reset();
+	var obj = $dtSiges.row(index).data();
+	$fmSiges.find('#sId').val(obj.id);
+	$fmSiges.find('#sCode').val(obj.codeSiges);
+	$fmSiges.find('#sSystemId').selectpicker('val',obj.system.id);
+	$mdSiges.find('#update').show();
+	$mdSiges.find('#save').hide();
+	$mdSiges.modal('show');
 }
 
-function updateGDoc() {
-	if (!$fmGDoc.valid())
+function updateSiges() {
+	if (!$fmSiges.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
@@ -76,22 +74,20 @@ function updateGDoc() {
 			blockUI();
 			$.ajax({
 				type : "PUT",
-				url : getCont() + "admin/gDoc/" ,
+				url : getCont() + "admin/siges/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					 id : $fmGDoc.find('#gId').val(),
-					 name:	$fmGDoc.find('#gDescription').val(),
-					 spreadSheet: $fmGDoc.find('#gSpreadSheet').val(),
-					 credentials: $fmGDoc.find('#gCredentials').val(),
-					 projectId: $fmGDoc.find('#pId').val()
+					id : $fmSiges.find('#sId').val(),
+					codeSiges : $fmSiges.find('#sCode').val(),
+					systemId : $fmSiges.find('#sSystemId').val(),
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtGDoc.ajax.reload();
-					$mdGDoc.modal('hide');
+					$dtSiges.ajax.reload();
+					$mdSiges.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -105,8 +101,9 @@ function updateGDoc() {
 }
 
 
-function saveGDoc() {
-	if (!$fmGDoc.valid())
+function saveSiges() {
+	console.log($fmSiges.find('#sSystemId').val());
+	if (!$fmSiges.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
@@ -117,21 +114,19 @@ function saveGDoc() {
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "admin/gDoc/" ,
+				url : getCont() + "admin/siges/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					 name:	$fmGDoc.find('#gDescription').val(),
-					 spreadSheet: $fmGDoc.find('#gSpreadSheet').val(),
-					 credentials: $fmGDoc.find('#gCredentials').val(),
-					 projectId: $fmGDoc.find('#pId').val()
+					codeSiges : $fmSiges.find('#sCode').val(),
+					systemId : $fmSiges.find('#sSystemId').val(),
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtGDoc.ajax.reload();
-					$mdGDoc.modal('hide');
+					$dtSiges.ajax.reload();
+					$mdSiges.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -144,8 +139,8 @@ function saveGDoc() {
 	});
 }
 
-function deleteGDoc(index) {
-	var obj = $dtGDoc.row(index).data();
+function deleteSiges(index) {
+	var obj = $dtSiges.row(index).data();
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
 		text: 'Esta acci\u00F3n no se puede reversar.',
@@ -155,14 +150,14 @@ function deleteGDoc(index) {
 			blockUI();
 			$.ajax({
 				type : "DELETE",
-				url : getCont() + "admin/gDoc/"+obj.id ,
+				url : getCont() + "admin/siges/"+obj.id ,
 				timeout : 60000,
 				data : {},
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtGDoc.ajax.reload();
-					$mdGDoc.modal('hide');
+					$dtSiges.ajax.reload();
+					$mdSiges.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -175,57 +170,39 @@ function deleteGDoc(index) {
 	});
 }
 
-function addGDoc(){
-	$fmGDoc.validate().resetForm();
-	$fmGDoc[0].reset();
-	$fmGDoc	.find('#pId').selectpicker('val',"");
-	$mdGDoc.find('#save').show();
-	$mdGDoc.find('#update').hide();
-	$mdGDoc.modal('show');
+function addSiges(){
+	$fmSiges.validate().resetForm();
+	$fmSiges[0].reset();
+	$fmSiges.find('#sSystemId').selectpicker('val',"");
+	$mdSiges.find('#save').show();
+	$mdSiges.find('#update').hide();
+	$mdSiges.modal('show');
 }
 
-function closeGDoc(){
-	$mdGDoc.modal('hide');
+function closeSiges(){
+	$mdSiges.modal('hide');
 }
 
-function initGDoc() {
-	$fmGDoc.validate({
+function initSigesFormValidation() {
+	$fmSiges.validate({
 		rules : {
-			'gDescription' : {
+			'sCode' : {
 				required : true,
 				minlength : 1,
-				maxlength : 200,
+				maxlength : 100,
 			},
-			'gSpreadSheet' : {
+			'sSystemId' : {
 				required : true,
-				minlength : 1,
-				maxlength : 500
-			},
-			'pId' : {
-				required : true,
-			},
-			'gCredentials' : {
-				required : true,
-				minlength : 1
 			},
 		},
 		messages : {
-			'gDescription' : {
+			'sCode' : {
 				required :  "Ingrese un valor",
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
-			'gSpreadSheet' : {
-				required : "Ingrese un valor",
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
-			'pId' : {
-				required : "Ingrese un valor",
-			},
-			'gCredentials' : {
-				required : "Ingrese un valor",
-				minlength : "Ingrese un valor",
+			'sSystemId' : {
+				required : "Seleccione un valor"
 			},
 		},
 		highlight,
