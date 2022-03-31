@@ -90,7 +90,7 @@ public class CrontabController extends BaseController {
 			}
 			crontab.getButton().setRelease(release);
 			crontab.setRelease(release);
-//			crontab.getButton().setHaveCrontab(true);
+			crontab.getButton().setHaveCrontab(true);
 			crontab = crontabService.saveCrontab(crontab);
 			for (DetailButtonCommand detail : crontab.getButton().getDetailsButtonCommands()) {
 				detail.setButton(null);
@@ -115,12 +115,19 @@ public class CrontabController extends BaseController {
 		try {
 			res.setStatus("success");
 
+			res.setStatus("success");
+
 			Crontab crontab = crontabService.findById(id);
 			crontabService.deleteCrontab(crontab);
+			res.setData(crontab.getButton().getId()+"");
 			for (DetailButtonCommand detail : crontab.getButton().getDetailsButtonCommands()) {
 				detail.setButton(null);
 			}
+
+			
 			res.setObj(crontab);
+			
+			
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "crontab");
 			res.setStatus("exception");
@@ -131,6 +138,7 @@ public class CrontabController extends BaseController {
 			res.setException("La acción no se pudo completar correctamente.");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
+		
 		return res;
 	}
 
@@ -139,6 +147,7 @@ public class CrontabController extends BaseController {
 			Model model, HttpSession session) {
 		Crontab crontab = null;
 		try {
+			
 			crontab = crontabService.findById(id);
 			for (DetailButtonCommand detail : crontab.getButton().getDetailsButtonCommands()) {
 				detail.setButton(null);
@@ -193,7 +202,7 @@ public class CrontabController extends BaseController {
 				detail.setTypeDetail(typeDetail);
 			}
 			crontab.getButton().setRelease(release);
-//			crontab.getButton().setHaveCrontab(true);
+			crontab.getButton().setHaveCrontab(true);
 			crontab.setRelease(release);
 			ButtonCommand old = buttonService.findById(crontab.getButton().getId());
 			crontab.getButton().setRelease(release);
