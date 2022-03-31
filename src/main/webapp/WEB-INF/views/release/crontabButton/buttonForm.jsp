@@ -5,7 +5,7 @@
 	</div>
 </div>
 <div class="row clearfix">
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 m-t-20">
+	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 m-t-20">
 		<label for="email_address">Nombre del Bot&oacute;n</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
@@ -17,7 +17,7 @@
 				style="visibility: hidden;">Valor requerido.</label>
 		</div>
 	</div>
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 m-t-20">
+	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 m-t-20">
 		<label for="email_address">Descripci&oacute;n</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
@@ -28,7 +28,20 @@
 			<label id="description_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Valor requerido.</label>
 		</div>
+		
 	</div>
+	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 m-t-20">
+			<label for="module">M&oacute;dulo</label>
+			<div class="form-group m-b-0i">
+				<div class="form-line">
+					<input type="text" id="module" maxlength="100" value=""
+						class="form-control" placeholder="Ingrese un valor..">
+					<div class="help-info">M&aacute;x. 100 caracteres</div>
+				</div>
+				<label id="module_error" class="error fieldError" for="name"
+					style="visibility: hidden;">Valor requerido.</label>
+			</div>
+		</div>
 </div>
 <div class="row clearfix">
 	<div class="col-sm-12 m-t-20">
