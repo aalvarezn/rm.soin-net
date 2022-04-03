@@ -156,7 +156,7 @@ public class RequestController extends BaseController {
 		return res;
 	}
 	
-	@RequestMapping(value = "/softDelete/{}", method = RequestMethod.POST)
+	@RequestMapping(value = "/softDelete/{id}", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse softDelete(@PathVariable Long id,Model model, HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		PRequest request;

@@ -6,52 +6,51 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.dao.pos.SigesDao;
-import com.soin.sgrm.model.pos.PSiges;
+import com.soin.sgrm.dao.pos.ReleaseDao;
+import com.soin.sgrm.model.pos.PRelease;
 
-@Service("sigesService")
+@Service("releaseService")
 @Transactional("transactionManagerPos")
-public class SigesServiceImpl implements SigesService {
-	@Autowired
-	SigesDao dao;
+public class ReleaseServiceImpl implements ReleaseService {
 	
+	@Autowired
+	ReleaseDao dao;
 	@Override
-	public PSiges findById(Long id) {
+	public PRelease findById(Long id) {
 		
 		return dao.getById(id);
 	}
 
 	@Override
-	public PSiges findByKey(String name, String value) {
-		
+	public PRelease findByKey(String name, String value) {
 		return dao.getByKey(name, value);
 	}
 
 	@Override
-	public List<PSiges> findAll() {
+	public List<PRelease> findAll() {
+		
 		return dao.findAll();
 	}
 
 	@Override
-	public void save(PSiges model) {
+	public void save(PRelease model) {
 		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		PSiges model= findById(id);
+		PRelease model= findById(id);
 		dao.delete(model);
 	}
 
 	@Override
-	public void update(PSiges model) {
+	public void update(PRelease model) {
 		dao.update(model);
 	}
 
 	@Override
-	public List<PSiges> listCodeSiges(Long id) {
-		
-		return dao.listCodeSiges(id);
+	public List<PRelease> listReleasesBySystem(Long id) {
+		return dao.listReleasesBySystem(id);
 	}
 
 }

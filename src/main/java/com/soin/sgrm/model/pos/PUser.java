@@ -42,7 +42,7 @@ public class PUser implements UserDetails, Serializable {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private Long id;
+	public Long id;
 
 	@Column(name = "USUARIO")
 	private String userName;

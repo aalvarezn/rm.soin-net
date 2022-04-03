@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Table(name = "REQUERIMIENTO")
@@ -24,9 +25,6 @@ public class PRequest implements Serializable{
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private Long id;
-
-	@Column(name = "ESTADO")
-	private String state;
 	
 	@Column(name = "CODIGO_SOIN")
 	private String codeSoin;
@@ -51,10 +49,12 @@ public class PRequest implements Serializable{
 	
 	@Column(name="ESTADO")
 	private String status;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"TIPO_REQUERIMIENTO_ID\"")
 	private PTypeRequest typeRequest;
 	
+	@Value("${active:true}")
 	@Column(name = "ACTIVO")
 	private boolean active;
 	
@@ -74,14 +74,6 @@ public class PRequest implements Serializable{
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
 	}
 
 	public String getCodeSoin() {
@@ -140,8 +132,6 @@ public class PRequest implements Serializable{
 		this.typeRequest = typeRequest;
 	}
 
-	
-
 	public boolean getActive() {
 		return active;
 	}
@@ -189,7 +179,4 @@ public class PRequest implements Serializable{
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
-	
-
 }

@@ -80,6 +80,14 @@ public class SystemServiceImpl implements SystemService {
 
 	}
 
+	@Override
+	public List<PSystem> listProjects(Long id) {
+		
+		return dao.listProjects(id);
+	}
+	
+	
+
 
 
 }
