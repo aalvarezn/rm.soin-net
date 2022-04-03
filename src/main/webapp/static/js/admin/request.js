@@ -96,6 +96,7 @@ function showRequest(index){
 	$fmRequest.find('#rIceManagement').val(obj.managerIce);
 	$fmRequest.find('#rLeaderSoin').val(obj.leaderTecSoin);
 	$fmRequest.find('#rLiderIce').val(obj.leaderTecIce);
+	console.log(obj.project.id);
 	$fmRequest.find('#rProjectId').selectpicker('val',obj.project.id);
 	$fmRequest.find('#rTypeRequestId').selectpicker('val',obj.typeRequest.id);
 	$mdRequest.find('#update').show();
@@ -181,7 +182,7 @@ function saveRequest() {
 				}),
 				success : function(response) {
 					unblockUI();
-					notifyMs(response.message, response.status)
+					notifyMs(response.message, response.status);--
 					$dtRequest.ajax.reload();
 					$mdRequest.modal('hide');
 				},
@@ -231,6 +232,7 @@ function deleteRequest(index) {
 function softDeleteRequest(index, active) {	
 	let textTittle = (active) ? 'desactivar':'activar';
 	let textMessage = (active) ? 'activado':'desactivado';
+	var obj = $dtRequest.row(index).data();
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea '+textTittle+' el requerimiento?',
 		text: "El requerimiento puede ser "+textMessage+" nuevamente.",
@@ -239,8 +241,8 @@ function softDeleteRequest(index, active) {
 		if(result.value){
 			blockUI();
 			$.ajax({
-				type : "DELETE",
-				url : getCont() + "admin/request/"+obj.id ,
+				type : "POST",
+				url : getCont() + "admin/request/softDelete/"+obj.id ,
 				timeout : 60000,
 				data : {},
 				success : function(response) {

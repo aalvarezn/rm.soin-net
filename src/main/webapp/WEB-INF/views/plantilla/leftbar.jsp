@@ -59,11 +59,12 @@
 				<li><a id="managerRFCItem" href="<c:url value='/rfc/'/> ">
 						<span>Gestión RFCs</span>
 				</a></li>
-			</c:if>
-	
-			<li><a id="rfcItem" href="<c:url value='/rfc/'/> ">
+							<li><a id="rfcItem" href="<c:url value='/rfc/'/> ">
 						<span>RFC</span>
 				</a></li>
+			</c:if>
+	
+
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">
 					<span>Perfil de usuario</span>
 			</a></li>

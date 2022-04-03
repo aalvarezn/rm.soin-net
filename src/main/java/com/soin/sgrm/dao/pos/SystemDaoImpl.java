@@ -7,10 +7,10 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.model.pos.PSystem;
-
 import com.soin.sgrm.utils.AliasToBeanNestedResultTransformer;
 
 @Repository("systemDao")
@@ -42,6 +42,14 @@ public class SystemDaoImpl extends AbstractDao<Long, PSystem> implements SystemD
 			e.printStackTrace();
 		}
 		return results;
+	}
+	@SuppressWarnings("unchecked")
+	public List<PSystem> listProjects(Long id){
+    return getSession().createCriteria(PSystem.class)
+    		.createAlias("managers","managers")
+    		.add(Restrictions.eq("managers.id", id))
+    		.list();
+			
 	}
 
 }

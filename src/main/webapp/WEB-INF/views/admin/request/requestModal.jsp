@@ -110,7 +110,7 @@
 						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 							<label>Proyecto</label>
 							<div class="form-group">
-								<select id="rProyectId"
+								<select id="rProjectId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="">-- Seleccione una opci&oacute;n --</option>

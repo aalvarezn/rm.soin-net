@@ -1,5 +1,6 @@
 package com.soin.sgrm.service.pos;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -16,9 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.pos.RFCDao;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.utils.Constant;
+import com.soin.sgrm.utils.CommonUtils;
+import com.soin.sgrm.utils.MyLevel;
 
 @Service("rfcService")
 @Transactional("transactionManagerPos")
@@ -26,6 +30,8 @@ public class RFCServiceImpl implements RFCService {
 
 	@Autowired
 	RFCDao dao;
+
+	public static final Logger logger = Logger.getLogger(RFCServiceImpl.class);
 
 	@Override
 	public PRFC findByKey(String name, String value) {
@@ -40,7 +46,7 @@ public class RFCServiceImpl implements RFCService {
 
 	@Override
 	public void save(PRFC model) {
-		// TODO Auto-generated method stub
+		dao.save(model);
 
 	}
 
@@ -58,8 +64,8 @@ public class RFCServiceImpl implements RFCService {
 
 	@Override
 	public PRFC findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return dao.getById(id);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -94,6 +100,53 @@ public class RFCServiceImpl implements RFCService {
 		List<String> fetchs = new ArrayList<String>();
 
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+	}
+
+	public String verifySecuence(String partCode) {
+		String numRFC="";
+		try {
+			int amount = existNumRelease(partCode);
+			
+			if (amount == 0) {
+				numRFC=partCode + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
+				return numRFC;
+			} else {
+				if(amount<10) {
+					numRFC=partCode + "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+					return numRFC;
+				}
+				numRFC=partCode + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+				return numRFC;
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return "Sin Asignar";
+
+	}
+
+	public String generateRFCNumber(String codeProject) {
+		String numRFC = "";
+		String partCode = "";
+		try {
+
+			partCode = "RFC_"+codeProject +"_SC";
+
+			numRFC = verifySecuence(partCode);
+			
+
+		} catch (Exception e) {
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			numRFC = "Sin Asignar";
+		}
+		return numRFC;
+	}
+
+	@Override
+	public Integer existNumRelease(String number_release) throws SQLException {
+		return dao.existNumRelease(number_release);
 	}
 
 }
