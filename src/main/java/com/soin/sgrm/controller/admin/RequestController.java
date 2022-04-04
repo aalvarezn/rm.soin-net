@@ -345,7 +345,7 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setProyect(proyect);
 								request.setTypeRequest(typeRequest);
-
+								request.setActive(true);
 								if (existRequest)
 									requestService.update(request);
 								else
@@ -415,6 +415,7 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								request.setActive(true);
 
 								if (existRequest)
 									requestService.update(request);
@@ -485,6 +486,7 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								request.setActive(true);
 								if (existRequest)
 									requestService.update(request);
 								else
@@ -554,7 +556,7 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-
+								request.setActive(true);
 								if (existRequest)
 									requestService.update(request);
 								else
@@ -622,7 +624,7 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-
+								request.setActive(true);
 								if (existRequest) {
 									requestService.update(request);
 								} else {
