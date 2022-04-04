@@ -8,7 +8,7 @@
 <div id="empty_4" style="display: none;">
 	<%@include file="../../plantilla/emptySection.jsp"%>
 </div>
-<c:if test="${systemConfiguration.attachmentFiles}">
+
 	<div class="button-demo flr">
 		<button type="button" class="btn btn-primary setIcon"
 			onclick="openAddFileModal()">
@@ -95,4 +95,3 @@
 			</div>
 		</div>
 	</div>
-</c:if>

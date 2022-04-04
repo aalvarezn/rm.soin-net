@@ -26,7 +26,7 @@
 		</p>
 		<div class="row clearfix">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<select class="form-control show-tick" id="riskId" name="riskId">
+				<select class="form-control show-tick" id="typeChangeId" name="typeChangeId">
 					<option value="">-- Seleccione una opci&oacute;n --</option>
 					<c:forEach items="${typeChange}" var="typeChange">
 						<c:choose>
@@ -132,7 +132,7 @@
 		</div>
 	</div>
 
-	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="margin-bottom: 70px;">
 		<label for="email_address">Raz&oacute;n del cambio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
