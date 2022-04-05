@@ -49,8 +49,36 @@ $(function() {
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
 	
+	$(".next-step").click(function(e) {
+		var $active = $('.stepper li.active');
+		while($active.next().hasClass('disabled')){
+			$active = $active.next();
+			e.stopPropagation();
+		}
+		nextTab($active);
+		$('html, body').animate({scrollTop: '0px'}, 300);
+	});
+
+	$(".prev-step").click(function(e) {
+		var $active = $('.stepper li.active');
+		while($active.prev().hasClass('disabled')){
+			$active = $active.prev();
+			e.stopPropagation();
+		}
+		prevTab($active);
+		$('html, body').animate({scrollTop: '0px'}, 300);
+	});
 
 });
+function nextTab(elem) {
+	$(elem).next().find('a[data-toggle="tab"]').tab('show');
+}
+
+function prevTab(elem) {
+	$(elem).prev().find('a[data-toggle="tab"]').tab('show');
+}
+
+
 /*
 var $releaseEditForm = $('#generateReleaseForm');
 origForm = null;
