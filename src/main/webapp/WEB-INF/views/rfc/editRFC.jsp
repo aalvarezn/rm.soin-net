@@ -57,6 +57,12 @@
 <link href="<c:url value='/static/css/themes/all-themes.css'/>"
 	rel="stylesheet" type="text/css">
 
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<link rel="stylesheet" type="text/css"
+	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
+
 <!-- Linearicons -->
 <link rel="stylesheet"
 	href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
@@ -66,15 +72,20 @@
 <link rel="stylesheet"
 	href="<c:url value='/static/plugins/jquery-file-upload/css/jquery.fileupload-ui.css'/>" />
 
-<link rel="stylesheet" type="text/css"
-	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
-<link rel="stylesheet" type="text/css"
-	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
+
+
 
 <style type="text/css">
 .alert {
 	width: 20%;
+}
+.bootstrap-datetimepicker-widget table td,
+.bootstrap-datetimepicker-widget table th {
+  text-align: center;
+  border-radius: 0px;
+  background-color:  #2B6D8D;
+  color:#fff;
 }
 </style>
 
@@ -127,7 +138,7 @@
 	</section>
 
 	<section class="content">
-		<form id="generateReleaseForm" role="form">
+		<form id="generateRFCForm" role="form">
 			<input type="hidden" name="${_csrf.parameterName}"
 				value="${_csrf.token}" />
 			<div class="container-fluid">
@@ -224,7 +235,7 @@
 										</div>
 										<div class="button-demo flr">
 											<button type="button" class="btn btn-primary next-step"
-												style="margin-bottom: 30px;">SIGUIENTE</button>
+												style="margin-bottom: 100px;">SIGUIENTE</button>
 										</div>
 									</div>
 									<!--#Step_1 -->
@@ -238,9 +249,9 @@
 										</div>
 										<div class="button-demo flr">
 											<button type="button" class="btn btn-default prev-step"
-												style="margin-bottom: 30px;">ANTERIOR</button>
+												style="margin-bottom: 100px;">ANTERIOR</button>
 											<button type="button" class="btn btn-primary next-step"
-												style="margin-bottom: 30px;">SIGUIENTE</button>
+												style="margin-bottom: 100px;">SIGUIENTE</button>
 										</div>
 									</div>
 									<!--#Step_2 -->
@@ -535,6 +546,7 @@
 
 	<!-- Linearicons -->
 	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>
+
 
 </body>
 

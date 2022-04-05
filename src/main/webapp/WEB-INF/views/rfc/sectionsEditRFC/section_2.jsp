@@ -8,6 +8,131 @@
 <div id="empty_2" style="display: none;">
 	<%@include file="../../plantilla/emptySection.jsp"%>
 </div>
+<div class="row clearfix activeSection">
+	<div class="col-sm-12">
+		<h5 class="titulares">Informaci&oacute;n de Cambio</h5>
+	</div>
+	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-b-20">
+		<p>
+			<b>Sistema</b>
+		</p>
+		<div class="row clearfix">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<select class="form-control show-tick" id="systemId" name="systemId">
+					<option value="">-- Seleccione una opci&oacute;n --</option>
+					<c:forEach items="${systems}" var="systems">
+						<option value="${systems.id }">${systems.name }</option>
+					</c:forEach>
+				</select>
+			</div>
+			<div class="form-group p-l-15 m-b-0i">
+				<label id="riskId_error" class="error fieldError" for="name"
+					style="visibility: hidden;">Campo Requerido.</label>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+		<div class="row clearfix">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="table-responsive"
+					style="margin-top: 20px; margin-bottom: 20px;">
+					<table
+						class="table table-bordered table-striped table-hover dataTable"
+						id="crontabTable">
+						<thead>
+							<tr>
+								<th>Comando</th>
+								<th>Usuario</th>
+								<th>Descripci&oacute;n</th>
+								<th>Entrada del comando</th>
+								<th class="actCol" style="text-align: center;">Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach items="${release.crontabs}" var="crontab">
+								<tr id="${crontab.id}">
+									<td>${crontab.commandCron}</td>
+									<td>${crontab.user}</td>
+									<td>${crontab.descriptionCron}</td>
+									<td>${crontab.commandEntry}</td>
+									<td><div style="text-align: center">
+											<i onclick="editCrontab(${crontab.id})"
+												class="material-icons gris" style="font-size: 30px;">mode_edit</i>
+											<i onclick="deleteCrontab(${crontab.id})"
+												class="material-icons gris" style="font-size: 30px;">delete</i>
+										</div></td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+		<div class="row clearfix">
+			<div class="alig_btn" style="margin-top: 10px;">
+				<button type="button" class="btn btn-primary setIcon"
+					onclick="openCrontabForm()">
+					<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
+				</button>
+			</div>
+		</div>
+	</div>
+	</div>
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+		<div class="row clearfix">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="table-responsive"
+					style="margin-top: 20px; margin-bottom: 20px;">
+					<div class="help-info">
+						<b>Releases a instalar Prod </b>
+					</div>
+					<table
+						class="table table-bordered table-striped table-hover dataTable"
+						id="crontabTable">
+						<thead>
+							<tr>
+								<th>Comando</th>
+								<th>Usuario</th>
+								<th>Descripci&oacute;n</th>
+								<th>Entrada del comando</th>
+								<th class="actCol" style="text-align: center;">Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach items="${release.crontabs}" var="crontab">
+								<tr id="${crontab.id}">
+									<td>${crontab.commandCron}</td>
+									<td>${crontab.user}</td>
+									<td>${crontab.descriptionCron}</td>
+									<td>${crontab.commandEntry}</td>
+									<td><div style="text-align: center">
+											<i onclick="editCrontab(${crontab.id})"
+												class="material-icons gris" style="font-size: 30px;">mode_edit</i>
+											<i onclick="deleteCrontab(${crontab.id})"
+												class="material-icons gris" style="font-size: 30px;">delete</i>
+										</div></td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 m-t-40">
+		<c:if test="${empty  release.functionalDescription}">
+			<input type="checkbox" id="requiredFunctionalDes" class="filled-in">
+		</c:if>
+
+		<c:if test="${not empty  release.functionalDescription}">
+			<input type="checkbox" id="requiredFunctionalDes" class="filled-in"
+				checked="checked">
+		</c:if>
+		<label for="requiredFunctionalDes">&iquest;Requiere BD?</label>
+	</div>
+</div>
 <c:if test="${systemConfiguration.definitionEnvironment}">
 	<div class="row clearfix activeSection">
 		<div class="col-sm-12">

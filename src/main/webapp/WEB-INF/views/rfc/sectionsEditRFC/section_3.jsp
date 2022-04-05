@@ -8,6 +8,54 @@
 <div id="empty_3" style="display: none;">
 	<%@include file="../../plantilla/emptySection.jsp"%>
 </div>
+
+<div class="row clearfix activeSection">
+	<div class="col-sm-12">
+		<h5 class="titulares">Detalles de la implementaci&oacute;n</h5>
+	</div>
+	
+
+	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+		<label for="email_address">Detalles</label>
+		<div class="form-group m-b-0i">
+			<div class="form-line">
+				<textarea rows="2" cols="" id="installationInstructions"
+					class="form-control"
+					placeholder="Ingrese los detalles de implementaci&oacute;n..."
+					style="">${release.installation_instructions}</textarea>
+			</div>
+			<label id="installationInstructions_error" class="error fieldError"
+				for="name" style="visibility: hidden;">Campo Requerido.</label>
+		</div>
+	</div>
+	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+		<label for="email_address">Plan de retorno </label>
+		<div class="form-group m-b-0i">
+			<div class="form-line">
+				<textarea rows="2" cols="" id="verificationInstructions"
+					name="verificationInstructions" class="form-control"
+					placeholder="Ingrese el plan de retorno..."
+					style="">${release.verification_instructions}</textarea>
+			</div>
+			<label id="verificationInstructions_error" class="error fieldError"
+				for="name" style="visibility: hidden;">Campo Requerido.</label>
+		</div>
+	</div>
+	
+	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+		<label for="email_address">Detalles</label>
+		<div class="form-group m-b-0i">
+			<div class="form-line">
+				<textarea rows="2" cols="" id="installationInstructions"
+					class="form-control"
+					placeholder="Ingrese los detalles de implementaci&oacute;n..."
+					style="">${release.installation_instructions}</textarea>
+			</div>
+			<label id="installationInstructions_error" class="error fieldError"
+				for="name" style="visibility: hidden;">Campo Requerido.</label>
+		</div>
+	</div>
+</div>
 <c:if test="${release.system.customCommands}">
 	<div class="row clearfix activeSection">
 		<div class="col-sm-12">
