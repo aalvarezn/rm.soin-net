@@ -76,6 +76,7 @@ function nextTab(elem) {
 
 function prevTab(elem) {
 	$(elem).prev().find('a[data-toggle="tab"]').tab('show');
+	console.log("prueba");
 }
 
 
