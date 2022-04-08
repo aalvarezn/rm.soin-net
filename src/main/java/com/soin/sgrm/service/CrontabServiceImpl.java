@@ -37,4 +37,9 @@ public class CrontabServiceImpl implements CrontabService {
 		dao.deleteCrontab(crontab);
 	}
 
+	@Override
+	public Crontab findByIdButton(Integer id) throws SQLException {
+		return dao.findByIdButton(id);
+	}
+
 }
