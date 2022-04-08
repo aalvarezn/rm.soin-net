@@ -99,6 +99,8 @@ public class CrontabDaoImpl implements CrontabDao {
 		crit.add(Restrictions.eq("id", id));
 		return (Crontab) crit.uniqueResult();
 	}
+	
+	
 
 	@Override
 	public void deleteCrontab(Crontab crontab) {
@@ -121,6 +123,13 @@ public class CrontabDaoImpl implements CrontabDao {
 		} finally {
 			sessionObj.close();
 		}
+	}
+
+	@Override
+	public Crontab findByIdButton(Integer id) throws SQLException {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Crontab.class);
+		crit.add(Restrictions.eq("button.id", id));
+		return (Crontab) crit.uniqueResult();
 	}
 
 }

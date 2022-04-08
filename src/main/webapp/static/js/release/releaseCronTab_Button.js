@@ -421,6 +421,7 @@ function validDetailForm(){
 }
 
 function openEditButtonForm(response, form){
+
 	$('#generateReleaseForm').hide();
 	$('#buttonForm').show();
 	$buttonForm.find('#editButton').show();
@@ -438,6 +439,7 @@ function loadButtonData(button, form){
 	form.find('#button_id').val(button.id);
 	form.find('#name').val(button.name);
 	form.find('#description').val(button.description);
+	form.find('#module').val(button.module);
 	form.find('#command').val(button.command);
 	if(button.executeDirectory){
 		activeInputCheckbox(form, 'executeDirectory');
@@ -571,6 +573,7 @@ function editButton(idButton){
 
 function saveButtonCommand() {
 	var form = "#generateReleaseForm";
+	var cron=0;
 	blockUI();
 	var cont = getCont();
 	$
@@ -583,6 +586,7 @@ function saveButtonCommand() {
 					id : 0,
 					name : $buttonForm.find('#name').val(),
 					description : $buttonForm.find('#description').val(),
+					module : $buttonForm.find('#module').val(),
 					command : $buttonForm.find('#command').val(),
 					executeDirectory : boolean($buttonForm.find('#executeDirectory')
 							.val()),
@@ -592,6 +596,7 @@ function saveButtonCommand() {
 					useUserEnvironment :boolean( $buttonForm
 							.find('#useUserEnvironment').val()),
 					haveHTML : boolean($buttonForm.find('#haveHTML').val()),
+					haveCrontab: cron,
 					hideExecute : boolean($buttonForm.find('#hideExecute').val()),
 					userminAvailability : boolean($buttonForm.find(
 							'#userminAvailability').val()),
@@ -600,8 +605,7 @@ function saveButtonCommand() {
 					timeCommand : $buttonForm.find('#timeCommand').val(),
 					principalPage : boolean($buttonForm.find('#principalPage').val()),
 					pageName : $buttonForm.find('#pageName').val(),
-					detailsButtonCommands : JSON
-					.stringify(getDetailsButton(buttonRowsTable)),
+					detailsButtonCommands : JSON.stringify(getDetailsButton(buttonRowsTable)),
 				},
 				success : function(response) {
 					responseAjaxSaveButton(response);
@@ -628,13 +632,13 @@ function responseAjaxSaveButton(response){
 		  swal("Error!", response.exception, "error")
 	    break;
 	  default:
-		  console.log(response.status);
 	  unblockUI();
 	}
 }
 
 function updateButtonCommand() {
 	var form = "#generateReleaseForm";
+	var cron=0;
 	blockUI();
 	var cont = getCont();
 	$
@@ -647,6 +651,7 @@ function updateButtonCommand() {
 					id :  $buttonForm.find('#button_id').val(),
 					name : $buttonForm.find('#name').val(),
 					description : $buttonForm.find('#description').val(),
+					module :$buttonForm.find('#module').val(),
 					command : $buttonForm.find('#command').val(),
 					executeDirectory : boolean($buttonForm.find('#executeDirectory')
 							.val()),
@@ -656,6 +661,7 @@ function updateButtonCommand() {
 					useUserEnvironment :boolean( $buttonForm
 							.find('#useUserEnvironment').val()),
 					haveHTML : boolean($buttonForm.find('#haveHTML').val()),
+					haveCrontab : cron,
 					hideExecute : boolean($buttonForm.find('#hideExecute').val()),
 					userminAvailability : boolean($buttonForm.find(
 							'#userminAvailability').val()),
@@ -693,7 +699,6 @@ function responseAjaxUpdateButton(response){
 		  swal("Error!", response.exception, "error")
 	    break;
 	  default:
-		  console.log(response.status);
 	  unblockUI();
 	}
 }
@@ -778,6 +783,7 @@ function getButton(isNew){
 	 Button ["name"] = $crontabForm.find('#name').val();
 	 Button ["description"] = $crontabForm.find('#description').val();
 	 Button ["command"] = $crontabForm.find('#command').val();
+	 Button ["module"] =$crontabForm.find('#module').val();
 	 Button ["executeDirectory"] = boolean($crontabForm.find('#executeDirectory').val());
 	 Button ["directoryName"] = $crontabForm.find('#directoryName').val();
 	 Button ["executeUser"] = boolean($crontabForm.find('#executeUser').val());
@@ -792,6 +798,7 @@ function getButton(isNew){
 	 Button ["principalPage"] = boolean($crontabForm.find('#principalPage').val());
 	 Button ["pageName"] = $crontabForm.find('#pageName').val();
 	 Button ["detailsButtonCommands"] = JSON.stringify(getDetailsButton(crontabButtonRowsTable));
+	 
 	 return Button;
 }
 
@@ -874,6 +881,7 @@ function deleteCrontab(idCrontab){
 
 
 function responseAjaxDeleteCrontab(response){
+
 	switch (response.status) {
 	case 'success':
 		crontabTable.row($releaseEditForm.find('#crontabTable #'+response.obj.id)).remove().draw();
@@ -897,7 +905,7 @@ function editCrontab(idCrontab){
 	$
 	.ajax({
 		type : "GET",
-		url : cont + "crontab/" + "findCrontab/" + idCrontab,
+		url : cont + "crontab/findCrontab/" + idCrontab,
 		timeout: 60000,
 		data : {},
 		success : function(response) {
@@ -969,7 +977,6 @@ function responseAjaxUpdateCrontab(response){
 		  swal("Error!", response.exception, "error")
 	    break;
 	  default:
-		  console.log(response.status);
 	  unblockUI();
 	}
 }
@@ -1004,6 +1011,7 @@ function loadButtonFileData(button, form){
 	form.find('#button_id').val(button.id);
 	form.find('#description').val(button.description);
 	form.find('#descriptionHtml').val(button.descriptionHtml);
+	form.find('#module').val(button.module);
 	form.find('#fileEdit').val(button.fileEdit);
 	form.find('#owner').val(button.owner);
 	form.find('#permissions').val(button.permissions);
@@ -1092,6 +1100,7 @@ function updateButtonFile() {
 			id :  $buttonFileForm.find('#button_id').val(),
 			description : $buttonFileForm.find('#description').val(),
 			descriptionHtml : $buttonFileForm.find('#descriptionHtml').val(),
+			module : $buttonFileForm.find('#module').val(),
 			fileEdit : $buttonFileForm.find('#fileEdit').val(),
 			owner : $buttonFileForm.find('#owner').val(),
 			permissions : $buttonFileForm.find('#permissions').val(),
@@ -1129,7 +1138,6 @@ function responseAjaxUpdateButtonFile(response){
 		  swal("Error!", response.exception, "error")
 	    break;
 	  default:
-		  console.log(response.status);
 	  unblockUI();
 	}
 }
@@ -1149,6 +1157,7 @@ function saveButtonFile() {
 					id :  0,
 					description : $buttonFileForm.find('#description').val(),
 					descriptionHtml : $buttonFileForm.find('#descriptionHtml').val(),
+					module : $buttonFileForm.find('#module').val(),
 					fileEdit : $buttonFileForm.find('#fileEdit').val(),
 					owner : $buttonFileForm.find('#owner').val(),
 					permissions : $buttonFileForm.find('#permissions').val(),
@@ -1185,7 +1194,6 @@ function responseAjaxSaveButtonFile(response){
 		  swal("Error!", response.exception, "error")
 	    break;
 	  default:
-		  console.log(response.status);
 	  unblockUI();
 	}
 }
