@@ -69,6 +69,13 @@ public class ReleaseServiceImpl implements ReleaseService {
 		return dao.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
 				statusId);
 	}
+	@Override
+	public JsonSheet<?> listByAllSystemQA(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
+			throws SQLException, ParseException {
+		return dao.listByAllSystemQA(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
+				statusId);
+	}
 
 	@Override
 	public Integer existNumRelease(String number_release) throws SQLException {
