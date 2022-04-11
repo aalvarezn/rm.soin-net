@@ -43,7 +43,24 @@ public class PRFC implements Serializable {
 
 	@Column(name = "REQUIERE_BD")
 	private Boolean requiredBD;
+	
+	@Column(name = "RAZON_CAMBIO")
+	private String reasonChange;
 
+	@Column(name = "EFECTO")
+	private String effect;
+
+	@Column(name = "DETALLE_IMPLEMEN")
+	private String detail;
+
+	@Column(name = "EVIDENCIA")
+	private String evidence;
+	
+
+	@Column(name = "REQUISITOS_ESP")
+	private String requestEsp;
+	
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ID_PRIORIDAD\"", nullable = true)
 	private PPriority priority;
@@ -67,6 +84,14 @@ public class PRFC implements Serializable {
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
+	
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "FECHA_EJECUCION_INICIO")
+	private Timestamp requestDateBegin;
+	
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "FECHA_EJECUCION_FINAL")
+	private Timestamp requestDateFinish;
 	
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
@@ -172,6 +197,62 @@ public class PRFC implements Serializable {
 
 	public void setTypeChange(PTypeChange typeChange) {
 		this.typeChange = typeChange;
+	}
+
+	public String getReasonChange() {
+		return reasonChange;
+	}
+
+	public void setReasonChange(String reasonChange) {
+		this.reasonChange = reasonChange;
+	}
+
+	public String getDetail() {
+		return detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+
+	public Timestamp getRequestDateBegin() {
+		return requestDateBegin;
+	}
+
+	public void setRequestDateBegin(Timestamp requestDateBegin) {
+		this.requestDateBegin = requestDateBegin;
+	}
+
+	public Timestamp getRequestDateFinish() {
+		return requestDateFinish;
+	}
+
+	public void setRequestDateFinish(Timestamp requestDateFinish) {
+		this.requestDateFinish = requestDateFinish;
+	}
+
+	public String getEffect() {
+		return effect;
+	}
+
+	public void setEffect(String effect) {
+		this.effect = effect;
+	}
+
+	public String getEvidence() {
+		return evidence;
+	}
+
+	public void setEvidence(String evidence) {
+		this.evidence = evidence;
+	}
+
+	public String getRequestEsp() {
+		return requestEsp;
+	}
+
+	public void setRequestEsp(String requestEsp) {
+		this.requestEsp = requestEsp;
 	}
 	
 	

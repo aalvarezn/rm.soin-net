@@ -125,11 +125,12 @@ public class RFCController extends BaseController {
 		return codeSiges;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/changeRelease/{id}" }, method = RequestMethod.GET)
-	public @ResponseBody List<PRelease> changeRelease(@PathVariable Long id, Locale locale, Model model) {
-		List<PRelease> releases =null;
+	public @ResponseBody JsonSheet changeRelease(@PathVariable Long id, Locale locale, Model model) {
+		JsonSheet<PRelease> releases =new JsonSheet<>();
 		try {
-			releases =releaseService.listReleasesBySystem(id);
+			releases.setData(releaseService.listReleasesBySystem(id));
 		}catch(Exception e) {
 			Sentry.capture(e, "siges");
 			
@@ -169,6 +170,7 @@ public class RFCController extends BaseController {
 		PRFC rfcEdit = new PRFC();
 		//SystemConfiguration systemConfiguration = new SystemConfiguration();
 		PUser user = getUserLogin();
+		List<PSystem> systems= systemService.listProjects(user.getId());
 		try {
 			if (id == null) {
 				return "redirect:/";
@@ -202,7 +204,7 @@ public class RFCController extends BaseController {
 				model.addAttribute("typeDetailList", typeDetail.list());
 			}
 */
-			model.addAttribute("systems", systemService.findAll());
+			model.addAttribute("systems", systems);
 			model.addAttribute("impacts", impactService.findAll());
 			model.addAttribute("typeChange", typeChangeService.findAll());
 			model.addAttribute("priorities", priority.findAll());

@@ -22,7 +22,7 @@
 			<security:authorize access="hasRole('ADMIN')" var="isAdmin" />
 			<security:authorize access="hasRole('RM')" var="isReleaseManager" />
 			<security:authorize access="hasRole('MANAGER')" var="isManager" />
-
+			<security:authorize access="hasRole('QA')" var="isQA" />
 			<c:if test="${isAdmin}">
 				<li><a id="adminItem" href="<c:url value='/admin/'/> "> <span>Administración</span>
 				</a></li>

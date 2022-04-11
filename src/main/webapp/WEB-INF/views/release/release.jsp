@@ -229,13 +229,27 @@
 							<div id="releaseTabs">
 								<!-- Nav tabs -->
 								<ul class="nav nav-tabs tab-nav-right" role="tablist">
-									<li role="presentation" class="active"><a href="#releases"
-										onclick="changeSelectView(1)" data-toggle="tab">MIS
-											RELEASES</a></li>
-									<li onclick="changeSelectView(2)" role="presentation"><a
-										href="#equipos" data-toggle="tab">MIS EQUIPOS</a></li>
-									<li onclick="changeSelectView(3)" role="presentation"><a
-										href="#sistemas" data-toggle="tab">TODOS LOS SISTEMAS</a></li>
+									<c:if test="${isDeveloper || isReleaseManager }">
+										<li role="presentation" class="active"><a
+											href="#releases" onclick="changeSelectView(1)"
+											data-toggle="tab">MIS RELEASES</a></li>
+										<li onclick="changeSelectView(2)" role="presentation"><a
+											href="#equipos" data-toggle="tab">MIS EQUIPOS</a></li>
+										<li onclick="changeSelectView(3)" role="presentation"><a
+											href="#sistemas" data-toggle="tab">TODOS LOS SISTEMAS</a></li>
+									</c:if>
+									<c:if test="${isManager}">
+										<li onclick="changeSelectView(2)" class="active"
+											role="presentation"><a href="#equipos" data-toggle="tab">MIS
+												EQUIPOS</a></li>
+										<li onclick="changeSelectView(3)" role="presentation"><a
+											href="#sistemas" data-toggle="tab">TODOS LOS SISTEMAS</a></li>
+									</c:if>
+									<c:if test="${isQA}">
+										<li onclick="changeSelectView(3)" class="active"
+											role="presentation"><a href="#sistemas"
+											data-toggle="tab">TODOS LOS SISTEMAS</a></li>
+									</c:if>
 								</ul>
 							</div>
 						</div>

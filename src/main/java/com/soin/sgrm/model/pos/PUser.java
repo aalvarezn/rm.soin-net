@@ -64,7 +64,7 @@ public class PUser implements UserDetails, Serializable {
 	@Column(name = "ULTIMO_LOGUEO")
 	private Timestamp lastLogin;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "\"USUARIO_ROL\"", joinColumns = { @JoinColumn(name = "\"USUARIO_ID\"") }, inverseJoinColumns = {
 			@JoinColumn(name = "\"ROL_ID\"") })

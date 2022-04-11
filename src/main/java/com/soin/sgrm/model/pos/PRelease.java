@@ -25,6 +25,10 @@ public class PRelease implements Serializable {
 	@Column(name = "ID")
 	private Long id;
 	
+	@Column(name = "NUMERO_RELEASE")
+	private String numRelease;
+
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"SISTEMA_ID\"")
 	private PSystem system;
@@ -32,4 +36,38 @@ public class PRelease implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ESTADO_ID\"")
 	private PStatus status;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getNumRelease() {
+		return numRelease;
+	}
+
+	public void setNumRelease(String numRelease) {
+		this.numRelease = numRelease;
+	}
+
+	public PSystem getSystem() {
+		return system;
+	}
+
+	public void setSystem(PSystem system) {
+		this.system = system;
+	}
+
+	public PStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(PStatus status) {
+		this.status = status;
+	}
+	
+	
 }

@@ -1,3 +1,5 @@
+var $rfcEditForm = $('#generateRFCForm');
+origForm = null;
 $(function() {
 	activeItemMenu("managemetReleaseItem");
 	$('input[name="daterange"]').daterangepicker({
@@ -48,6 +50,17 @@ $(function() {
 
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
+	$('.nav-tabs > li a[title]').tooltip();
+	// Wizard
+	$('.stepper a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+		var $target = $(e.target);
+		if ($target.parent().hasClass('disabled')) {
+			return false;
+		}
+		if(formHasChanges()){
+			//sendPartialRFC();
+		}
+	});
 	
 	$(".next-step").click(function(e) {
 		var $active = $('.stepper li.active');
@@ -68,6 +81,8 @@ $(function() {
 		prevTab($active);
 		$('html, body').animate({scrollTop: '0px'}, 300);
 	});
+	
+	dropDownChange();
 
 });
 function nextTab(elem) {
@@ -76,12 +91,104 @@ function nextTab(elem) {
 
 function prevTab(elem) {
 	$(elem).prev().find('a[data-toggle="tab"]').tab('show');
-	console.log("prueba");
-	console.log("prueba");
-	
 }
 
 
+function formHasChanges(){
+	if($rfcEditForm.serialize() === origForm && compareArrays(dependenciesFunctionalsList, listLi('listFunctionalsDependencies'))
+			&& compareArrays(dependenciesTechnicalList, listLi('listTechnicalsDependencies'))
+			&& compareArrays(ambientsList, listLi('listAmbients'))
+			&& compareArrays(modifiedComponentsList, listLi('listComponents'))
+			&& compareArrays(actionsList, listLi('environmentActionTable'))
+	){
+		return false;
+	}else{
+		return true;
+	}
+}
+function sendPartialRFC() {
+	var form = "#generateReleaseForm";
+	changeSaveButton(true);
+	var cont = getCont();
+	$
+	.ajax({
+		// async : false,
+		type : "POST",
+		url : cont + "rfc/saveRFC",
+		timeout: 60000,
+		data : {
+			// Informacion general
+			id : $rfcEditForm.find('#rfcId').val(),
+			codeProyect : $rfcEditForm.find('#rfcCode').val(),
+			impactId : $rfcEditForm.find('#impactId').children(
+			"option:selected").val(),
+			priorityId : $releaseEditForm.find('#priorityId').children("option:selected")
+			.val(),
+			typeChangeId : $releaseEditForm.find('#typeChangeId').children(
+			"option:selected").val(),
+			requestDateBegin : $releaseEditForm.find('#dateBegin').val(),
+
+			requestDateFinish : $releaseEditForm.find('#dateFinish').val(),
+			reasonChange : $releaseEditForm.find('#rfcReason').val(),
+			effect : $releaseEditForm.find('#rfcEffect').val(),
+			
+		},
+		success : function(response) {
+			responseAjaxSendPartialRelease(response);
+			changeSaveButton(false);
+		},
+		error: function(x, t, m) {
+			notifyAjaxError(x, t, m);
+			changeSaveButton(false);
+		}
+	});
+}
+
+function changeSaveButton(save){
+	if(save){
+		$rfcEditForm.find('#btnSave').find('#btnText').text('GUARDANDO');
+		$rfcEditForm.find('#btnSave').find('#btnIcon').text('cached');
+	}else{
+		$rfcEditForm.find('#btnSave').find('#btnText').text('GUARDAR');
+		$rfcEditForm.find('#btnSave').find('#btnIcon').text('check_box');
+	}
+}
+
+
+
+function dropDownChange(){
+
+	$('#systemId').on('change', function(){
+		var sId =$rfcEditForm.find('#systemId').val();
+		
+		console.log(sId);
+		if(sId!=""){
+			$dtRFCs = $('#releaseTable').DataTable(
+					{
+						lengthMenu : [ [ 10, 25, 50, -1 ],
+							[ '10', '25', '50', 'Mostrar todo' ] ],
+							"iDisplayLength" : 10,
+							"language" : optionLanguaje,
+							"iDisplayStart" : 0,
+							"processing" : true,
+							"serverSide" : true,
+							"sAjaxSource" : getCont() + "rfc/changeRelease/"+sId,
+							"fnServerParams" : function(aoData) {
+							},
+							"aoColumns" : [ {
+								"mDataProp" : "numRelease"
+							}],
+							ordering : false,
+							select:{
+								style:'multi'
+							}
+					});
+		}else{
+			resetDrop();
+		}
+		
+	});
+}
 /*
 var $releaseEditForm = $('#generateReleaseForm');
 origForm = null;

@@ -30,7 +30,7 @@
 					<option value="">-- Seleccione una opci&oacute;n --</option>
 					<c:forEach items="${typeChange}" var="typeChange">
 						<c:choose>
-							<c:when test="${typeChange.id == rfc.typeChange}">
+							<c:when test="${typeChange.id == rfc.typeChange.id}">
 								<option selected="selected" value="${typeChange.id }">${typeChange.name }</option>
 							</c:when>
 							<c:otherwise>
@@ -39,10 +39,6 @@
 						</c:choose>
 					</c:forEach>
 				</select>
-			</div>
-			<div class="form-group p-l-15 m-b-0i">
-				<label id="riskId_error" class="error fieldError" for="name"
-					style="visibility: hidden;">Campo Requerido.</label>
 			</div>
 		</div>
 	</div>
@@ -66,10 +62,6 @@
 					</c:forEach>
 				</select>
 			</div>
-			<div class="form-group p-l-15 m-b-0i">
-				<label id="impactId_error" class="error fieldError activeError"
-					for="name" style="visibility: hidden;">Campo Requerido.</label>
-			</div>
 		</div>
 	</div>
 
@@ -85,7 +77,7 @@
 						<option value="">-- Seleccione una opci&oacute;n --</option>
 						<c:forEach items="${priorities}" var="priority">
 							<c:choose>
-								<c:when test="${priority.id == release.priority}">
+								<c:when test="${priority.id == rfc.priority.id}">
 									<option selected="selected" value="${priority.id }">${priority.name }</option>
 								</c:when>
 								<c:otherwise>
@@ -97,10 +89,6 @@
 					</select>
 				</div>
 			</div>
-			<div class="form-group p-l-15 m-b-0i">
-				<label id="priorityId_error" class="error fieldError" for="name"
-					style="visibility: hidden;">Campo Requerido.</label>
-			</div>
 		</div>
 	</div>
 </div>
@@ -109,54 +97,48 @@
 		<h5 class="titulares">Fechas y hora propuesta para ejecutar</h5>
 	</div>
 
+
 	<div class='col-lg-6 col-md-6 col-sm-12 col-xs-12'>
 		<label>Fecha Inicio</label>
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
-					class="form-control datetimepicker" id='dateChange' />
+					class="form-control datetimepicker" id='dateBegin' />
 			</div>
-			<label id="dateChange_error" class="error fieldError" for="name"
-				style="visibility: hidden">Campo Requerido.</label>
 		</div>
 	</div>
 	<div class='col-lg-6 col-md-6 col-sm-12 col-xs-12'>
-		<label>Fecha</label>
+		<label>Fecha Fin</label>
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
-					class="form-control datetimepicker" id='dateChange' />
+					class="form-control datetimepicker" id='dateFinish' />
 			</div>
-			<label id="dateChange_error" class="error fieldError" for="name"
-				style="visibility: hidden">Campo Requerido.</label>
 		</div>
 	</div>
-
-	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="margin-bottom: 70px;">
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 		<label for="email_address">Raz&oacute;n del cambio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" id="installationInstructions"
+				<textarea rows="2" cols="" id="rfcReason"
 					class="form-control"
 					placeholder="Ingrese la raz&oacute;n del cambio..."
-					style="">${release.installation_instructions}</textarea>
+					style="">${rfc.reasonChange}</textarea>
 			</div>
-			<label id="installationInstructions_error" class="error fieldError"
-				for="name" style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 	</div>
-	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+	
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-bottom: 20px;">
 		<label for="email_address">Efecto si no se implementa el
 			cambio. </label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" id="verificationInstructions"
-					name="verificationInstructions" class="form-control"
+				<textarea rows="2" cols="" id="rfcEffect"
+					name="rfcEffect" class="form-control"
 					placeholder="Ingrese el efecto si no se implementa..."
-					style="">${release.verification_instructions}</textarea>
+					style="">${rfc.effect}</textarea>
 			</div>
-			<label id="verificationInstructions_error" class="error fieldError"
-				for="name" style="visibility: hidden;">Campo Requerido.</label>
+
 		</div>
 	</div>
 </div>

@@ -15,7 +15,7 @@
 	</div>
 	
 
-	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 		<label for="email_address">Detalles</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
@@ -28,7 +28,7 @@
 				for="name" style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 	</div>
-	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 		<label for="email_address">Plan de retorno </label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
@@ -42,8 +42,8 @@
 		</div>
 	</div>
 	
-	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-		<label for="email_address">Detalles</label>
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<label for="email_address">Evidencias</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
 				<textarea rows="2" cols="" id="installationInstructions"
@@ -54,6 +54,21 @@
 			<label id="installationInstructions_error" class="error fieldError"
 				for="name" style="visibility: hidden;">Campo Requerido.</label>
 		</div>
+		
+	</div>
+		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+		<label for="email_address">Requisitos especiales</label>
+		<div class="form-group m-b-0i">
+			<div class="form-line">
+				<textarea rows="2" cols="" id="installationInstructions"
+					class="form-control"
+					placeholder="Ingrese los detalles de implementaci&oacute;n..."
+					style="">${release.installation_instructions}</textarea>
+			</div>
+			<label id="installationInstructions_error" class="error fieldError"
+				for="name" style="visibility: hidden;">Campo Requerido.</label>
+		</div>
+		
 	</div>
 </div>
 <c:if test="${release.system.customCommands}">

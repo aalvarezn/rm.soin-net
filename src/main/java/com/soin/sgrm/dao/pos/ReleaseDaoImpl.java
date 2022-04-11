@@ -17,7 +17,7 @@ public class ReleaseDaoImpl extends AbstractDao<Long, PRelease> implements Relea
 	    		.createAlias("system","systems")
 	    		.createAlias("status", "statuses")
 	    		.add(Restrictions.eq("systems.id", id))
-	    		.add(Restrictions.eq("statuses.name","Certificacion"))
+	    		.add(Restrictions.or(Restrictions.eq("statuses.name","Certificacion"),Restrictions.eq("statuses.name","Solicitado")))
 	    		.list();
 		}
 }

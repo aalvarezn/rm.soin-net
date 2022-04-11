@@ -32,7 +32,10 @@ function initRFCTable() {
 						"mDataProp" : "numRequest"
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return row.numRequest;
+							if(row.impact)
+								return row.impact.name;
+							else
+								return '';
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
@@ -43,7 +46,7 @@ function initRFCTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return row.numRequest;
+							return row.user.name;
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {

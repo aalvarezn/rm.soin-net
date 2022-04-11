@@ -296,7 +296,7 @@
 										<div class="button-demo flr p-t-20">
 											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
 <%-- 											<c:if test="${release.status.name == 'Borrador'}"> --%>
-												<button id="applyFor" onclick="requestRelease()"
+												<button id="applyFor" onclick="requestRFC()"
 													type="button" class="btn btn-primary">SOLICITAR</button>
 <%-- 											</c:if> --%>
 										</div>
@@ -312,165 +312,10 @@
 		</form>
 	</section>
 
-	<section class="content">
-		<form id="crontabForm" role="form" class="animated fadeIn"
-			style="display: none">
-			<div id="crontab" class="animated fadeIn">
-				<div class="row">
-					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 align-left">
-						<a onclick="closeCrontabForm()"
-							style="cursor: pointer; text-decoration: none;"><i
-							class="material-icons active_icons font-50">
-								keyboard_arrow_left</i></a>
-					</div>
-					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 align-right">
-						<h5 class="rel_num">
-							<span>Release: </span>${release.releaseNumber}
-						</h5>
-					</div>
-				</div>
-				<input type="hidden" name="${_csrf.parameterName}"
-					value="${_csrf.token}" />
-				<div class="container-fluid">
-					<div class="row">
-						<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
-							<h5 class="font-20 greyLigth">Crontab</h5>
-						</div>
-					</div>
-					<hr>
-					<%@include file="../release/crontabButton/crontabForm.jsp"%>
-					<div class="row clearfix">
-						<div class="button-demo flr m-t-20">
-							<button type="button" onclick="closeCrontabForm()"
-								class="btn btn-default">CANCELAR</button>
-							<button type="button" class="btn btn-primary crb"
-								data-type="button">SIGUIENTE</button>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div id="button" style="display: none" class="animated fadeIn">
-				<div class="row">
-					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 align-left">
-						<a onclick="changeCrontabButtonForm('crontab')"
-							style="cursor: pointer; text-decoration: none;"><i
-							class="material-icons active_icons font-50">
-								keyboard_arrow_left</i></a>
-					</div>
-					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 align-right">
-						<h5 class="rel_num">
-							<span>Release: </span>${release.releaseNumber}
-						</h5>
-					</div>
-				</div>
-				<div class="container-fluid">
-					<div class="row">
-						<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
-							<h5 class="font-20 greyLigth">Bot&oacute;n</h5>
-						</div>
-					</div>
-					<hr>
-					<%@include file="../release/crontabButton/buttonForm.jsp"%>
-					<div class="row clearfix">
-						<div class="button-demo flr m-t-20">
-							<button type="button" class="btn btn-default crb"
-								data-type="crontab">ANTERIOR</button>
-							<button id="editCrontab" type="button" onclick="updateCrontab()"
-								class="btn btn-primary" data-type="button">ACTUALIZAR</button>
-							<button id="saveCrontab" type="button" onclick="saveCrontabs()"
-								class="btn btn-primary">GUARDAR</button>
+	
 
-						</div>
-					</div>
-				</div>
-			</div>
-		</form>
-	</section>
 
-	<section class="content">
-		<form id="buttonForm" role="form" class="animated fadeIn"
-			style="display: none">
-			<div class="row">
-				<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 align-left">
-					<a onclick="closeButtonForm()"
-						style="cursor: pointer; text-decoration: none;"><i
-						class="material-icons active_icons font-50">
-							keyboard_arrow_left</i></a>
-				</div>
-				<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 align-right">
-					<h5 class="rel_num">
-						<span>Release: </span>${release.releaseNumber}
-					</h5>
-				</div>
-			</div>
 
-			<input type="hidden" name="${_csrf.parameterName}"
-				value="${_csrf.token}" />
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
-						<h5 class="font-20 greyLigth">Bot&oacute;n</h5>
-					</div>
-				</div>
-				<hr>
-				<%@include file="../release/crontabButton/buttonForm.jsp"%>
-				<div class="row clearfix">
-					<div class="button-demo flr m-t-20">
-						<button type="button" onclick="closeButtonForm()"
-							class="btn btn-default">CANCELAR</button>
-						<button id="editButton" type="button"
-							onclick="updateButtonCommand()" class="btn btn-primary"
-							data-type="button">ACTUALIZAR</button>
-						<button id="saveButton" type="button"
-							onclick="saveButtonCommand()" class="btn btn-primary"
-							data-type="button">GUARDAR</button>
-					</div>
-				</div>
-			</div>
-		</form>
-	</section>
-
-	<section class="content">
-		<form id="buttonFileForm" role="form" class="animated fadeIn"
-			style="display: none">
-			<div class="row">
-				<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 align-left">
-					<a onclick="closeButtonFileForm()"
-						style="cursor: pointer; text-decoration: none;"><i
-						class="material-icons active_icons font-50">
-							keyboard_arrow_left</i></a>
-				</div>
-				<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12 align-right">
-					<h5 class="rel_num">
-						<span>Release: </span>${release.releaseNumber}
-					</h5>
-				</div>
-			</div>
-
-			<input type="hidden" name="${_csrf.parameterName}"
-				value="${_csrf.token}" />
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-md-6 col-lg-6 col-sm-12 col-xs-12">
-						<h5 class="font-20 greyLigth">Bot&oacute;n de edici&oacute;n
-							de archivo</h5>
-					</div>
-				</div>
-				<hr>
-				<%@include file="../release/crontabButton/buttonFileForm.jsp"%>
-				<div class="row clearfix">
-					<div class="button-demo flr m-t-20">
-						<button type="button" onclick="closeButtonFileForm()"
-							class="btn btn-default">CANCELAR</button>
-						<button id="editButton" type="button" onclick="updateButtonFile()"
-							class="btn btn-primary" data-type="button">ACTUALIZAR</button>
-						<button id="saveButton" type="button" onclick="saveButtonFile()"
-							class="btn btn-primary" data-type="button">GUARDAR</button>
-					</div>
-				</div>
-			</div>
-		</form>
-	</section>
 
 	<!-- Jquery Core Js -->
 	<script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
