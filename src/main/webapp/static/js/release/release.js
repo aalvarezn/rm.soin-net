@@ -120,9 +120,6 @@ function loadTableRelease(nameTable) {
 						}, 
 						"aoColumns" : [
 							{
-								"mDataProp" : "id"
-							},
-							{
 								"mDataProp" : "system.name",
 							},
 							{

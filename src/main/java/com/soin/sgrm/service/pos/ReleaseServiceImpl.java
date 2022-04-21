@@ -1,5 +1,7 @@
 package com.soin.sgrm.service.pos;
 
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.pos.ReleaseDao;
 import com.soin.sgrm.model.pos.PRelease;
+import com.soin.sgrm.utils.JsonSheet;
 
 @Service("releaseService")
 @Transactional("transactionManagerPos")
@@ -49,8 +52,15 @@ public class ReleaseServiceImpl implements ReleaseService {
 	}
 
 	@Override
-	public List<PRelease> listReleasesBySystem(Long id) {
-		return dao.listReleasesBySystem(id);
+	public List<PRelease> listReleasesBySystem1(Long id) {
+		return dao.listReleasesBySystem1(id);
+	}
+
+	@Override
+	public JsonSheet<?> listReleasesBySystem( int sEcho, int iDisplayStart, int iDisplayLength,
+			String sSearch, Long systemId) throws SQLException, ParseException  {
+
+		return dao.listReleasesBySystem( sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
 	}
 
 }

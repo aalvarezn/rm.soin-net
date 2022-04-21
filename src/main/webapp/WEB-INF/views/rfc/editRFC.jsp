@@ -57,8 +57,7 @@
 <link href="<c:url value='/static/css/themes/all-themes.css'/>"
 	rel="stylesheet" type="text/css">
 
-<link rel="stylesheet" type="text/css"
-	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
@@ -80,13 +79,20 @@
 .alert {
 	width: 20%;
 }
-.bootstrap-datetimepicker-widget table td,
-.bootstrap-datetimepicker-widget table th {
-  text-align: center;
-  border-radius: 0px;
-  background-color:  #2B6D8D;
-  color:#fff;
+
+
+
+.dataTables_paginate {
+  float: initial;
+  font-size: 15px;
 }
+
+table.dataTable tbody tr.selected {
+  background-color: #b0bed9;
+}	
+tr.selected {
+  background-color: #acbad4;
+}	
 </style>
 
 </head>
@@ -373,8 +379,7 @@
 		<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/es.js"></script>
 
-	
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
 	<script src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
 
 	<!-- Custom Js -->

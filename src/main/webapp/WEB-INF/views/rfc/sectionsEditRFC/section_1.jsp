@@ -103,7 +103,7 @@
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
-					class="form-control datetimepicker" id='dateBegin' />
+					class="form-control datetimepicker" id='dateBegin' value="${rfc.requestDateBegin }" />
 			</div>
 		</div>
 	</div>
@@ -112,12 +112,12 @@
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
-					class="form-control datetimepicker" id='dateFinish' />
+					class="form-control datetimepicker" id='dateFinish' value="${rfc.requestDateBegin }" />
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-		<label for="email_address">Raz&oacute;n del cambio</label>
+		<label>Raz&oacute;n del cambio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
 				<textarea rows="2" cols="" id="rfcReason"
@@ -129,7 +129,7 @@
 	</div>
 	
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-bottom: 20px;">
-		<label for="email_address">Efecto si no se implementa el
+		<label>Efecto si no se implementa el
 			cambio. </label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">

@@ -45,8 +45,9 @@
 				<label for="email_address">Fecha de creaci&oacute;n</label>
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
-						<input type="text" disabled id="dateTinySummary" name="systemCode"
-							value="${rfc.requestDate }" class="form-control"
+						<input type="text" disabled id="dateTinySummary" name="dateCreate"
+							value='<fmt:formatDate
+										value="${rfc.requestDate }" pattern="dd/MM/YYYY HH:mm:ss"  />' class="form-control"
 							placeholder="">
 					</div>
 				</div>

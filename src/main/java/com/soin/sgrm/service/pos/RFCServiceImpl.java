@@ -58,8 +58,8 @@ public class RFCServiceImpl implements RFCService {
 
 	@Override
 	public void update(PRFC model) {
-		// TODO Auto-generated method stub
-
+		dao.update(model);
+		
 	}
 
 	@Override

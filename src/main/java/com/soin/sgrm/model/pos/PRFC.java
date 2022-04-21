@@ -60,6 +60,9 @@ public class PRFC implements Serializable {
 	@Column(name = "REQUISITOS_ESP")
 	private String requestEsp;
 	
+	@Column(name = "PLAN_RETORNO")
+	private String returnPlan;
+	
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ID_PRIORIDAD\"", nullable = true)
@@ -85,14 +88,13 @@ public class PRFC implements Serializable {
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
 	
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	
 	@Column(name = "FECHA_EJECUCION_INICIO")
-	private Timestamp requestDateBegin;
+	private String requestDateBegin;
 	
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
+
 	@Column(name = "FECHA_EJECUCION_FINAL")
-	private Timestamp requestDateFinish;
-	
+	private String requestDateFinish;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -102,6 +104,19 @@ public class PRFC implements Serializable {
 	
 	@Transient
 	private String[] strReleases;
+	
+	@Transient
+	private Long impactId;
+	
+	@Transient
+	private Long priorityId;
+	
+	@Transient
+	private Long typeChangeId;
+	
+	@Transient
+	private PRelease[] releasesList;
+	
 	
 	public Long getId() {
 		return id;
@@ -135,12 +150,52 @@ public class PRFC implements Serializable {
 		this.requiredBD = requiredBD;
 	}
 
-	public Timestamp getRequestDate() {
-		return requestDate;
+	public String getReasonChange() {
+		return reasonChange;
 	}
 
-	public void setRequestDate(Timestamp requestDate) {
-		this.requestDate = requestDate;
+	public void setReasonChange(String reasonChange) {
+		this.reasonChange = reasonChange;
+	}
+
+	public String getEffect() {
+		return effect;
+	}
+
+	public void setEffect(String effect) {
+		this.effect = effect;
+	}
+
+	public String getDetail() {
+		return detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+
+	public String getEvidence() {
+		return evidence;
+	}
+
+	public void setEvidence(String evidence) {
+		this.evidence = evidence;
+	}
+
+	public String getRequestEsp() {
+		return requestEsp;
+	}
+
+	public void setRequestEsp(String requestEsp) {
+		this.requestEsp = requestEsp;
+	}
+
+	public String getReturnPlan() {
+		return returnPlan;
+	}
+
+	public void setReturnPlan(String returnPlan) {
+		this.returnPlan = returnPlan;
 	}
 
 	public PPriority getPriority() {
@@ -149,38 +204,6 @@ public class PRFC implements Serializable {
 
 	public void setPriority(PPriority priority) {
 		this.priority = priority;
-	}
-
-	public PStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(PStatus status) {
-		this.status = status;
-	}
-
-	public PUser getUser() {
-		return user;
-	}
-
-	public void setUser(PUser user) {
-		this.user = user;
-	}
-
-	public Set<PRelease> getReleases() {
-		return releases;
-	}
-
-	public void setReleases(Set<PRelease> releases) {
-		this.releases = releases;
-	}
-
-	public String[] getStrReleases() {
-		return strReleases;
-	}
-
-	public void setStrReleases(String[] strSystems) {
-		this.strReleases = strSystems;
 	}
 
 	public PImpact getImpact() {
@@ -199,61 +222,97 @@ public class PRFC implements Serializable {
 		this.typeChange = typeChange;
 	}
 
-	public String getReasonChange() {
-		return reasonChange;
+	public PStatus getStatus() {
+		return status;
 	}
 
-	public void setReasonChange(String reasonChange) {
-		this.reasonChange = reasonChange;
+	public void setStatus(PStatus status) {
+		this.status = status;
 	}
 
-	public String getDetail() {
-		return detail;
+	public PUser getUser() {
+		return user;
 	}
 
-	public void setDetail(String detail) {
-		this.detail = detail;
+	public void setUser(PUser user) {
+		this.user = user;
 	}
 
-	public Timestamp getRequestDateBegin() {
+	public Timestamp getRequestDate() {
+		return requestDate;
+	}
+
+	public void setRequestDate(Timestamp requestDate) {
+		this.requestDate = requestDate;
+	}
+
+
+
+
+	public Set<PRelease> getReleases() {
+		return releases;
+	}
+
+	public void setReleases(Set<PRelease> releases) {
+		this.releases = releases;
+	}
+
+	public String[] getStrReleases() {
+		return strReleases;
+	}
+
+	public void setStrReleases(String[] strReleases) {
+		this.strReleases = strReleases;
+	}
+
+	public Long getImpactId() {
+		return impactId;
+	}
+
+	public void setImpactId(Long impactId) {
+		this.impactId = impactId;
+	}
+
+	public Long getPriorityId() {
+		return priorityId;
+	}
+
+	public void setPriorityId(Long priorityId) {
+		this.priorityId = priorityId;
+	}
+
+	public Long getTypeChangeId() {
+		return typeChangeId;
+	}
+
+	public void setTypeChangeId(Long typeChangeId) {
+		this.typeChangeId = typeChangeId;
+	}
+
+	public PRelease[]  getReleasesList() {
+		return releasesList;
+	}
+
+	public void setReleasesList(PRelease[]  releasesList) {
+		this.releasesList = releasesList;
+	}
+
+	public String getRequestDateBegin() {
 		return requestDateBegin;
 	}
 
-	public void setRequestDateBegin(Timestamp requestDateBegin) {
+	public void setRequestDateBegin(String requestDateBegin) {
 		this.requestDateBegin = requestDateBegin;
 	}
 
-	public Timestamp getRequestDateFinish() {
+	public String getRequestDateFinish() {
 		return requestDateFinish;
 	}
 
-	public void setRequestDateFinish(Timestamp requestDateFinish) {
+	public void setRequestDateFinish(String requestDateFinish) {
 		this.requestDateFinish = requestDateFinish;
 	}
-
-	public String getEffect() {
-		return effect;
-	}
-
-	public void setEffect(String effect) {
-		this.effect = effect;
-	}
-
-	public String getEvidence() {
-		return evidence;
-	}
-
-	public void setEvidence(String evidence) {
-		this.evidence = evidence;
-	}
-
-	public String getRequestEsp() {
-		return requestEsp;
-	}
-
-	public void setRequestEsp(String requestEsp) {
-		this.requestEsp = requestEsp;
-	}
+	
 	
 	
 

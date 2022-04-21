@@ -1,7 +1,11 @@
 package com.soin.sgrm.controller;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -10,6 +14,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +23,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.collect.Sets;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.Ambient;
+import com.soin.sgrm.model.Dependency;
+import com.soin.sgrm.model.ModifiedComponent;
+import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.pos.PImpact;
 import com.soin.sgrm.model.pos.PPriority;
 
 import com.soin.sgrm.model.pos.PRFC;
@@ -31,20 +44,23 @@ import com.soin.sgrm.service.pos.ReleaseService;
 import com.soin.sgrm.service.pos.SigesService;
 import com.soin.sgrm.model.pos.PStatus;
 import com.soin.sgrm.model.pos.PSystem;
+import com.soin.sgrm.model.pos.PTypeChange;
 import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.service.pos.StatusService;
 import com.soin.sgrm.service.pos.SystemService;
 import com.soin.sgrm.service.pos.TypeChangeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyError;
 import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.utils.ReleaseCreate;
 
 @Controller
 @RequestMapping(value = "/rfc")
 public class RFCController extends BaseController {
 
 	@Autowired
-	PriorityService priority;
+	PriorityService priorityService;
 
 	@Autowired
 	RFCService rfcService;
@@ -76,7 +92,7 @@ public class RFCController extends BaseController {
 		try {
 			PUser userLogin = getUserLogin();
 			List<PSystem> systems= systemService.listProjects(userLogin.getId());
-			List<PPriority> priorities = priority.findAll();
+			List<PPriority> priorities = priorityService.findAll();
 			List<PStatus> statuses = statusService.findAll();
 
 			model.addAttribute("priorities", priorities);
@@ -125,20 +141,33 @@ public class RFCController extends BaseController {
 		return codeSiges;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = { "/changeRelease/{id}" }, method = RequestMethod.GET)
-	public @ResponseBody JsonSheet changeRelease(@PathVariable Long id, Locale locale, Model model) {
-		JsonSheet<PRelease> releases =new JsonSheet<>();
+
+	
+	@RequestMapping(value = { "/changeRelease" }, method = RequestMethod.GET)
+	public @ResponseBody com.soin.sgrm.utils.JsonSheet<?> changeRelease(HttpServletRequest request, Locale locale, Model model,
+			HttpSession session) {
+	
 		try {
-			releases.setData(releaseService.listReleasesBySystem(id));
+			Long systemId;
+			String sSearch = request.getParameter("sSearch");
+			if(request.getParameter("systemId").equals("")) {
+				systemId=(long) 0;
+			}else {
+			     systemId =(long)  Integer.parseInt(request.getParameter("systemId"));
+			}
+			
+			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
+					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
+					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			return releaseService.listReleasesBySystem( sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
 		}catch(Exception e) {
 			Sentry.capture(e, "siges");
 			
-			e.printStackTrace();
+			return null;
 		}
 		
-		return releases;
 	}
+
 	
 	@RequestMapping(path = "", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody PRFC addRFC) {
@@ -164,6 +193,63 @@ public class RFCController extends BaseController {
 		}
 		return res;
 	}
+	
+	@SuppressWarnings("null")
+	@RequestMapping(value = "/saveRFC",method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse saveRelease(HttpServletRequest request, @RequestBody PRFC addRFC) {
+
+		JsonResponse res = new JsonResponse();
+		PPriority priority=null;
+		PImpact impact=null;
+		PTypeChange typeChange=null;
+		PRelease[] arrayRelease=null;
+		List<PRelease> listRelease=null;
+		try {
+
+			PRFC rfcMod = rfcService.findById(addRFC.getId());
+			addRFC.setUser(rfcMod.getUser());
+			addRFC.setNumRequest(rfcMod.getNumRequest());
+			addRFC.setCodeProyect(rfcMod.getCodeProyect());
+			addRFC.setStatus(rfcMod.getStatus());
+			addRFC.setRequestDate(rfcMod.getRequestDate());
+			if(addRFC.getImpactId()!=null){
+				impact= impactService.findById(addRFC.getImpactId());
+				addRFC.setImpact(impact);
+			}
+			
+			if(addRFC.getPriorityId()!=null){
+				priority= priorityService.findById(addRFC.getPriorityId());
+				addRFC.setPriority(priority);
+			}
+			if(addRFC.getTypeChangeId()!=null){
+				typeChange= typeChangeService.findById(addRFC.getTypeChangeId());
+				addRFC.setTypeChange(typeChange);
+				
+			}
+			if(addRFC.getReleasesList()!=null) {
+				arrayRelease=addRFC.getReleasesList();
+				if(arrayRelease.length!=0) {
+					//for(PRelease release: arrayRelease) {
+					//	listRelease.add(releaseService.findById(release.getId()));
+						
+				//	}
+					addRFC.setReleases(Sets.newHashSet(listRelease));
+				}
+			}
+		
+		
+			rfcService.update(addRFC);
+			res.setStatus("success");
+		
+		}  catch (Exception e) {
+			Sentry.capture(e, "rfc");
+			res.setStatus("exception");
+			res.setException("Error al guardar el rfc: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
 	@RequestMapping(value = "/editRFC-{id}", method = RequestMethod.GET)
 	public String editRelease(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) {
@@ -207,7 +293,7 @@ public class RFCController extends BaseController {
 			model.addAttribute("systems", systems);
 			model.addAttribute("impacts", impactService.findAll());
 			model.addAttribute("typeChange", typeChangeService.findAll());
-			model.addAttribute("priorities", priority.findAll());
+			model.addAttribute("priorities", priorityService.findAll());
 			model.addAttribute("rfc",rfcEdit);
 			/*
 			model.addAttribute("doc", new DocTemplate());

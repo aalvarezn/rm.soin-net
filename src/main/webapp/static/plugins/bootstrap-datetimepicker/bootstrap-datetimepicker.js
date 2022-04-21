@@ -1103,10 +1103,11 @@
 					expanded = $parent.find('.in'),
 					closed = $parent.find('.collapse:not(.in)'),
 					collapseData;
-
+					
 					if (expanded && expanded.length) {
 						collapseData = expanded.data('collapse');
 						if (collapseData && collapseData.transitioning) {
+							
 							return;
 						}
 						if (expanded.collapse) { // if collapse plugin is available through bootstrap.js then use it
@@ -1131,6 +1132,7 @@
 
 				showPicker: function () {
 					widget.find('.timepicker > div:not(.timepicker-picker)').hide();
+				
 					widget.find('.timepicker .timepicker-picker').show();
 				},
 

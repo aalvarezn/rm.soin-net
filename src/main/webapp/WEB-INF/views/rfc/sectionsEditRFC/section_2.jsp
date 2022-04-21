@@ -31,39 +31,38 @@
 			</div>
 		</div>
 	</div>
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+	<div class="row clearfix">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<div class="table-responsive m-b-20">
+						<table
+							class="table tableIni table-bordered table-striped table-hover dataTable"
+							id="releaseTable">
+							<thead>
+								<tr>
+									<th>Numero Release</th>
+									<th class="actCol" style="text-align: center;">Acciones</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+	</div>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-		<div class="row clearfix">
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<div class="table-responsive"
-					style="margin-top: 20px; margin-bottom: 20px;">
-					<table
-						class="table table-bordered table-striped table-hover dataTable"
-						id="releaseTable">
-						<thead>
-							<tr>
-								<th>Numero Release</th>
-								<th class="actCol" style="text-align: center;">Acciones</th>
-							</tr>
-						</thead>
-						<tbody>
-							
-						</tbody>
-					</table>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+			<div class="row clearfix">
+				<div class="alig_btn" style="margin-top: 10px;">
+					<button type="button" class="btn btn-primary setIcon"
+						onclick="addDataToTable()">
+						<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
+					</button>
 				</div>
 			</div>
 		</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-		<div class="row clearfix">
-			<div class="alig_btn" style="margin-top: 10px;">
-				<button type="button" class="btn btn-primary setIcon"
-					onclick="openCrontabForm()">
-					<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
-				</button>
-			</div>
-		</div>
-	</div>
-	</div>
-	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 		<div class="row clearfix">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="table-responsive"
@@ -76,11 +75,7 @@
 						id="releaseTableAdd">
 						<thead>
 							<tr>
-								<th>Comando</th>
-								<th>Usuario</th>
-								<th>Descripci&oacute;n</th>
-								<th>Entrada del comando</th>
-								<th class="actCol" style="text-align: center;">Acciones</th>
+								<th>Numero Release</th>
 							</tr>
 						</thead>
 						<tbody>
