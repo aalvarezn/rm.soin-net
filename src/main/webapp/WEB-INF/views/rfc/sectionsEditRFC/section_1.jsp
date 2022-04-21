@@ -112,7 +112,7 @@
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
-					class="form-control datetimepicker" id='dateFinish' value="${rfc.requestDateBegin }" />
+					class="form-control datetimepicker" id='dateFinish' value="${rfc.requestDateFinish }" />
 			</div>
 		</div>
 	</div>

@@ -147,6 +147,7 @@ tr.selected {
 		<form id="generateRFCForm" role="form">
 			<input type="hidden" name="${_csrf.parameterName}"
 				value="${_csrf.token}" />
+			
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">

@@ -115,7 +115,7 @@ public class PRFC implements Serializable {
 	private Long typeChangeId;
 	
 	@Transient
-	private PRelease[] releasesList;
+	private String releasesList;
 	
 	
 	public Long getId() {
@@ -289,11 +289,11 @@ public class PRFC implements Serializable {
 		this.typeChangeId = typeChangeId;
 	}
 
-	public PRelease[]  getReleasesList() {
+	public String getReleasesList() {
 		return releasesList;
 	}
 
-	public void setReleasesList(PRelease[]  releasesList) {
+	public void setReleasesList(String releasesList) {
 		this.releasesList = releasesList;
 	}
 

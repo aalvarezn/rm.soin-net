@@ -1,11 +1,13 @@
 var $rfcEditForm = $('#generateRFCForm');
 var $dataRelease = [];
-var $dataReleaseCopia=[];
 var origForm=null;
 var $dtRFCs;
 var $dtRFCsAdd;
+
 $(function() {
+
 	activeItemMenu("managemetReleaseItem");
+	initData();
 	initTable();
 	initTableAdd();
 	 $('#releaseTable tbody').on( 'click', 'tr', function () {
@@ -110,12 +112,7 @@ function prevTab(elem) {
 
 
 function formHasChanges(){
-	if($rfcEditForm.serialize() === origForm && compareArrays(dependenciesFunctionalsList, listLi('listFunctionalsDependencies'))
-			&& compareArrays(dependenciesTechnicalList, listLi('listTechnicalsDependencies'))
-			&& compareArrays(ambientsList, listLi('listAmbients'))
-			&& compareArrays(modifiedComponentsList, listLi('listComponents'))
-			&& compareArrays(actionsList, listLi('environmentActionTable'))
-	){
+	if($rfcEditForm.serialize() === origForm ){
 		return false;
 	}else{
 		return true;
@@ -146,7 +143,7 @@ function sendPartialRFC() {
 			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
 			reasonChange : $rfcEditForm.find('#rfcReason').val(),
 			effect : $rfcEditForm.find('#rfcEffect').val(),
-			releasesList: $dataRelease,
+			releasesList: JSON.stringify($dataRelease),
 			detail:$rfcEditForm.find('#detailRFC').val(),
 			evidence:$rfcEditForm.find('#evidenceRFC').val(),
 			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
@@ -176,6 +173,27 @@ $('#systemId').change(function() {
 	console.log("Estoy cambiando bro");
 	$dtRFCs.ajax.reload();
 });
+function initData(){
+	var idRFC=$('#rfcId').val();
+	
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "rfc/getRFC-"+idRFC,
+			success: function(result) {
+				
+				if(result.length!=0){
+					$dataRelease=result.releases;
+					console.log($dataRelease);
+				}else{
+					
+				}
+				
+				
+			}
+		});
+		
+	
+}
 function initTable(){
 
 	
@@ -228,7 +246,9 @@ function addDataToTable(){
 			
 		});
 		if(verification){
-			$dataRelease.unshift(data);
+			let text ='{"id":'+(data.id).toString()+',"numRelease":"'+(data.numRelease).toString()+'"}';
+			const obj = JSON.parse(text);
+			$dataRelease.unshift(obj);
 			 $('#releaseTableAdd').dataTable().fnClearTable();
 			 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
 		}else{
@@ -238,7 +258,9 @@ function addDataToTable(){
 		}
 		
 	}else{
-		$dataRelease.unshift(data);
+		let text ='{"id":'+(data.id).toString()+',"numRelease":"'+(data.numRelease).toString()+'"}';
+		const obj = JSON.parse(text);
+		$dataRelease.unshift(obj);
 		 $('#releaseTableAdd').dataTable().fnClearTable();
 		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
 	}

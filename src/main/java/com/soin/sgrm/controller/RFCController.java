@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -203,7 +205,8 @@ public class RFCController extends BaseController {
 		PImpact impact=null;
 		PTypeChange typeChange=null;
 		PRelease[] arrayRelease=null;
-		List<PRelease> listRelease=null;
+		List<PRelease> listRelease = new ArrayList<PRelease>() ;
+		
 		try {
 
 			PRFC rfcMod = rfcService.findById(addRFC.getId());
@@ -217,6 +220,7 @@ public class RFCController extends BaseController {
 				addRFC.setImpact(impact);
 			}
 			
+			
 			if(addRFC.getPriorityId()!=null){
 				priority= priorityService.findById(addRFC.getPriorityId());
 				addRFC.setPriority(priority);
@@ -227,12 +231,16 @@ public class RFCController extends BaseController {
 				
 			}
 			if(addRFC.getReleasesList()!=null) {
-				arrayRelease=addRFC.getReleasesList();
-				if(arrayRelease.length!=0) {
-					//for(PRelease release: arrayRelease) {
-					//	listRelease.add(releaseService.findById(release.getId()));
+				JSONArray jsonArray = new JSONArray(addRFC.getReleasesList());
+				
+				if(jsonArray.length()!=0) {
+					for (int i = 0; i < jsonArray.length(); i++) {
+						JSONObject object =jsonArray.getJSONObject(i);
+						System.out.println(object.getInt(("id")));
+						PRelease release= releaseService.findById(Long.valueOf(object.getInt(("id"))));
+						listRelease.add(release);
 						
-				//	}
+					}
 					addRFC.setReleases(Sets.newHashSet(listRelease));
 				}
 			}
@@ -309,6 +317,28 @@ public class RFCController extends BaseController {
 		}
 
 		return "redirect:/";
+	}
+	
+	@RequestMapping(value = "/getRFC-{id}", method = RequestMethod.GET)
+	public @ResponseBody PRFC getRFC(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) {
+		PRFC rfcEdit = new PRFC();
+
+	try {
+
+			
+			rfcEdit = rfcService.findById(id);
+			return rfcEdit;
+		
+
+
+		} catch (Exception e) {
+			Sentry.capture(e, "rfc");
+			redirectAttributes.addFlashAttribute("data", e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+
+		return rfcEdit;
 	}
 
 }
