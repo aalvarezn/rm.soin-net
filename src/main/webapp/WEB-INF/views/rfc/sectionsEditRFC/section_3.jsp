@@ -21,6 +21,7 @@
 			<div class="form-line">
 				<textarea rows="2" cols="" id="detailRFC"
 					class="form-control"
+					name="detailRFC"
 					placeholder="Ingrese los detalles de implementaci&oacute;n..."
 					style="">${rfc.detail}</textarea>
 			</div>
@@ -33,7 +34,7 @@
 		<div class="form-group m-b-0i">
 			<div class="form-line">
 				<textarea rows="2" cols="" id="returnPlanRFC"
-					name="verificationInstructions" class="form-control"
+					name="returnPlanRFC" class="form-control"
 					placeholder="Ingrese el plan de retorno..."
 					style="">${rfc.returnPlan}</textarea>
 			</div>
@@ -48,6 +49,7 @@
 			<div class="form-line">
 				<textarea rows="2" cols="" id="evidenceRFC"
 					class="form-control"
+					name="evidenceRFC"
 					placeholder="Ingrese los detalles de implementaci&oacute;n..."
 					style="">${rfc.evidence}</textarea>
 			</div>
@@ -62,6 +64,7 @@
 			<div class="form-line">
 				<textarea rows="2" cols="" id="requestEspRFC"
 					class="form-control"
+					name="requestEspRFC"
 					placeholder="Ingrese los detalles de implementaci&oacute;n..."
 					style="">${rfc.requestEsp}</textarea>
 			</div>

@@ -1,5 +1,6 @@
 var $rfcEditForm = $('#generateRFCForm');
 var $dataRelease = [];
+let $dataReleaseCheck = [];
 var origForm=null;
 var $dtRFCs;
 var $dtRFCsAdd;
@@ -7,9 +8,10 @@ var $dtRFCsAdd;
 $(function() {
 
 	activeItemMenu("managemetReleaseItem");
-	initData();
+	
 	initTable();
 	initTableAdd();
+	initData();
 	 $('#releaseTable tbody').on( 'click', 'tr', function () {
 	      if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
@@ -67,6 +69,14 @@ $(function() {
 	$('.nav-tabs > li a[title]').tooltip();
 	// Wizard
 	$('.stepper a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+		if($dataRelease!=0){
+			 $('#releaseTableAdd').dataTable().fnClearTable();
+			 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
+		}else{
+			$('#releaseTableAdd').dataTable().fnClearTable();
+		}
+		
+		
 		var $target = $(e.target);
 		if ($target.parent().hasClass('disabled')) {
 			return false;
@@ -98,7 +108,8 @@ $(function() {
 		prevTab($active);
 		$('html, body').animate({scrollTop: '0px'}, 300);
 	});
-	
+	origForm = $rfcEditForm.serialize();
+	//$dataReleaseCheck=$dataRelease;
 	//dropDownChange();
 	//initTable();
 });
@@ -112,12 +123,23 @@ function prevTab(elem) {
 
 
 function formHasChanges(){
-	if($rfcEditForm.serialize() === origForm ){
+	
+	if($rfcEditForm.serialize() === origForm && compareArrays($dataRelease,$dataReleaseCheck) ){
 		return false;
 	}else{
 		return true;
 	}
 }
+
+function compareArrays(arr1, arr2) {
+	console.log($dataReleaseCheck);
+	console.log("$dataReleaseCheck");
+	console.log($dataRelease);
+	console.log("$dataRelease");
+	console.log($(arr1).not(arr2).length);
+	console.log( $(arr2).not(arr1).length);
+	return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0;
+};
 function sendPartialRFC() {
 	var form = "#generateReleaseForm";
 	changeSaveButton(true);
@@ -152,6 +174,11 @@ function sendPartialRFC() {
 		success : function(response) {
 			//responseAjaxSendPartialRelease(response);
 			changeSaveButton(false);
+			origForm = $rfcEditForm.serialize();
+			
+			$dataReleaseCheck={...$dataRelease};
+			
+			console.log("aca se esta asignando");
 		},
 		error: function(x, t, m) {
 			notifyAjaxError(x, t, m);
@@ -170,7 +197,7 @@ function changeSaveButton(save){
 	}
 }
 $('#systemId').change(function() {
-	console.log("Estoy cambiando bro");
+	
 	$dtRFCs.ajax.reload();
 });
 function initData(){
@@ -183,7 +210,8 @@ function initData(){
 				
 				if(result.length!=0){
 					$dataRelease=result.releases;
-					console.log($dataRelease);
+					$dataReleaseCheck={...$dataRelease};
+					console.log("aca se asigna por primera vez");
 				}else{
 					
 				}
@@ -191,6 +219,7 @@ function initData(){
 				
 			}
 		});
+		
 		
 	
 }
@@ -251,6 +280,7 @@ function addDataToTable(){
 			$dataRelease.unshift(obj);
 			 $('#releaseTableAdd').dataTable().fnClearTable();
 			 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
+			
 		}else{
 			swal("Error!", "El release ya ha sido agregado",
 					"error", 2000);
@@ -263,6 +293,7 @@ function addDataToTable(){
 		$dataRelease.unshift(obj);
 		 $('#releaseTableAdd').dataTable().fnClearTable();
 		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
+		
 	}
 		return;
 	}
@@ -326,13 +357,6 @@ function dropDownChange(){
 	});
 }
 
-function addData(){
-	var myobj = {name: "Julia", birthdate: "xxxx"};
-
-	myobj.movies = []; 
-	myobj.movies.push({title: "movie1", rating: 5}); 
-	myobj.movies.push({title: "movie2", rating: 3}); 
-}
 
 function removeData(data){
 
@@ -345,10 +369,12 @@ function removeData(data){
         		$dataRelease=[];
         		console.log($dataRelease==$dataRelease);
         		 $('#releaseTableAdd').dataTable().fnClearTable();
+        		 
         		 return;
         	}
         	 $('#releaseTableAdd').dataTable().fnClearTable();
     		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
+    		
             return false; 
         }
 });

@@ -103,7 +103,7 @@
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
-					class="form-control datetimepicker" id='dateBegin' value="${rfc.requestDateBegin }" />
+					class="form-control datetimepicker" id='dateBegin' name='dateBegin' value="${rfc.requestDateBegin }" />
 			</div>
 		</div>
 	</div>
@@ -112,7 +112,7 @@
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
-					class="form-control datetimepicker" id='dateFinish' value="${rfc.requestDateFinish }" />
+					class="form-control datetimepicker" id='dateFinish' name='dateFinish' value="${rfc.requestDateFinish }" />
 			</div>
 		</div>
 	</div>
@@ -120,7 +120,7 @@
 		<label>Raz&oacute;n del cambio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" id="rfcReason"
+				<textarea rows="2" cols="" name='rfcReason' id="rfcReason"
 					class="form-control"
 					placeholder="Ingrese la raz&oacute;n del cambio..."
 					style="">${rfc.reasonChange}</textarea>
@@ -133,7 +133,7 @@
 			cambio. </label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" id="rfcEffect"
+				<textarea rows="2" cols="" name='rfcEffect' id="rfcEffect"
 					name="rfcEffect" class="form-control"
 					placeholder="Ingrese el efecto si no se implementa..."
 					style="">${rfc.effect}</textarea>

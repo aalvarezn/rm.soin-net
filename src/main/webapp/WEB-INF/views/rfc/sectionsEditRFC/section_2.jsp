@@ -18,7 +18,7 @@
 		</p>
 		<div class="row clearfix">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<select class="form-control show-tick" id="systemId" name="systemId">
+				<select class="form-control show-tick" id="systemId" >
 					<option value="">-- Seleccione una opci&oacute;n --</option>
 					<c:forEach items="${systems}" var="systems">
 						<option value="${systems.id }">${systems.name }</option>
