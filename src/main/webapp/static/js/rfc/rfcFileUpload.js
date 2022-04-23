@@ -124,7 +124,7 @@ function uploadInputFile(f, idRow) {
 			.append('file', $('#addFileModal table #file_' + idRow)[0].files[0]);
 	// Ajax call for file uploaling
 	var ajaxReq = $.ajax({
-		url : cont + "file/" + "singleUpload-" + $('#release_id').val(),
+		url : cont + "file/" + "singleUploadRFC-" + $('#rfcId').val(),
 		timeout : 60000,
 		type : 'POST',
 		data : formData,

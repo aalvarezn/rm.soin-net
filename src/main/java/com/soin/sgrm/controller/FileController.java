@@ -45,12 +45,16 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseFile;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.pos.PRFC;
+import com.soin.sgrm.model.pos.PRFCFile;
 import com.soin.sgrm.service.DocTemplateService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseFileService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.pos.RFCFileService;
+import com.soin.sgrm.service.pos.RFCService;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.DocxContext;
 import com.soin.sgrm.utils.DocxVariables;
@@ -71,6 +75,10 @@ public class FileController extends BaseController {
 	private DocTemplateService docsTemplateService;
 	@Autowired
 	ReleaseService releaseService;
+	
+	@Autowired
+	RFCService rfcService;
+	
 	@Autowired
 	RequestService requestService;
 	@Autowired
@@ -79,6 +87,10 @@ public class FileController extends BaseController {
 	SystemService systemService;
 	@Autowired
 	ReleaseFileService releaseFileService;
+	
+	@Autowired 
+	RFCFileService rfcFileService;
+	
 	@Autowired
 	ResourceLoader resourceLoader;
 
@@ -269,6 +281,35 @@ public class FileController extends BaseController {
 
 	}
 
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del rfc.
+	 * @author: Esteban Bogantes H.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathRFC(Long id, String basePath) throws SQLException {
+		PRFC rfc;
+		try {
+			rfc = releaseService.findEditById(id);
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
+			if (release.getRequestList().size() != 0) {
+				Request request = release.getRequestList().iterator().next();
+				if (request.getCode_ice() != null) {
+					path += request.getCode_soin() + "_" + request.getCode_ice() + "/";
+				} else {
+					path += request.getCode_soin() + "/";
+				}
+			}
+			path += release.getReleaseNumber() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (SQLException e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
 	/**
 	 * @description: Crea la asociacion para descargar el archivo en la respuesta.
 	 * @author: Esteban Bogantes H.
@@ -541,6 +582,59 @@ public class FileController extends BaseController {
 		OutputStream os = new FileOutputStream(outFile);
 		stamper.stamp(inputstream, context, os);
 		os.close();
+	}
+	
+	/**
+	 * @description: Adjunta el archivo al rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	@RequestMapping(value = "/singleUploadRFC-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadRFC(@PathVariable Long id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+
+		// valida que se selecciono un archivo
+		if (file.getName().equals("") || file.isEmpty()) {
+			json.setStatus("fail");
+			json.setException("Archivo no seleccionado");
+			return json;
+		}
+
+		// Direccion del archivo a guardar
+		String basePath = env.getProperty("fileStore.path");
+		String path = createPathRFC(id, basePath);
+		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+		// Referencia del archivo
+		PRFCFile rfcFile = new PRFCFile();
+		rfcFile.setName(fileName);
+		rfcFile.setPath(basePath + path + fileName);
+		long time = System.currentTimeMillis();
+		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+		rfcFile.setRevisionDate(revisionDate);
+		try {
+			// Se carga el archivo y se guarda la referencia
+			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+			rfcFileService.save(id, rfcFile);
+			rfcFile = rfcFileService.findByKey("path", rfcFile.getPath());
+			json.setStatus("success");
+			json.setObj(rfcFile);
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
+			json.setStatus("exception");
+			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			json.setStatus("exception");
+			json.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			if (e instanceof MaxUploadSizeExceededException) {
+				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			}
+		}
+		return json;
 	}
 
 }

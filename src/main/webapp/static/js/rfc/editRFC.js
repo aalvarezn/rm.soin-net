@@ -175,9 +175,7 @@ function sendPartialRFC() {
 			//responseAjaxSendPartialRelease(response);
 			changeSaveButton(false);
 			origForm = $rfcEditForm.serialize();
-			
-			$dataReleaseCheck={...$dataRelease};
-			
+			$dataReleaseCheck=$dataRelease.slice();
 			console.log("aca se esta asignando");
 		},
 		error: function(x, t, m) {
@@ -210,7 +208,7 @@ function initData(){
 				
 				if(result.length!=0){
 					$dataRelease=result.releases;
-					$dataReleaseCheck={...$dataRelease};
+					$dataReleaseCheck=$dataRelease.slice();
 					console.log("aca se asigna por primera vez");
 				}else{
 					

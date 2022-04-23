@@ -80,19 +80,18 @@
 	width: 20%;
 }
 
-
-
 .dataTables_paginate {
-  float: initial;
-  font-size: 15px;
+	float: initial;
+	font-size: 15px;
 }
 
 table.dataTable tbody tr.selected {
-  background-color: #b0bed9;
-}	
+	background-color: #b0bed9;
+}
+
 tr.selected {
-  background-color: #acbad4;
-}	
+	background-color: #acbad4;
+}
 </style>
 
 </head>
@@ -147,7 +146,7 @@ tr.selected {
 		<form id="generateRFCForm" role="form">
 			<input type="hidden" name="${_csrf.parameterName}"
 				value="${_csrf.token}" />
-			
+
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
@@ -156,10 +155,9 @@ tr.selected {
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>RFC: </span>${rfc.numRequest} <input
-									type="hidden" id="rfcId" value="${rfc.id}"> <input
-									type="hidden" id="rfcNumber"
-									value="${rfc.numRequest}">
+								<span>RFC: </span>${rfc.numRequest} <input type="hidden"
+									id="rfcId" value="${rfc.id}"> <input type="hidden"
+									id="rfcNumber" value="${rfc.numRequest}">
 							</h5>
 						</div>
 						<div
@@ -173,10 +171,12 @@ tr.selected {
 									style="font-size: 28px; margin-top: -3px;">pageview</i></span>
 							</button>
 
-							<button type="button" id="btnSave" class="btn btn-default setIcon"
-								onclick="sendRelease()" title="GUARDAR"
+							<button type="button" id="btnSave"
+								class="btn btn-default setIcon" onclick="sendRelease()"
+								title="GUARDAR"
 								style="background-color: #00294c !important; color: #fff; border: none !important;">
-								<span id="btnText">GUARDAR</span><span style="margin-left: 10px;"><i id="btnIcon"
+								<span id="btnText">GUARDAR</span><span
+									style="margin-left: 10px;"><i id="btnIcon"
 									class="material-icons m-t--2">check_box</i></span>
 							</button>
 						</div>
@@ -237,8 +237,7 @@ tr.selected {
 									<div class="tab-pane animated fadeIn active" role="tabpanel"
 										id="step1">
 										<div class="body">
-											<%@include
-												file="../rfc/sectionsEditRFC/section_1.jsp"%>
+											<%@include file="../rfc/sectionsEditRFC/section_1.jsp"%>
 										</div>
 										<div class="button-demo flr">
 											<button type="button" class="btn btn-primary next-step"
@@ -251,8 +250,7 @@ tr.selected {
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step2">
 										<div class="body">
-											<%@include
-												file="../rfc/sectionsEditRFC/section_2.jsp"%>
+											<%@include file="../rfc/sectionsEditRFC/section_2.jsp"%>
 										</div>
 										<div class="button-demo flr">
 											<button type="button" class="btn btn-default prev-step"
@@ -267,8 +265,7 @@ tr.selected {
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step3">
 										<div class="body">
-											<%@include
-												file="../rfc/sectionsEditRFC/section_3.jsp"%>
+											<%@include file="../rfc/sectionsEditRFC/section_3.jsp"%>
 
 										</div>
 										<div class="button-demo flr">
@@ -284,8 +281,7 @@ tr.selected {
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step4">
 										<div class="body">
-											<%@include
-												file="../rfc/sectionsEditRFC/section_4.jsp"%>
+											<%@include file="../rfc/sectionsEditRFC/section_4.jsp"%>
 										</div>
 										<div class="button-demo flr">
 											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
@@ -297,15 +293,14 @@ tr.selected {
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step5">
 										<div class="body">
-											<%@include
-												file="../rfc/sectionsEditRFC/section_5.jsp"%>
+											<%@include file="../rfc/sectionsEditRFC/section_5.jsp"%>
 										</div>
 										<div class="button-demo flr p-t-20">
 											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
-<%-- 											<c:if test="${release.status.name == 'Borrador'}"> --%>
-												<button id="applyFor" onclick="requestRFC()"
-													type="button" class="btn btn-primary">SOLICITAR</button>
-<%-- 											</c:if> --%>
+											<%-- 											<c:if test="${release.status.name == 'Borrador'}"> --%>
+											<button id="applyFor" onclick="requestRFC()" type="button"
+												class="btn btn-primary">SOLICITAR</button>
+											<%-- 											</c:if> --%>
 										</div>
 									</div>
 									<!--#Step_5 -->
@@ -319,7 +314,7 @@ tr.selected {
 		</form>
 	</section>
 
-	
+
 
 
 
@@ -377,11 +372,13 @@ tr.selected {
 
 	<!-- BlockUI Plugin Js -->
 	<script src="<c:url value='/static/plugins/blockPage/blockUI.js'/>"></script>
-		<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/es.js"></script>
+	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
+	<script type="text/javascript"
+		src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/es.js"></script>
 
 
-	<script src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
 
 	<!-- Custom Js -->
 	<script src="<c:url value='/static/js/admin.js'/>"></script>
@@ -394,6 +391,7 @@ tr.selected {
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 
 	<script src="<c:url value='/static/js/rfc/editRFC.js'/>"></script>
+	<script src="<c:url value='/static/js/rfc/rfcFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
 	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>
