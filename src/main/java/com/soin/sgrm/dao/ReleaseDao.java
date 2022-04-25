@@ -27,6 +27,10 @@ public interface ReleaseDao {
 
 	JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
+	
+	JsonSheet<?> listByAllSystemQA(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
+	
 	/* #Paginacion por ajax de 10 items# */
 
 	Integer countByType(String name, String type, int query, Object[] ids);

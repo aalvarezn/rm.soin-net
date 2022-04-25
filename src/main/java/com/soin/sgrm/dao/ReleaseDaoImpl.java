@@ -150,6 +150,33 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		json.setData(aaData);
 		return json;
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public JsonSheet listByAllSystemQA(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
+			throws SQLException, ParseException {
+		JsonSheet json = new JsonSheet();
+		Criteria crit = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId);
+
+		crit.setFirstResult(iDisplayStart);
+		crit.setMaxResults(iDisplayLength);
+
+		Criteria critCount = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId);
+
+		critCount.setProjection(Projections.rowCount());
+		Long count = (Long) critCount.uniqueResult();
+		int recordsTotal = count.intValue();
+
+		List<ReleaseUser> aaData = crit.list();
+		json.setDraw(sEcho);
+		json.setRecordsTotal(recordsTotal);
+		json.setRecordsFiltered(recordsTotal);
+		json.setData(aaData);
+		return json;
+	}
 
 	@Override
 	public Integer existNumRelease(String number_release) {
@@ -509,6 +536,48 @@ public class ReleaseDaoImpl implements ReleaseDao {
 					Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+
+		if (dateRange != null) {
+			if (dateRange.length > 1) {
+				Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
+				Date end = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[1]);
+				end.setHours(23);
+				end.setMinutes(59);
+				end.setSeconds(59);
+				crit.add(Restrictions.ge("createDate", start));
+				crit.add(Restrictions.le("createDate", end));
+			}
+		}
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		if (statusId != 0) {
+			crit.add(Restrictions.eq("status.id", statusId));
+		}
+		crit.addOrder(Order.desc("createDate"));
+
+		return crit;
+	}
+	@SuppressWarnings({ "deprecation" })
+	public Criteria criteriaBySystemsQA(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
+			throws SQLException, ParseException {
+
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		crit.createAlias("system", "system");
+		crit.createAlias("status", "status");
+		crit.createAlias("user", "user");
+
+		if (filtred != null) {
+			crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
+		}
+
+		// Valores de busqueda en la tabla
+		if (sSearch != null && !((sSearch.trim()).equals("")))
+			crit.add(Restrictions.or(Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
 
 		if (dateRange != null) {

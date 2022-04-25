@@ -84,6 +84,9 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_Release Manager")) {
 			return "redirect:/management/release/";
 		}
+		if (request.isUserInRole("ROLE_QA")) {
+			return "redirect:/release/qa";
+		}
 
 		return "redirect:/release/";
 	}
