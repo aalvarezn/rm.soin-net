@@ -172,32 +172,32 @@ function responseFileUpload(response, idRow) {
 
 }
 
-function addReleaseFileRow(releaseFile) {
+function addReleaseFileRow(rfcFile) {
 
 	var attachedFilesTable = $('#attachedFilesTable').DataTable();
-	var myDate = new Date(releaseFile.revisionDate);
-	if ($('table#attachedFilesTable ').find('#' + releaseFile.id).length != 0) {
-		attachedFilesTable.row($('#attachedFilesTable #' + releaseFile.id))
+	var myDate = new Date(rfcFile.revisionDate);
+	if ($('table#attachedFilesTable ').find('#' + rfcFile.id).length != 0) {
+		attachedFilesTable.row($('#attachedFilesTable #' + rfcFile.id))
 				.remove().draw();
 	}
 
 	attachedFilesTable.row
 			.add(
 					[
-							releaseFile.name,
+						rfcFile.name,
 							myDate.toLocaleString(),
 							'<div style="text-align: center">'
 									+ '<div class="iconLine">'
 									+ '<a onclick="deleteReleaseFile('
-									+ releaseFile.id
+									+ rfcFile.id
 									+ ')" download="" class=""> <i class="material-icons gris" style="font-size: 30px;">delete</i>'
 									+ '</a>'
 									+ '<a href="'
 									+ getCont()
-									+ 'file/singleDownload-'
-									+ releaseFile.id
+									+ 'file/singleDownloadRFC-'
+									+ rfcFile.id
 									+ '" download="" class=""> <i class="material-icons gris" style="font-size: 30px;">cloud_download</i>'
-									+ '</a>' + '</div>' + '</div>' ]).node().id = releaseFile.id;
+									+ '</a>' + '</div>' + '</div>' ]).node().id = rfcFile.id;
 	attachedFilesTable.draw();
 }
 
@@ -228,7 +228,7 @@ function ajaxDeleteReleaseFile(id) {
 	var cont = getCont();
 	// Ajax call for file uploaling
 	var ajaxReq = $.ajax({
-		url : cont + "file/" + "deleteFileUpload-" + id,
+		url : cont + "file/" + "deleteFileUploadRFC-" + id,
 		timeout : 60000,
 		type : 'DELETE',
 		data : {},

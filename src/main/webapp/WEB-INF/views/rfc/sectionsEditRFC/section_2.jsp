@@ -86,17 +86,7 @@
 		</div>
 
 	</div>
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 m-t-40">
-		<c:if test="${empty  release.functionalDescription}">
-			<input type="checkbox" id="requiredFunctionalDes" class="filled-in">
-		</c:if>
 
-		<c:if test="${not empty  release.functionalDescription}">
-			<input type="checkbox" id="requiredFunctionalDes" class="filled-in"
-				checked="checked">
-		</c:if>
-		<label for="requiredFunctionalDes">&iquest;Requiere BD?</label>
-	</div>
 </div>
 
 

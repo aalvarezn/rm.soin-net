@@ -37,52 +37,19 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach items="${docs}" var="doc">
-							<tr>
-								<td>${doc.name}</td>
-								<td></td>
-								<td>
-									<div style="text-align: center">
-										<div class="iconLine">
-											<a href="#" class="" style="visibility: hidden;"> <i
-												class="material-icons gris" style="font-size: 30px;">delete</i>
-											</a> <a class=""> <i class="material-icons gris"
-												style="font-size: 30px;">cloud_download</i>
-											</a>
-										</div>
-									</div>
-							</tr>
-						</c:forEach>
-						<tr>
-							<td>OBJETOS IMPACTADOS</td>
-							<td></td>
-							<td>
-								<div style="text-align: center">
-									<div class="iconLine">
-										<a href="#" class="" style="visibility: hidden;"> <i
-											class="material-icons gris" style="font-size: 30px;">delete</i>
-										</a> <a href="<c:url value='/file/impactObject-${release.id}'/>"
-											download class=""> <i class="material-icons gris"
-											style="font-size: 30px;">cloud_download</i>
-										</a>
-									</div>
-								</div>
-							</td>
-						</tr>
-
-						<c:forEach items="${release.files}" var="fileRelease">
-							<tr id="${fileRelease.id}">
-								<td>${fileRelease.name}</td>
-								<td><fmt:formatDate value="${fileRelease.revisionDate}"
+						<c:forEach items="${rfc.files}" var="fileRFC">
+							<tr id="${fileRFC.id}">
+								<td>${fileRFC.name}</td>
+								<td><fmt:formatDate value="${fileRFC.revisionDate}"
 										type="both" /></td>
 								<td>
 									<div style="text-align: center">
 										<div class="iconLine">
-											<a onclick="deleteReleaseFile(${fileRelease.id})" download
+											<a onclick="deleteReleaseFile(${fileRFC.id})" download
 												class=""> <i class="material-icons gris"
 												style="font-size: 30px;">delete</i>
 											</a> <a
-												href="<c:url value='/file/singleDownload-${fileRelease.id}'/>"
+												href="<c:url value='/file/singleDownload-${fileRFC.id}'/>"
 												download class=""> <i class="material-icons gris"
 												style="font-size: 30px;">cloud_download</i>
 											</a>

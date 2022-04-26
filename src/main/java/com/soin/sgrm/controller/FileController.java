@@ -47,6 +47,8 @@ import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRFCFile;
+import com.soin.sgrm.model.pos.PSiges;
+import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.service.DocTemplateService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseFileService;
@@ -55,6 +57,7 @@ import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.pos.RFCFileService;
 import com.soin.sgrm.service.pos.RFCService;
+import com.soin.sgrm.service.pos.SigesService;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.DocxContext;
 import com.soin.sgrm.utils.DocxVariables;
@@ -85,6 +88,9 @@ public class FileController extends BaseController {
 	ProjectService projectService;
 	@Autowired
 	SystemService systemService;
+	
+	@Autowired
+	com.soin.sgrm.service.pos.SystemService systemServicePos;
 	@Autowired
 	ReleaseFileService releaseFileService;
 	
@@ -93,6 +99,9 @@ public class FileController extends BaseController {
 	
 	@Autowired
 	ResourceLoader resourceLoader;
+	
+	@Autowired
+	SigesService sigesService;
 
 	@Autowired
 	private Environment env;
@@ -290,21 +299,15 @@ public class FileController extends BaseController {
 	public String createPathRFC(Long id, String basePath) throws SQLException {
 		PRFC rfc;
 		try {
-			rfc = releaseService.findEditById(id);
-			Project project = projectService.findById(release.getSystem().getProyectId());
-			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
-			if (release.getRequestList().size() != 0) {
-				Request request = release.getRequestList().iterator().next();
-				if (request.getCode_ice() != null) {
-					path += request.getCode_soin() + "_" + request.getCode_ice() + "/";
-				} else {
-					path += request.getCode_soin() + "/";
-				}
-			}
-			path += release.getReleaseNumber() + "/";
+			rfc = rfcService.findById(id);
+			PSiges siges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
+			PSystem system= siges.getSystem();
+			String path = system.getName() + "/" +siges.getCodeSiges()  + "/";
+
+			path += rfc.getNumRequest() + "/";
 			new File(basePath + path).mkdirs();
 			return path;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			Sentry.capture(e, "files");
 			throw e;
 		}
@@ -594,14 +597,15 @@ public class FileController extends BaseController {
 	public @ResponseBody JsonResponse singleFileUploadRFC(@PathVariable Long id,
 			@RequestParam("file") MultipartFile file) throws SQLException {
 		JsonResponse json = new JsonResponse();
-
+		
+		
 		// valida que se selecciono un archivo
 		if (file.getName().equals("") || file.isEmpty()) {
 			json.setStatus("fail");
 			json.setException("Archivo no seleccionado");
 			return json;
 		}
-
+		
 		// Direccion del archivo a guardar
 		String basePath = env.getProperty("fileStore.path");
 		String path = createPathRFC(id, basePath);
@@ -617,7 +621,7 @@ public class FileController extends BaseController {
 		try {
 			// Se carga el archivo y se guarda la referencia
 			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
-			rfcFileService.save(id, rfcFile);
+			rfcFileService.saveRFCFile(id, rfcFile);
 			rfcFile = rfcFileService.findByKey("path", rfcFile.getPath());
 			json.setStatus("success");
 			json.setObj(rfcFile);
@@ -635,6 +639,57 @@ public class FileController extends BaseController {
 			}
 		}
 		return json;
+	}
+	
+	/**
+	 * @description: Descarga de un archivo particular del rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: archivo a descargar.
+	 **/
+	@RequestMapping(value = "/singleDownloadRFC-{id}", method = RequestMethod.GET)
+	public void downloadFileRFC(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+		PRFCFile rfcFile = rfcFileService.findById(id);
+		File file = new File(rfcFile.getPath());
+
+		// Se modifica la respuesta para descargar el archivo
+		response.setContentType("text/plain");
+		response.setHeader("Content-Disposition", "attachment;filename=" + rfcFile.getName());
+		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+		response.setContentLength((int) file.length());
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	/**
+	 * @description: borra un archivo adjuntado de un rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: response de la eliminacion.
+	 **/
+	@RequestMapping(value = "/deleteFileUploadRFC-{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteFileUploadRFC(@PathVariable Long id) {
+		JsonResponse res = new JsonResponse();
+		res.setStatus("success");
+		try {
+			PRFCFile rfcFile = rfcFileService.findById(id);
+			rfcFileService.deleteRFC(rfcFile);
+			File file = new File(rfcFile.getPath());
+			if (file.exists()) {
+				file.delete();
+			}
+			res.setData(rfcFile.getId() + "");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 
 }

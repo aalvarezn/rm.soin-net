@@ -13,7 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "RFC_ARCHIVO")
+@Table(name = "ARCHIVORFC")
 public class PRFCFile implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

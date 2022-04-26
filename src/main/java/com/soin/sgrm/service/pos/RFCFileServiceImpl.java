@@ -2,6 +2,7 @@ package com.soin.sgrm.service.pos;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import com.soin.sgrm.model.pos.PRFCFile;
 @Transactional("transactionManagerPos")
 public class RFCFileServiceImpl implements RFCFileService {
 	
+	@Autowired
 	RFCFileDao dao;
 	@Override
 	public PRFCFile findById(Long id) {
@@ -47,10 +49,15 @@ public class RFCFileServiceImpl implements RFCFileService {
 		dao.update(model);
 	}
 
+	
 	@Override
-	public void save(Integer id, PRFCFile rfcFile) throws Exception {
-		// TODO Auto-generated method stub
-		
+	public void saveRFCFile(Long id, PRFCFile rfcFile) throws Exception{
+		dao.saveRFCFile(id,rfcFile);
+	}
+
+	@Override
+	public void deleteRFC(PRFCFile rfcFile) throws Exception {
+		dao.deleteRFC(rfcFile);
 	}
 
 }

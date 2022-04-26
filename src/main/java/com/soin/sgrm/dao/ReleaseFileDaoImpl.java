@@ -88,7 +88,6 @@ public class ReleaseFileDaoImpl implements ReleaseFileDao {
 		Session sessionObj = null;
 		String sql = "";
 		Query query = null;
-		ReleaseFile file = null;
 		try {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();

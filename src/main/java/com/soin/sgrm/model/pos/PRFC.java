@@ -102,6 +102,12 @@ public class PRFC implements Serializable {
 			@JoinColumn(name = "\"ID_RELEASE\"") })
 	private Set<PRelease> releases = new HashSet<>();
 	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@Fetch(value = FetchMode.SUBSELECT)
+	@JoinTable(name = "\"RFC_ARCHIVORFC\"", joinColumns = { @JoinColumn(name = "\"RFC_ID\"") }, inverseJoinColumns = {
+			@JoinColumn(name = "\"ARCHIVORFC_ID\"") })
+	private Set<PRFCFile> files = new HashSet<>();
+	
 	@Transient
 	private String[] strReleases;
 	
@@ -311,6 +317,14 @@ public class PRFC implements Serializable {
 
 	public void setRequestDateFinish(String requestDateFinish) {
 		this.requestDateFinish = requestDateFinish;
+	}
+
+	public Set<PRFCFile> getFiles() {
+		return files;
+	}
+
+	public void setFiles(Set<PRFCFile> files) {
+		this.files = files;
 	}
 	
 	
