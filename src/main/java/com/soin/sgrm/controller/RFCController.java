@@ -29,9 +29,13 @@ import com.google.common.collect.Sets;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Ambient;
 import com.soin.sgrm.model.Dependency;
+import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseObject;
+import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.pos.PImpact;
 import com.soin.sgrm.model.pos.PPriority;
 
@@ -339,6 +343,39 @@ public class RFCController extends BaseController {
 		}
 
 		return rfcEdit;
+	}
+	
+	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
+	public String tinySummary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
+		PUser user = getUserLogin();
+		List<PSystem> systems= systemService.listProjects(user.getId());
+		try {
+			model.addAttribute("parameter", status);
+			PRFC rfc = null;
+			if (CommonUtils.isNumeric(status)) {
+				rfc = rfcService.findById(Long.parseLong(status));
+			}
+
+			if (rfc == null) {
+				return "redirect:/";
+			}
+			PSiges codeSiges= sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+			model.addAttribute("systems", systems);
+			model.addAttribute("impacts", impactService.findAll());
+			model.addAttribute("typeChange", typeChangeService.findAll());
+			model.addAttribute("priorities", priorityService.findAll());
+			model.addAttribute("codeSiges", codeSiges);
+			model.addAttribute("rfc",rfc);
+
+		} catch (Exception e) {
+			Sentry.capture(e, "rfc");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina resumen rfc." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/";
+		}
+		return "/rfc/tinySummaryRFC";
 	}
 
 }

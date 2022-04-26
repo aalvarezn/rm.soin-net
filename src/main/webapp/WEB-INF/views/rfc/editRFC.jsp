@@ -120,7 +120,7 @@ tr.selected {
 		<!-- #END# addObjectModal -->
 
 		<!-- addObjectModal -->
-		<%@include file="../release/previewReleaseModal.jsp"%>
+		<%@include file="../rfc/previewRFCModal.jsp"%>
 		<!-- #END# addObjectModal -->
 
 		<!-- addFileModal -->
@@ -164,7 +164,7 @@ tr.selected {
 							class=" col-lg-6 col-md-6 col-sm-12 col-xs-12 align-right p-r-0">
 
 							<button type="button" class="btn btn-default setIcon"
-								onclick="previewRelease()" title="RESUMEN"
+								onclick="previewRFC()" title="RESUMEN"
 								style="background-color: #00294c !important; color: #ffffff; border: none !important;">
 								<span>VER RESUMEN</span><span style="margin-left: 10px;"><i
 									class="material-icons"

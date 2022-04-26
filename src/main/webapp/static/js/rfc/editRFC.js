@@ -131,6 +131,14 @@ function formHasChanges(){
 	}
 }
 
+function previewRFC() {
+	$('#previewReleaseModal').modal('show');
+}
+
+function closePreviewRFC() {
+	$('#previewReleaseModal').modal('hide');
+}
+
 function compareArrays(arr1, arr2) {
 	console.log($dataReleaseCheck);
 	console.log("$dataReleaseCheck");
