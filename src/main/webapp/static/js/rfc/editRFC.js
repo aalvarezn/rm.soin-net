@@ -109,6 +109,7 @@ $(function() {
 		$('html, body').animate({scrollTop: '0px'}, 300);
 	});
 	origForm = $rfcEditForm.serialize();
+	checkDB();
 	//$dataReleaseCheck=$dataRelease;
 	//dropDownChange();
 	//initTable();
@@ -121,6 +122,17 @@ function prevTab(elem) {
 	$(elem).prev().find('a[data-toggle="tab"]').tab('show');
 }
 
+function checkDB(){
+	$("#generateRFCForm #requiredBD").change(function() {
+		if (this.checked) {
+			this.value = 1;
+			console.log(true);
+		} else {
+			this.value = 0;
+			console.log(false);
+		}
+	});
+}
 
 function formHasChanges(){
 	
@@ -151,6 +163,7 @@ function compareArrays(arr1, arr2) {
 function sendPartialRFC() {
 	var form = "#generateReleaseForm";
 	changeSaveButton(true);
+	console.log($rfcEditForm.find('#requiredBD').val());
 	$.ajax({
 		// async : false,
 		type : "PUT",
@@ -169,7 +182,7 @@ function sendPartialRFC() {
 			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
 			"option:selected").val(),
 			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-
+			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),	
 			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
 			reasonChange : $rfcEditForm.find('#rfcReason').val(),
 			effect : $rfcEditForm.find('#rfcEffect').val(),

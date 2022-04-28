@@ -183,6 +183,7 @@ public class RFCController extends BaseController {
 			PStatus status=statusService.findByKey("code", "draft");
 			addRFC.setStatus(status);
 			addRFC.setUser(userLogin);
+			addRFC.setRequiredBD(false);
 			addRFC.setRequestDate(CommonUtils.getSystemTimestamp());
 			res.setStatus("success");
 		
@@ -219,6 +220,7 @@ public class RFCController extends BaseController {
 			addRFC.setCodeProyect(rfcMod.getCodeProyect());
 			addRFC.setStatus(rfcMod.getStatus());
 			addRFC.setRequestDate(rfcMod.getRequestDate());
+			
 			if(addRFC.getImpactId()!=null){
 				impact= impactService.findById(addRFC.getImpactId());
 				addRFC.setImpact(impact);
@@ -345,6 +347,7 @@ public class RFCController extends BaseController {
 		return rfcEdit;
 	}
 	
+	@SuppressWarnings("null")
 	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
 	public String tinySummary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
@@ -361,11 +364,36 @@ public class RFCController extends BaseController {
 				return "redirect:/";
 			}
 			PSiges codeSiges= sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+			
+			List<String> systemsImplicated=new ArrayList<String>();
+			
+			systemsImplicated.add(codeSiges.getSystem().getName());
+			String nameSystem="";
+			boolean validate=true;
+			Set<PRelease> releases= rfc.getReleases();
+			if(releases!=null) {
+				if(releases.size()!=0) {
+					for(PRelease release: releases) {
+						nameSystem=release.getSystem().getName();
+						for(String system: systemsImplicated) {
+							if(system.equals(nameSystem)) {
+								validate=false;
+							}
+						}
+						if(validate) {
+							systemsImplicated.add(nameSystem);
+						}
+						validate=true;
+					}
+				}
+				
+			}
 			model.addAttribute("systems", systems);
 			model.addAttribute("impacts", impactService.findAll());
 			model.addAttribute("typeChange", typeChangeService.findAll());
 			model.addAttribute("priorities", priorityService.findAll());
 			model.addAttribute("codeSiges", codeSiges);
+			model.addAttribute("systemsImplicated",systemsImplicated);
 			model.addAttribute("rfc",rfc);
 
 		} catch (Exception e) {

@@ -83,6 +83,26 @@
 					</table>
 				</div>
 			</div>
+			
+					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+			<label for="email_address">Requiere Base de datos</label>
+			<c:choose>
+				<c:when test="${rfc.requiredBD}">
+					<div class="switch" style="margin-top: 20px;">
+						<label>NO<input id="requiredBD" type="checkbox"
+							value="1" name="requiredBD" checked="checked"><span class="lever"></span>S&Iacute;
+						</label>
+					</div>
+				</c:when>
+				<c:otherwise>
+					<div class="switch" style="margin-top: 20px;">
+						<label>NO<input id="requiredBD" name="requiredBD" type="checkbox"
+							value="0"><span class="lever"></span>S&Iacute;
+						</label>
+					</div>
+				</c:otherwise>
+			</c:choose>
+		</div>
 		</div>
 
 	</div>

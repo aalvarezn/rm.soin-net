@@ -844,7 +844,7 @@ function sendPartialRelease() {
 		// async : false,
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 60000,
+		//timeout: 60000,
 		data : {
 			// Informacion general
 			release_id : $releaseEditForm.find('#release_id').val(),
