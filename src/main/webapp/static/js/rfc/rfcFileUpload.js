@@ -159,6 +159,7 @@ function responseFileUpload(response, idRow) {
 	case 'success':
 		deleteFile(idRow);
 		addReleaseFileRow(response.obj);
+		reloadPreview();
 		break;
 	case 'fail':
 		swal("Error!", response.exception, "error")
@@ -234,6 +235,7 @@ function ajaxDeleteReleaseFile(id) {
 		data : {},
 		success : function(response) {
 			responseDeleteReleaseFile(response);
+			reloadPreview();
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
@@ -260,4 +262,9 @@ function responseDeleteReleaseFile(response) {
 		location.reload();
 	}
 
+}
+
+function reloadPreview() {
+	var src = $("#tinySummary").attr("src")
+	$("#tinySummary").attr("src", src)
 }

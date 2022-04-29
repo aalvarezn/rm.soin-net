@@ -269,7 +269,7 @@
 								<thead>
 									<tr>
 										<th class="col-md-8 col-lg-8 col-xs-12 col-sm-12">Nombre</th>
-										<th class="col-md-3 col-lg-3 col-xs-12 col-sm-12">Fecha
+										<th class="col-md-4 col-lg-4 col-xs-12 col-sm-12">Fecha
 											de Carga</th>
 									</tr>
 								</thead>

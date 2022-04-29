@@ -76,28 +76,27 @@ public class RFCController extends BaseController {
 
 	@Autowired
 	SystemService systemService;
-	
+
 	@Autowired
 	SigesService sigeService;
-	
+
 	@Autowired
 	ImpactService impactService;
-	
+
 	@Autowired
 	TypeChangeService typeChangeService;
-	
+
 	@Autowired
 	ReleaseService releaseService;
-	
 
 	public static final Logger logger = Logger.getLogger(RFCController.class);
-	
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
 			PUser userLogin = getUserLogin();
-			List<PSystem> systems= systemService.listProjects(userLogin.getId());
+			List<PSystem> systems = systemService.listProjects(userLogin.getId());
 			List<PPriority> priorities = priorityService.findAll();
 			List<PStatus> statuses = statusService.findAll();
 
@@ -135,60 +134,57 @@ public class RFCController extends BaseController {
 
 	@RequestMapping(value = { "/changeProject/{id}" }, method = RequestMethod.GET)
 	public @ResponseBody List<PSiges> changeProject(@PathVariable Long id, Locale locale, Model model) {
-		List<PSiges> codeSiges =null;
+		List<PSiges> codeSiges = null;
 		try {
-			codeSiges =sigeService.listCodeSiges(id);
-		}catch(Exception e) {
+			codeSiges = sigeService.listCodeSiges(id);
+		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			
+
 			e.printStackTrace();
 		}
-		
+
 		return codeSiges;
 	}
-	
 
-	
 	@RequestMapping(value = { "/changeRelease" }, method = RequestMethod.GET)
-	public @ResponseBody com.soin.sgrm.utils.JsonSheet<?> changeRelease(HttpServletRequest request, Locale locale, Model model,
-			HttpSession session) {
-	
+	public @ResponseBody com.soin.sgrm.utils.JsonSheet<?> changeRelease(HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
+
 		try {
 			Long systemId;
 			String sSearch = request.getParameter("sSearch");
-			if(request.getParameter("systemId").equals("")) {
-				systemId=(long) 0;
-			}else {
-			     systemId =(long)  Integer.parseInt(request.getParameter("systemId"));
+			if (request.getParameter("systemId").equals("")) {
+				systemId = (long) 0;
+			} else {
+				systemId = (long) Integer.parseInt(request.getParameter("systemId"));
 			}
-			
+
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
-			return releaseService.listReleasesBySystem( sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
-		}catch(Exception e) {
+			return releaseService.listReleasesBySystem(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
+		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			
+
 			return null;
 		}
-		
+
 	}
 
-	
 	@RequestMapping(path = "", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody PRFC addRFC) {
 		JsonResponse res = new JsonResponse();
 		try {
 			PUser userLogin = getUserLogin();
-			PStatus status=statusService.findByKey("code", "draft");
+			PStatus status = statusService.findByKey("code", "draft");
 			addRFC.setStatus(status);
 			addRFC.setUser(userLogin);
 			addRFC.setRequiredBD(false);
 			addRFC.setRequestDate(CommonUtils.getSystemTimestamp());
 			res.setStatus("success");
-		
+
 			addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect()));
-			
+
 			rfcService.save(addRFC);
 			res.setData(addRFC.getId().toString());
 			res.setMessage("Se creo correctamente el RFC!");
@@ -200,62 +196,65 @@ public class RFCController extends BaseController {
 		}
 		return res;
 	}
-	
+
 	@SuppressWarnings("null")
-	@RequestMapping(value = "/saveRFC",method = RequestMethod.PUT)
+	@RequestMapping(value = "/saveRFC", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse saveRelease(HttpServletRequest request, @RequestBody PRFC addRFC) {
 
 		JsonResponse res = new JsonResponse();
-		PPriority priority=null;
-		PImpact impact=null;
-		PTypeChange typeChange=null;
-		PRelease[] arrayRelease=null;
-		List<PRelease> listRelease = new ArrayList<PRelease>() ;
-		
-		try {
+		PPriority priority = null;
+		PImpact impact = null;
+		PTypeChange typeChange = null;
+		ArrayList<MyError> errors = new ArrayList<MyError>();
+		List<PRelease> listRelease = new ArrayList<PRelease>();
 
+		try {
+			errors = validSections(addRFC, errors);
 			PRFC rfcMod = rfcService.findById(addRFC.getId());
 			addRFC.setUser(rfcMod.getUser());
 			addRFC.setNumRequest(rfcMod.getNumRequest());
 			addRFC.setCodeProyect(rfcMod.getCodeProyect());
 			addRFC.setStatus(rfcMod.getStatus());
 			addRFC.setRequestDate(rfcMod.getRequestDate());
-			
-			if(addRFC.getImpactId()!=null){
-				impact= impactService.findById(addRFC.getImpactId());
+			addRFC.setFiles(rfcMod.getFiles());
+			if (addRFC.getImpactId() != null) {
+				impact = impactService.findById(addRFC.getImpactId());
 				addRFC.setImpact(impact);
 			}
-			
-			
-			if(addRFC.getPriorityId()!=null){
-				priority= priorityService.findById(addRFC.getPriorityId());
+
+			if (addRFC.getPriorityId() != null) {
+				priority = priorityService.findById(addRFC.getPriorityId());
 				addRFC.setPriority(priority);
 			}
-			if(addRFC.getTypeChangeId()!=null){
-				typeChange= typeChangeService.findById(addRFC.getTypeChangeId());
+			if (addRFC.getTypeChangeId() != null) {
+				typeChange = typeChangeService.findById(addRFC.getTypeChangeId());
 				addRFC.setTypeChange(typeChange);
-				
+
 			}
-			if(addRFC.getReleasesList()!=null) {
+			if (addRFC.getReleasesList() != null) {
 				JSONArray jsonArray = new JSONArray(addRFC.getReleasesList());
-				
-				if(jsonArray.length()!=0) {
+
+				if (jsonArray.length() != 0) {
 					for (int i = 0; i < jsonArray.length(); i++) {
-						JSONObject object =jsonArray.getJSONObject(i);
+						JSONObject object = jsonArray.getJSONObject(i);
 						System.out.println(object.getInt(("id")));
-						PRelease release= releaseService.findById(Long.valueOf(object.getInt(("id"))));
+						PRelease release = releaseService.findById(Long.valueOf(object.getInt(("id"))));
 						listRelease.add(release);
-						
+
 					}
 					addRFC.setReleases(Sets.newHashSet(listRelease));
 				}
 			}
-		
-		
+
 			rfcService.update(addRFC);
 			res.setStatus("success");
-		
-		}  catch (Exception e) {
+			if (errors.size() > 0) {
+				// Se adjunta lista de errores
+				res.setStatus("fail");
+				res.setErrors(errors);
+			}
+
+		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
 			res.setStatus("exception");
 			res.setException("Error al guardar el rfc: " + e.getMessage());
@@ -268,15 +267,13 @@ public class RFCController extends BaseController {
 	public String editRelease(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		PRFC rfcEdit = new PRFC();
-		//SystemConfiguration systemConfiguration = new SystemConfiguration();
 		PUser user = getUserLogin();
-		List<PSystem> systems= systemService.listProjects(user.getId());
+		List<PSystem> systems = systemService.listProjects(user.getId());
 		try {
 			if (id == null) {
 				return "redirect:/";
 			}
 
-			
 			rfcEdit = rfcService.findById(id);
 
 			if (rfcEdit == null) {
@@ -295,25 +292,12 @@ public class RFCController extends BaseController {
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
-/*
-			systemConfiguration = systemConfigurationService.findBySystemId(release.getSystem().getId());
-			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
-			*/
-/*
-			if (release.getSystem().getImportObjects()) {
-				model.addAttribute("typeDetailList", typeDetail.list());
-			}
-*/
 			model.addAttribute("systems", systems);
 			model.addAttribute("impacts", impactService.findAll());
 			model.addAttribute("typeChange", typeChangeService.findAll());
 			model.addAttribute("priorities", priorityService.findAll());
-			model.addAttribute("rfc",rfcEdit);
-			/*
-			model.addAttribute("doc", new DocTemplate());
-			model.addAttribute("docs", docs);
-			model.addAttribute("release", release);
-			*/
+			model.addAttribute("rfc", rfcEdit);
+
 			return "/rfc/editRFC";
 
 		} catch (Exception e) {
@@ -324,19 +308,16 @@ public class RFCController extends BaseController {
 
 		return "redirect:/";
 	}
-	
+
 	@RequestMapping(value = "/getRFC-{id}", method = RequestMethod.GET)
 	public @ResponseBody PRFC getRFC(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		PRFC rfcEdit = new PRFC();
 
-	try {
+		try {
 
-			
 			rfcEdit = rfcService.findById(id);
 			return rfcEdit;
-		
-
 
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
@@ -346,13 +327,13 @@ public class RFCController extends BaseController {
 
 		return rfcEdit;
 	}
-	
+
 	@SuppressWarnings("null")
 	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
 	public String tinySummary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
 		PUser user = getUserLogin();
-		List<PSystem> systems= systemService.listProjects(user.getId());
+		List<PSystem> systems = systemService.listProjects(user.getId());
 		try {
 			model.addAttribute("parameter", status);
 			PRFC rfc = null;
@@ -363,38 +344,38 @@ public class RFCController extends BaseController {
 			if (rfc == null) {
 				return "redirect:/";
 			}
-			PSiges codeSiges= sigeService.findByKey("codeSiges", rfc.getCodeProyect());
-			
-			List<String> systemsImplicated=new ArrayList<String>();
-			
+			PSiges codeSiges = sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+
+			List<String> systemsImplicated = new ArrayList<String>();
+
 			systemsImplicated.add(codeSiges.getSystem().getName());
-			String nameSystem="";
-			boolean validate=true;
-			Set<PRelease> releases= rfc.getReleases();
-			if(releases!=null) {
-				if(releases.size()!=0) {
-					for(PRelease release: releases) {
-						nameSystem=release.getSystem().getName();
-						for(String system: systemsImplicated) {
-							if(system.equals(nameSystem)) {
-								validate=false;
+			String nameSystem = "";
+			boolean validate = true;
+			Set<PRelease> releases = rfc.getReleases();
+			if (releases != null) {
+				if (releases.size() != 0) {
+					for (PRelease release : releases) {
+						nameSystem = release.getSystem().getName();
+						for (String system : systemsImplicated) {
+							if (system.equals(nameSystem)) {
+								validate = false;
 							}
 						}
-						if(validate) {
+						if (validate) {
 							systemsImplicated.add(nameSystem);
 						}
-						validate=true;
+						validate = true;
 					}
 				}
-				
+
 			}
 			model.addAttribute("systems", systems);
 			model.addAttribute("impacts", impactService.findAll());
 			model.addAttribute("typeChange", typeChangeService.findAll());
 			model.addAttribute("priorities", priorityService.findAll());
 			model.addAttribute("codeSiges", codeSiges);
-			model.addAttribute("systemsImplicated",systemsImplicated);
-			model.addAttribute("rfc",rfc);
+			model.addAttribute("systemsImplicated", systemsImplicated);
+			model.addAttribute("rfc", rfc);
 
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
@@ -404,6 +385,43 @@ public class RFCController extends BaseController {
 			return "redirect:/";
 		}
 		return "/rfc/tinySummaryRFC";
+	}
+
+	public ArrayList<MyError> validSections(PRFC rfc, ArrayList<MyError> errors) {
+
+		if (rfc.getImpactId() == null)
+			errors.add(new MyError("impactId", "Valor requerido."));
+
+		if (rfc.getTypeChangeId() == null)
+			errors.add(new MyError("typeChangeId", "Valor requerido."));
+
+		if (rfc.getPriorityId() == null)
+			errors.add(new MyError("priorityId", "Valor requerido."));
+
+		if (rfc.getRequestDateBegin().equals(""))
+			errors.add(new MyError("dateBegin", "Valor requerido."));
+
+		if (rfc.getRequestDateBegin().equals(""))
+			errors.add(new MyError("dateFinish", "Valor requerido."));
+
+		if (rfc.getReasonChange().equals(""))
+			errors.add(new MyError("rfcReason", "Valor requerido."));
+
+		if (rfc.getEffect().equals(""))
+			errors.add(new MyError("rfcEffect", "Valor requerido."));
+
+		if (rfc.getDetail().trim().equals(""))
+			errors.add(new MyError("detailRFC", "Valor requerido."));
+
+		if (rfc.getReturnPlan().trim().equals(""))
+			errors.add(new MyError("returnPlanRFC", "Valor requerido."));
+
+		if (rfc.getEvidence().trim().equals(""))
+			errors.add(new MyError("evidenceRFC", "Valor requerido."));
+
+		if (rfc.getRequestEsp().equals(""))
+			errors.add(new MyError("requestEspRFC", "Valor requerido."));
+		return errors;
 	}
 
 }

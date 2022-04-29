@@ -25,7 +25,7 @@
 					placeholder="Ingrese los detalles de implementaci&oacute;n..."
 					style="">${rfc.detail}</textarea>
 			</div>
-			<label id="installationInstructions_error" class="error fieldError"
+			<label id="detailRFC_error" class="error fieldError"
 				for="name" style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 	</div>
@@ -38,7 +38,7 @@
 					placeholder="Ingrese el plan de retorno..."
 					style="">${rfc.returnPlan}</textarea>
 			</div>
-			<label id="verificationInstructions_error" class="error fieldError"
+			<label id="returnPlanRFC_error" class="error fieldError"
 				for="name" style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 	</div>
@@ -53,7 +53,7 @@
 					placeholder="Ingrese los detalles de implementaci&oacute;n..."
 					style="">${rfc.evidence}</textarea>
 			</div>
-			<label id="installationInstructions_error" class="error fieldError"
+			<label id="evidenceRFC_error" class="error fieldError"
 				for="name" style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 		
@@ -68,7 +68,7 @@
 					placeholder="Ingrese los detalles de implementaci&oacute;n..."
 					style="">${rfc.requestEsp}</textarea>
 			</div>
-			<label id="installationInstructions_error" class="error fieldError"
+			<label id="requestEspRFC_error" class="error fieldError"
 				for="name" style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 		

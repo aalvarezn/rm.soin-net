@@ -172,7 +172,7 @@ tr.selected {
 							</button>
 
 							<button type="button" id="btnSave"
-								class="btn btn-default setIcon" onclick="sendRelease()"
+								class="btn btn-default setIcon" onclick="sendRFC()"
 								title="GUARDAR"
 								style="background-color: #00294c !important; color: #fff; border: none !important;">
 								<span id="btnText">GUARDAR</span><span

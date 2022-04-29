@@ -26,7 +26,8 @@
 		</p>
 		<div class="row clearfix">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<select class="form-control show-tick" id="typeChangeId" name="typeChangeId">
+				<select class="form-control show-tick" id="typeChangeId"
+					name="typeChangeId">
 					<option value="">-- Seleccione una opci&oacute;n --</option>
 					<c:forEach items="${typeChange}" var="typeChange">
 						<c:choose>
@@ -39,8 +40,15 @@
 						</c:choose>
 					</c:forEach>
 				</select>
+
+			</div>
+			<div class="form-group p-l-15 m-b-0i">
+				<label id="typeChangeId_error" class="error fieldError activeError"
+					for="name" style="visibility: hidden;">Campo Requerido.</label>
 			</div>
 		</div>
+
+
 	</div>
 	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-b-20">
 		<p>
@@ -61,8 +69,14 @@
 						</c:choose>
 					</c:forEach>
 				</select>
+
+			</div>
+			<div class="form-group p-l-15 m-b-0i">
+				<label id="impactId_error" class="error fieldError activeError"
+					for="name" style="visibility: hidden;">Campo Requerido.</label>
 			</div>
 		</div>
+
 	</div>
 
 	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-b-20">
@@ -87,7 +101,13 @@
 
 						</c:forEach>
 					</select>
+
 				</div>
+
+			</div>
+			<div class="form-group p-l-15 m-b-0i">
+				<label id="priorityId_error" class="error fieldError activeError"
+					for="name" style="visibility: hidden;">Campo Requerido.</label>
 			</div>
 		</div>
 	</div>
@@ -103,8 +123,11 @@
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
-					class="form-control datetimepicker" id='dateBegin' name='dateBegin' value="${rfc.requestDateBegin }" />
+					class="form-control datetimepicker" id='dateBegin' name='dateBegin'
+					value="${rfc.requestDateBegin }" />
 			</div>
+			<label id="dateBegin_error" class="error fieldError" for="name"
+				style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 	</div>
 	<div class='col-lg-6 col-md-6 col-sm-12 col-xs-12'>
@@ -112,8 +135,11 @@
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
-					class="form-control datetimepicker" id='dateFinish' name='dateFinish' value="${rfc.requestDateFinish }" />
+					class="form-control datetimepicker" id='dateFinish'
+					name='dateFinish' value="${rfc.requestDateFinish }" />
 			</div>
+			<label id="dateFinish_error" class="error fieldError" for="name"
+				style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -122,23 +148,24 @@
 			<div class="form-line">
 				<textarea rows="2" cols="" name='rfcReason' id="rfcReason"
 					class="form-control"
-					placeholder="Ingrese la raz&oacute;n del cambio..."
-					style="">${rfc.reasonChange}</textarea>
+					placeholder="Ingrese la raz&oacute;n del cambio..." style="">${rfc.reasonChange}</textarea>
 			</div>
+			<label id="rfcReason_error" class="error fieldError" for="name"
+				style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 	</div>
-	
-	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-bottom: 20px;">
-		<label>Efecto si no se implementa el
-			cambio. </label>
+
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12"
+		style="margin-bottom: 20px;">
+		<label>Efecto si no se implementa el cambio. </label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
 				<textarea rows="2" cols="" name='rfcEffect' id="rfcEffect"
 					name="rfcEffect" class="form-control"
-					placeholder="Ingrese el efecto si no se implementa..."
-					style="">${rfc.effect}</textarea>
+					placeholder="Ingrese el efecto si no se implementa..." style="">${rfc.effect}</textarea>
 			</div>
-
+			<label id="rfcEffect_error" class="error fieldError" for="name"
+				style="visibility: hidden;">Campo Requerido.</label>
 		</div>
 	</div>
 </div>

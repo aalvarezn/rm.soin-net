@@ -197,7 +197,7 @@ function sendPartialRFC() {
 			changeSaveButton(false);
 			origForm = $rfcEditForm.serialize();
 			$dataReleaseCheck=$dataRelease.slice();
-			console.log("aca se esta asignando");
+			reloadPreview();
 		},
 		error: function(x, t, m) {
 			notifyAjaxError(x, t, m);
@@ -320,6 +320,11 @@ function addDataToTable(){
     	//console.log(data);
 }
 
+function reloadPreview() {
+	var src = $("#tinySummary").attr("src")
+	$("#tinySummary").attr("src", src)
+}
+
 function initTableAdd(){
 	$dtRFCsAdd=$('#releaseTableAdd').DataTable({
 			"iDisplayLength" : 5,
@@ -397,4 +402,123 @@ function removeData(data){
             return false; 
         }
 });
+}
+
+function sendRFC() {
+	var form = "#generateReleaseForm";
+	changeSaveButton(true);
+	console.log($rfcEditForm.find('#requiredBD').val());
+	$.ajax({
+		// async : false,
+		type : "PUT",
+		url : getCont() + "rfc/saveRFC",
+		timeout: 60000,
+		dataType : "json",
+		contentType: "application/json; charset=utf-8",
+		data : JSON.stringify({
+			// Informacion general
+			id : $rfcEditForm.find('#rfcId').val(),
+			codeProyect : $rfcEditForm.find('#rfcCode').val(),
+			impactId : $rfcEditForm.find('#impactId').children(
+			"option:selected").val(),
+			priorityId : $rfcEditForm.find('#priorityId').children("option:selected")
+			.val(),
+			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
+			"option:selected").val(),
+			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
+			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),	
+			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
+			reasonChange : $rfcEditForm.find('#rfcReason').val(),
+			effect : $rfcEditForm.find('#rfcEffect').val(),
+			releasesList: JSON.stringify($dataRelease),
+			detail:$rfcEditForm.find('#detailRFC').val(),
+			evidence:$rfcEditForm.find('#evidenceRFC').val(),
+			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
+			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
+		}),
+		success : function(response) {
+			responseAjaxSendRFC(response);
+			changeSaveButton(false);
+			origForm = $rfcEditForm.serialize();
+			$dataReleaseCheck=$dataRelease.slice();
+			reloadPreview();
+		},
+		error: function(x, t, m) {
+			notifyAjaxError(x, t, m);
+			changeSaveButton(false);
+		}
+	});
+}
+
+
+function responseAjaxSendRFC(response) {
+	if (response != null) {
+		switch (response.status) {
+		case 'success':
+			resetErrors();
+			reloadPreview();
+			swal("Correcto!", "RFC guardado correctamente.",
+					"success", 2000)
+					$('#generateReleaseForm #applyFor').show();
+			break;
+		case 'fail':
+			showReleaseErrors(response.errors);
+			countErrorsByStep();
+			var numItems = $('.yourclass').length
+			swal("Avance guardado!", "El formulario a\u00FAn posee campos incompletos.",
+			"warning")
+			break;
+		case 'exception':
+			swal("Error!", response.exception, "error")
+			break;
+		default:
+			unblockUI();
+		}
+	}
+}
+
+function resetErrors() {
+	$(".fieldError").css("visibility", "hidden");
+	$(".fieldError").attr("class", "error fieldError");
+	$(".fieldErrorLine").attr("class", "form-line");
+	$('.labelCount_Error').css("visibility", "hidden");
+}
+
+function showReleaseErrors(errors) {
+	resetErrors();// Eliminamos las etiquetas de errores previas
+	var error = errors;
+	console.log(errors);
+	for (var i = 0; i < error.length; i++) {
+		// Se modifica el texto de la advertencia y se agrega la de activeError
+		$rfcEditForm.find(" #" + error[i].key + "_error").text(
+				error[i].message);
+		$rfcEditForm.find(" #" + error[i].key + "_error").css("visibility",
+		"visible");
+		$rfcEditForm.find(" #" + error[i].key + "_error").attr("class",
+		"error fieldError activeError");
+		// Si es input||textarea se marca el line en rojo
+		if ($rfcEditForm.find(" #" + error[i].key).is("input")
+				|| $rfcEditForm.find(" #" + error[i].key).is("textarea")) {
+			$rfcEditForm.find(" #" + error[i].key).parent().attr("class",
+			"form-line error fieldErrorLine");
+		}
+	}
+}
+function countErrorsByStep() {
+	var step1 = $("#step1").find(".activeError").length;
+	if (step1 != 0) {
+		$("#step1Errors").css("visibility", "visible");
+	}
+	var step2 = $("#step2").find(".activeError").length;
+	if (step2 != 0) {
+		$("#step2Errors").css("visibility", "visible");
+	}
+	var step3 = $("#step3").find(".activeError").length;
+	if (step3 != 0) {
+		$("#step3Errors").css("visibility", "visible");
+	}
+	var step4 = $("#step4").find(".activeError").length;
+	if (step4 != 0) {
+		$("#step4Errors").css("visibility", "visible");
+	}
 }
