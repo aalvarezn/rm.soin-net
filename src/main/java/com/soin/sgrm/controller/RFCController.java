@@ -30,20 +30,26 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Ambient;
 import com.soin.sgrm.model.Dependency;
 import com.soin.sgrm.model.DocTemplate;
+import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemConfiguration;
+import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PImpact;
+import com.soin.sgrm.model.pos.PParameter;
 import com.soin.sgrm.model.pos.PPriority;
 
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PSiges;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.pos.EmailTemplateService;
 import com.soin.sgrm.service.pos.ImpactService;
+import com.soin.sgrm.service.pos.ParameterService;
 import com.soin.sgrm.service.pos.PriorityService;
 import com.soin.sgrm.service.pos.RFCService;
 import com.soin.sgrm.service.pos.ReleaseService;
@@ -52,6 +58,8 @@ import com.soin.sgrm.model.pos.PStatus;
 import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PTypeChange;
 import com.soin.sgrm.model.pos.PUser;
+import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.service.pos.StatusService;
 import com.soin.sgrm.service.pos.SystemService;
 import com.soin.sgrm.service.pos.TypeChangeService;
@@ -88,6 +96,12 @@ public class RFCController extends BaseController {
 
 	@Autowired
 	ReleaseService releaseService;
+	
+	@Autowired 
+	ParameterService parameterService;
+	
+	@Autowired
+	EmailTemplateService emailService;
 
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 
@@ -385,6 +399,74 @@ public class RFCController extends BaseController {
 			return "redirect:/";
 		}
 		return "/rfc/tinySummaryRFC";
+	}
+	
+	@RequestMapping(value = "/updateRelease/{rfcId}", method = RequestMethod.GET)
+	public String updateRelease(@PathVariable String releaseId, HttpServletRequest request, Locale locale,
+			HttpSession session, RedirectAttributes redirectAttributes) {
+		try {
+			PRFC rfc = null;
+
+			if (CommonUtils.isNumeric(releaseId)) {
+				rfc = rfcService.findById( (long)Integer.parseInt(releaseId));
+			}
+			// Si el release no existe se regresa al inicio.
+			if (rfc == null) {
+				return "redirect:/";
+			}
+			// Verificar si existe un flujo para el sistema
+			
+			PStatus status = statusService.findByKey("name","Solicitado");
+
+//			if (node != null)
+//				release.setNode(node);
+
+			rfc.setStatus(status);
+			//rfc.set(status.getReason());
+			//release.setOperator(getUserLogin().getName());
+
+			if (Boolean.valueOf(parameterService.findByKey("code","1").getParamValue())) {
+				if (emailService.findByKey("name", "RFC Solicitado")!=null) {
+					PEmailTemplate email = emailService.findByKey("name", "RFC Solicitado");
+					PRFC releaseEmail = rfc;
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMail(releaseEmail, email);
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+
+					});
+					newThread.start();
+				}
+			}
+
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getActors().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+				EmailTemplate emailActor = emailService.findById(idTemplate);
+				WFRelease releaseEmail = new WFRelease();
+				releaseEmail.convertReleaseToWFRelease(release);
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailActor(releaseEmail, emailActor);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
+
+			rfcService.update(rfc);
+
+			return "redirect:/rfc/summary-" + rfc.getId();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+
+		return "redirect:/";
 	}
 
 	public ArrayList<MyError> validSections(PRFC rfc, ArrayList<MyError> errors) {

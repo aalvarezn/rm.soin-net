@@ -25,7 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.pos.EmailTemplateDao;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.Ambient;
+import com.soin.sgrm.model.Dependency;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.EnviromentConfig;
 
@@ -111,6 +117,136 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			Sentry.capture(e, "email");
 			throw e;
 		}
+	}
+	
+	@Override
+	public void sendMailRFC(PRFC rfc, PEmailTemplate email) throws Exception {
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
+		email = fillEmail(email, rfc);
+		String body = email.getHtml();
+		body = Constant.getCharacterEmail(body);
+		MimeMultipart mmp = MimeMultipart(body);
+		mimeMessage.setContent(mmp);
+		mimeMessage.setSubject(email.getSubject());
+		mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
+		mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
+		for (String toUser : email.getTo().split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
+		}
+		mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(release.getUser().getEmail()));
+		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
+			for (String ccUser : email.getCc().split(",")) {
+				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			}
+		}
+		mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(release.getUser().getEmail()));
+
+		mailSender.send(mimeMessage);
+	}
+	
+	public PEmailTemplate fillEmail(EmailTemplate email, PRFC rfc) {
+		String temp = "";
+		/* ------ body ------ */
+		if (email.getHtml().contains("{{userName}}")) {
+			email.setHtml(email.getHtml().replace("{{userName}}",
+					(rfc.getUser().getName() != null ? rfc.getUser().getName() : "")));
+		}
+
+		if (email.getHtml().contains("{{rfcNumber}}")) {
+			email.setHtml(email.getHtml().replace("{{rfcNumber}}",
+					(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
+		}
+
+		if (email.getHtml().contains("{{description}}")) {
+			String description = release.getDescription() != null ? release.getDescription() : "";
+			description = description.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{description}}", description));
+		}
+
+		if (email.getHtml().contains("{{observation}}")) {
+			String observation = release.getObservations() != null ? release.getObservations() : "";
+			observation = observation.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{observation}}", observation));
+		}
+
+		if (email.getHtml().contains("{{functionalSolution}}")) {
+			String functionalSolution = release.getFunctionalSolution() != null ? release.getFunctionalSolution() : "";
+			functionalSolution = functionalSolution.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{functionalSolution}}", functionalSolution));
+		}
+
+		if (email.getHtml().contains("{{minimalEvidence}}")) {
+			String minimalEvidence = release.getMinimal_evidence() != null ? release.getMinimal_evidence() : "";
+			minimalEvidence = minimalEvidence.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{minimalEvidence}}", minimalEvidence));
+		}
+
+		if (email.getHtml().contains("{{technicalSolution}}")) {
+			String technicalSolution = release.getTechnicalSolution() != null ? release.getTechnicalSolution() : "";
+			technicalSolution = technicalSolution.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{technicalSolution}}", technicalSolution));
+		}
+
+		if (email.getHtml().contains("{{ambient}}")) {
+			temp = "";
+			for (Ambient amb : release.getAmbients()) {
+				temp += amb.getName() + "<br>";
+			}
+			email.setHtml(email.getHtml().replace("{{ambient}}", (temp.equals("") ? "Sin ambientes definidos" : temp)));
+		}
+
+		if (email.getHtml().contains("{{dependencies}}")) {
+			temp = "";
+			int i = 1;
+			for (Dependency dep : release.getDependencies()) {
+				temp += i + ": " + dep.getTo_release().getReleaseNumber() + "<br>";
+				i++;
+			}
+			email.setHtml(email.getHtml().replace("{{dependencies}}",
+					(temp.equals("") ? "Sin dependencias definidos" : temp)));
+		}
+
+		if (email.getHtml().contains("{{objects}}")) {
+			temp = "<ul>";
+
+			for (ReleaseObject obj : release.getObjects()) {
+				temp += "<li> " + obj.getName() + "</li>";
+			}
+			temp += "</ul>";
+			email.setHtml(email.getHtml().replace("{{objects}}", (temp.equals("") ? "Sin objetos definidos" : temp)));
+		}
+
+		if (email.getHtml().contains("{{version}}")) {
+			email.setHtml(email.getHtml().replace("{{version}}",
+					(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
+		}
+
+		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{releaseNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{releaseNumber}}",
+					(release.getReleaseNumber() != null ? release.getReleaseNumber() : "")));
+		}
+		if (email.getSubject().contains("{{version}}")) {
+			email.setSubject(email.getSubject().replace("{{version}}",
+					(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
+		}
+		if (email.getSubject().contains("{{priority}}")) {
+			email.setSubject(email.getSubject().replace("{{priority}}",
+					(release.getPriority().getName() != null ? release.getPriority().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{impact}}")) {
+			email.setSubject(email.getSubject().replace("{{impact}}",
+					(release.getImpact().getName() != null ? release.getImpact().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{risk}}")) {
+			email.setSubject(email.getSubject().replace("{{risk}}",
+					(release.getRisk().getName() != null ? release.getRisk().getName() : "")));
+		}
+
+		return email;
 	}
 	@Override
 	public void save(PEmailTemplate model) {

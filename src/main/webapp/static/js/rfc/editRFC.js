@@ -450,6 +450,79 @@ function sendRFC() {
 	});
 }
 
+function requestRFC() {
+	var form = "#generateReleaseForm";
+	changeSaveButton(true);
+	console.log($rfcEditForm.find('#requiredBD').val());
+	$.ajax({
+		// async : false,
+		type : "PUT",
+		url : getCont() + "rfc/saveRFC",
+		timeout: 60000,
+		dataType : "json",
+		contentType: "application/json; charset=utf-8",
+		data : JSON.stringify({
+			// Informacion general
+			id : $rfcEditForm.find('#rfcId').val(),
+			codeProyect : $rfcEditForm.find('#rfcCode').val(),
+			impactId : $rfcEditForm.find('#impactId').children(
+			"option:selected").val(),
+			priorityId : $rfcEditForm.find('#priorityId').children("option:selected")
+			.val(),
+			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
+			"option:selected").val(),
+			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
+			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),	
+			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
+			reasonChange : $rfcEditForm.find('#rfcReason').val(),
+			effect : $rfcEditForm.find('#rfcEffect').val(),
+			releasesList: JSON.stringify($dataRelease),
+			detail:$rfcEditForm.find('#detailRFC').val(),
+			evidence:$rfcEditForm.find('#evidenceRFC').val(),
+			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
+			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
+		}),
+		success : function(response) {
+			responseAjaxRequestRelease(response);
+			changeSaveButton(false);
+			origForm = $rfcEditForm.serialize();
+			$dataReleaseCheck=$dataRelease.slice();
+			reloadPreview();
+		},
+		error: function(x, t, m) {
+			notifyAjaxError(x, t, m);
+			changeSaveButton(false);
+		}
+	});
+}
+
+function responseAjaxRequestRelease(response) {
+	if (response != null) {
+		switch (response.status) {
+		case 'success':
+			resetErrors();
+			reloadPreview();
+			swal("Correcto!", "RFC guardado correctamente.",
+					"success", 2000)
+					$('#generateReleaseForm #applyFor').show();
+			break;
+		case 'fail':
+			showReleaseErrors(response.errors);
+			countErrorsByStep();
+			var numItems = $('.yourclass').length
+			swal("Avance guardado!", "El formulario a\u00FAn posee campos incompletos.",
+			"warning")
+			break;
+		case 'exception':
+			swal("Error!", response.exception, "error")
+			break;
+		default:
+			unblockUI();
+		}
+	}
+}
+
+
 
 function responseAjaxSendRFC(response) {
 	if (response != null) {

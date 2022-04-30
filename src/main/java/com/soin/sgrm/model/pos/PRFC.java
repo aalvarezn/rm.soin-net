@@ -108,6 +108,8 @@ public class PRFC implements Serializable {
 			@JoinColumn(name = "\"ARCHIVORFC_ID\"") })
 	private Set<PRFCFile> files = new HashSet<>();
 	
+	//Agregar Motivo
+	//Agregar Usuario que lo cambio
 	@Transient
 	private String[] strReleases;
 	
