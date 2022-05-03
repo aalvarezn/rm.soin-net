@@ -165,7 +165,7 @@ function loadTableRelease(nameTable) {
 							},
 							{
 								mRender : function(data, type, row) {
-									var options = '<div class="iconLine">';
+									var options = '<div class="iconLineC">';
 									options = options
 									+ '<a onclick="openReleaseTrackingModal('
 									+ row.id
