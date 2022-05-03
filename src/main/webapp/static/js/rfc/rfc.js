@@ -61,7 +61,39 @@ function initRFCTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return "---";
+							var options = '<div class="iconLine">';
+							if (row.status.name == 'Borrador') {
+								if(row.user.username == getUserName()){
+									options = options
+									+ '<a onclick="editRelease('
+									+ row.id
+									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>'
+									+ '<a onclick="confirmDeleteRelease('
+									+ row.id
+									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
+								}
+							}
+							if($('#isDeveloper').val()){
+								options = options
+								+ '<a onclick="copyRelease('
+								+ row.id
+								+ ')" title="Copiar"><i class="material-icons gris">file_copy</i> </a>';
+							}
+
+							
+
+							options = options
+							+ '<a onclick="openReleaseTrackingModal('
+							+ row.id
+							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
+
+							options = options
+							+ '<a href="'
+							+ getCont()
+							+ 'rfc/summaryRFC-'
+							+ row.id
+							+ '" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
+							return options;
 						},
 					} ],
 					ordering : false,

@@ -27,7 +27,7 @@ public class PParameter implements Serializable{
 	private Long id;
 
 	@Column(name = "CODIGO")
-	private Integer code;
+	private Long code;
 
 	@Column(name = "DESCRIPCION")
 	@NotEmpty(message = Constant.EMPTY)
@@ -50,11 +50,11 @@ public class PParameter implements Serializable{
 		this.id = id;
 	}
 
-	public Integer getCode() {
+	public Long getCode() {
 		return code;
 	}
 
-	public void setCode(Integer code) {
+	public void setCode(Long code) {
 		this.code = code;
 	}
 

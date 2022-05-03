@@ -451,7 +451,7 @@ function sendRFC() {
 }
 
 function requestRFC() {
-	var form = "#generateReleaseForm";
+	
 	changeSaveButton(true);
 	console.log($rfcEditForm.find('#requiredBD').val());
 	$.ajax({
@@ -483,7 +483,7 @@ function requestRFC() {
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
 		}),
 		success : function(response) {
-			responseAjaxRequestRelease(response);
+			responseAjaxRequestRFC(response);
 			changeSaveButton(false);
 			origForm = $rfcEditForm.serialize();
 			$dataReleaseCheck=$dataRelease.slice();
@@ -496,15 +496,14 @@ function requestRFC() {
 	});
 }
 
-function responseAjaxRequestRelease(response) {
+function responseAjaxRequestRFC(response) {
 	if (response != null) {
 		switch (response.status) {
 		case 'success':
 			resetErrors();
 			reloadPreview();
-			swal("Correcto!", "RFC guardado correctamente.",
-					"success", 2000)
-					$('#generateReleaseForm #applyFor').show();
+			window.location = getCont() + "rfc/updateRFC/"
+			+  $rfcEditForm.find('#rfcId').val();
 			break;
 		case 'fail':
 			showReleaseErrors(response.errors);

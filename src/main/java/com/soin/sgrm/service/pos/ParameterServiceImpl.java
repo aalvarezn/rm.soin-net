@@ -49,5 +49,10 @@ public class ParameterServiceImpl implements ParameterService {
 	public void update(PParameter model) {
 		dao.update(model);
 	}
+	
+	@Override
+	public PParameter getParameterByCode(Long code) {
+		return dao.getParameterByCode(code);
+	} 
 
 }

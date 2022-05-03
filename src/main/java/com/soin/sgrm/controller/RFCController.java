@@ -342,6 +342,68 @@ public class RFCController extends BaseController {
 		return rfcEdit;
 	}
 
+	@RequestMapping(value = "/summaryRFC-{status}", method = RequestMethod.GET)
+	public String summmary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
+		PUser user = getUserLogin();
+		List<PSystem> systems = systemService.listProjects(user.getId());
+		try {
+			model.addAttribute("parameter", status);
+			PRFC rfc = null;
+			if (CommonUtils.isNumeric(status)) {
+				rfc = rfcService.findById(Long.parseLong(status));
+			}
+
+			if (rfc == null) {
+				return "redirect:/";
+			}
+			PSiges codeSiges = sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+
+			List<String> systemsImplicated = new ArrayList<String>();
+
+			systemsImplicated.add(codeSiges.getSystem().getName());
+			String nameSystem = "";
+			boolean validate = true;
+			Set<PRelease> releases = rfc.getReleases();
+			if (releases != null) {
+				if (releases.size() != 0) {
+					for (PRelease release : releases) {
+						nameSystem = release.getSystem().getName();
+						for (String system : systemsImplicated) {
+							if (system.equals(nameSystem)) {
+								validate = false;
+							}
+						}
+						if (validate) {
+							systemsImplicated.add(nameSystem);
+						}
+						validate = true;
+					}
+				}
+
+			}
+			model.addAttribute("statuses", statusService.findAll());
+			model.addAttribute("systems", systems);
+			model.addAttribute("impacts", impactService.findAll());
+			model.addAttribute("typeChange", typeChangeService.findAll());
+			model.addAttribute("priorities", priorityService.findAll());
+			model.addAttribute("codeSiges", codeSiges);
+			model.addAttribute("systemsImplicated", systemsImplicated);
+			model.addAttribute("rfc", rfc);
+			
+
+		} catch (Exception e) {
+			Sentry.capture(e, "rfc");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina resumen rfc." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/";
+		}
+		
+		return "/rfc/summaryRFC";
+	}
+
+
 	@SuppressWarnings("null")
 	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
 	public String tinySummary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
@@ -401,14 +463,14 @@ public class RFCController extends BaseController {
 		return "/rfc/tinySummaryRFC";
 	}
 	
-	@RequestMapping(value = "/updateRelease/{rfcId}", method = RequestMethod.GET)
-	public String updateRelease(@PathVariable String releaseId, HttpServletRequest request, Locale locale,
+	@RequestMapping(value = "/updateRFC/{rfcId}", method = RequestMethod.GET)
+	public String updateRFC(@PathVariable String rfcId, HttpServletRequest request, Locale locale,
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		try {
 			PRFC rfc = null;
 
-			if (CommonUtils.isNumeric(releaseId)) {
-				rfc = rfcService.findById( (long)Integer.parseInt(releaseId));
+			if (CommonUtils.isNumeric(rfcId)) {
+				rfc = rfcService.findById( (long)Integer.parseInt(rfcId));
 			}
 			// Si el release no existe se regresa al inicio.
 			if (rfc == null) {
@@ -425,13 +487,13 @@ public class RFCController extends BaseController {
 			//rfc.set(status.getReason());
 			//release.setOperator(getUserLogin().getName());
 
-			if (Boolean.valueOf(parameterService.findByKey("code","1").getParamValue())) {
+			if (Boolean.valueOf(parameterService.getParameterByCode((long) 1).getParamValue())) {
 				if (emailService.findByKey("name", "RFC Solicitado")!=null) {
 					PEmailTemplate email = emailService.findByKey("name", "RFC Solicitado");
-					PRFC releaseEmail = rfc;
+					PRFC rfcEmail = rfc;
 					Thread newThread = new Thread(() -> {
 						try {
-							emailService.sendMail(releaseEmail, email);
+							emailService.sendMailRFC(rfcEmail, email);
 						} catch (Exception e) {
 							Sentry.capture(e, "release");
 						}
@@ -440,7 +502,7 @@ public class RFCController extends BaseController {
 					newThread.start();
 				}
 			}
-
+/*
 			// si tiene un nodo y ademas tiene actor se notifica por correo
 			if (node != null && node.getActors().size() > 0) {
 				Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
@@ -455,12 +517,13 @@ public class RFCController extends BaseController {
 					}
 
 				});
+				
 				newThread.start();
-			}
+			}*/
 
 			rfcService.update(rfc);
 
-			return "redirect:/rfc/summary-" + rfc.getId();
+			return "redirect:/rfc/summaryRFC-" + rfc.getId();
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());

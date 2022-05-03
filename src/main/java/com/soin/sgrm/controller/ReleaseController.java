@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.model.Ambient;
-import com.soin.sgrm.model.Authority;
 import com.soin.sgrm.model.Dependency;
 import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.EmailTemplate;
@@ -36,7 +35,6 @@ import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Status;
-import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Request;
@@ -44,12 +42,9 @@ import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
-import com.soin.sgrm.model.pos.PAuthority;
-import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
-import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.ActionEnvironmentService;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.ConfigurationItemService;
@@ -61,7 +56,6 @@ import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.ReleaseService;
-import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.RiskService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
@@ -70,8 +64,6 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.service.TypeObjectService;
 import com.soin.sgrm.service.UserInfoService;
-import com.soin.sgrm.service.pos.AuthorityService;
-import com.soin.sgrm.service.pos.UserService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
@@ -80,8 +72,6 @@ import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.MyError;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.utils.ReleaseCreate;
-
-import ch.qos.logback.core.util.SystemInfo;
 
 import com.soin.sgrm.exception.Sentry;
 
@@ -132,35 +122,14 @@ public class ReleaseController extends BaseController {
 	@Autowired
 	private NodeService nodeService;
 
-	@Autowired
-	private AuthorityService authorityService;
-	
-	@Autowired
-	UserService userService;
-
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
-		
 		try {
-			List<System>systems=null;
 			String name = getUserLogin().getUsername();
-			PUser userLogin =userService.findById(getUserLogin().id);
-			Set<PAuthority> roles= userLogin.getRoles();
-			
-			for(PAuthority rol: roles) {
-					if(rol.getCode().equals("QA")) {
-						systems=systemService.list();
-					}
-			}
-			if(systems==null) {
-				model.addAttribute("systems", systemService.listSystemByUser(getUserLogin().getUsername()));
-			}else {
-				model.addAttribute("systems",systems);
-			}
 			loadCountsRelease(request, name);
 			model.addAttribute("system", new SystemUser());
-
+			model.addAttribute("systems", systemService.listSystemByUser(getUserLogin().getUsername()));
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
 			model.addAttribute("list", "userRelease");

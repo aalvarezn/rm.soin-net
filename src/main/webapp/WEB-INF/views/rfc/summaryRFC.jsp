@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -27,32 +25,70 @@
 	href="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Bootstrap Select Css -->
-<link
-	href="<c:url value='/static/bootstrap-select/css/bootstrap-select.css'/>"
-	type="text/css">
-
 <!-- Sweetalert Css -->
 <link href="<c:url value='/static/plugins/sweetalert/sweetalert.css'/>"
 	rel="stylesheet" />
-
-<!-- TagInput Js -->
-<link
-	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
-	rel="stylesheet" type="text/css">
 
 <!-- Custom Css -->
 <link href="<c:url value='/static/css/style.css'/>" rel="stylesheet"
 	type="text/css">
 
+<!-- Bootstrap Select Css -->
+<link
+	href="<c:url value='/static/plugins/bootstrap-select/css/bootstrap-select.css'/>"
+	rel="stylesheet" type="text/css">
+
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+
 <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
 <link href="<c:url value='/static/css/themes/all-themes.css'/>"
 	rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" type="text/css"
+	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 </head>
 
 <body class="theme-grey">
-	<section id="tinyContentSummary" style="padding-right: 20px;">
-		<div class="">
+	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
+	<!-- Page Loader -->
+	<%@include file="../plantilla/pageLoader.jsp"%>
+	<!-- #END# Page Loader -->
+
+	<!-- Overlay For Sidebars -->
+	<div class="overlay"></div>
+	<!-- #END# Overlay For Sidebars -->
+
+	<!-- Top Bar -->
+	<%@include file="../plantilla/topbar.jsp"%>
+	<!-- #Top Bar -->
+
+	<section>
+		<!-- Left Sidebar -->
+		<%@include file="../plantilla/leftbar.jsp"%>
+		<!-- #END# Left Sidebar -->
+	</section>
+
+	<section id="contentSummary" class="content">
+		<div class="container-fluid">
+			<div class="row clearfix">
+				<%@include file="../rfc/changeStatusModal.jsp"%>
+			</div>
+			<span class="topArrow"> <i class="material-icons pointer">keyboard_arrow_up</i>
+			</span>
+			<div class="row clearfix">
+				<div class="button-demo flr">
+					<a href="<c:url value='/'/> " class="btn btn-default">IR A
+						INICIO</a>
+				</div>
+			</div>
+			<div class="block-header">
+				<p class="font-20">
+					<span class="col-blue-grey">RESUMEN RFC</span> <span
+						class="flr font-bold col-cyan ">${rfc.numRequest}</span>
+				</p>
+			</div>
+			<hr>
 			<div class="row clearfix">
 				<div class="col-sm-12">
 					<h5 class="titulares">Informaci&oacute;n General</h5>
@@ -269,9 +305,9 @@
 								class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
 								<thead>
 									<tr>
-										<th class="col-md-8 col-lg-8 col-xs-12 col-sm-12">Nombre</th>
-										<th class="col-md-4 col-lg-4 col-xs-12 col-sm-12">Fecha
-											de Carga</th>
+										<th class="col-md-8 col-lg-8 col-xs-8 col-sm-8">Nombre</th>
+										<th class="col-md-4 col-lg-4 col-xs-4 col-sm-4">Fecha de
+											Carga</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -288,77 +324,46 @@
 							</table>
 						</div>
 					</div>
+
+
 				</div>
+
+
+				<c:if test="${ isReleaseManager }">
+					<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
+						<div class="m-b-20">
+							<c:if test="${rfc.status.name ne 'Anulado'}">
+								<button type="button" class="btn btn-default setIcon"
+									onclick="confirmCancelRFC(${rfc.id})" title="Anular"
+									style="background-color: #00294c !important; color: #fff; border: none !important;">
+									<span>ANULAR</span><span style="margin-left: 10px;"><i
+										class="material-icons m-t--2">highlight_off</i></span>
+								</button>
+							</c:if>
+							<button type="button" class="btn btn-default setIcon"
+								onclick="changeStatusRFC(${rfc.id}, '${rfc.numRequest}' )"
+								title="Borrador"
+								style="background-color: #00294c !important; color: #fff; border: none !important;">
+								<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
+									class="material-icons m-t--2">offline_pin</i></span>
+							</button>
+						</div>
+					</div>
+				</c:if>
+
 			</div>
 		</div>
 	</section>
-	<!-- Jquery Core Js -->
-	<script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
-	<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-	<!-- Bootstrap Core Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap/js/bootstrap.js'/>"></script>
-
-	<!-- Select Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-select/js/bootstrap-select.js'/>"></script>
-
-	<!-- Slimscroll Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Jquery CountTo Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-countto/jquery.countTo.js'/>"></script>
-
-	<!-- Autosize Plugin Js -->
-	<script src="<c:url value='/static/plugins/autosize/autosize.js'/>"></script>
-
-	<!-- Jquery DataTable Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
-
-	<!-- Bootstrap Notify Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-notify/bootstrap-notify.js'/>"></script>
-
-	<!-- SweetAlert Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/sweetalert/sweetalert.min.js'/>"></script>
-
-	<!-- TagInput Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
-
-	<!-- Custom Js -->
-	<script src="<c:url value='/static/js/admin.js'/>"></script>
-	<%-- 	<script src="<c:url value='/static/js/release/release.js'/>"></script> --%>
-	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
-	<script
-		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
-
+	<%@include file="../plantilla/footer.jsp"%>
+	<script src="<c:url value='/static/js/rfc/rfcSummaryActions.js'/>"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$("#tinyContentSummary textarea").parent().removeClass('focused');
-			$("#tinyContentSummary input").parent().removeClass('focused');
-			$("#tinyContentSummary input").attr("disabled", true);
-			$("#tinyContentSummary textarea").attr("disabled", true);
+			$("#contentSummary textarea").parent().removeClass('focused');
+			$("#contentSummary textarea").attr("disabled", true);
 			autosize($('textarea'));
 
-			$('table').DataTable({
-				"language" : {
-					"emptyTable" : "No existen registros",
-					"zeroRecords" : "No existen registros"
-				},
-				"searching" : false,
-				"paging" : false
-			});
 		});
 	</script>
-
 </body>
 
 </html>
