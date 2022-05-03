@@ -174,7 +174,7 @@ function loadTableRelease(nameTable) {
 									options = options
 									+ '<a href="'
 									+ getCont()
-									+ 'release/summary-'
+									+ 'release/summaryQA-'
 									+ row.id
 									+ '" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
 									return options;

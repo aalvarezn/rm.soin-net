@@ -319,6 +319,43 @@ public class ReleaseController extends BaseController {
 		return "/release/summaryRelease";
 	}
 
+	@RequestMapping(value = "/summaryQA-{status}", method = RequestMethod.GET)
+	public String summmaryQA(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
+
+		try {
+			model.addAttribute("parameter", status);
+			ReleaseSummary release = null;
+			if (CommonUtils.isNumeric(status)) {
+				release = releaseService.findById(Integer.parseInt(status));
+			}
+
+			if (release == null) {
+				return "redirect:/";
+			}
+			SystemConfiguration systemConfiguration = systemConfigurationService
+					.findBySystemId(release.getSystem().getId());
+			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
+			model.addAttribute("dependency", new Release());
+			model.addAttribute("object", new ReleaseObject());
+			model.addAttribute("doc", new DocTemplate());
+			model.addAttribute("docs", docs);
+			model.addAttribute("release", release);
+			model.addAttribute("systemConfiguration", systemConfiguration);
+			model.addAttribute("status", new Status());
+			model.addAttribute("statuses", statusService.list());
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
+			throw ex;
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina resumen release." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/";
+		}
+		return "/release/summaryReleaseQA";
+	}
 	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
 	public String tinySummary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
