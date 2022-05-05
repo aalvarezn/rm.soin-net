@@ -22,6 +22,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.CommonUtils;
+import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.MyLevel;
 
 @Service("rfcService")
@@ -59,23 +60,26 @@ public class RFCServiceImpl implements RFCService {
 	@Override
 	public void update(PRFC model) {
 		dao.update(model);
-		
+
 	}
 
 	@Override
 	public PRFC findById(Long id) {
-		
+
 		return dao.getById(id);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public JsonSheet<PRFC> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
-			Integer sStatus, String dateRange) {
+			Long sStatus, String dateRange, Long sPriority, Long sImpact) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
 
+		alias.put("status", "status");
+		alias.put("user", "user");
+		
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {
 			if (range.length > 1) {
@@ -94,28 +98,58 @@ public class RFCServiceImpl implements RFCService {
 
 		Criterion qSrch = null;
 		if (sSearch != null && sSearch.length() > 0) {
-			qSrch = Restrictions.or(Restrictions.like("rowId", sSearch, MatchMode.ANYWHERE).ignoreCase());
+			qSrch = Restrictions.or(
+
+					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.name", sSearch, MatchMode.ANYWHERE).ignoreCase()
+					
+					);
+		}
+		if (sStatus == 0) {
+			sStatus = null;
+		}
+		if (sPriority == 0) {
+			sPriority = null;
+		}
+		if (sImpact == 0) {
+			sImpact = null;
+		}
+		if (sStatus != null) {
+			
+			columns.put("status", Restrictions.eq("status.id", sStatus));
 		}
 
-		List<String> fetchs = new ArrayList<String>();
+		if (sPriority != null) {
+			alias.put("priority", "priority");
+			columns.put("priority", Restrictions.eq("priority.id", sPriority));
+		}
+		if (sImpact != null) {
+			alias.put("impact", "impact");
+			columns.put("impact", Restrictions.or(Restrictions.eq("impact.id", sImpact)));
 
+		}
+		 columns.put("status",Restrictions.not(Restrictions.in("status.name",
+		Constant.FILTRED)));
+
+		List<String> fetchs = new ArrayList<String>();
+		
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
 	}
 
 	public String verifySecuence(String partCode) {
-		String numRFC="";
+		String numRFC = "";
 		try {
 			int amount = existNumRelease(partCode);
-			
+
 			if (amount == 0) {
-				numRFC=partCode + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
+				numRFC = partCode + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
 				return numRFC;
 			} else {
-				if(amount<10) {
-					numRFC=partCode + "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+				if (amount < 10) {
+					numRFC = partCode + "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
 					return numRFC;
 				}
-				numRFC=partCode + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+				numRFC = partCode + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
 				return numRFC;
 			}
 
@@ -132,10 +166,9 @@ public class RFCServiceImpl implements RFCService {
 		String partCode = "";
 		try {
 
-			partCode = "RFC_"+codeProject +"_SC";
+			partCode = "RFC_" + codeProject + "_SC";
 
 			numRFC = verifySecuence(partCode);
-			
 
 		} catch (Exception e) {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());

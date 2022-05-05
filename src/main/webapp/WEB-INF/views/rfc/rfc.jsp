@@ -5,7 +5,13 @@
 <html>
 <head>
 <%@include file="../plantilla/header.jsp"%>
-
+<!-- Bootstrap Material Datetime Picker Css -->
+<link
+	href="<c:url value='/static/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css'/>"
+	rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css"
+	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
+	
 <!-- Style Section -->
 <%@include file="../plantilla/styleSection.jsp"%>
 <!-- #END# Style Section -->
@@ -113,15 +119,28 @@
 									class="material-icons">date_range</i>
 								</span>
 								<div class="form-line">
-									<input type="text" class="form-control" name="daterange"
+									<input type="text" class="form-control" name="daterange" id="daterange"
 										value="" />
 								</div>
+							</div>
+						</div>
+							<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+							<label>Impacto</label>
+							<div class="form-group m-b-0">
+								<select id="impactId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="0">-- Todos --</option>
+									<c:forEach items="${impacts}" var="impact">
+										<option value="${impact.id }">${impact.name }</option>
+									</c:forEach>
+								</select>
 							</div>
 						</div>
 						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
 							<label>Prioridad</label>
 							<div class="form-group m-b-0">
-								<select id="statusId"
+								<select id="priorityId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
@@ -187,7 +206,12 @@
 	<!-- Script Section -->
 	<%@include file="../plantilla/scriptSection.jsp"%>
 	<!-- #END# Script Section -->
-
+	<script
+		src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
+			<!-- Bootstrap Material Datetime Picker Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
+		
 	<script src="<c:url value='/static/js/rfc/rfc.js'/>"></script>
 </body>
 

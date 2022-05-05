@@ -63,6 +63,12 @@ public class PRFC implements Serializable {
 	@Column(name = "PLAN_RETORNO")
 	private String returnPlan;
 	
+	@Column(name = "MOTIVO")
+	private String motive;
+	
+	@Column(name = "OPERADOR")
+	private String operator;
+	
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ID_PRIORIDAD\"", nullable = true)
@@ -327,6 +333,22 @@ public class PRFC implements Serializable {
 
 	public void setFiles(Set<PRFCFile> files) {
 		this.files = files;
+	}
+
+	public String getMotive() {
+		return motive;
+	}
+
+	public void setMotive(String motive) {
+		this.motive = motive;
+	}
+
+	public String getOperator() {
+		return operator;
+	}
+
+	public void setOperator(String operator) {
+		this.operator = operator;
 	}
 	
 	

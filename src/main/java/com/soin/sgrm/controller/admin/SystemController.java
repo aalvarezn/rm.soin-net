@@ -74,7 +74,7 @@ public class SystemController extends BaseController {
 			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			String sProject = request.getParameter("sProject");
-
+			
 			String sSearch = request.getParameter("sSearch");
 			String dateRange = request.getParameter("dateRange");
 			list = systemService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, sProject);

@@ -6,6 +6,45 @@ var $formChangeUser = $('#changeUserForm');
 var $trackingReleaseForm = $('#trackingReleaseForm');
 
 $(function() {
+	$('input[name="daterange"]').daterangepicker({
+		"autoUpdateInput": false,
+		"opens": 'left',
+		"orientation": 'right',
+		"locale": {
+			"format": "DD/MM/YYYY",
+			"separator": " - ",
+			"applyLabel": "Aplicar",
+			"cancelLabel": "Cancelar",
+			"fromLabel": "Desde",
+			"toLabel": "Hasta",
+			"customRangeLabel": "Custom",
+			"daysOfWeek": [
+				"Do",
+				"Lu",
+				"Ma",
+				"Mi",
+				"Ju",
+				"Vi",
+				"Sa"
+				],
+				"monthNames": [
+					"Enero",
+					"Febrero",
+					"Marzo",
+					"Abril",
+					"Mayo",
+					"Junio",
+					"Julio",
+					"Agosto",
+					"Septiembre",
+					"Octubre",
+					"Noviembre",
+					"Deciembre"
+					],
+					"firstDay": 1
+		}
+	});
+	
 	activeItemMenu("managerRFCItem");
 	dropDownChange();
 	$("#addRFCSection").hide();
@@ -13,6 +52,29 @@ $(function() {
 	$('input[name="daterange"]').daterangepicker(optionRangePicker);
 	initRFCTable();
 	initRFCFormValidation();
+});
+$('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
+	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+	console.log("prueba");
+	$dtRFCs.ajax.reload();
+});
+
+$('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
+	$('input[name="daterange"]').val('');
+	console.log("prueba");
+	$dtRFCs.ajax.reload();
+});
+
+$('#tableFilters #priorityId').change(function() {
+	$dtRFCs.ajax.reload();
+});
+
+$('#tableFilters #impactId').change(function() {
+	$dtRFCs.ajax.reload();
+});
+
+$('#tableFilters #statusId').change(function() {
+	$dtRFCs.ajax.reload();
 });
 
 function initRFCTable() {
@@ -27,6 +89,11 @@ function initRFCTable() {
 					"serverSide" : true,
 					"sAjaxSource" : getCont() + "rfc/list",
 					"fnServerParams" : function(aoData) {
+						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
+								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
+								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
+								{"name": "impactId", "value": $('#tableFilters #impactId').children("option:selected").val()}
+						);
 					},
 					"aoColumns" : [ {
 						"mDataProp" : "numRequest"
@@ -65,17 +132,17 @@ function initRFCTable() {
 							if (row.status.name == 'Borrador') {
 								if(row.user.username == getUserName()){
 									options = options
-									+ '<a onclick="editRelease('
+									+ '<a onclick="editRFC('
 									+ row.id
 									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>'
-									+ '<a onclick="confirmDeleteRelease('
+									+ '<a onclick="confirmDeleteRFC('
 									+ row.id
 									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
 								}
 							}
 							if($('#isDeveloper').val()){
 								options = options
-								+ '<a onclick="copyRelease('
+								+ '<a onclick="copyRFC('
 								+ row.id
 								+ ')" title="Copiar"><i class="material-icons gris">file_copy</i> </a>';
 							}
@@ -83,7 +150,7 @@ function initRFCTable() {
 							
 
 							options = options
-							+ '<a onclick="openReleaseTrackingModal('
+							+ '<a onclick="openRFCTrackingModal('
 							+ row.id
 							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
 
@@ -127,6 +194,63 @@ function addRFCSection() {
 
 function closeRFCSection(){
 	changeSlide();
+}
+
+function editRFC(element) {
+	var cont = getCont();
+	window.location = cont + "	rfc/editRFC-" + element;
+}
+
+
+
+function confirmDeleteRFC(element) {
+	// $('#deleteReleaseModal').modal('show');
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea eliminar?',
+		text: "Esta acci\u00F3n no se puede reversar.",
+		icon: 'question',
+		showCancelButton: true,
+		customClass: 'swal-wide',
+		cancelButtonText: 'Cancelar',
+		cancelButtonColor: '#f14747',
+		confirmButtonColor: '#3085d6',
+		confirmButtonText: 'Aceptar',
+	}).then((result) => {
+		if(result.value){
+			deleteRFC(element);
+		}		
+	});
+}
+
+function deleteRFC(element) {
+	blockUI();
+	var cont = getCont();
+	$.ajax({
+		type : "DELETE",
+		url : cont + "rfc/" + "deleteRFC /" + element,
+		timeout : 60000,
+		data : {},
+		success : function(response) {
+			switch (response.status) {
+			case 'success':
+				swal("Correcto!", "El RFC ha sido eliminado exitosamente.",
+						"success", 2000)
+						$dtRFCs.DataTable().ajax.reload();
+				break;
+			case 'fail':
+				swal("Error!", response.exception, "error")
+				break;
+			case 'exception':
+				swal("Error!", response.exception, "warning")
+				break;
+			default:
+				location.reload();
+			}
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
 }
 
 function createRFC() {

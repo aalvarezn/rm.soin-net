@@ -33,6 +33,7 @@ import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
@@ -96,10 +97,10 @@ public class RFCController extends BaseController {
 
 	@Autowired
 	ReleaseService releaseService;
-	
-	@Autowired 
+
+	@Autowired
 	ParameterService parameterService;
-	
+
 	@Autowired
 	EmailTemplateService emailService;
 
@@ -113,8 +114,9 @@ public class RFCController extends BaseController {
 			List<PSystem> systems = systemService.listProjects(userLogin.getId());
 			List<PPriority> priorities = priorityService.findAll();
 			List<PStatus> statuses = statusService.findAll();
-
+			List<PImpact> impacts = impactService.findAll();
 			model.addAttribute("priorities", priorities);
+			model.addAttribute("impacts", impacts);
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("systems", systems);
 		} catch (Exception e) {
@@ -130,15 +132,34 @@ public class RFCController extends BaseController {
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
 		JsonSheet<PRFC> rfcs = new JsonSheet<>();
 		try {
+
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
 			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
-			Integer sStatus = Integer.parseInt(request.getParameter("sEcho"));
-
-			String sSearch = request.getParameter("sStatus");
+			
+			String sSearch = request.getParameter("sSearch");
+			 Long statusId;
+			 Long priorityId;
+			 Long impactId;
+			if (request.getParameter("statusId").equals("")) {
+				statusId = null;
+			} else {
+				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
+			}
+			if (request.getParameter("priorityId").equals("")) {
+				priorityId = null;
+			} else {
+				priorityId = (long) Integer.parseInt(request.getParameter("priorityId"));
+			}
+			
+			if (request.getParameter("impactId").equals("")) {
+				impactId = null;
+			} else {
+				impactId = (long) Integer.parseInt(request.getParameter("impactId"));
+			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, sStatus, dateRange);
+			rfcs = rfcService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, impactId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -390,7 +411,6 @@ public class RFCController extends BaseController {
 			model.addAttribute("codeSiges", codeSiges);
 			model.addAttribute("systemsImplicated", systemsImplicated);
 			model.addAttribute("rfc", rfc);
-			
 
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
@@ -399,10 +419,9 @@ public class RFCController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return "redirect:/";
 		}
-		
+
 		return "/rfc/summaryRFC";
 	}
-
 
 	@SuppressWarnings("null")
 	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
@@ -462,33 +481,33 @@ public class RFCController extends BaseController {
 		}
 		return "/rfc/tinySummaryRFC";
 	}
-	
+
 	@RequestMapping(value = "/updateRFC/{rfcId}", method = RequestMethod.GET)
-	public String updateRFC(@PathVariable String rfcId, HttpServletRequest request, Locale locale,
-			HttpSession session, RedirectAttributes redirectAttributes) {
+	public String updateRFC(@PathVariable String rfcId, HttpServletRequest request, Locale locale, HttpSession session,
+			RedirectAttributes redirectAttributes) {
 		try {
 			PRFC rfc = null;
 
 			if (CommonUtils.isNumeric(rfcId)) {
-				rfc = rfcService.findById( (long)Integer.parseInt(rfcId));
+				rfc = rfcService.findById((long) Integer.parseInt(rfcId));
 			}
 			// Si el release no existe se regresa al inicio.
 			if (rfc == null) {
 				return "redirect:/";
 			}
 			// Verificar si existe un flujo para el sistema
-			
-			PStatus status = statusService.findByKey("name","Solicitado");
+
+			PStatus status = statusService.findByKey("name", "Solicitado");
 
 //			if (node != null)
 //				release.setNode(node);
 
 			rfc.setStatus(status);
-			//rfc.set(status.getReason());
-			//release.setOperator(getUserLogin().getName());
+			// rfc.set(status.getReason());
+			// release.setOperator(getUserLogin().getName());
 
 			if (Boolean.valueOf(parameterService.getParameterByCode((long) 1).getParamValue())) {
-				if (emailService.findByKey("name", "RFC Solicitado")!=null) {
+				if (emailService.findByKey("name", "RFC Solicitado") != null) {
 					PEmailTemplate email = emailService.findByKey("name", "RFC Solicitado");
 					PRFC rfcEmail = rfc;
 					Thread newThread = new Thread(() -> {
@@ -502,24 +521,19 @@ public class RFCController extends BaseController {
 					newThread.start();
 				}
 			}
-/*
-			// si tiene un nodo y ademas tiene actor se notifica por correo
-			if (node != null && node.getActors().size() > 0) {
-				Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
-				EmailTemplate emailActor = emailService.findById(idTemplate);
-				WFRelease releaseEmail = new WFRelease();
-				releaseEmail.convertReleaseToWFRelease(release);
-				Thread newThread = new Thread(() -> {
-					try {
-						emailService.sendMailActor(releaseEmail, emailActor);
-					} catch (Exception e) {
-						Sentry.capture(e, "release");
-					}
-
-				});
-				
-				newThread.start();
-			}*/
+			/*
+			 * // si tiene un nodo y ademas tiene actor se notifica por correo if (node !=
+			 * null && node.getActors().size() > 0) { Integer idTemplate =
+			 * Integer.parseInt(paramService.findByCode(22).getParamValue()); EmailTemplate
+			 * emailActor = emailService.findById(idTemplate); WFRelease releaseEmail = new
+			 * WFRelease(); releaseEmail.convertReleaseToWFRelease(release); Thread
+			 * newThread = new Thread(() -> { try { emailService.sendMailActor(releaseEmail,
+			 * emailActor); } catch (Exception e) { Sentry.capture(e, "release"); }
+			 * 
+			 * });
+			 * 
+			 * newThread.start(); }
+			 */
 
 			rfcService.update(rfc);
 
@@ -567,6 +581,36 @@ public class RFCController extends BaseController {
 		if (rfc.getRequestEsp().equals(""))
 			errors.add(new MyError("requestEspRFC", "Valor requerido."));
 		return errors;
+	}
+
+	@RequestMapping(value = "/deleteRFC/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteRelease(@PathVariable Long id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			PRFC rfc = rfcService.findById(id);
+			if (rfc.getStatus().getName().equals("Borrador")) {
+				if (rfc.getUser().getUsername().equals(getUserLogin().getUsername())) {
+					PStatus status = statusService.findByKey("name", "Anulado");
+					rfc.setStatus(status);
+					rfc.setMotive(status.getReason());
+					rfc.setOperator(getUserLogin().getName());
+					rfcService.update(rfc);
+				} else {
+					res.setStatus("fail");
+					res.setException("No tiene permisos sobre el release.");
+				}
+			} else {
+				res.setStatus("fail");
+				res.setException("La acción no se pudo completar, el release no esta en estado de Borrador.");
+			}
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			res.setStatus("exception");
+			res.setException("La acción no se pudo completar correctamente.");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 
 }

@@ -36,7 +36,10 @@
 					href="<c:url value='/management/wf/'/> "> <span>RM
 							Trámites</span>
 				</a></li>
-
+				<li><a id="managerRFCItem"
+					href="<c:url value='/management/rfc/'/> "> <span>RM
+							RFC</span>
+				</a></li>
 				<!---- 	#Seccion de reportes ---->
 				<li class=""><a id="ambientItem" href="javascript:void(0);"
 					class="menu-toggle"> <span>Reportes</span>
@@ -53,17 +56,13 @@
 			</c:if>
 
 			<c:if test="${ isManager}">
-				<li><a id="managerReleasesItem" href="<c:url value='/release/'/> ">
-						<span>Gestión Releases</span>
-				</a></li>
-				<li><a id="managerRFCItem" href="<c:url value='/rfc/'/> ">
-						<span>Gestión RFCs</span>
-				</a></li>
-							<li><a id="rfcItem" href="<c:url value='/rfc/'/> ">
-						<span>RFC</span>
+
+
+				<li><a id="rfcItem" href="<c:url value='/rfc/'/> "> <span>Mis
+							RFC</span>
 				</a></li>
 			</c:if>
-	
+
 
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">
 					<span>Perfil de usuario</span>

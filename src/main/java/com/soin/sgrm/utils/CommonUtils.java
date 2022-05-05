@@ -70,6 +70,7 @@ public class CommonUtils {
 	}
 
 	public static Timestamp getSystemTimestamp(String dateTime) {
+		
 		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		try {
 			java.util.Date utilDate = sdf1.parse(dateTime);

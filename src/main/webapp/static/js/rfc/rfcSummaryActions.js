@@ -1,6 +1,6 @@
 var $formChangeStatus = $('#changeStatusForm');
 $(function() {
-	
+	initImpactFormValidation();
 	$('.tableIni').DataTable({
 		"language": optionLanguaje,
 		"searching" : true,
@@ -38,7 +38,7 @@ $(function() {
 
 function confirmCancelRFC(index){
 	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea cancelar el release?',
+		title: '\u00BFEst\u00e1s seguro que desea cancelar el rfc?',
 		text: "Esta acci\u00F3n no se puede reversar.",
 		icon: 'question',
 		showCancelButton: true,
@@ -58,13 +58,13 @@ function cancelRFC(index) {
 	blockUI();
 	$.ajax({
 		type : "GET",
-		url : getCont() + "management/release/" + "cancelRelease",
+		url : getCont() + "management/rfc/" + "cancelRFC",
 		timeout : 60000,
 		data : {
-			idRelease : index
+			idRFC : index
 		},
 		success : function(response) {
-			responseCancelRelease(response);
+			responseCancelRFC(response);
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
@@ -88,10 +88,11 @@ function responseCancelRFC(response) {
 	}
 }
 
-function changeStatusRFC(releaseId, releaseNumber) {
+function changeStatusRFC(releaseId, rfcNumRequest) {
 	$formChangeStatus[0].reset();
-	$formChangeStatus.find('#idRelease').val(releaseId);
-	$formChangeStatus.find('#releaseNumber').val(releaseNumber);
+	$formChangeStatus.validate().resetForm();
+	$formChangeStatus.find('#idRFC').val(releaseId);
+	$formChangeStatus.find('#rfcNumRequest').val(rfcNumRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
@@ -99,21 +100,22 @@ function changeStatusRFC(releaseId, releaseNumber) {
 }
 
 function saveChangeStatusModal(){
-	if (!validStatusRelease())
+
+	if (!$formChangeStatus.valid())
 		return false;
 	blockUI();
 	$.ajax({
 		type : "GET",
-		url : getCont() + "management/release/" + "statusRelease",
+		url : getCont() + "management/rfc/statusRFC",
 		timeout : 60000,
 		data : {
-			idRelease : $formChangeStatus.find('#idRelease').val(),
+			idRFC : $formChangeStatus.find('#idRFC').val(),
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
 			motive: $formChangeStatus.find('#motive').val()
 		},
 		success : function(response) {
-			responseStatusRelease(response);
+			responseStatusRFC(response);
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
@@ -124,7 +126,7 @@ function saveChangeStatusModal(){
 function responseStatusRFC(response) {
 	switch (response.status) {
 	case 'success':
-		swal("Correcto!", "El release ha sido modificado exitosamente.",
+		swal("Correcto!", "El RFC ha sido modificado exitosamente.",
 				"success", 2000);
 		location.reload(true);
 		closeChangeStatusModal();
@@ -140,6 +142,7 @@ function responseStatusRFC(response) {
 
 function closeChangeStatusModal(){
 	$formChangeStatus[0].reset();
+	$formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#userId').selectpicker('val', '');
 	$('#changeStatusModal').modal('hide');
 }
@@ -156,4 +159,43 @@ function validStatusRFC() {
 		$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
 		return true;
 	}
+}
+
+
+function initImpactFormValidation() {
+	$formChangeStatus.validate({
+		
+		rules : {
+			'statusId' : {
+				required : true,
+				
+			},
+			'motive' : {
+				required : true,
+				minlength : 1,
+				maxlength : 50,
+			},
+			'dateChange' : {
+				required : true,
+			
+			},
+		},
+		messages : {
+			'statusId' : {
+				required :  "Ingrese un valor",
+			},
+			'motive' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+			'dateChange' : {
+				required : "Ingrese un valor",
+				
+			},
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
+	});
 }

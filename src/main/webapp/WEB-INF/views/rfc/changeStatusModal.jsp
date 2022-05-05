@@ -13,14 +13,14 @@
 				<div class="row clearfix">
 					<form id="changeStatusForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="idRelease"
+							value="${_csrf.token}" /> <input type="hidden" id="idRFC"
 							value="" />
 
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 m-b-10">
 							<label>Número RFC</label>
 							<div class="form-group">
 								<div class="form-line disabled">
-									<input type="text" readonly="" id="releaseNumber"
+									<input type="text" readonly="" id="rfcNumRequest"
 										class="form-control">
 								</div>
 							</div>
@@ -33,8 +33,7 @@
 									<input required="required" type='text'
 										class="form-control datetimepicker" id='dateChange' />
 								</div>
-								<label id="dateChange_error" class="error fieldError" for="name"
-									style="visibility: hidden">Campo Requerido.</label>
+								
 							</div>
 						</div>
 
@@ -44,28 +43,27 @@
 
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<div class="form-group">
-								<select id="statusId"
+							
+								<select id="statusId" name="statusId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true" required="required">
 									<option value="">-- Seleccione una opci&oacute;n --</option>
 									<c:forEach items="${statuses}" var="status">
 										<option data-motive="${status.reason }" value="${status.id }">${status.name }</option>
 									</c:forEach>
-								</select> <label id="statusId_error" class="error fieldError" for="name"
-									style="visibility: hidden">Campo Requerido.</label>
+								</select> 
 							</div>
 						</div>
 						<div class="col-lg-12 col-md-12 col-sm-6 col-xs-6">
 							<label for="email_address">Motivo</label>
 							<div class="form-group m-b-0i">
 								<div class="form-line">
-									<textarea required="required" rows="2" cols="" id="motive"
+									<input required="required"  id="motive"
 										name="motive" class="form-control"
 										placeholder="Ingrese un motivo..." style="height: 67px;"
-										maxlength="50"></textarea>
+										maxlength="50"></input>
 								</div>
-								<label id="motive_error" class="error fieldError" for="name"
-									style="visibility: hidden;">Campo Requerido.</label>
+							
 							</div>
 						</div>
 					</form>

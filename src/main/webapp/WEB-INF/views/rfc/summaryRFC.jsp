@@ -354,8 +354,13 @@
 			</div>
 		</div>
 	</section>
+	
 	<%@include file="../plantilla/footer.jsp"%>
+	
 	<script src="<c:url value='/static/js/rfc/rfcSummaryActions.js'/>"></script>
+	<!-- Validate Core Js -->
+<script
+	src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#contentSummary textarea").parent().removeClass('focused');
@@ -364,6 +369,7 @@
 
 		});
 	</script>
+	
 </body>
 
 </html>
