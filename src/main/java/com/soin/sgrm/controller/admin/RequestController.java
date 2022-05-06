@@ -581,7 +581,7 @@ public class RequestController extends BaseController {
 		try {
 			// Se define los indices de las columnas
 			Integer statusIndex = null, descriptionIndex = null, soinManagementIndex = null, iceManagementIndex = null,
-					btIndex = null, count = 0;
+					btIndex = null,codeIce=null, count = 0;
 			Project proyect = null;
 			Request request = null;
 			Boolean existRequest = false;
@@ -593,12 +593,14 @@ public class RequestController extends BaseController {
 				// con la primera fila
 				for (List<Object> row : values) {
 					// Se inicia de nuevo el requerimiento
+
 					request = null;
 					if (count == 0) {
 						for (int i = 0; i < row.size(); i++)
 							row.set(i, ((String) row.get(i)).trim());
 						statusIndex = row.indexOf("Estado");
-						btIndex = row.indexOf("ID Boleta");
+						btIndex = row.indexOf("Boleta");
+						codeIce = row.indexOf("RQ");
 						descriptionIndex = row.indexOf("Nombre");
 						soinManagementIndex = row.indexOf("Gestor SOIN");
 						iceManagementIndex = row.indexOf("Referente ICE");
@@ -619,7 +621,7 @@ public class RequestController extends BaseController {
 								request = (!existRequest) ? new Request() : request;
 								request.setCode_soin((String) row.get(btIndex));
 								request.setStatus((String) row.get(statusIndex));
-								request.setDescription((String) row.get(descriptionIndex));
+								request.setDescription((String)row.get(codeIce)+" " +row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
