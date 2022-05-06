@@ -624,6 +624,7 @@ public class RequestController extends BaseController {
 								request.setDescription((String)row.get(codeIce)+" " +row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								request.setCode_ice((String)row.get(codeIce));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								request.setActive(true);
