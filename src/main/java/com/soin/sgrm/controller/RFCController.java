@@ -2,9 +2,11 @@ package com.soin.sgrm.controller;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +41,7 @@ import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemConfiguration;
+import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PImpact;
 import com.soin.sgrm.model.pos.PParameter;
@@ -111,6 +114,7 @@ public class RFCController extends BaseController {
 			RedirectAttributes redirectAttributes) {
 		try {
 			PUser userLogin = getUserLogin();
+			loadCountsRelease(request, userLogin.getName());
 			List<PSystem> systems = systemService.listProjects(userLogin.getId());
 			List<PPriority> priorities = priorityService.findAll();
 			List<PStatus> statuses = statusService.findAll();
@@ -611,6 +615,19 @@ public class RFCController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
+	}
+	
+	public void loadCountsRelease(HttpServletRequest request, String name) {
+		//PUser userLogin = getUserLogin();
+		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
+		Map<String, Integer> userC = new HashMap<String, Integer>();
+		userC.put("draft", rfcService.countByType(name, "Borrador", 1, null));
+		userC.put("requested", rfcService.countByType(name, "Solicitado", 1, null));
+		userC.put("completed", rfcService.countByType(name, "Completado", 1, null));
+		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+		request.setAttribute("userC", userC);
+
+		
 	}
 
 }

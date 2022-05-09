@@ -3,7 +3,7 @@ var $dtRFCs;
 
 var $fmRFC = $('#formAddRFC');
 var $formChangeUser = $('#changeUserForm');
-var $trackingReleaseForm = $('#trackingReleaseForm');
+var $trackingRFCForm = $('#trackingReleaseForm');
 
 $(function() {
 	$('input[name="daterange"]').daterangepicker({

@@ -117,6 +117,9 @@ public class RFCServiceImpl implements RFCService {
 		if (sStatus != null) {
 			
 			columns.put("status", Restrictions.eq("status.id", sStatus));
+		}else {
+			columns.put("status",Restrictions.not(Restrictions.in("status.name",
+					Constant.FILTRED)));
 		}
 
 		if (sPriority != null) {
@@ -128,8 +131,7 @@ public class RFCServiceImpl implements RFCService {
 			columns.put("impact", Restrictions.or(Restrictions.eq("impact.id", sImpact)));
 
 		}
-		 columns.put("status",Restrictions.not(Restrictions.in("status.name",
-		Constant.FILTRED)));
+		 
 
 		List<String> fetchs = new ArrayList<String>();
 		
@@ -180,6 +182,12 @@ public class RFCServiceImpl implements RFCService {
 	@Override
 	public Integer existNumRelease(String number_release) throws SQLException {
 		return dao.existNumRelease(number_release);
+	}
+
+	@Override
+	public Integer countByType(String name, String type, int query, Object[] ids) {
+		// TODO Auto-generated method stub
+		return dao.countByType(name, type, query, ids);
 	}
 
 }

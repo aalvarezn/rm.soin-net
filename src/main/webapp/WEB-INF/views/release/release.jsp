@@ -328,8 +328,10 @@
 	<!-- Script Section -->
 	<%@include file="../plantilla/scriptSection.jsp"%>
 	<!-- #END# Script Section -->
-	<script
-		src="<c:url value='/static/js/release/release.js?v=${jsVersion}'/>"></script>
+	<script type="text/javascript">
+		$('.number').countTo();
+	</script>
+	<script src="<c:url value='/static/js/release/release.js'/>"></script>
 </body>
 
 </html>
