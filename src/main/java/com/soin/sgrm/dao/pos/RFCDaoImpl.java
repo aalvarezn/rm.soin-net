@@ -76,7 +76,8 @@ public class RFCDaoImpl extends AbstractDao<Long, PRFC> implements RFCDao {
 			crit.add(Restrictions.eq("user.name", name));
 			crit.add(Restrictions.eq("status.name", type));
 			break;
-
+		case 2:
+			crit.add(Restrictions.eq("status.name", type));
 		
 		default:
 			break;

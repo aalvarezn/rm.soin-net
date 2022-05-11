@@ -44,12 +44,19 @@ $(function() {
 					"firstDay": 1
 		}
 	});
-	
+	// Datetimepicker plugin
+	$('.datetimepicker').datetimepicker({
+		locale: 'es',
+		format: 'DD/MM/YYYY hh:mm a',
+		maxDate : new Date()
+	});
+	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+
 	activeItemMenu("managerRFCItem");
 	dropDownChange();
 	$("#addRFCSection").hide();
 	$fmRFC.find("#sId").selectpicker('val',"");
-	$('input[name="daterange"]').daterangepicker(optionRangePicker);
+
 	initRFCTable();
 	initRFCFormValidation();
 });
@@ -373,9 +380,10 @@ function openRFCTrackingModal(idRFC) {
 	console.log(idRow[0]);
 	var rowData = $dtRFCs.row(idRow[0]).data();
 	console.log(rowData);
-
+ 
 	$trackingRFCForm.find('#idRFC').val(rowData.id);
 	$trackingRFCForm.find('#rfcNumber').text(rowData.numRequest);
+	
 	loadTrackingRFC(rowData);
 	$('#trackingRFCModal').modal('show');
 }

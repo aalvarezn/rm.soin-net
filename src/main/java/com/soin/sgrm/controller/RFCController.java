@@ -140,7 +140,7 @@ public class RFCController extends BaseController {
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
 			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
-			
+			String name = getUserLogin().getUsername();
 			String sSearch = request.getParameter("sSearch");
 			 Long statusId;
 			 Long priorityId;
@@ -163,7 +163,7 @@ public class RFCController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, impactId);
+			rfcs = rfcService.findAll(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, impactId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -221,7 +221,8 @@ public class RFCController extends BaseController {
 			addRFC.setRequiredBD(false);
 			addRFC.setRequestDate(CommonUtils.getSystemTimestamp());
 			res.setStatus("success");
-
+			addRFC.setMotive("Inicio de RFC");	
+			addRFC.setOperator(userLogin.getName());
 			addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect()));
 
 			rfcService.save(addRFC);
@@ -254,6 +255,8 @@ public class RFCController extends BaseController {
 			addRFC.setNumRequest(rfcMod.getNumRequest());
 			addRFC.setCodeProyect(rfcMod.getCodeProyect());
 			addRFC.setStatus(rfcMod.getStatus());
+			addRFC.setMotive(rfcMod.getMotive());
+			addRFC.setOperator(rfcMod.getUser().getName());
 			addRFC.setRequestDate(rfcMod.getRequestDate());
 			addRFC.setFiles(rfcMod.getFiles());
 			if (addRFC.getImpactId() != null) {
@@ -507,8 +510,10 @@ public class RFCController extends BaseController {
 //				release.setNode(node);
 
 			rfc.setStatus(status);
-			// rfc.set(status.getReason());
-			// release.setOperator(getUserLogin().getName());
+			rfc.setMotive(status.getReason());
+		
+			
+			 rfc.setOperator(getUserLogin().getName());
 
 			if (Boolean.valueOf(parameterService.getParameterByCode((long) 1).getParamValue())) {
 				if (emailService.findByKey("name", "RFC Solicitado") != null) {
@@ -518,7 +523,7 @@ public class RFCController extends BaseController {
 						try {
 							emailService.sendMailRFC(rfcEmail, email);
 						} catch (Exception e) {
-							Sentry.capture(e, "release");
+							Sentry.capture(e, "rfc");
 						}
 
 					});
@@ -543,7 +548,7 @@ public class RFCController extends BaseController {
 
 			return "redirect:/rfc/summaryRFC-" + rfc.getId();
 		} catch (Exception e) {
-			Sentry.capture(e, "release");
+			Sentry.capture(e, "rfc");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 
@@ -626,7 +631,6 @@ public class RFCController extends BaseController {
 		userC.put("completed", rfcService.countByType(name, "Completado", 1, null));
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
 		request.setAttribute("userC", userC);
-
 		
 	}
 

@@ -1,3 +1,10 @@
+var $dtRFCs;
+
+var $fmRFC = $('#formAddRFC');
+var $formChangeUser = $('#changeUserForm');
+var $trackingRFCForm = $('#trackingRFCForm');
+
+/*
 var releaseTable = $('#dtReleases').DataTable();
 var formChangeUser = $('#changeUserForm');
 var formChangeStatus = $('#changeStatusForm');
@@ -463,3 +470,5 @@ function getColorNode(status){
 	break;
 	}
 }
+
+*/

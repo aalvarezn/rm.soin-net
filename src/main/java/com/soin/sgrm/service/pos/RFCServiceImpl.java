@@ -190,4 +190,75 @@ public class RFCServiceImpl implements RFCService {
 		return dao.countByType(name, type, query, ids);
 	}
 
+	@Override
+	public JsonSheet<PRFC> findAll(String name, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, Long sStatus, String dateRange, Long sPriority, Long sImpact) {
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+
+		alias.put("status", "status");
+		alias.put("user", "user");
+		columns.put("user",(Restrictions.eq("user.userName", name)));
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					columns.put("requestDate", Restrictions.between("requestDate", start, end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		Criterion qSrch = null;
+		if (sSearch != null && sSearch.length() > 0) {
+			qSrch = Restrictions.or(
+
+					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.name", sSearch, MatchMode.ANYWHERE).ignoreCase()
+					
+					
+					);
+		}
+		if (sStatus == 0) {
+			sStatus = null;
+		}
+		if (sPriority == 0) {
+			sPriority = null;
+		}
+		if (sImpact == 0) {
+			sImpact = null;
+		}
+		if (sStatus != null) {
+			
+			columns.put("status", Restrictions.eq("status.id", sStatus));
+		}else {
+			columns.put("status",Restrictions.not(Restrictions.in("status.name",
+					Constant.FILTRED)));
+		}
+
+		if (sPriority != null) {
+			alias.put("priority", "priority");
+			columns.put("priority", Restrictions.eq("priority.id", sPriority));
+		}
+		if (sImpact != null) {
+			alias.put("impact", "impact");
+			columns.put("impact", Restrictions.or(Restrictions.eq("impact.id", sImpact)));
+
+		}
+	
+		
+		 
+
+		List<String> fetchs = new ArrayList<String>();
+		
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+	}
+
 }

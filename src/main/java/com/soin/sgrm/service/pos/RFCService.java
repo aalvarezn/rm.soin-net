@@ -17,4 +17,7 @@ public interface RFCService extends BaseService<Long, PRFC> {
 
 	Integer countByType(String name, String type, int query, Object[] ids);
 
+	public JsonSheet<PRFC> findAll(String name, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, Long statusId, String dateRange, Long priorityId, Long impactId);
+
 }

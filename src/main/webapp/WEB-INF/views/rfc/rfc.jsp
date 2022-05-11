@@ -209,10 +209,6 @@
 
 	<!-- Script Section -->
 	<%@include file="../plantilla/scriptSection.jsp"%>
-	<!-- Jquery CountTo Plugin Js -->
-<script src="<c:url value='/static/plugins/jquery-countto/jquery.countTo.js'/>"></script>
-	<!-- #END# Script Section -->
-
 	<script src="<c:url value='/static/js/rfc/rfc.js'/>"></script>
 	<script type="text/javascript">
   $('.number').countTo();

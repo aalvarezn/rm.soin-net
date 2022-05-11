@@ -30,7 +30,6 @@ public class PRFCTracking implements Serializable{
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"RFC_ID\"", nullable = true)
-	
 	private PRFCReference rfc;
 
 	@Column(name = "ACTUALIZACION")

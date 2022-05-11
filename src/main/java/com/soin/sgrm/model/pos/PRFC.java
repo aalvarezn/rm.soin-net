@@ -119,7 +119,7 @@ public class PRFC implements Serializable {
 	private Set<PRFCFile> files = new HashSet<>();
 	
 	@OrderBy("trackingDate ASC")
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "rfc")
 	private Set<PRFCTracking> tracking = new HashSet<PRFCTracking>();
 	
 	//Agregar Motivo
