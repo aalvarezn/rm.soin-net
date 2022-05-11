@@ -2,7 +2,7 @@
 	pageEncoding="ISO-8859-1"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<div class="modal fade" id="trackingReleaseModal" tabindex="-1"
+<div class="modal fade" id="trackingRFCModal" tabindex="-1"
 	role="dialog">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
@@ -12,9 +12,9 @@
 			</div>
 			<div class="modal-body">
 				<div class="row clearfix">
-					<form id="trackingReleaseForm" action="">
+					<form id="trackingRFCForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="idRelease"
+							value="${_csrf.token}" /> <input type="hidden" id="idRFC"
 							value="" />
 
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

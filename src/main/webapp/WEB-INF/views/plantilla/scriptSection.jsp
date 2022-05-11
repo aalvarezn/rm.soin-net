@@ -32,8 +32,11 @@
 <!-- Jquery DataTable Plugin Js -->
 <script
 	src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
+		<script
+	src="<c:url value='/static/plugins/jquery-datatable/fnFindCellRowIndexes.js'/>"></script>
 <script
 	src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
+
 
 <!-- Bootstrap Notify Plugin Js -->
 <script

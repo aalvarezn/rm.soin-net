@@ -1,28 +1,37 @@
-package com.soin.sgrm.model;
+package com.soin.sgrm.model.pos;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-@SuppressWarnings("serial")
-@Entity
-@Table(name = "RELEASES_RELEASE_HISTORIAL")
-public class ReleaseTracking implements Serializable {
+import org.hibernate.annotations.GenericGenerator;
 
+import java.util.Date;
+
+
+@Entity
+@Table(name = "RFC_HISTORIAL")
+public class PRFCTracking implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	@Id
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Long id;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "RELEASE_ID", nullable = true)
-	private ReleaseReference release;
+	@JoinColumn(name = "\"RFC_ID\"", nullable = true)
+	
+	private PRFCReference rfc;
 
 	@Column(name = "ACTUALIZACION")
 	private Date trackingDate;
@@ -36,20 +45,22 @@ public class ReleaseTracking implements Serializable {
 	@Column(name = "MOTIVO")
 	private String motive;
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public ReleaseReference getRelease() {
-		return release;
+
+
+	public PRFCReference getRfc() {
+		return rfc;
 	}
 
-	public void setRelease(ReleaseReference release) {
-		this.release = release;
+	public void setRfc(PRFCReference rfc) {
+		this.rfc = rfc;
 	}
 
 	public Date getTrackingDate() {
@@ -83,5 +94,6 @@ public class ReleaseTracking implements Serializable {
 	public void setMotive(String motive) {
 		this.motive = motive;
 	}
-
+	
+	
 }

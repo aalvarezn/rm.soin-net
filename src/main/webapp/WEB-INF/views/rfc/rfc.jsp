@@ -179,6 +179,7 @@
 										class="table table-bordered table-striped table-hover dataTable">
 										<thead>
 											<tr>
+												<th></th>
 												<th>Número RFC</th>
 												<th>Impacto</th>
 												<th>Prioridad</th>

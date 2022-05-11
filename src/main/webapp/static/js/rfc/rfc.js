@@ -3,7 +3,7 @@ var $dtRFCs;
 
 var $fmRFC = $('#formAddRFC');
 var $formChangeUser = $('#changeUserForm');
-var $trackingRFCForm = $('#trackingReleaseForm');
+var $trackingRFCForm = $('#trackingRFCForm');
 
 $(function() {
 	$('input[name="daterange"]').daterangepicker({
@@ -80,6 +80,11 @@ $('#tableFilters #statusId').change(function() {
 function initRFCTable() {
 	$dtRFCs = $('#dtRFCs').DataTable(
 			{
+				
+				'columnDefs' : [ {
+					'visible' : false,
+					'targets' : [ 0]
+				} ],
 				lengthMenu : [ [ 10, 25, 50, -1 ],
 					[ '10', '25', '50', 'Mostrar todo' ] ],
 					"iDisplayLength" : 10,
@@ -95,7 +100,12 @@ function initRFCTable() {
 								{"name": "impactId", "value": $('#tableFilters #impactId').children("option:selected").val()}
 						);
 					},
-					"aoColumns" : [ {
+					"aoColumns" : [
+						{
+							"mDataProp" : "id",
+						},
+						{
+						
 						"mDataProp" : "numRequest"
 					}, {
 						"mRender" : function(data, type, row, meta) {
@@ -143,7 +153,7 @@ function initRFCTable() {
 							if($('#isDeveloper').val()){
 								options = options
 								+ '<a onclick="copyRFC('
-								+ row.id
+								+ row.index
 								+ ')" title="Copiar"><i class="material-icons gris">file_copy</i> </a>';
 							}
 
@@ -354,6 +364,55 @@ function dropDownChange(){
 		
 	});
 }
+
+function openRFCTrackingModal(idRFC) {
+	console.log(idRFC);
+	var dtRFC = $('#dtRFCs').dataTable();
+	//console.log(dtRFC.row(0).data());
+	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
+	console.log(idRow[0]);
+	var rowData = $dtRFCs.row(idRow[0]).data();
+	console.log(rowData);
+
+	$trackingRFCForm.find('#idRFC').val(rowData.id);
+	$trackingRFCForm.find('#rfcNumber').text(rowData.numRequest);
+	loadTrackingRFC(rowData);
+	$('#trackingRFCModal').modal('show');
+}
+
+function loadTrackingRFC(rowData){
+	$trackingRFCForm.find('tbody tr').remove();
+	if(rowData.tracking.length == 0){
+		$trackingRFCForm.find('tbody').append('<tr><td colspan="4" style="text-align: center;">No hay movimientos</td></tr>');
+	}
+	$.each(rowData.tracking, function(i, value) {
+		$trackingRFCForm.find('tbody').append('<tr style="padding: 10px 0px 0px 0px;" > <td><span style="background-color: '+getColorNode(value.status)+';" class="round-step"></span></td>	<td>'+value.status+'</td>	<td>'+moment(value.trackingDate).format('DD/MM/YYYY h:mm:ss a')+'</td>	<td>'+value.operator+'</td> <td>'+(value.motive && value.motive != null && value.motive != 'null' ? value.motive:'' )+'</td>	</tr>');
+	});
+}
+
+function getColorNode(status){
+	switch (status) {
+	case 'Produccion':
+		return 'rgb(0, 150, 136)';
+		break;
+	case 'Certificacion':
+		return 'rgb(255, 152, 0)';
+		break;
+	case 'Solicitado':
+		return 'rgb(76, 175, 80)';
+		break;
+	case 'Borrador':
+		return 'rgb(31, 145, 243)';
+		break;
+	case 'Anulado':
+		return 'rgb(233, 30, 99)';
+		break;
+	default:
+		return 'rgb(0, 181, 212)';
+	break;
+	}
+}
+
 function resetDrops(){
 	$fmRFC.find('#sId').selectpicker('val',  "");
 	resetDrop();

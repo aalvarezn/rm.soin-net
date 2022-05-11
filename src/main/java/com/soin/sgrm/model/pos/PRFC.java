@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -22,6 +24,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.soin.sgrm.model.ReleaseTracking;
 
 @Entity
 @Table(name = "RFC")
@@ -113,6 +117,10 @@ public class PRFC implements Serializable {
 	@JoinTable(name = "\"RFC_ARCHIVORFC\"", joinColumns = { @JoinColumn(name = "\"RFC_ID\"") }, inverseJoinColumns = {
 			@JoinColumn(name = "\"ARCHIVORFC_ID\"") })
 	private Set<PRFCFile> files = new HashSet<>();
+	
+	@OrderBy("trackingDate ASC")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "id")
+	private Set<PRFCTracking> tracking = new HashSet<PRFCTracking>();
 	
 	//Agregar Motivo
 	//Agregar Usuario que lo cambio
@@ -349,6 +357,14 @@ public class PRFC implements Serializable {
 
 	public void setOperator(String operator) {
 		this.operator = operator;
+	}
+
+	public Set<PRFCTracking> getTracking() {
+		return tracking;
+	}
+
+	public void setTracking(Set<PRFCTracking> tracking) {
+		this.tracking = tracking;
 	}
 	
 	
