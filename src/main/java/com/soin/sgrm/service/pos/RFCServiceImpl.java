@@ -117,9 +117,6 @@ public class RFCServiceImpl implements RFCService {
 		if (sStatus != null) {
 			
 			columns.put("status", Restrictions.eq("status.id", sStatus));
-		}else {
-			columns.put("status",Restrictions.not(Restrictions.in("status.name",
-					Constant.FILTRED)));
 		}
 
 		if (sPriority != null) {

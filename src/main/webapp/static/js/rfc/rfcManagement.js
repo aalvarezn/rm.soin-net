@@ -1,8 +1,164 @@
 var $dtRFCs;
 
-var $fmRFC = $('#formAddRFC');
+
 var $formChangeUser = $('#changeUserForm');
 var $trackingRFCForm = $('#trackingRFCForm');
+
+$(document).ready(function() {
+	$('input[name="daterange"]').daterangepicker({
+		"autoUpdateInput": false,
+		"opens": 'left',
+		"orientation": 'right',
+		"locale": {
+			"format": "DD/MM/YYYY",
+			"separator": " - ",
+			"applyLabel": "Aplicar",
+			"cancelLabel": "Cancelar",
+			"fromLabel": "Desde",
+			"toLabel": "Hasta",
+			"customRangeLabel": "Custom",
+			"daysOfWeek": [
+				"Do",
+				"Lu",
+				"Ma",
+				"Mi",
+				"Ju",
+				"Vi",
+				"Sa"
+				],
+				"monthNames": [
+					"Enero",
+					"Febrero",
+					"Marzo",
+					"Abril",
+					"Mayo",
+					"Junio",
+					"Julio",
+					"Agosto",
+					"Septiembre",
+					"Octubre",
+					"Noviembre",
+					"Deciembre"
+					],
+					"firstDay": 1
+		}
+	});
+	// Datetimepicker plugin
+	$('.datetimepicker').datetimepicker({
+		locale: 'es',
+		format: 'DD/MM/YYYY hh:mm a',
+		maxDate : new Date()
+	});
+	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+
+	activeItemMenu("managerRFCItem");
+	//dropDownChange();
+	//$("#addRFCSection").hide();
+	//$fmRFC.find("#sId").selectpicker('val',"");
+
+	initRFCTable();
+	//initRFCFormValidation();
+});
+
+$('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
+	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+	console.log("prueba");
+	$dtRFCs.ajax.reload();
+});
+
+$('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
+	$('input[name="daterange"]').val('');
+	console.log("prueba");
+	$dtRFCs.ajax.reload();
+});
+
+$('#tableFilters #priorityId').change(function() {
+	$dtRFCs.ajax.reload();
+});
+
+$('#tableFilters #impactId').change(function() {
+	$dtRFCs.ajax.reload();
+});
+
+$('#tableFilters #statusId').change(function() {
+	$dtRFCs.ajax.reload();
+});
+
+function initRFCTable() {
+	console.log(getCont() + "management/rfc/list");
+	$dtRFCs = $('#dtRFCs').DataTable(
+			{
+				
+				'columnDefs' : [ {
+					'visible' : false,
+					'targets' : [ 0]
+				} ],
+				lengthMenu : [ [ 10, 25, 50, -1 ],
+					[ '10', '25', '50', 'Mostrar todo' ] ],
+					"iDisplayLength" : 10,
+					"language" : optionLanguaje,
+					"iDisplayStart" : 0,
+					"processing" : true,
+					"serverSide" : true,
+					"sAjaxSource" : getCont() + "management/rfc/list",
+					"fnServerParams" : function(aoData) {
+						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
+								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
+								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
+								{"name": "impactId", "value": $('#tableFilters #impactId').children("option:selected").val()}
+						);
+					},
+					"aoColumns" : [
+						{
+							"mDataProp" : "id",
+						},
+						{
+						
+						"mDataProp" : "numRequest"
+					},
+					{
+						"mRender" : function(data, type, row, meta) {
+							return row.user.name;
+						},
+					}, {
+						"mRender" : function(data, type, row, meta) {
+							return moment(row.requestDate).format('DD/MM/YYYY h:mm:ss a');
+						},
+					}, {
+						"mRender" : function(data, type, row, meta) {
+							if(row.status)
+								return row.status.name;
+							else
+								return '';
+						},
+					}, {
+						"mRender" : function(data, type, row, meta) {
+							var options = '<div class="iconLineC">';
+							
+							if(row.status.name != 'Anulado') {
+								options = options
+								+ '<a onclick="confirmDeleteRFC('+row.id+')" title="Anular"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
+							}
+						
+							options = options
+							+ '<a onclick="changeStatusRFC('+row.id+')" title="Cambiar Estado"><i class="material-icons gris" style="font-size: 25px;">offline_pin</i></a>';
+							options = options
+							+ '<a onclick="openRFCTrackingModal('
+							+ row.id
+							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
+
+							options = options
+							+ '<a href="'
+							+ getCont()
+							+ 'rfc/summaryRFC-'
+							+ row.id
+							+ '" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
+							return options;
+						},
+					} ],
+					ordering : false,
+			});
+}
 
 /*
 var releaseTable = $('#dtReleases').DataTable();

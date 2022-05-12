@@ -26,6 +26,7 @@ import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PStatus;
 import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PUser;
+import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.pos.ImpactService;
 import com.soin.sgrm.service.pos.PriorityService;
 import com.soin.sgrm.service.pos.RFCService;
@@ -60,7 +61,7 @@ public class RFCManagementController extends BaseController{
 			RedirectAttributes redirectAttributes) {
 		try {
 			PUser userLogin = getUserLogin();
-			loadCountsRelease(request, userLogin.getName());
+			loadCountsRFC(request, userLogin.getName());
 			List<PSystem> systems = systemService.listProjects(userLogin.getId());
 			List<PPriority> priorities = priorityService.findAll();
 			List<PStatus> statuses = statusService.findAll();
@@ -76,6 +77,46 @@ public class RFCManagementController extends BaseController{
 		return "/rfc/rfcManagement";
 
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
+		JsonSheet<PRFC> rfcs = new JsonSheet<>();
+		try {
+
+			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
+			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
+			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			String sSearch = request.getParameter("sSearch");
+			 Long statusId;
+			 Long priorityId;
+			 Long impactId;
+			if (request.getParameter("statusId").equals("")) {
+				statusId = null;
+			} else {
+				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
+			}
+			if (request.getParameter("priorityId").equals("")) {
+				priorityId = null;
+			} else {
+				priorityId = (long) Integer.parseInt(request.getParameter("priorityId"));
+			}
+			
+			if (request.getParameter("impactId").equals("")) {
+				impactId = null;
+			} else {
+				impactId = (long) Integer.parseInt(request.getParameter("impactId"));
+			}
+			String dateRange = request.getParameter("dateRange");
+
+			rfcs = rfcService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, impactId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return rfcs;
+	}
+
 	
 	@RequestMapping(value = "/statusRFC", method = RequestMethod.GET)
 	public @ResponseBody JsonResponse draftRFC(HttpServletRequest request, Model model,
@@ -131,7 +172,7 @@ public class RFCManagementController extends BaseController{
 		return res;
 	}
 	
-	public void loadCountsRelease(HttpServletRequest request, String name) {
+	public void loadCountsRFC(HttpServletRequest request, String name) {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> rfcC = new HashMap<String, Integer>();
@@ -139,7 +180,7 @@ public class RFCManagementController extends BaseController{
 		rfcC.put("requested", rfcService.countByType(name, "Solicitado", 2, null));
 		rfcC.put("completed", rfcService.countByType(name, "Completado", 2, null));
 		rfcC.put("all", (rfcC.get("draft") + rfcC.get("requested") + rfcC.get("completed")));
-		request.setAttribute("userC", rfcC);
+		request.setAttribute("rfcC", rfcC);
 
 		
 	}

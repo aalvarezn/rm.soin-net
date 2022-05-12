@@ -211,7 +211,7 @@
 					class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="body">
 						<div class="body table-responsive">
-							<table id="dtReleases"
+							<table id="dtRFCs"
 								class="table table-bordered table-striped table-hover dataTable">
 								<thead>
 									<tr>
@@ -240,7 +240,7 @@
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 	<script
-		src="<c:url value='/static/js/release/releaseManagement.js?v=${jsVersion}'/>"></script>
+		src="<c:url value='/static/js/rfc/rfcManagement.js?v=${jsVersion}'/>"></script>
 </body>
 
 </html>
