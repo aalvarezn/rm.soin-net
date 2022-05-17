@@ -126,10 +126,10 @@ function checkDB(){
 	$("#generateRFCForm #requiredBD").change(function() {
 		if (this.checked) {
 			this.value = 1;
-			console.log(true);
+			$("#generateReleaseForm #environmentsActions").show("slow");
 		} else {
 			this.value = 0;
-			console.log(false);
+			$("#generateReleaseForm #environmentsActions").show("slow");
 		}
 	});
 }

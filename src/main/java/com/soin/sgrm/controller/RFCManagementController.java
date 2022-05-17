@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -149,29 +150,32 @@ public class RFCManagementController extends BaseController{
 		return res;
 	}
 	
-	@RequestMapping(value = "/cancelRFC", method = RequestMethod.GET)
-	public @ResponseBody JsonResponse cancelRFC(HttpServletRequest request, Model model,
-			@RequestParam(value = "idRFC", required = true) Long idRFC) {
+	@RequestMapping(value = "/deleteRFC/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteRFC(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			PUser userLogin = getUserLogin();
-			PRFC rfc = rfcService.findById(idRFC);
-			PStatus status = statusService.findByKey("name", "Anulado");
-			rfc.setStatus(status);
-			rfc.setOperator(userLogin.getName());
-			rfc.setMotive(status.getReason());
-			rfcService.update(rfc);
 			res.setStatus("success");
-
+			PRFC rfc = rfcService.findById(id);
+			if (rfc.getStatus().getName().equals("Borrador")) {
+				
+					PStatus status = statusService.findByKey("name", "Anulado");
+					rfc.setStatus(status);
+					rfc.setMotive(status.getReason());
+					rfc.setOperator(getUserLogin().getName());
+					rfcService.update(rfc);
+				
+			} else {
+				res.setStatus("fail");
+				res.setException("La acción no se pudo completar, el release no esta en estado de Borrador.");
+			}
 		} catch (Exception e) {
-			Sentry.capture(e, "rfcManagement");
+			Sentry.capture(e, "release");
 			res.setStatus("exception");
-			res.setException("Error al cancelar el RFC: " + e.getMessage());
+			res.setException("La acción no se pudo completar correctamente.");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
-	
 	public void loadCountsRFC(HttpServletRequest request, String name) {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());

@@ -593,7 +593,7 @@ public class RFCController extends BaseController {
 	}
 
 	@RequestMapping(value = "/deleteRFC/{id}", method = RequestMethod.DELETE)
-	public @ResponseBody JsonResponse deleteRelease(@PathVariable Long id, Model model) {
+	public @ResponseBody JsonResponse deleteRFC(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
@@ -607,7 +607,7 @@ public class RFCController extends BaseController {
 					rfcService.update(rfc);
 				} else {
 					res.setStatus("fail");
-					res.setException("No tiene permisos sobre el release.");
+					res.setException("No tiene permisos sobre el rfc.");
 				}
 			} else {
 				res.setStatus("fail");

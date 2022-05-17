@@ -74,7 +74,6 @@
 
 
 
-
 <style type="text/css">
 .alert {
 	width: 20%;

@@ -232,7 +232,8 @@
 	</section>
 
 	<%@include file="../plantilla/footer.jsp"%>
-
+<script
+	src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
 	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
 	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
 	<script

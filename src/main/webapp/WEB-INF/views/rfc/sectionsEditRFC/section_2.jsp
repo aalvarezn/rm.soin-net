@@ -18,7 +18,7 @@
 		</p>
 		<div class="row clearfix">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<select class="form-control show-tick" id="systemId" >
+				<select class="form-control show-tick" id="systemId">
 					<option value="">-- Seleccione una opci&oacute;n --</option>
 					<c:forEach items="${systems}" var="systems">
 						<option value="${systems.id }">${systems.name }</option>
@@ -31,29 +31,29 @@
 			</div>
 		</div>
 	</div>
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-	<div class="row clearfix">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<div class="table-responsive m-b-20">
-						<table
-							class="table tableIni table-bordered table-striped table-hover dataTable"
-							id="releaseTable">
-							<thead>
-								<tr>
-									<th>Numero Release</th>
-									<th class="actCol" style="text-align: center;">Acciones</th>
-								</tr>
-							</thead>
-							<tbody>
-							</tbody>
-						</table>
-					</div>
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+		<div class="row clearfix">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="table-responsive m-b-20">
+					<table
+						class="table tableIni table-bordered table-striped table-hover dataTable"
+						id="releaseTable">
+						<thead>
+							<tr>
+								<th>Numero Release</th>
+								<th class="actCol" style="text-align: center;">Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
 				</div>
 			</div>
+		</div>
 
 	</div>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 			<div class="row clearfix">
 				<div class="alig_btn" style="margin-top: 10px;">
 					<button type="button" class="btn btn-primary setIcon"
@@ -83,26 +83,31 @@
 					</table>
 				</div>
 			</div>
-			
-					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-			<label for="email_address">Requiere Base de datos</label>
-			<c:choose>
-				<c:when test="${rfc.requiredBD}">
-					<div class="switch" style="margin-top: 20px;">
-						<label>NO<input id="requiredBD" type="checkbox"
-							value="1" name="requiredBD" checked="checked"><span class="lever"></span>S&Iacute;
-						</label>
-					</div>
-				</c:when>
-				<c:otherwise>
-					<div class="switch" style="margin-top: 20px;">
-						<label>NO<input id="requiredBD" name="requiredBD" type="checkbox"
-							value="0"><span class="lever"></span>S&Iacute;
-						</label>
-					</div>
-				</c:otherwise>
-			</c:choose>
-		</div>
+
+			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+				<label for="email_address">Requiere Base de datos</label>
+				<c:choose>
+					<c:when test="${rfc.requiredBD}">
+						<div class="switch" style="margin-top: 20px;">
+							<label>NO<input id="requiredBD" type="checkbox" value="1"
+								name="requiredBD" checked="checked"><span class="lever"></span>S&Iacute;
+							</label>
+						</div>
+					</c:when>
+					<c:otherwise>
+						<div class="switch" style="margin-top: 20px;">
+							<label>NO<input id="requiredBD" name="requiredBD"
+								type="checkbox" value="0"><span class="lever"></span>S&Iacute;
+							</label>
+						</div>
+					</c:otherwise>
+				</c:choose>
+			</div>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<input id="form-tags-${releaseObject.id}" maxlength="150"
+					class="tagInit" name="tags-1" type="text"
+					value="${releaseObject.dbScheme}">
+			</div>
 		</div>
 
 	</div>

@@ -6,6 +6,7 @@ var $formChangeUser = $('#changeUserForm');
 var $trackingRFCForm = $('#trackingRFCForm');
 
 $(function() {
+
 	$('input[name="daterange"]').daterangepicker({
 		"autoUpdateInput": false,
 		"opens": 'left',
