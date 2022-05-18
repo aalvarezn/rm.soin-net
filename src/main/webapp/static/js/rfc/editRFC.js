@@ -5,6 +5,7 @@ var origForm=null;
 var $dtRFCs;
 var $dtRFCsAdd;
 
+
 $(function() {
 
 	activeItemMenu("managemetReleaseItem");
@@ -109,7 +110,15 @@ $(function() {
 		$('html, body').animate({scrollTop: '0px'}, 300);
 	});
 	origForm = $rfcEditForm.serialize();
+	$('.tagInit').tagsInput({
+		width:'400px'
+	});
 	checkDB();
+	if($rfcEditForm.find('#requiredBD').val()==0){
+		$("#tagShow").hide();
+	}else{
+		$("#tagShow").show();
+	}
 	//$dataReleaseCheck=$dataRelease;
 	//dropDownChange();
 	//initTable();
@@ -126,10 +135,12 @@ function checkDB(){
 	$("#generateRFCForm #requiredBD").change(function() {
 		if (this.checked) {
 			this.value = 1;
-			$("#generateReleaseForm #environmentsActions").show("slow");
+			
+			$("#tagShow").show("slow");
 		} else {
 			this.value = 0;
-			$("#generateReleaseForm #environmentsActions").show("slow");
+			console.log("aca");
+			$("#tagShow").hide("slow");
 		}
 	});
 }
@@ -162,8 +173,9 @@ function compareArrays(arr1, arr2) {
 };
 function sendPartialRFC() {
 	var form = "#generateReleaseForm";
+	console.log();
 	changeSaveButton(true);
-	console.log($rfcEditForm.find('#requiredBD').val());
+
 	$.ajax({
 		// async : false,
 		type : "PUT",
@@ -183,6 +195,7 @@ function sendPartialRFC() {
 			"option:selected").val(),
 			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
 			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),	
+			schemaDB:$('.tagInit').val(),
 			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
 			reasonChange : $rfcEditForm.find('#rfcReason').val(),
 			effect : $rfcEditForm.find('#rfcEffect').val(),
@@ -426,7 +439,8 @@ function sendRFC() {
 			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
 			"option:selected").val(),
 			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),	
+			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),
+			schemaDB:$('.tagInit').val(),
 			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
 			reasonChange : $rfcEditForm.find('#rfcReason').val(),
 			effect : $rfcEditForm.find('#rfcEffect').val(),
@@ -472,7 +486,8 @@ function requestRFC() {
 			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
 			"option:selected").val(),
 			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),	
+			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),
+			schemaDB:$('.tagInit').val(),
 			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
 			reasonChange : $rfcEditForm.find('#rfcReason').val(),
 			effect : $rfcEditForm.find('#rfcEffect').val(),

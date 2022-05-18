@@ -103,10 +103,11 @@
 					</c:otherwise>
 				</c:choose>
 			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<input id="form-tags-${releaseObject.id}" maxlength="150"
+			<div id="tagShow" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<label for="email_address">Ingrese nombre de BD</label>
+				<input id="form-tags" maxlength="150"
 					class="tagInit" name="tags-1" type="text"
-					value="${releaseObject.dbScheme}">
+					value="${rfc.schemaDB}">
 			</div>
 		</div>
 

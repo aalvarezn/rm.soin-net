@@ -73,6 +73,8 @@ public class PRFC implements Serializable {
 	@Column(name = "OPERADOR")
 	private String operator;
 	
+	@Column(name = "SCHEMADB")
+	private String schemaDB;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ID_PRIORIDAD\"", nullable = true)
@@ -365,6 +367,14 @@ public class PRFC implements Serializable {
 
 	public void setTracking(Set<PRFCTracking> tracking) {
 		this.tracking = tracking;
+	}
+
+	public String getSchemaDB() {
+		return schemaDB;
+	}
+
+	public void setSchemaDB(String schemaDB) {
+		this.schemaDB = schemaDB;
 	}
 	
 	
