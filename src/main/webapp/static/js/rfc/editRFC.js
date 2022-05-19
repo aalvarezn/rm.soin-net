@@ -521,7 +521,7 @@ function responseAjaxRequestRFC(response) {
 			+  $rfcEditForm.find('#rfcId').val();
 			break;
 		case 'fail':
-			showReleaseErrors(response.errors);
+			showRFCErrors(response.errors);
 			countErrorsByStep();
 			var numItems = $('.yourclass').length
 			swal("Avance guardado!", "El formulario a\u00FAn posee campos incompletos.",
@@ -549,7 +549,7 @@ function responseAjaxSendRFC(response) {
 					$('#generateReleaseForm #applyFor').show();
 			break;
 		case 'fail':
-			showReleaseErrors(response.errors);
+			showRFCErrors(response.errors);
 			countErrorsByStep();
 			var numItems = $('.yourclass').length
 			swal("Avance guardado!", "El formulario a\u00FAn posee campos incompletos.",
@@ -571,7 +571,7 @@ function resetErrors() {
 	$('.labelCount_Error').css("visibility", "hidden");
 }
 
-function showReleaseErrors(errors) {
+function showRFCErrors(errors) {
 	resetErrors();// Eliminamos las etiquetas de errores previas
 	var error = errors;
 	console.log(errors);

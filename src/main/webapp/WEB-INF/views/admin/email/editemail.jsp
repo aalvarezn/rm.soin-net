@@ -105,6 +105,28 @@
 					</div>
 				</div>
 				<div class="row clearfix">
+					<div class="form-group">
+						<label for="subject" class="col-sm-1 col-form-label lbtxt m-t-10">Tipo:</label>
+						<div class="col-sm-3">
+							<div class="row clearfix">
+
+
+								<select class="form-control show-tick" id="changeType"
+									name="changeType">
+									<option value="0">Release</option>
+									<option value="1">RFC</option>
+
+								</select>
+
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<div id="ReleaseAttributtes"class="row clearfix">
+
 					<div class="col-sm-12">
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{userName}}">Solicitante</button>
@@ -140,6 +162,39 @@
 							onclick="copyToClipboard($(this))" data-type="{{version}}">Versión</button>
 					</div>
 				</div>
+				<div id="RFCAttributtes" class="row clearfix" hidden>
+					<div class="col-sm-12">
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{userName}}">Solicitante</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{rfcNumber}}">Número
+							RFC</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{priority}}">Prioridad</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{typeChange}}">Tipo de cambio</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{impact}}">Impacto</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{detail}}">Detalle</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{reason}}">Razón</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))"
+							data-type="{{requestDateBegin}}">Fecha Inicial</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))"
+							data-type="{{requestDateFinish}}">Fecha final</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{effect}}">Efecto</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))"
+							data-type="{{releases}}">Releases</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{systemsInvolved}}">Sistemas impactados</button>
+					
+					</div>
+				</div>
 				<div class="row clearfix">
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-10">
 						<textarea id="eBody">${email.body}</textarea>
@@ -154,8 +209,7 @@
 	<%@include file="../../plantilla/scriptSection.jsp"%>
 	<!-- #END# Script Section -->
 
-	<script
-		src="<c:url value='/static/js/admin/editEmail.js'/>"></script>
+	<script src="<c:url value='/static/js/admin/editEmail.js'/>"></script>
 
 </body>
 
