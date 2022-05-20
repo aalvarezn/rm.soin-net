@@ -15,11 +15,13 @@
 		</div>
 	</div>
 	<div class="row clearfix">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 		<div class="alig_btn" style="margin-top: 10px;">
 			<button type="button" class="btn btn-primary setIcon"
 				onclick="openCrontabForm()">
 				<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
 			</button>
+		 </div>
 		</div>
 	</div>
 	<div class="row clearfix">
@@ -65,11 +67,13 @@
 		</div>
 	</div>
 	<div class="row clearfix">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 		<div class="alig_btn" style="margin-top: 10px;">
 			<button type="button" class="btn btn-primary setIcon"
 				onclick="openButtonForm()">
 				<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
 			</button>
+		</div>
 		</div>
 	</div>
 	<div class="row clearfix">
@@ -115,11 +119,13 @@
 		</div>
 	</div>
 	<div class="row clearfix">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 		<div class="alig_btn" style="margin-top: 10px;">
 			<button type="button" class="btn btn-primary setIcon"
 				onclick="openButtonFileForm()">
 				<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
 			</button>
+		</div>
 		</div>
 	</div>
 	<div class="row clearfix">
@@ -165,6 +171,7 @@
 		</div>
 	</div>
 	<div class="row clearfix">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 		<div class="alig_btn" style="margin-top: 10px;">
 			<c:if test="${release.system.importObjects}">
 				<button type="button" class="btn btn-default setIcon"
@@ -182,6 +189,7 @@
 				onclick="openObjectItemModal()">
 				<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
 			</button>
+		</div>
 		</div>
 	</div>
 	<div class="row clearfix">

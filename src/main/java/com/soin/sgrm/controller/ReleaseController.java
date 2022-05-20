@@ -144,6 +144,27 @@ public class ReleaseController extends BaseController {
 		return "/release/release";
 
 	}
+	@RequestMapping(value = "/qa", method = RequestMethod.GET)
+	public String releaseQA(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			String name = getUserLogin().getUsername();
+			loadCountsRelease(request, name);
+			model.addAttribute("system", new SystemUser());
+			model.addAttribute("systems", systemService.listSystemUser());
+			model.addAttribute("status", new Status());
+			model.addAttribute("statuses", statusService.list());
+			model.addAttribute("list", "userRelease");
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina inicial." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/";
+		}
+		return "/release/releaseQA";
+
+	}
 
 	@RequestMapping(path = "/userRelease", method = RequestMethod.GET)
 	public @ResponseBody JsonSheet<?> getUserRelease(HttpServletRequest request, Locale locale, Model model,
@@ -194,6 +215,28 @@ public class ReleaseController extends BaseController {
 		}
 
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
+		try {
+			String range = request.getParameter("dateRange");
+			String[] dateRange = (range != null) ? range.split("-") : null;
+			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
+			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
+
+			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
+			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
+					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
+					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			return releaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, Constant.FILTRED,
+					dateRange, systemId, statusId);
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
+		}
+	}
 
 	@RequestMapping(path = "/systemRelease", method = RequestMethod.GET)
 	public @ResponseBody JsonSheet<?> getSystemRelease(HttpServletRequest request, Locale locale, Model model,
@@ -209,6 +252,27 @@ public class ReleaseController extends BaseController {
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			return releaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, Constant.FILTRED,
+					dateRange, systemId, statusId);
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
+		}
+	}
+	@RequestMapping(path = "/systemReleaseQA", method = RequestMethod.GET)
+	public @ResponseBody JsonSheet<?> getSystemReleaseQA(HttpServletRequest request, Locale locale, Model model,
+			HttpSession session) {
+		try {
+			String range = request.getParameter("dateRange");
+			String[] dateRange = (range != null) ? range.split("-") : null;
+			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
+			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
+
+			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
+			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
+					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
+					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			return releaseService.listByAllSystemQA(name, sEcho, iDisplayStart, iDisplayLength, sSearch, Constant.FILTRED,
 					dateRange, systemId, statusId);
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
@@ -255,6 +319,43 @@ public class ReleaseController extends BaseController {
 		return "/release/summaryRelease";
 	}
 
+	@RequestMapping(value = "/summaryQA-{status}", method = RequestMethod.GET)
+	public String summmaryQA(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
+
+		try {
+			model.addAttribute("parameter", status);
+			ReleaseSummary release = null;
+			if (CommonUtils.isNumeric(status)) {
+				release = releaseService.findById(Integer.parseInt(status));
+			}
+
+			if (release == null) {
+				return "redirect:/";
+			}
+			SystemConfiguration systemConfiguration = systemConfigurationService
+					.findBySystemId(release.getSystem().getId());
+			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
+			model.addAttribute("dependency", new Release());
+			model.addAttribute("object", new ReleaseObject());
+			model.addAttribute("doc", new DocTemplate());
+			model.addAttribute("docs", docs);
+			model.addAttribute("release", release);
+			model.addAttribute("systemConfiguration", systemConfiguration);
+			model.addAttribute("status", new Status());
+			model.addAttribute("statuses", statusService.list());
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
+			throw ex;
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina resumen release." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/";
+		}
+		return "/release/summaryReleaseQA";
+	}
 	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
 	public String tinySummary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
