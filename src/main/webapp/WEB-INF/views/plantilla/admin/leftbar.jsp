@@ -53,10 +53,11 @@
 				</ul></li>
 			<!---- 	#Seccion de releases ---->
 			<li class=""><a id="releaseItem" href="javascript:void(0);"
-				class="menu-toggle"> <span>Releases</span>
+				class="menu-toggle"> <span>Catalogos</span>
 			</a>
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
+					<!----<li><a href="<c:url value='/admin/status/'/>">Estados RFC</a></li> ---->
 					<li><a href="<c:url value='/admin/impact/'/>">Impacto</a></li>
 					<li><a href="<c:url value='/admin/priority/'/>">Prioridad</a></li>
 					<li><a href="<c:url value='/admin/risk/'/>">Riesgo</a></li>
@@ -77,6 +78,7 @@
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/admin/action/'/>">Acciones</a></li>
 					<li><a href="<c:url value='/admin/environment/'/>">Entorno</a></li>
+					<li><a href="<c:url value='/admin/siges/'/>">Código Siges</a></li>
 					<li><a href="<c:url value='/admin/configurationItem/'/>">Item
 							Configuración</a></li>
 					<li><a href="<c:url value='/admin/module/'/>">Modulo</a></li>

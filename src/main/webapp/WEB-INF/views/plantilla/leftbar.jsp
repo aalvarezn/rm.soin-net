@@ -29,6 +29,10 @@
 						href="<c:url value='/management/release/'/> "> <span>Gestión
 								Release</span>
 					</a></li>
+					<li><a id="managerRFCItem"
+					href="<c:url value='/management/rfc/'/> "> <span>Gestión
+							RFC</span>
+				</a></li>
 					<li><a id="managemetWorkFlowItem"
 						href="<c:url value='/management/wf/'/> "> <span>Gestión
 								Trámites</span>
@@ -48,6 +52,10 @@
 				</a></li>
 			</c:if>
 			<c:if test="${managerAccess}">
+				<li><li><a id="rfcItem" href="<c:url value='/rfc/'/> "> <span>Mis
+							RFC</span>
+				</a></li>
+					
 				<li><a id="managerWorkFlowItem"
 					href="<c:url value='/manager/wf/'/> "> <span>Mis
 							Trámites</span>
