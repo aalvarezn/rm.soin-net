@@ -45,11 +45,26 @@
 				<c:if test="${authority.name == 'Gestores'}">
 					<c:set var="managerAccess" value="true"></c:set>
 				</c:if>
+				<c:if test="${authority.name == 'QA'}">
+					<c:set var="qaAccess" value="true"></c:set>
+				</c:if>
 			</c:forEach>
+			<c:if test="${qaAccess}">
+				<li><a id="releasesItem" href="<c:url value='/release/qa'/> ">
+						<span>Gestión QA</span>
+				</a></li>
+			</c:if>
 			<c:if test="${releaseAccess}">
 				<li><a id="releasesItem" href="<c:url value='/release/'/> ">
 						<span>Mis Releases</span>
 				</a></li>
+				<!---- 	#Seccion de reportes ---->
+				<li class=""><a id="ambientItem" href="javascript:void(0);"
+					class="menu-toggle"> <span>Reportes</span>
+				</a>
+					<ul class="ml-menu">
+						<li><a href="<c:url value='/report/releases/'/>">Releases</a></li>
+					</ul></li>
 			</c:if>
 			<c:if test="${managerAccess}">
 				<li><li><a id="rfcItem" href="<c:url value='/rfc/'/> "> <span>Mis
@@ -64,13 +79,7 @@
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">
 					<span>Perfil de usuario</span>
 			</a></li>
-			<!---- 	#Seccion de reportes ---->
-			<li class=""><a id="ambientItem" href="javascript:void(0);"
-				class="menu-toggle"> <span>Reportes</span>
-			</a>
-				<ul class="ml-menu">
-					<li><a href="<c:url value='/report/releases/'/>">Releases</a></li>
-				</ul></li>
+
 		</ul>
 	</div>
 	<!-- #Menu -->
