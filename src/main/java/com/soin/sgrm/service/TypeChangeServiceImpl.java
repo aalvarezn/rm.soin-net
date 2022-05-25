@@ -6,51 +6,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.dao.SigesDao;
-import com.soin.sgrm.model.Siges;
+import com.soin.sgrm.dao.TypeChangeDao;
+import com.soin.sgrm.model.TypeChange;
 
-@Service("sigesService")
 @Transactional("transactionManager")
-public class SigesServiceImpl implements SigesService{
-
+@Service("TypeChangeService")
+public class TypeChangeServiceImpl implements TypeChangeService {
+	
 	@Autowired
-	SigesDao dao;
+	TypeChangeDao dao;
 	
 	@Override
-	public Siges findById(Long id) {
+	public TypeChange findById(Long id) {
 		return dao.getById(id);
 	}
 
 	@Override
-	public Siges findByKey(String name, String value) {
-
+	public TypeChange findByKey(String name, String value) {
 		return dao.getByKey(name, value);
 	}
 
 	@Override
-	public List<Siges> findAll() {
+	public List<TypeChange> findAll() {
 		return dao.findAll();
 	}
 
 	@Override
-	public void save(Siges model) {
+	public void save(TypeChange model) {
 		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		Siges model= findById(id);
+		TypeChange model= findById(id);
 		dao.delete(model);
 	}
 
 	@Override
-	public void update(Siges model) {
+	public void update(TypeChange model) {
 		dao.update(model);
-	}
-
-	@Override
-	public List<Siges> listCodeSiges(Integer id) {
-		return dao.listCodeSiges(id);
 	}
 
 }

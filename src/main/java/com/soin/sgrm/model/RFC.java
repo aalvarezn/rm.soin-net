@@ -131,10 +131,10 @@ public class RFC implements Serializable {
 	private String[] strReleases;
 	
 	@Transient
-	private Long impactId;
+	private int impactId;
 	
 	@Transient
-	private Long priorityId;
+	private int priorityId;
 	
 	@Transient
 	private Long typeChangeId;
@@ -290,19 +290,19 @@ public class RFC implements Serializable {
 		this.strReleases = strReleases;
 	}
 
-	public Long getImpactId() {
+	public int getImpactId() {
 		return impactId;
 	}
 
-	public void setImpactId(Long impactId) {
+	public void setImpactId(int impactId) {
 		this.impactId = impactId;
 	}
 
-	public Long getPriorityId() {
+	public int getPriorityId() {
 		return priorityId;
 	}
 
-	public void setPriorityId(Long priorityId) {
+	public void setPriorityId(int priorityId) {
 		this.priorityId = priorityId;
 	}
 

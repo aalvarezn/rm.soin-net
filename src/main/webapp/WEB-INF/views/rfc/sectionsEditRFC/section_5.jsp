@@ -36,7 +36,7 @@
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="userTinySummary" name="systemCode"
-							value="${rfc.user.name}" class="form-control"
+							value="${rfc.user.fullName}" class="form-control"
 							placeholder="">
 					</div>
 				</div>

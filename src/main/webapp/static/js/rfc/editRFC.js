@@ -277,7 +277,7 @@ function initTable(){
 						}, 
 						"aoColumns" : [
 							{
-								"mDataProp" : "numRelease",
+								"mDataProp" : "releaseNumber",
 							},
 							{
 								"mDataProp" : "system.code",
@@ -307,7 +307,7 @@ function addDataToTable(){
 			
 		});
 		if(verification){
-			let text ='{"id":'+(data.id).toString()+',"numRelease":"'+(data.numRelease).toString()+'"}';
+			let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'"}';
 			const obj = JSON.parse(text);
 			$dataRelease.unshift(obj);
 			 $('#releaseTableAdd').dataTable().fnClearTable();
@@ -320,7 +320,7 @@ function addDataToTable(){
 		}
 		
 	}else{
-		let text ='{"id":'+(data.id).toString()+',"numRelease":"'+(data.numRelease).toString()+'"}';
+		let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'"}';
 		const obj = JSON.parse(text);
 		$dataRelease.unshift(obj);
 		 $('#releaseTableAdd').dataTable().fnClearTable();
@@ -348,7 +348,7 @@ function initTableAdd(){
 			},
 		  		data: $dataRelease,
 		       aoColumns: [
-		         { mData: 'numRelease' },		
+		         { mData: 'releaseNumber' },		
 		      ]
 		  });
 }
@@ -372,7 +372,7 @@ function dropDownChange(){
 							"fnServerParams" : function(aoData) {
 							},
 							"aoColumns" : [ {
-								"mDataProp" : "numRelease"
+								"mDataProp" : "releaseNumber"
 							},
 							{
 								"mRender" : function(data, type, row, meta) {

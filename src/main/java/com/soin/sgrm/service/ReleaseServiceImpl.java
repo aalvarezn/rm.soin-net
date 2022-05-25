@@ -248,4 +248,10 @@ public class ReleaseServiceImpl implements ReleaseService {
 		return "Sin Asignar";
 	}
 
+	@Override
+	public JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer systemId) throws SQLException, ParseException {
+		return dao.listReleasesBySystem( sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
+	}
+
 }

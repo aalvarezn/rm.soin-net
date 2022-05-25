@@ -240,10 +240,13 @@
 	</section>
 
 	<%@include file="../plantilla/footer.jsp"%>
+	<!-- Validate Core Js -->
+	<script
+		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
 	<script src="<c:url value='/static/js/rfc/rfc.js'/>"></script>
 	<script type="text/javascript">
-  $('.number').countTo();
-</script>
+		$('.number').countTo();
+	</script>
 </body>
 
 </html>

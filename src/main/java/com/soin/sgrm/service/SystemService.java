@@ -47,4 +47,6 @@ public interface SystemService {
 	void delete(Integer id);
 	
 	Object[] myTeamsProyect(String name);
+	
+	List<System> listProjects(int id);
 }

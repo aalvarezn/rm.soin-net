@@ -14,9 +14,10 @@ import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.RFCFile;
 
 @Repository
-public class EmailTemplateDaoImpl implements EmailTemplateDao {
+public class EmailTemplateDaoImpl extends AbstractDao<Long, EmailTemplate> implements EmailTemplateDao {
 
 	@Autowired
 	SessionFactory sessionFactory;

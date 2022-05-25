@@ -131,7 +131,7 @@ function initRFCTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return row.user.name;
+							return row.user.fullName;
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {

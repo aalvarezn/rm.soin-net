@@ -11,7 +11,7 @@ import com.soin.sgrm.model.Siges;
 public class SigesDaoImpl extends  AbstractDao<Long, Siges> implements SigesDao{
 
 	@SuppressWarnings("unchecked")
-	public List<Siges> listCodeSiges(Long id){
+	public List<Siges> listCodeSiges(Integer id){
     return getSession().createCriteria(Siges.class)
     		.createAlias("system","systems")
     		.add(Restrictions.eq("systems.id", id))

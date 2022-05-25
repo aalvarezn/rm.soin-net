@@ -70,4 +70,6 @@ public interface ReleaseService {
 	
 	String generateReleaseNumber(String requeriment, String requirement_name, String system_id);
 
+	public JsonSheet<?> listReleasesBySystem( int sEcho, int iDisplayStart, int iDisplayLength, String sSearch, Integer systemId) throws SQLException, ParseException ;
+
 }
