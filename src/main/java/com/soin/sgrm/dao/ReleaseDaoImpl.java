@@ -26,6 +26,7 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.ItemObject;
@@ -284,6 +285,11 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	@Override
 	public Release findReleaseById(Integer id) {
 		Release release = (Release) sessionFactory.getCurrentSession().get(Release.class, id);
+		return release;
+	}
+	@Override
+	public Release_RFC findRelease_RFCById(Integer id) {
+		Release_RFC release = (Release_RFC) sessionFactory.getCurrentSession().get(Release_RFC.class, id);
 		return release;
 	}
 
@@ -633,7 +639,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			Integer systemId)
 			throws SQLException, ParseException {
 
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_RFC.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name","Certificacion"),
 				Restrictions.eq("statuses.name","Solicitado")))

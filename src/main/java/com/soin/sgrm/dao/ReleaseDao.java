@@ -13,6 +13,7 @@ import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.ReleaseCreate;
@@ -62,5 +63,7 @@ public interface ReleaseDao {
 	ArrayList<ReleaseObjectEdit> saveReleaseObjects(Integer release_id, ArrayList<ReleaseObjectEdit> objects);
 
 	JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch, Integer systemId) throws SQLException, ParseException;
+
+	Release_RFC findRelease_RFCById(Integer id);
 
 }

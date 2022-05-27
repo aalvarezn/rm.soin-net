@@ -109,7 +109,7 @@ public class RFCManagementController extends BaseController{
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, impactId);
+			rfcs = rfcService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, impactId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

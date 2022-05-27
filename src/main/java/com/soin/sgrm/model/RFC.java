@@ -113,7 +113,7 @@ public class RFC implements Serializable {
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "RFC_RELEASE", joinColumns = { @JoinColumn(name = "ID_RFC") }, inverseJoinColumns = {
 			@JoinColumn(name = "ID_RELEASE") })
-	private Set<Release> releases = new HashSet<>();
+	private Set<Release_RFC> releases = new HashSet<>();
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -274,11 +274,11 @@ public class RFC implements Serializable {
 
 
 
-	public Set<Release> getReleases() {
+	public Set<Release_RFC> getReleases() {
 		return releases;
 	}
 
-	public void setReleases(Set<Release> releases) {
+	public void setReleases(Set<Release_RFC> releases) {
 		this.releases = releases;
 	}
 

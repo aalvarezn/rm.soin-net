@@ -138,7 +138,7 @@
 					<label for="email_address">Solicitado por</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${rfc.user.name}</p>
+							<p>${rfc.user.fullName}</p>
 						</div>
 					</div>
 				</div>
@@ -248,7 +248,7 @@
 
 							<c:forEach items="${rfc.releases}" var="release">
 
-								<li class="nav-item dependency m-r-10">${release.numRelease}</li>
+								<li class="nav-item dependency m-r-10">${release.releaseNumber}</li>
 
 							</c:forEach>
 

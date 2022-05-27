@@ -41,6 +41,7 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
@@ -252,7 +253,7 @@ public class RFCController extends BaseController {
 		Impact impact = null;
 		TypeChange typeChange = null;
 		ArrayList<MyError> errors = new ArrayList<MyError>();
-		List<Release> listRelease = new ArrayList<Release>();
+		List<Release_RFC> listRelease = new ArrayList<Release_RFC>();
 
 		try {
 			errors = validSections(addRFC, errors);
@@ -286,7 +287,7 @@ public class RFCController extends BaseController {
 					for (int i = 0; i < jsonArray.length(); i++) {
 						JSONObject object = jsonArray.getJSONObject(i);
 					
-						Release release = releaseService.findReleaseById(object.getInt(("id")));
+						Release_RFC release = releaseService.findRelease_RFCById(object.getInt(("id")));
 						listRelease.add(release);
 
 					}
@@ -398,10 +399,10 @@ public class RFCController extends BaseController {
 			systemsImplicated.add(codeSiges.getSystem().getName());
 			String nameSystem = "";
 			boolean validate = true;
-			Set<Release> releases = rfc.getReleases();
+			Set<Release_RFC> releases = rfc.getReleases();
 			if (releases != null) {
 				if (releases.size() != 0) {
-					for (Release release : releases) {
+					for (Release_RFC release : releases) {
 						nameSystem = release.getSystem().getName();
 						for (String system : systemsImplicated) {
 							if (system.equals(nameSystem)) {
@@ -458,10 +459,10 @@ public class RFCController extends BaseController {
 			systemsImplicated.add(codeSiges.getSystem().getName());
 			String nameSystem = "";
 			boolean validate = true;
-			Set<Release> releases = rfc.getReleases();
+			Set<Release_RFC> releases = rfc.getReleases();
 			if (releases != null) {
 				if (releases.size() != 0) {
-					for (Release release : releases) {
+					for (Release_RFC release : releases) {
 						nameSystem = release.getSystem().getName();
 						for (String system : systemsImplicated) {
 							if (system.equals(nameSystem)) {

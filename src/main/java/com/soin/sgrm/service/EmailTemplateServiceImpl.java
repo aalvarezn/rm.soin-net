@@ -38,6 +38,7 @@ import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
+import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.WFRelease;
@@ -564,7 +565,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 		if (email.getHtml().contains("{{releases}}")) {
 			temp = "";
-			for (Release release : rfc.getReleases()) {
+			for (Release_RFC release : rfc.getReleases()) {
 				temp += release.getReleaseNumber() + "<br>";
 			}
 			email.setHtml(email.getHtml().replace("{{releases}}", (temp.equals("") ? "Sin releases definidos" : temp)));
@@ -581,10 +582,10 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			systemsInvolved.add(codeSiges.getSystem().getName());
 			String nameSystem = "";
 			boolean validate = true;
-			Set<Release> releases = rfc.getReleases();
+			Set<Release_RFC> releases = rfc.getReleases();
 			if (releases != null) {
 				if (releases.size() != 0) {
-					for (Release release : releases) {
+					for (Release_RFC release : releases) {
 						nameSystem = release.getSystem().getName();
 						for (String system : systemsInvolved) {
 							if (system.equals(nameSystem)) {
