@@ -41,15 +41,22 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.Project;
+import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCFile;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseFile;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.Siges;
+import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.service.DocTemplateService;
 import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.RFCFileService;
+import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseFileService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.RequestService;
+import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.DocxContext;
@@ -81,7 +88,16 @@ public class FileController extends BaseController {
 	ReleaseFileService releaseFileService;
 	@Autowired
 	ResourceLoader resourceLoader;
+	
+	@Autowired
+	RFCService rfcService;
 
+	@Autowired 
+	RFCFileService rfcFileService;
+	
+	@Autowired
+	SigesService sigesService;
+	
 	@Autowired
 	private Environment env;
 
@@ -541,6 +557,136 @@ public class FileController extends BaseController {
 		OutputStream os = new FileOutputStream(outFile);
 		stamper.stamp(inputstream, context, os);
 		os.close();
+	}
+	
+
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathRFC(Long id, String basePath) throws SQLException {
+		RFC rfc;
+		try {
+			rfc = rfcService.findById(id);
+			Siges siges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
+			SystemInfo system= siges.getSystem();
+			String path = system.getName() + "/" +siges.getCodeSiges()  + "/";
+
+			path += rfc.getNumRequest() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	
+	/**
+	 * @description: Adjunta el archivo al rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	@RequestMapping(value = "/singleUploadRFC-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadRFC(@PathVariable Long id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		
+		
+		// valida que se selecciono un archivo
+		if (file.getName().equals("") || file.isEmpty()) {
+			json.setStatus("fail");
+			json.setException("Archivo no seleccionado");
+			return json;
+		}
+		
+		// Direccion del archivo a guardar
+		String basePath = env.getProperty("fileStore.path");
+		String path = createPathRFC(id, basePath);
+		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+		// Referencia del archivo
+		RFCFile rfcFile = new RFCFile();
+		rfcFile.setName(fileName);
+		rfcFile.setPath(basePath + path + fileName);
+		long time = System.currentTimeMillis();
+		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+		rfcFile.setRevisionDate(revisionDate);
+		try {
+			// Se carga el archivo y se guarda la referencia
+			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+			rfcFileService.saveRFCFile(id, rfcFile);
+			rfcFile = rfcFileService.findByKey("path", rfcFile.getPath());
+			json.setStatus("success");
+			json.setObj(rfcFile);
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
+			json.setStatus("exception");
+			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			json.setStatus("exception");
+			json.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			if (e instanceof MaxUploadSizeExceededException) {
+				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			}
+		}
+		return json;
+	}
+	
+	/**
+	 * @description: Descarga de un archivo particular del rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: archivo a descargar.
+	 **/
+	@RequestMapping(value = "/singleDownloadRFC-{id}", method = RequestMethod.GET)
+	public void downloadFileRFC(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+		RFCFile rfcFile = rfcFileService.findById(id);
+		File file = new File(rfcFile.getPath());
+
+		// Se modifica la respuesta para descargar el archivo
+		response.setContentType("text/plain");
+		response.setHeader("Content-Disposition", "attachment;filename=" + rfcFile.getName());
+		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+		response.setContentLength((int) file.length());
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	/**
+	 * @description: borra un archivo adjuntado de un rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: response de la eliminacion.
+	 **/
+	@RequestMapping(value = "/deleteFileUploadRFC-{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteFileUploadRFC(@PathVariable Long id) {
+		JsonResponse res = new JsonResponse();
+		res.setStatus("success");
+		try {
+			RFCFile rfcFile = rfcFileService.findById(id);
+			rfcFileService.deleteRFC(rfcFile);
+			File file = new File(rfcFile.getPath());
+			if (file.exists()) {
+				file.delete();
+			}
+			res.setData(rfcFile.getId() + "");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 
 }

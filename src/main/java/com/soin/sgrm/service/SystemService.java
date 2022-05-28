@@ -40,6 +40,7 @@ public interface SystemService {
 
 	System findSystemById(Integer id);
 
+	SystemInfo findSystemInfoById(Integer id);
 	void save(System system);
 
 	void update(System system);

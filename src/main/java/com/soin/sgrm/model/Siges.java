@@ -31,7 +31,7 @@ public class Siges implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SISTEMA_ID")
-	private System system;
+	private SystemInfo system;
 	
 	@Transient
 	private int systemId;
@@ -52,11 +52,11 @@ public class Siges implements Serializable{
 		this.codeSiges = codeSiges;
 	}
 
-	public System getSystem() {
+	public SystemInfo getSystem() {
 		return system;
 	}
 
-	public void setSystem(System system) {
+	public void setSystem(SystemInfo system) {
 		this.system = system;
 	}
 

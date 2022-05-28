@@ -116,4 +116,9 @@ public class SystemServiceImpl implements SystemService {
 	public List<System> listProjects(int id){
 		return dao.listProjects(id);
 	}
+
+	@Override
+	public SystemInfo findSystemInfoById(Integer id) {
+		return dao.findById(id);
+	}
 }

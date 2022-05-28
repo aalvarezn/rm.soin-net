@@ -20,6 +20,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.SystemService;
@@ -62,7 +63,7 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			System system= systemService.findSystemById( addSiges.getSystemId());
+			SystemInfo system= systemService.findSystemInfoById( addSiges.getSystemId());
 			addSiges.setSystem(system);
 			sigesService.save(addSiges);
 
@@ -81,7 +82,7 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			System system= systemService.findSystemById(uptSiges.getSystemId());
+			SystemInfo system= systemService.findSystemInfoById(uptSiges.getSystemId());
 			uptSiges.setSystem(system);
 			sigesService.update(uptSiges);
 
