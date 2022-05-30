@@ -276,7 +276,7 @@
 					<label for="">Requisitos especiales</label>
 					<textarea class="areaWidth" rows="" cols="">${rfc.requestEsp }</textarea>
 				</div>
-				<div class="col-md-6 col-lg-6 col-xs-6 col-sm-6 m-b-5">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Requiere Base de datos</label>
 					<div class="switch">
 						<c:choose>
@@ -291,8 +291,17 @@
 								</label>
 							</c:otherwise>
 						</c:choose>
+
 					</div>
 				</div>
+				<c:if test="${rfc.requiredBD}">
+					<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+						<label for="">SCHEMAS Necesarias</label>
+						<div class="form-line disabled">
+							<p>${rfc.schemaDB }</p>
+						</div>
+					</div>
+				</c:if>
 			</div>
 			<div class="row clearfix">
 				<div class="col-sm-12">
@@ -328,39 +337,39 @@
 
 				</div>
 
-
-				<c:if test="${ isReleaseManager }">
-					<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
-						<div class="m-b-20">
-							<c:if test="${rfc.status.name ne 'Anulado'}">
+				<c:forEach items="${userInfo.authorities}" var="authority">
+					<c:if test="${authority.name == 'Release Manager'}">
+						<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
+							<div class="m-b-20">
+								<c:if test="${rfc.status.name ne 'Anulado'}">
+									<button type="button" class="btn btn-default setIcon"
+										onclick="confirmCancelRFC(${rfc.id})" title="Anular"
+										style="background-color: #00294c !important; color: #fff; border: none !important;">
+										<span>ANULAR</span><span style="margin-left: 10px;"><i
+											class="material-icons m-t--2">highlight_off</i></span>
+									</button>
+								</c:if>
 								<button type="button" class="btn btn-default setIcon"
-									onclick="confirmCancelRFC(${rfc.id})" title="Anular"
+									onclick="changeStatusRFC(${rfc.id}, '${rfc.numRequest}' )"
+									title="Borrador"
 									style="background-color: #00294c !important; color: #fff; border: none !important;">
-									<span>ANULAR</span><span style="margin-left: 10px;"><i
-										class="material-icons m-t--2">highlight_off</i></span>
+									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
+										class="material-icons m-t--2">offline_pin</i></span>
 								</button>
-							</c:if>
-							<button type="button" class="btn btn-default setIcon"
-								onclick="changeStatusRFC(${rfc.id}, '${rfc.numRequest}' )"
-								title="Borrador"
-								style="background-color: #00294c !important; color: #fff; border: none !important;">
-								<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
-									class="material-icons m-t--2">offline_pin</i></span>
-							</button>
+							</div>
 						</div>
-					</div>
-				</c:if>
-
+					</c:if>
+				</c:forEach>
 			</div>
 		</div>
 	</section>
-	
+
 	<%@include file="../plantilla/footer.jsp"%>
-	
+
 	<script src="<c:url value='/static/js/rfc/rfcSummaryActions.js'/>"></script>
 	<!-- Validate Core Js -->
-<script
-	src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#contentSummary textarea").parent().removeClass('focused');
@@ -369,7 +378,7 @@
 
 		});
 	</script>
-	
+
 </body>
 
 </html>

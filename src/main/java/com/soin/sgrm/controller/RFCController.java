@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -282,15 +283,33 @@ public class RFCController extends BaseController {
 			}
 			if (addRFC.getReleasesList() != null) {
 				JSONArray jsonArray = new JSONArray(addRFC.getReleasesList());
-
+				String dbScheme=addRFC.getSchemaDB();
 				if (jsonArray.length() != 0) {
 					for (int i = 0; i < jsonArray.length(); i++) {
 						JSONObject object = jsonArray.getJSONObject(i);
-					
+						
 						Release_RFC release = releaseService.findRelease_RFCById(object.getInt(("id")));
+						Set<ReleaseObject> releaseObjects=release.getObjects();
+						for(ReleaseObject releaseObject:releaseObjects) {
+							
+							if (releaseObject.getIsSql() == 1) {
+								String scheme=releaseObject.getDbScheme();
+								addRFC.setRequiredBD(true);
+								if(dbScheme.trim().equals("")) {
+									dbScheme=scheme;
+								}else {
+									String[] split=dbScheme.split(",");
+									boolean verify= ArrayUtils.contains(split,scheme);
+									if(!verify) {
+										dbScheme=dbScheme+","+scheme;
+									}
+								}
+							}
+						}
 						listRelease.add(release);
 
 					}
+					addRFC.setSchemaDB(dbScheme);
 					addRFC.setReleases(Sets.newHashSet(listRelease));
 				}
 			}
@@ -522,8 +541,8 @@ public class RFCController extends BaseController {
 			 rfc.setOperator(getUserLogin().getFullName());
 
 			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
-				if (emailService.getByKey("name", "RFC Solicitado") != null) {
-					EmailTemplate email = emailService.getByKey("name", "RFC Solicitado");
+				if (emailService.getByKey("name", "Plantilla RFC") != null) {
+					EmailTemplate email = emailService.getByKey("name", "Plantilla RFC");
 					RFC rfcEmail = rfc;
 					Thread newThread = new Thread(() -> {
 						try {
@@ -565,23 +584,26 @@ public class RFCController extends BaseController {
 
 		if (rfc.getImpactId()==0)
 			errors.add(new MyError("impactId", "Valor requerido."));
-
-		if (rfc.getTypeChangeId() ==0)
+		if (rfc.getTypeChangeId()==null ) {
 			errors.add(new MyError("typeChangeId", "Valor requerido."));
-
+		}else {
+			if (rfc.getTypeChangeId() ==0 )
+				errors.add(new MyError("typeChangeId", "Valor requerido."));
+		}
+			
 		if (rfc.getPriorityId() ==0)
 			errors.add(new MyError("priorityId", "Valor requerido."));
 
-		if (rfc.getRequestDateBegin().equals(""))
+		if (rfc.getRequestDateBegin().trim().equals(""))
 			errors.add(new MyError("dateBegin", "Valor requerido."));
 
-		if (rfc.getRequestDateBegin().equals(""))
+		if (rfc.getRequestDateBegin().trim().equals(""))
 			errors.add(new MyError("dateFinish", "Valor requerido."));
 
-		if (rfc.getReasonChange().equals(""))
+		if (rfc.getReasonChange().trim().equals(""))
 			errors.add(new MyError("rfcReason", "Valor requerido."));
 
-		if (rfc.getEffect().equals(""))
+		if (rfc.getEffect().trim().equals(""))
 			errors.add(new MyError("rfcEffect", "Valor requerido."));
 
 		if (rfc.getDetail().trim().equals(""))

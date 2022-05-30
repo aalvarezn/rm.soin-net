@@ -625,8 +625,10 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
-
-		List<Release> aaData = crit.list();
+		if(recordsTotal==1) {
+			crit.uniqueResult();
+		}
+		List<Release_RFC> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -648,11 +650,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		// Valores de busqueda en la tabla
 		if (sSearch != null && !((sSearch.trim()).equals("")))
-			crit.add(Restrictions.or(Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("numRelease", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+			crit.add(Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase());
 		if (systemId != 0) {
 			crit.add(Restrictions.eq("system.id", systemId));
 		}
