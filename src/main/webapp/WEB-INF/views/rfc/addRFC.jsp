@@ -1,3 +1,4 @@
+
 <div id="addRFCSection">
 	<form id="formAddRFC" action="changePassword" method="post">
 		<input type="hidden" name="${_csrf.parameterName}"
@@ -18,6 +19,7 @@
 								<option value="${system.id }">${system.code }</option>
 							</c:forEach>
 							</select>
+							
 					</div>
 
 				</div>
@@ -41,7 +43,7 @@
 	<div class="button-demo flr">
 		<button type="button" class="btn btn-default"
 			onclick="closeRFCSection()">CANCELAR</button>
-		<button id="createRFC" type="button"
+		<button id="createRFC" type="button" disabled
 			class="btn btn-primary waves-effect" onclick="createRFC()">CREAR
 			RFC</button>
 	</div>

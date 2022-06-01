@@ -654,3 +654,4 @@ jQuery.validator.addMethod("selectOption",function(value,element,param) {
 	return elementValue != param;
 },
 "Value cannot be {0}");
+

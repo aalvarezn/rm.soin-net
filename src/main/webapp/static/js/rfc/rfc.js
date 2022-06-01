@@ -63,13 +63,11 @@ $(function() {
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-	console.log("prueba");
 	$dtRFCs.ajax.reload();
 });
 
 $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val('');
-	console.log("prueba");
 	$dtRFCs.ajax.reload();
 });
 
@@ -291,7 +289,6 @@ function createRFC() {
 					codeProyect : $fmRFC.find('#sigesId').val(),
 				}),
 				success : function(response) {
-					console.log(response.data);
 					unblockUI();
 					notifyMs(response.message, response.status);
 					window.location = getCont()
@@ -341,23 +338,20 @@ function dropDownChange(){
 
 	$('#sId').on('change', function(){
 		var sId =$fmRFC.find('#sId').val();
-		
-		console.log(sId);
 		if(sId!=""){
 		$.ajax({
 			type: 'GET',
 			url: getCont() + "rfc/changeProject/"+sId,
 			success: function(result) {
-				console.log(result.length);
 				if(result.length!=0){
 					var s = '';
 					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 					for(var i = 0; i < result.length; i++) {
 						s += '<option value="' + result[i].codeSiges + '">' + result[i].codeSiges + '</option>';
 					}
-					console.log(s);
 					$('#sigesId').html(s);
 					$('#sigesId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
 					$('#sigesId').selectpicker('refresh');
 				}else{
 					resetDrop();
@@ -374,14 +368,11 @@ function dropDownChange(){
 }
 
 function openRFCTrackingModal(idRFC) {
-	console.log(idRFC);
+
 	var dtRFC = $('#dtRFCs').dataTable();
-	//console.log(dtRFC.row(0).data());
 	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
-	console.log(idRow[0]);
 	var rowData = $dtRFCs.row(idRow[0]).data();
-	console.log(rowData);
- 
+	
 	$trackingRFCForm.find('#idRFC').val(rowData.id);
 	$trackingRFCForm.find('#rfcNumber').text(rowData.numRequest);
 	
@@ -431,6 +422,7 @@ function resetDrop(){
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 	$('#sigesId').html(s);
 	$('#sigesId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
 	$('#sigesId').selectpicker('refresh');
 	
 }
