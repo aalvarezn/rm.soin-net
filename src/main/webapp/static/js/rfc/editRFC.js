@@ -350,7 +350,7 @@ function initTableAdd(){
 		            render: function (data, type, row) {
 		            	var data="click";
 		              if (type === 'display') {
-		                return '<span title="doble click para eliminar">' + row.releaseNumber + '</span>';
+		                return '<span title="Presione doble click para eliminar">' + row.releaseNumber + '</span>';
 		              }
 		              return data;
 		            }
