@@ -54,7 +54,7 @@
 								</select> 
 							</div>
 						</div>
-						<div class="col-lg-12 col-md-12 col-sm-6 col-xs-6">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="email_address">Motivo</label>
 							<div class="form-group m-b-0i">
 								<div class="form-line">

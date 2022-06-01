@@ -40,6 +40,9 @@ $(function() {
 		 var data = $dtRFCsAdd.row( this ).data();
 		 removeData(data);
 	 });
+	 
+	    
+	  
 
 
 	$('#dateBegin').datetimepicker({
@@ -277,9 +280,6 @@ function initTable(){
 						"aoColumns" : [
 							{
 								"mDataProp" : "releaseNumber",
-							},
-							{
-								"mDataProp" : "system.code",
 							}
 							],
 							responsive : true,
@@ -344,9 +344,18 @@ function initTableAdd(){
 				"processing" : "Cargando",
 			},
 		  		data: $dataRelease,
-		       aoColumns: [
-		         { mData: 'releaseNumber' },		
-		      ]
+		      columnDefs: [
+		          {
+		            targets: 0,
+		            render: function (data, type, row) {
+		            	var data="click";
+		              if (type === 'display') {
+		                return '<span title="doble click para eliminar">' + row.releaseNumber + '</span>';
+		              }
+		              return data;
+		            }
+		          }
+		        ]
 		  });
 }
 function dropDownChange(){

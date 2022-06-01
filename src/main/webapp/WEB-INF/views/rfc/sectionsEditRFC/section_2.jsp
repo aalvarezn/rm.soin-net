@@ -41,7 +41,6 @@
 						<thead>
 							<tr>
 								<th>Numero Release</th>
-								<th class="actCol" style="text-align: center;">Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
