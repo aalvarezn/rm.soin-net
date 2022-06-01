@@ -57,10 +57,11 @@
 			</a>
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
-					<!----<li><a href="<c:url value='/admin/status/'/>">Estados RFC</a></li> ---->
+					<li><a href="<c:url value='/admin/statusRFC/'/>">Estados RFC</a></li> 
 					<li><a href="<c:url value='/admin/impact/'/>">Impacto</a></li>
 					<li><a href="<c:url value='/admin/priority/'/>">Prioridad</a></li>
 					<li><a href="<c:url value='/admin/risk/'/>">Riesgo</a></li>
+					<li><a href="<c:url value='/admin/typeChange/'/>">Tipo Cambio</a></li> 
 				</ul></li>
 			<!---- 	#Seccion de requerimientos ---->
 			<li class=""><a id="requestItem" href="javascript:void(0);"

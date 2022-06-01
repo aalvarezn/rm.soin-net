@@ -17,91 +17,71 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.EmailTemplate;
-import com.soin.sgrm.model.Project;
-import com.soin.sgrm.model.Siges;
-import com.soin.sgrm.model.System;
-import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.EmailTemplateService;
-import com.soin.sgrm.service.SigesService;
-import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
-@RequestMapping("/admin/siges")
-public class SigesController extends BaseController {
+@RequestMapping("/admin/statusRFC")
+public class StatusRFCController extends BaseController {
 	public static final Logger logger = Logger.getLogger(AmbientController.class);
 
 	@Autowired
-	SigesService sigesService;
+	StatusRFCService statusRFCService;
 	
-	@Autowired
-	SystemService systemService;
 	
-	@Autowired 
-	EmailTemplateService emailTemplateService;
 	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("systems", systemService.listAll());
-		model.addAttribute("system", new Project());
-		model.addAttribute("emailTemplates",emailTemplateService.listAll());
-		model.addAttribute("emailTemplate",new EmailTemplate());
-		return "/admin/siges/siges";
+
+		return "/admin/statusRFC/statusRFC";
 	}
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<Siges> rfcs = new JsonSheet<>();
+		JsonSheet<StatusRFC> statusRFCs = new JsonSheet<>();
 		try {
-			rfcs.setData(sigesService.findAll());
+			statusRFCs.setData(statusRFCService.findAll());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return rfcs;
+		return statusRFCs;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody Siges addSiges) {
+	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody StatusRFC addStatusRFC) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			SystemInfo system= systemService.findSystemInfoById( addSiges.getSystemId());
-			EmailTemplate emailTemplate= emailTemplateService.findById(addSiges.getEmailTemplateId());
-			addSiges.setEmailTemplate(emailTemplate);
-			addSiges.setSystem(system);
-			sigesService.save(addSiges);
 
-			res.setMessage("Siges agregado!");
+			statusRFCService.save(addStatusRFC);
+
+			res.setMessage("Status RFC agregado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "siges");
+			Sentry.capture(e, "statusRFC");
 			res.setStatus("exception");
-			res.setMessage("Error al agregar siges!");
+			res.setMessage("Error al agregar Status RFC!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody Siges uptSiges) {
+	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody StatusRFC uptStatusRFC) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			SystemInfo system= systemService.findSystemInfoById(uptSiges.getSystemId());
-			EmailTemplate emailTemplate= emailTemplateService.findById( uptSiges.getEmailTemplateId());
-			uptSiges.setEmailTemplate(emailTemplate);
-			uptSiges.setSystem(system);
-			sigesService.update(uptSiges);
+			statusRFCService.update(uptStatusRFC);
 
-			res.setMessage("Siges modificado!");
+			res.setMessage("Status RFC modificado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "siges");
+			Sentry.capture(e, "statusRFC");
 			res.setStatus("exception");
-			res.setMessage("Error al modificar siges!");
+			res.setMessage("Error al modificar Status RFC!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -112,12 +92,12 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			sigesService.delete(id);
-			res.setMessage("Siges eliminado!");
+			statusRFCService.delete(id);
+			res.setMessage("Status RFC eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
 			res.setStatus("exception");
-			res.setMessage("Error al eliminar el siges!");
+			res.setMessage("Error al eliminar el Status RFC!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;

@@ -62,13 +62,11 @@ $(document).ready(function() {
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-	console.log("prueba");
 	$dtRFCs.ajax.reload();
 });
 
 $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val('');
-	console.log("prueba");
 	$dtRFCs.ajax.reload();
 });
 
@@ -85,7 +83,6 @@ $('#tableFilters #statusId').change(function() {
 });
 
 function initRFCTable() {
-	console.log(getCont() + "management/rfc/list");
 	$dtRFCs = $('#dtRFCs').DataTable(
 			{
 				
@@ -162,12 +159,8 @@ function initRFCTable() {
 
 function openRFCTrackingModal(idRFC) {
 	var dtRFC = $('#dtRFCs').dataTable();
-	//console.log(dtRFC.row(0).data());
 	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
-	console.log(idRow[0]);
 	var rowData = $dtRFCs.row(idRow[0]).data();
-	console.log(rowData);
- 
 	$trackingRFCForm.find('#idRFC').val(rowData.id);
 	$trackingRFCForm.find('#rfcNumber').text(rowData.numRequest);
 	
@@ -265,12 +258,8 @@ function deleteRFC(element) {
 
 function changeStatusRFC(idRFC) {
 	var dtRFC = $('#dtRFCs').dataTable();
-	//console.log(dtRFC.row(0).data());
 	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
-	console.log(idRow[0]);
 	var rowData = $dtRFCs.row(idRow[0]).data();
-	console.log(rowData);
-	
 	$formChangeStatus[0].reset();
 	$formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#idRFC').val(idRFC);

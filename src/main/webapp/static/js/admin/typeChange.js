@@ -1,17 +1,17 @@
 
-var $dtSiges;
-var $mdSiges = $('#sigesModal');
-var $fmSiges = $('#sigesModalForm');
+var $dtTypeChange;
+var $mdTypeChange = $('#typeChangeModal');
+var $fmTypeChange = $('#typeChangeModalForm');
 
 $(function() {
-	activeItemMenu("sigesItem", true);
+	activeItemMenu("typeChangeItem", true);
 	initDataTable();
-	initSigesFormValidation();
+	initTypeChangeFormValidation();
 });
 
 
 function initDataTable() {
-	$dtSiges = $('#sigesTable')
+	$dtTypeChange = $('#typeChangeTable')
 	.DataTable(
 			{
 				lengthMenu : [ [ 10, 25, 50, -1 ],
@@ -19,25 +19,26 @@ function initDataTable() {
 					"iDisplayLength" : 10,
 					"language" : optionLanguaje,
 					"iDisplayStart" : 0,
-					"sAjaxSource" : getCont() + "admin/siges/list",
+					"sAjaxSource" : getCont() + "admin/typeChange/list",
 					"fnServerParams" : function(aoData) {
 					},
 					"aoColumns" : [
 						{
-							"mDataProp" : 'codeSiges'
+							"mDataProp" : 'name'
 						},
 						{
-							"mDataProp" : 'system.code'
+							"mDataProp" : 'description'
 						},
+						
 						{
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';
 
-								options += '<a onclick="showSiges('
+								options += '<a onclick="showTypeChange('
 									+ meta.row
 									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
 
-								options += '<a onclick="deleteSiges('
+								options += '<a onclick="deleteTypeChange('
 									+ meta.row
 									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
 
@@ -50,21 +51,20 @@ function initDataTable() {
 			});
 }
 
-function showSiges(index){
-	$fmSiges.validate().resetForm();
-	$fmSiges[0].reset();
-	var obj = $dtSiges.row(index).data();
-	$fmSiges.find('#sId').val(obj.id);
-	$fmSiges.find('#sCode').val(obj.codeSiges);
-	$fmSiges.find('#sSystemId').selectpicker('val',obj.system.id);
-	$fmSiges.find('#sEmailId').selectpicker('val',obj.emailTemplate.id);
-	$mdSiges.find('#update').show();
-	$mdSiges.find('#save').hide();
-	$mdSiges.modal('show');
+function showTypeChange(index){
+	$fmTypeChange.validate().resetForm();
+	$fmTypeChange[0].reset();
+	var obj = $dtTypeChange.row(index).data();
+	$fmTypeChange.find('#sId').val(obj.id);
+	$fmTypeChange.find('#sName').val(obj.name);
+	$fmTypeChange.find('#sDescription').val(obj.description);
+	$mdTypeChange.find('#update').show();
+	$mdTypeChange.find('#save').hide();
+	$mdTypeChange.modal('show');
 }
 
-function updateSiges() {
-	if (!$fmSiges.valid())
+function updateTypeChange() {
+	if (!$fmTypeChange.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
@@ -75,21 +75,20 @@ function updateSiges() {
 			blockUI();
 			$.ajax({
 				type : "PUT",
-				url : getCont() + "admin/siges/" ,
+				url : getCont() + "admin/typeChange/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					id : $fmSiges.find('#sId').val(),
-					codeSiges : $fmSiges.find('#sCode').val(),
-					systemId : $fmSiges.find('#sSystemId').val(),
-					emailTemplateId :$fmSiges.find('#sEmailId').val()
+					id : $fmTypeChange.find('#sId').val(),
+					name : $fmTypeChange.find('#sName').val(),
+					description:$fmTypeChange.find('#sDescription').val(),
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtSiges.ajax.reload();
-					$mdSiges.modal('hide');
+					$dtTypeChange.ajax.reload();
+					$mdTypeChange.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -101,9 +100,9 @@ function updateSiges() {
 }
 
 
-function saveSiges() {
+function saveTypeChange() {
 	
-	if (!$fmSiges.valid())
+	if (!$fmTypeChange.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
@@ -114,20 +113,19 @@ function saveSiges() {
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "admin/siges/" ,
+				url : getCont() + "admin/typeChange/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					codeSiges : $fmSiges.find('#sCode').val(),
-					systemId : $fmSiges.find('#sSystemId').val(),
-					emailTemplateId :$fmSiges.find('#sEmailId').val()
+					name : $fmTypeChange.find('#sName').val(),
+					description:$fmTypeChange.find('#sDescription').val(),
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtSiges.ajax.reload();
-					$mdSiges.modal('hide');
+					$dtTypeChange.ajax.reload();
+					$mdTypeChange.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -138,8 +136,8 @@ function saveSiges() {
 	});
 }
 
-function deleteSiges(index) {
-	var obj = $dtSiges.row(index).data();
+function deleteTypeChange(index) {
+	var obj = $dtTypeChange.row(index).data();
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
 		text: 'Esta acci\u00F3n no se puede reversar.',
@@ -149,14 +147,14 @@ function deleteSiges(index) {
 			blockUI();
 			$.ajax({
 				type : "DELETE",
-				url : getCont() + "admin/siges/"+obj.id ,
+				url : getCont() + "admin/typeChange/"+obj.id ,
 				timeout : 60000,
 				data : {},
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtSiges.ajax.reload();
-					$mdSiges.modal('hide');
+					$dtTypeChange.ajax.reload();
+					$mdTypeChange.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -167,46 +165,45 @@ function deleteSiges(index) {
 	});
 }
 
-function addSiges(){
-	$fmSiges.validate().resetForm();
-	$fmSiges[0].reset();
-	$fmSiges.find('#sSystemId').selectpicker('val',"");
-	$fmSiges.find('#sEmailId').selectpicker('val',"");
-	$mdSiges.find('#save').show();
-	$mdSiges.find('#update').hide();
-	$mdSiges.modal('show');
+function addTypeChange(){
+	$fmTypeChange.validate().resetForm();
+	$fmTypeChange[0].reset();
+	$mdTypeChange.find('#save').show();
+	$mdTypeChange.find('#update').hide();
+	$mdTypeChange.modal('show');
 }
 
-function closeSiges(){
-	$mdSiges.modal('hide');
+function closeTypeChange(){
+	$mdTypeChange.modal('hide');
 }
 
-function initSigesFormValidation() {
-	$fmSiges.validate({
+function initTypeChangeFormValidation() {
+	$fmTypeChange.validate({
 		rules : {
-			'sCode' : {
+
+			'sName' : {
 				required : true,
 				minlength : 1,
-				maxlength : 100,
+				maxlength : 20,
 			},
-			'sSystemId' : {
+
+			'sDescription' : {
 				required : true,
-			},
-			'sEmailId' : {
-				required : true,
+				minlength : 1,
+				maxlength : 20,
 			}
 		},
 		messages : {
-			'sCode' : {
+
+			'sName' : {
 				required :  "Ingrese un valor",
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
-			'sSystemId' : {
-				required : "Seleccione un valor"
-			},
-			'sEmailId' : {
-				required : "Seleccione un valor"
+			'sDescription' : {
+				required :  "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
 			},
 		},
 		highlight,

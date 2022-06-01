@@ -539,10 +539,10 @@ public class RFCController extends BaseController {
 		
 			
 			 rfc.setOperator(getUserLogin().getFullName());
-
+			 Siges siges=sigeService.findByKey("name", rfc.getCodeProyect());
 			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
-				if (emailService.getByKey("name", "Plantilla RFC") != null) {
-					EmailTemplate email = emailService.getByKey("name", "Plantilla RFC");
+				if (siges.getEmailTemplate() != null) {
+					EmailTemplate email = siges.getEmailTemplate();
 					RFC rfcEmail = rfc;
 					Thread newThread = new Thread(() -> {
 						try {

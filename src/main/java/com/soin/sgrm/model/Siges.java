@@ -33,8 +33,16 @@ public class Siges implements Serializable{
 	@JoinColumn(name = "SISTEMA_ID")
 	private SystemInfo system;
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "EMAIL_ID")
+	private EmailTemplate emailTemplate;
+	
 	@Transient
 	private int systemId;
+	
+	@Transient
+	private int emailTemplateId;
+
 
 	public Long getId() {
 		return id;
@@ -66,6 +74,22 @@ public class Siges implements Serializable{
 
 	public void setSystemId(int systemId) {
 		this.systemId = systemId;
+	}
+
+	public EmailTemplate getEmailTemplate() {
+		return emailTemplate;
+	}
+
+	public void setEmailTemplate(EmailTemplate emailTemplate) {
+		this.emailTemplate = emailTemplate;
+	}
+
+	public int getEmailTemplateId() {
+		return emailTemplateId;
+	}
+
+	public void setEmailTemplateId(int emailTemplateId) {
+		this.emailTemplateId = emailTemplateId;
 	}
 	
 	

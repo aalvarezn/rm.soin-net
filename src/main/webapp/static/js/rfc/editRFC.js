@@ -86,7 +86,7 @@ $(function() {
 			sendPartialRFC();
 		}
 	});
-	//console.log($('a data-action="togglePicker"'));
+	
 	
 	var toggle = $('.picker-switch a[data-action="togglePicker"]');
 	
@@ -139,7 +139,7 @@ function checkDB(){
 			$("#tagShow").show("slow");
 		} else {
 			this.value = 0;
-			console.log("aca");
+			
 			$("#tagShow").hide("slow");
 		}
 	});
@@ -163,12 +163,6 @@ function closePreviewRFC() {
 }
 
 function compareArrays(arr1, arr2) {
-	console.log($dataReleaseCheck);
-	console.log("$dataReleaseCheck");
-	console.log($dataRelease);
-	console.log("$dataRelease");
-	console.log($(arr1).not(arr2).length);
-	console.log( $(arr2).not(arr1).length);
 	return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0;
 };
 function sendPartialRFC() {
@@ -248,7 +242,7 @@ function initData(){
 				if(result.length!=0){
 					$dataRelease=result.releases;
 					$dataReleaseCheck=$dataRelease.slice();
-					console.log("aca se asigna por primera vez");
+					
 				}else{
 					
 				}
@@ -296,7 +290,6 @@ function initTable(){
 
 function addDataToTable(){
 	var data = $dtRFCs.row('.selected').data();
-	console.log(data);
 	var verification=true;
 	if(data!=undefined){
 		
@@ -305,7 +298,7 @@ function addDataToTable(){
 
 		$dataRelease.forEach(function(element){
 			if(element.id==data.id){
-				console.log(element.id)
+				
 				verification=false;
 				
 			}
@@ -334,8 +327,7 @@ function addDataToTable(){
 	}
 		return;
 	}
-	 // var data = $dtRFCs.row(this).data();
-    	//console.log(data);
+
 }
 
 function reloadPreview() {
@@ -361,8 +353,6 @@ function dropDownChange(){
 
 	$('#systemId').on('change', function(){
 		var sId =$rfcEditForm.find('#systemId').val();
-		
-		console.log(sId);
 		if(sId!=""){
 			$dtRFCs = $('#releaseTable').DataTable(
 					{
@@ -404,12 +394,10 @@ function removeData(data){
 
 	$dataRelease.forEach(function (element,index){
         if(element.id == data.id){
-        	console.log(index);	
         	$dataRelease.splice(index,1); 
         	if($dataRelease.length==0){
     
         		$dataRelease=[];
-        		console.log($dataRelease==$dataRelease);
         		 $('#releaseTableAdd').dataTable().fnClearTable();
         		 
         		 return;
@@ -590,7 +578,6 @@ function resetErrors() {
 function showRFCErrors(errors) {
 	resetErrors();// Eliminamos las etiquetas de errores previas
 	var error = errors;
-	console.log(errors);
 	for (var i = 0; i < error.length; i++) {
 		// Se modifica el texto de la advertencia y se agrega la de activeError
 		$rfcEditForm.find(" #" + error[i].key + "_error").text(

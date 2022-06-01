@@ -39,6 +39,19 @@
 								</select>
 							</div>
 						</div>
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+							<label for="description">Plantilla Correo</label>
+							<div class="form-group m-t-12">
+								<select id="sEmailId" name="sEmailId" required="required"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="">-- Seleccione una opci&oacute;n --</option>
+									<c:forEach items="${emailTemplates}" var="emailTemplate">
+										<option value="${emailTemplate.id }">${emailTemplate.name }</option>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
 					</div>
 				</form>
 			</div>

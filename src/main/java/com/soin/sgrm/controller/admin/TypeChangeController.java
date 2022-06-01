@@ -17,91 +17,71 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.EmailTemplate;
-import com.soin.sgrm.model.Project;
-import com.soin.sgrm.model.Siges;
-import com.soin.sgrm.model.System;
-import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.EmailTemplateService;
-import com.soin.sgrm.service.SigesService;
-import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.TypeChangeService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
-@RequestMapping("/admin/siges")
-public class SigesController extends BaseController {
-	public static final Logger logger = Logger.getLogger(AmbientController.class);
+@RequestMapping("/admin/typeChange")
+public class TypeChangeController extends BaseController {
+	public static final Logger logger = Logger.getLogger(TypeChangeController.class);
 
 	@Autowired
-	SigesService sigesService;
+	TypeChangeService typeChangeService;
 	
-	@Autowired
-	SystemService systemService;
 	
-	@Autowired 
-	EmailTemplateService emailTemplateService;
 	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("systems", systemService.listAll());
-		model.addAttribute("system", new Project());
-		model.addAttribute("emailTemplates",emailTemplateService.listAll());
-		model.addAttribute("emailTemplate",new EmailTemplate());
-		return "/admin/siges/siges";
+
+		return "/admin/typeChange/typeChange";
 	}
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<Siges> rfcs = new JsonSheet<>();
+		JsonSheet<TypeChange> typeChange = new JsonSheet<>();
 		try {
-			rfcs.setData(sigesService.findAll());
+			typeChange.setData(typeChangeService.findAll());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return rfcs;
+		return typeChange;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody Siges addSiges) {
+	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody TypeChange addTypeChange) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			SystemInfo system= systemService.findSystemInfoById( addSiges.getSystemId());
-			EmailTemplate emailTemplate= emailTemplateService.findById(addSiges.getEmailTemplateId());
-			addSiges.setEmailTemplate(emailTemplate);
-			addSiges.setSystem(system);
-			sigesService.save(addSiges);
 
-			res.setMessage("Siges agregado!");
+			typeChangeService.save(addTypeChange);
+
+			res.setMessage("Tipo cambio agregado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "siges");
+			Sentry.capture(e, "typeChange");
 			res.setStatus("exception");
-			res.setMessage("Error al agregar siges!");
+			res.setMessage("Error al agregar Tipo cambio!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody Siges uptSiges) {
+	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody TypeChange uptTypeChange) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			SystemInfo system= systemService.findSystemInfoById(uptSiges.getSystemId());
-			EmailTemplate emailTemplate= emailTemplateService.findById( uptSiges.getEmailTemplateId());
-			uptSiges.setEmailTemplate(emailTemplate);
-			uptSiges.setSystem(system);
-			sigesService.update(uptSiges);
+			typeChangeService.update(uptTypeChange);
 
-			res.setMessage("Siges modificado!");
+			res.setMessage("Tipo cambio modificado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "siges");
+			Sentry.capture(e, "typeChange");
 			res.setStatus("exception");
-			res.setMessage("Error al modificar siges!");
+			res.setMessage("Error al modificar Tipo cambio!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -112,12 +92,12 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			sigesService.delete(id);
-			res.setMessage("Siges eliminado!");
+			typeChangeService.delete(id);
+			res.setMessage("Tipo cambio  eliminado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "siges");
+			Sentry.capture(e, "typeChange");
 			res.setStatus("exception");
-			res.setMessage("Error al eliminar el siges!");
+			res.setMessage("Error al eliminar el Tipo cambio!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
