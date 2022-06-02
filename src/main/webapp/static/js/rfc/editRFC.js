@@ -398,10 +398,7 @@ function dropDownChange(){
 	});
 }
 
-function closeTrackingRFCModal(){
-	$trackingRFCForm[0].reset();
-	$('#trackingRFCModal').modal('hide');
-}
+
 function removeData(data){
 
 	$dataRelease.forEach(function (element,index){
