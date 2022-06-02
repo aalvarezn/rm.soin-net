@@ -1,21 +1,22 @@
 package com.soin.sgrm.service;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.hibernate.criterion.Criterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,19 +30,20 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.PreencodedMimeBodyPart;
 
-import org.springframework.mail.javamail.MimeMessageHelper;
-
 import com.soin.sgrm.dao.EmailTemplateDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Ambient;
 import com.soin.sgrm.model.Dependency;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
+import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.UserInfo;
-import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.model.wf.WFUser;
+import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.EnviromentConfig;
 
@@ -59,6 +61,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	@Autowired
+	SigesService sigeService;
 
 	EnviromentConfig envConfig = new EnviromentConfig();
 
@@ -488,5 +493,228 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	public void sendMailRFC(RFC rfc, EmailTemplate email) throws Exception{
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
+		email = fillEmail(email, rfc);
+		String body = email.getHtml();
+		body = Constant.getCharacterEmail(body);
+		MimeMultipart mmp = MimeMultipart(body);
+		mimeMessage.setContent(mmp);
+		mimeMessage.setSubject(email.getSubject());
+		mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
+		mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
+		for (String toUser : email.getTo().split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
+		}
+		mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(rfc.getUser().getEmail()));
+		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
+			for (String ccUser : email.getCc().split(",")) {
+				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			}
+		}
+		mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(rfc.getUser().getEmail()));
+
+		mailSender.send(mimeMessage);
+	}
+	public EmailTemplate fillEmail(EmailTemplate email, RFC rfc) {
+		String temp = "";
+		/* ------ body ------ */
+		if (email.getHtml().contains("{{userName}}")) {
+			email.setHtml(email.getHtml().replace("{{userName}}",
+					(rfc.getUser().getFullName() != null ? rfc.getUser().getFullName() : "")));
+		}
+
+		if (email.getHtml().contains("{{rfcNumber}}")) {
+			email.setHtml(email.getHtml().replace("{{rfcNumber}}",
+					(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
+		}
+
+		if (email.getHtml().contains("{{detail}}")) {
+			String detail = rfc.getDetail()!= null ? rfc.getDetail() : "";
+			detail = detail.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{detail}}", detail));
+		}
+
+		if (email.getHtml().contains("{{reason}}")) {
+			String reason = rfc.getReasonChange() != null ? rfc.getReasonChange() : "";
+			reason = reason.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{reason}}", reason));
+		}
+
+		if (email.getHtml().contains("{{requestDateBegin}}")) {
+			String requestDateBegin = rfc.getRequestDateBegin() != null ? rfc.getRequestDateBegin() : "";
+			requestDateBegin = requestDateBegin.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{requestDateBegin}}", requestDateBegin));
+		}
+
+		if (email.getHtml().contains("{{requestDateFinish}}")) {
+			String minimalEvidence = rfc.getRequestDateFinish() != null ? rfc.getRequestDateFinish() : "";
+			minimalEvidence = minimalEvidence.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{requestDateFinish}}", minimalEvidence));
+		}
+
+		if (email.getHtml().contains("{{effect}}")) {
+			String effect = rfc.getEffect() != null ? rfc.getEffect() : "";
+			effect = effect.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{effect}}", effect));
+		}
+
+		if (email.getHtml().contains("{{releases}}")) {
+			temp = "";
+			for (Release_RFC release : rfc.getReleases()) {
+				temp += release.getReleaseNumber() + "<br>";
+			}
+			email.setHtml(email.getHtml().replace("{{releases}}", (temp.equals("") ? "Sin releases definidos" : temp)));
+		}
+
+
+
+		if (email.getHtml().contains("{{systemsInvolved}}")) {
+			temp = "";
+			Siges codeSiges = sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+
+			List<String> systemsInvolved = new ArrayList<String>();
+
+			systemsInvolved.add(codeSiges.getSystem().getName());
+			String nameSystem = "";
+			boolean validate = true;
+			Set<Release_RFC> releases = rfc.getReleases();
+			if (releases != null) {
+				if (releases.size() != 0) {
+					for (Release_RFC release : releases) {
+						nameSystem = release.getSystem().getName();
+						for (String system : systemsInvolved) {
+							if (system.equals(nameSystem)) {
+								validate = false;
+							}
+						}
+						if (validate) {
+							systemsInvolved.add(nameSystem);
+						}
+						validate = true;
+					}
+				}
+			}
+			for (String  systems : systemsInvolved) {
+				temp += systems + "<br>";
+			}
+			
+			email.setHtml(email.getHtml().replace("{{systemsInvolved}}", (temp.equals("") ? "Sin sistemas definidos" : temp)));
+		}
+
+		
+
+		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{rfcNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{rfcNumber}}",
+					(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
+		}
+	
+		if (email.getSubject().contains("{{priority}}")) {
+			email.setSubject(email.getSubject().replace("{{priority}}",
+					(rfc.getPriority().getName() != null ? rfc.getPriority().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{impact}}")) {
+			email.setSubject(email.getSubject().replace("{{impact}}",
+					(rfc.getImpact().getName() != null ? rfc.getImpact().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{typeChange}}")) {
+			email.setSubject(email.getSubject().replace("{{typeChange}}",
+					(rfc.getTypeChange().getName() != null ? rfc.getTypeChange().getName() : "")));
+		}
+
+		return email;
+	}
+
+	@Override
+	public EmailTemplate getByKey(String key, String value) {
+		return dao.getByKey(key, value);
+	}
+
+	@Override
+	public EmailTemplate getById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void save(EmailTemplate model) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void merge(EmailTemplate model) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveOrUpdate(EmailTemplate model) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(EmailTemplate model) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void flush() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteByKey(String key, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void delete(EmailTemplate model) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public JsonSheet<EmailTemplate> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			Map<String, Object> columns, Criterion qSrch) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JsonSheet<EmailTemplate> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			Map<String, Object> columns, Criterion qSrch, List<String> fetchs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JsonSheet<EmailTemplate> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<EmailTemplate> findAll() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

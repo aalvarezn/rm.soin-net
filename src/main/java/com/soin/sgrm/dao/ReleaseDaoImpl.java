@@ -26,6 +26,7 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.ItemObject;
@@ -284,6 +285,11 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	@Override
 	public Release findReleaseById(Integer id) {
 		Release release = (Release) sessionFactory.getCurrentSession().get(Release.class, id);
+		return release;
+	}
+	@Override
+	public Release_RFC findRelease_RFCById(Integer id) {
+		Release_RFC release = (Release_RFC) sessionFactory.getCurrentSession().get(Release_RFC.class, id);
 		return release;
 	}
 
@@ -599,6 +605,56 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		}
 		crit.addOrder(Order.desc("createDate"));
 
+		return crit;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer systemId) throws SQLException, ParseException {
+		JsonSheet json = new JsonSheet();
+		Criteria crit = criteriaBySystems1( sEcho, iDisplayStart, iDisplayLength, sSearch,
+				systemId);
+
+		crit.setFirstResult(iDisplayStart);
+		crit.setMaxResults(iDisplayLength);
+
+		Criteria critCount = criteriaBySystems1( sEcho, iDisplayStart, iDisplayLength, sSearch,
+				systemId);
+
+		critCount.setProjection(Projections.rowCount());
+		Long count = (Long) critCount.uniqueResult();
+		int recordsTotal = count.intValue();
+		if(recordsTotal==1) {
+			crit.uniqueResult();
+		}
+		List<Release_RFC> aaData = crit.list();
+		json.setDraw(sEcho);
+		json.setRecordsTotal(recordsTotal);
+		json.setRecordsFiltered(recordsTotal);
+		json.setData(aaData);
+		return json;
+	}
+	
+
+	public Criteria criteriaBySystems1(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer systemId)
+			throws SQLException, ParseException {
+
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_RFC.class);
+		crit.createAlias("system", "system");
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name","Certificacion"),
+				Restrictions.eq("statuses.name","Solicitado")))
+		.add(Restrictions.eq("system.id", systemId));
+		
+
+		// Valores de busqueda en la tabla
+		if (sSearch != null && !((sSearch.trim()).equals("")))
+			crit.add(Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase());
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		
 		return crit;
 	}
 }

@@ -42,4 +42,9 @@ public class ParameterDaoImpl implements ParameterDao {
 		sessionFactory.getCurrentSession().update(param);
 	}
 
+	@Override
+	public Parameter getParameterByCode(Integer code) {
+		return  (Parameter) sessionFactory.getCurrentSession().createCriteria(Parameter.class).add(Restrictions.eq("code", code)).uniqueResult();
+	}
+
 }

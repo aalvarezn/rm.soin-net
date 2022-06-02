@@ -36,4 +36,9 @@ public class ParameterServiceImpl implements ParameterService {
 		dao.updateParameter(param);
 	}
 
+	@Override
+	public Parameter getParameterByCode(Integer code) {
+		return dao.getParameterByCode(code);
+	}
+
 }

@@ -1,10 +1,16 @@
 package com.soin.sgrm.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
 
 import com.soin.sgrm.dao.SystemDao;
 import com.soin.sgrm.model.SystemInfo;
@@ -104,5 +110,15 @@ public class SystemServiceImpl implements SystemService {
 	@Override
 	public List<SystemUser> listSystemUserByIds(Object[] ids) {
 		return dao.listSystemUserByIds(ids);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<System> listProjects(int id){
+		return dao.listProjects(id);
+	}
+
+	@Override
+	public SystemInfo findSystemInfoById(Integer id) {
+		return dao.findById(id);
 	}
 }
