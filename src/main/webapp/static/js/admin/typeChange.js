@@ -38,10 +38,7 @@ function initDataTable() {
 									+ meta.row
 									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
 
-								options += '<a onclick="deleteTypeChange('
-									+ meta.row
-									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
-
+			
 								options += ' </div>';
 
 								return options;
