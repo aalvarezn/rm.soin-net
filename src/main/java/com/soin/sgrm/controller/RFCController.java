@@ -224,18 +224,25 @@ public class RFCController extends BaseController {
 		try {
 			User user=userService.getUserByUsername(getUserLogin().getUsername());
 			StatusRFC status = statusService.findByKey("code", "draft");
-			addRFC.setStatus(status);
-			addRFC.setUser(user);
-			addRFC.setRequiredBD(false);
-			addRFC.setRequestDate(CommonUtils.getSystemTimestamp());
-			res.setStatus("success");
-			addRFC.setMotive("Inicio de RFC");	
-			addRFC.setOperator(user.getFullName());
-			addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect()));
+			if(status!=null) {
+				addRFC.setStatus(status);
+				addRFC.setUser(user);
+				addRFC.setRequiredBD(false);
+				addRFC.setRequestDate(CommonUtils.getSystemTimestamp());
+				res.setStatus("success");
+				addRFC.setMotive("Inicio de RFC");	
+				addRFC.setOperator(user.getFullName());
+				addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect()));
 
-			rfcService.save(addRFC);
-			res.setData(addRFC.getId().toString());
-			res.setMessage("Se creo correctamente el RFC!");
+				rfcService.save(addRFC);
+				res.setData(addRFC.getId().toString());
+				res.setMessage("Se creo correctamente el RFC!");
+			}else {
+				
+				res.setStatus("exception");
+				res.setMessage("Error al crear RFC comunicarse con los administradores!");
+			}
+	
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
 			res.setStatus("exception");
