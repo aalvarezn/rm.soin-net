@@ -1,214 +1,215 @@
+
+var $dtAction;
+var $mdAction = $('#actionEnvironmentModal');
+var $fmAction = $('#actionEnvironmentModalForm');
+
 $(function() {
-	activeItemMenu("systemItem", true);
-});
-var $actionEnvironmentTable = $('#actionEnvironmentTable').DataTable({
-	"language" : {
-		"emptyTable" : "No existen registros",
-		"zeroRecords" : "No existen registros"
-	},
-	"ordering" : true,
-	"searching" : true,
-	"paging" : true
+	activeItemMenu("actionItem", true);
+	initDataTable();
+	initActionFormValidation();
 });
 
-var $actionEnvironmentModal = $('#actionEnvironmentModal');
-var $actionEnvironmentModalForm = $('#actionEnvironmentModalForm');
 
-function openActionEnvironmentModal() {
-	resetErrors();
-	$actionEnvironmentModalForm[0].reset();
-	$actionEnvironmentModalForm.find("#systemId").selectpicker('val', '');
-	$('#btnUpdateActionEnvironment').hide();
-	$('#btnSaveActionEnvironment').show();
-	$actionEnvironmentModal.modal('show');
+function initDataTable() {
+	$dtAction = $('#actionEnvironmentTable')
+	.DataTable(
+			{
+				lengthMenu : [ [ 10, 25, 50, -1 ],
+					[ '10', '25', '50', 'Mostrar todo' ] ],
+					"iDisplayLength" : 10,
+					"language" : optionLanguaje,
+					"iDisplayStart" : 0,
+					"sAjaxSource" : getCont() + "admin/action/list",
+					"fnServerParams" : function(aoData) {
+					},
+					"aoColumns" : [
+						{
+							"mDataProp" : 'name'
+						},
+						{
+							"mDataProp" : 'system.name'
+						},
+						{
+							render : function(data, type, row, meta) {
+								var options = '<div class="iconLineC">';
+
+								options += '<a onclick="showAction('
+									+ meta.row
+									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
+
+								options += '<a onclick="deleteAction('
+									+ meta.row
+									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
+
+								options += ' </div>';
+
+								return options;
+							}
+						} ],
+						ordering : false,
+			});
 }
 
-function saveActionEnvironment() {
-	blockUI();
-	$.ajax({
-		type : "POST",
-		url : getCont() + "admin/action/" + "saveActionEnvironment",
-		data : {
-			// Informacion accións
-			id : 0,
-			name : $actionEnvironmentModalForm.find('#name').val(),
-			description : $actionEnvironmentModalForm.find('#description').val(),
-			systemId: $actionEnvironmentModalForm.find("#systemId").children("option:selected").val()
-		},
-		success : function(response) {
-			ajaxSaveActionEnvironment(response)
-		},
-		error : function(x, t, m) {
-			console.log(x);
-			console.log(t);
-			console.log(m);
-			unblockUI();
-			notifyAjaxError(x, t, m);
-		}
-	});
+function showAction(index){
+	$fmAction.validate().resetForm();
+	$fmAction[0].reset();
+	var obj = $dtAction.row(index).data();
+	$fmAction.find('#aId').val(obj.id);
+	$fmAction.find('#aSystemId').selectpicker('val', obj.system.id);
+	$fmAction.find('#aName').val(obj.name);
+	$mdAction.find('#update').show();
+	$mdAction.find('#save').hide();
+	$mdAction.modal('show');
 }
 
-function ajaxSaveActionEnvironment(response) {
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!", "Acci\u00F3n creada correctamente.", "success", 2000)
-		break;
-	case 'fail':
-		unblockUI();
-		showActionEnvironmentErrors(response.errors, $actionEnvironmentModalForm);
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "error")
-		break;
-	default:
-		console.log(response.status);
-	unblockUI();
-	}
-}
-
-function updateActionEnvironmentModal(index) {
-	resetErrors();
-	$('#btnUpdateActionEnvironment').show();
-	$('#btnSaveActionEnvironment').hide();
-	blockUI();
-	$.ajax({
-		type : "GET",
-		url : getCont() + "admin/" + "action/findActionEnvironment/" + index,
-		timeout : 60000,
-		data : {},
-		success : function(response) {
-			unblockUI();
-			$actionEnvironmentModalForm.find('#actionEnvironmentId').val(index);
-			$actionEnvironmentModalForm.find('#name').val(response.name);
-			$actionEnvironmentModalForm.find("#systemId").selectpicker('val', response.system.id);
-			$actionEnvironmentModal.modal('show');
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function closeActionEnvironmentModal() {
-	$actionEnvironmentModalForm[0].reset();
-	$actionEnvironmentModal.modal('hide');
-}
-
-function updateActionEnvironment() {
-	blockUI();
-	$.ajax({
-		type : "POST",
-		url : getCont() + "admin/action/" + "updateActionEnvironment",
-		data : {
-			// Informacion tipo de objeto
-			id : $actionEnvironmentModalForm.find('#actionEnvironmentId').val(),
-			name : $actionEnvironmentModalForm.find('#name').val(),
-			systemId: $actionEnvironmentModalForm.find("#systemId").children("option:selected").val()
-		},
-		success : function(response) {
-			ajaxUpdateActionEnvironment(response)
-		},
-		error : function(x, t, m) {
-			console.log(x);
-			console.log(t);
-			console.log(m);
-			unblockUI();
-			notifyAjaxError(x, t, m);
-		}
-	});
-}
-
-function ajaxUpdateActionEnvironment(response) {
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!", "Acci\u00F3n modificada correctamente.", "success", 2000)
-		break;
-	case 'fail':
-		unblockUI();
-		showActionEnvironmentErrors(response.errors, $actionEnvironmentModalForm);
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "error")
-		break;
-	default:
-		console.log(response.status);
-	unblockUI();
-	}
-}
-
-function confirmDeleteActionEnvironment(element) {
+function updateAction() {
+	if (!$fmAction.valid())
+		return;
 	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea eliminar?',
-		text: "Esta acci\u00F3n no se puede reversar.",
-		icon: 'question',
-		showCancelButton: true,
-		customClass: 'swal-wide',
-		cancelButtonText: 'Cancelar',
-		cancelButtonColor: '#f14747',
-		confirmButtonColor: '#3085d6',
-		confirmButtonText: 'Aceptar',
+		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
 	}).then((result) => {
 		if(result.value){
-			deleteActionEnvironment(element);
-		}		
+			blockUI();
+			$.ajax({
+				type : "PUT",
+				url : getCont() + "admin/action/" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					id : $fmAction.find('#aId').val(),
+					systemId : $fmAction.find('#aSystemId').val(),
+					name : $fmAction.find('#aName').val(),
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtAction.ajax.reload();
+					$mdAction.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
 	});
 }
 
-function deleteActionEnvironment(element){
-	blockUI();
-	$.ajax({
-		type : "DELETE",
-		url : getCont() + "admin/" + "action/deleteActionEnvironment/" + element,
-		timeout : 60000,
-		data : {},
-		success : function(response) {
-			ajaxDeleteActionEnvironment(response);
+
+function saveAction() {
+	if (!$fmAction.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "POST",
+				url : getCont() + "admin/action/" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					systemId : $fmAction.find('#aSystemId').val(),
+					name : $fmAction.find('#aName').val(),
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtAction.ajax.reload();
+					$mdAction.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
+	});
+}
+
+function deleteAction(index) {
+	var obj = $dtAction.row(index).data();
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "DELETE",
+				url : getCont() + "admin/action/"+obj.id ,
+				timeout : 60000,
+				data : {},
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtAction.ajax.reload();
+					$mdAction.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
+	});
+}
+
+function addAction(){
+	$fmAction.validate().resetForm();
+	$fmAction[0].reset();
+	$fmAction.find('#aSystemId').selectpicker('val', "");
+	$mdAction.find('#save').show();
+	$mdAction.find('#update').hide();
+	$mdAction.modal('show');
+}
+
+function closeAction(){
+	$mdAction.modal('hide');
+}
+
+function initActionFormValidation() {
+	$fmAction.validate({
+		rules : {
+			'aSystemId' : {
+				required : true,
+				minlength : 1,
+				maxlength : 50,
+			},
+			'aName' : {
+				required : true,
+				minlength : 1,
+				maxlength : 100
+			},
 		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-		}
+		messages : {
+			'aSystemId' : {
+				required :  "Ingrese un valor",
+
+			},
+			'aName' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
 	});
 }
 
-function ajaxDeleteActionEnvironment(response){
-	switch (response.status) {
-	case 'success':
-		location.reload();
-		swal("Correcto!", "La acci\u00F3n ha sido eliminada exitosamente.",
-				"success", 2000)
-				break;
-	case 'fail':
-		swal("Error!", response.exception, "error")
-		break;
-	case 'exception':
-		swal("Error!", response.exception, "warning")
-		break;
-	default:
-		location.reload();
-	}
-}
-
-function resetErrors() {
-	$(".fieldError").css("visibility", "hidden");
-	$(".fieldError").attr("class", "error fieldError");
-	$(".fieldErrorLine").attr("class", "form-line");
-}
-
-function showActionEnvironmentErrors(error, $form) {
-	resetErrors();// Eliminamos las etiquetas de errores previas
-	for (var i = 0; i < error.length; i++) {
-		// Se modifica el texto de la advertencia y se agrega la de activeError
-		$form.find(" #" + error[i].key + "_error").text(error[i].message);
-		$form.find(" #" + error[i].key + "_error").css("visibility", "visible");
-		$form.find(" #" + error[i].key + "_error").attr("class",
-		"error fieldError activeError");
-		// Si es input||textarea se marca el line en rojo
-		if ($form.find(" #" + error[i].key).is("input")
-				|| $form.find(" #" + error[i].key).is("textarea")) {
-			$form.find(" #" + error[i].key).parent().attr("class",
-			"form-line error focused fieldErrorLine");
-		}
-	}
-}
