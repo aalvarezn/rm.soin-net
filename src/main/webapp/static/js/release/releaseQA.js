@@ -10,8 +10,7 @@ var formChangeUser = $('#changeUserForm');
 var trackingReleaseForm = $('#trackingReleaseForm');
 $(function() {
 	activeItemMenu("releasesItem");
-	loadTableRelease('systemReleaseQA');
-	setTab();
+
 	$("#addReleaseSection").hide();
 
 	$('input[name="daterange"]').daterangepicker({
@@ -52,6 +51,16 @@ $(function() {
 					"firstDay": 1
 		}
 	});
+	// Datetimepicker plugin
+	$('.datetimepicker').datetimepicker({
+		locale: 'es',
+		format: 'DD/MM/YYYY hh:mm a',
+		maxDate : new Date()
+	});
+
+	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+	loadTableRelease('systemReleaseQA');
+	setTab();
 });
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
