@@ -22,7 +22,23 @@ $(function() {
 			$(this).val(0);
 		}
 	});
+	initSystems();
 });
+
+function initSystems(){
+	$('#userGroups').multiSelect(
+			{
+				selectableHeader: "<div class='custom-header'>Sistemas</div>",
+				selectionHeader: "<div class='custom-header'>Sistemas asignados</div>",
+				afterSelect : function(values) {
+					$environmentModalForm.find("#userGroups option[id='" + values + "']").attr("selected","selected");
+				},
+				afterDeselect : function(values) {
+					$environmentModalForm.find("#userGroups option[id='" + values +"']").removeAttr('selected');
+				}
+			});
+
+}
 
 function openEnvironmentModal() {
 	resetErrors();

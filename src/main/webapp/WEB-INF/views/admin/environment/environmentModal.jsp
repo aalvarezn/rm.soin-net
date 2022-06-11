@@ -14,7 +14,22 @@
 					<input type="hidden" name="${_csrf.parameterName}"
 						value="${_csrf.token}" /> <input type="hidden" id="environmentId"
 						value="" />
-					<div class="row clearfix">
+
+					<div class="row">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<!-- Nav tabs -->
+							<ul class="nav nav-tabs tab-nav-right" role="tablist">
+								<li role="presentation" class="active"><a href="#tabHome"
+									data-toggle="tab">INFORMACIÓN</a></li>
+								<li role="presentation"><a href="#tabRoles"
+									data-toggle="tab">SISTEMAS</a></li>
+							</ul>
+						</div>
+					</div>
+					<!-- Tab panes -->
+					<div class="tab-content">
+						<div role="tabpanel" class="tab-pane active" id="tabHome">
+		<div class="row clearfix">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<label for="name">Nombre</label>
 							<div class="form-group">
@@ -43,22 +58,9 @@
 						</div>
 					</div>
 					<div class="row clearfix">
-						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-							<label>Sistema</label>
-							<div class="form-group">
-								<select id="systemId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="">-- Seleccione una opci&oacute;n --</option>
-									<c:forEach items="${systems}" var="system">
-										<option id="${system.id }" value="${system.id }">${system.code }</option>
-									</c:forEach>
-								</select> <label id="systemId_error" class="error fieldError"
-									for="system" style="visibility: hidden">Campo
-									Requerido.</label>
-							</div>
-						</div>
-						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 align-left m-t-10"">
+						
+						<div
+							class="col-lg-6 col-md-6 col-sm-12 col-xs-12 align-left m-t-10">
 							<div class="switch" style="margin-top: 20px;">
 								<label>Externo<input id="external" type="checkbox"
 									value="0"><span class="lever"></span>
@@ -66,6 +68,21 @@
 							</div>
 						</div>
 					</div>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="tabRoles">
+							<div class="row m-t-20">
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									<select id='userGroups' class="multiselect" multiple='multiple'>
+										<c:forEach items="${systems}" var="system">
+											<option id="${system.id}" value='${system.id}'>${system.name}</option>
+										</c:forEach>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+				
+
 				</form>
 			</div>
 			<div class="modal-footer">

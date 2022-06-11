@@ -646,10 +646,11 @@ function notifyMs(message, status) {
 		break;
 	}
 }
-
+/*
 //add the rule here
 jQuery.validator.addMethod("selectOption",function(value,element,param) {
 	console.log(element);
 	return elementValue != param;
 },
 "Value cannot be {0}");
+*/
