@@ -51,6 +51,15 @@ public class SystemDaoImpl extends AbstractDao<Long, PSystem> implements SystemD
     		.list();
 			
 	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<PSystem> listSystemByName(String[] names){
+		Criteria crit = createEntityCriteria();
+		crit.add(Restrictions.in("name", names));
+		return crit.list();
+			
+	}
 
 }
 

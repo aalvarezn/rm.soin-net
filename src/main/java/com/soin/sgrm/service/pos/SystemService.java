@@ -11,4 +11,6 @@ public interface SystemService extends BaseService<Long, PSystem> {
 			String sProject);
 	
 	List<PSystem> listProjects(Long id);
+
+	List<PSystem> listSystemByName(String[] names);
 }

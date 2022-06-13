@@ -38,7 +38,7 @@ public class PEnvironment implements Serializable{
 	private String description;
 	
 	@Column(name = "EXTERNO")
-	private String extern;
+	private Boolean external;
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -47,7 +47,7 @@ public class PEnvironment implements Serializable{
 	private Set<PSystem> systems = new HashSet<>();
 	
 	@Transient
-	private String[] strRoles;
+	private String[] strSystems;
 
 	public Long getId() {
 		return id;
@@ -73,12 +73,14 @@ public class PEnvironment implements Serializable{
 		this.description = description;
 	}
 
-	public String getExtern() {
-		return extern;
+
+
+	public Boolean getExternal() {
+		return external;
 	}
 
-	public void setExtern(String extern) {
-		this.extern = extern;
+	public void setExternal(Boolean external) {
+		this.external = external;
 	}
 
 	public Set<PSystem> getSystems() {
@@ -89,12 +91,12 @@ public class PEnvironment implements Serializable{
 		this.systems = systems;
 	}
 
-	public String[] getStrRoles() {
-		return strRoles;
+	public String[] getStrSystems() {
+		return strSystems;
 	}
 
-	public void setStrRoles(String[] strRoles) {
-		this.strRoles = strRoles;
+	public void setStrSystems(String[] strSystems) {
+		this.strSystems = strSystems;
 	}
 	
 	

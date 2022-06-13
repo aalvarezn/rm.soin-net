@@ -8,4 +8,5 @@ public interface SystemDao extends BaseDao<Long, PSystem> {
 
 	List<PSystem> listWithProject();
 	List<PSystem> listProjects(Long id);
+	List<PSystem> listSystemByName(String[] names);
 }

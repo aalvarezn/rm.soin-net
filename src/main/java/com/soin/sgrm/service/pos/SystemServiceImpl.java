@@ -86,6 +86,12 @@ public class SystemServiceImpl implements SystemService {
 		return dao.listProjects(id);
 	}
 	
+	@Override
+	public List<PSystem> listSystemByName(String[] names) {
+		
+		return dao.listSystemByName(names);
+	}
+	
 	
 
 
