@@ -219,6 +219,8 @@
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{rfcNumber}}">Número
 							RFC</button>
+							<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{systemMain}}">Sistema Principal</button>
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{priority}}">Prioridad</button>
 						<button type="button" class="btn btn-primary btn-xs"

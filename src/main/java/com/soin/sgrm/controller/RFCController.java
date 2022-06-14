@@ -546,7 +546,7 @@ public class RFCController extends BaseController {
 		
 			
 			 rfc.setOperator(getUserLogin().getFullName());
-			 Siges siges=sigeService.findByKey("name", rfc.getCodeProyect());
+			 Siges siges=sigeService.findByKey("codeSiges", rfc.getCodeProyect());
 			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
 				if (siges.getEmailTemplate() != null) {
 					EmailTemplate email = siges.getEmailTemplate();
@@ -584,7 +584,7 @@ public class RFCController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 
-		return "redirect:/";
+		return "redirect:/homeRFC";
 	}
 	
 	public ArrayList<MyError> validSections(RFC rfc, ArrayList<MyError> errors) {

@@ -78,7 +78,7 @@
 			</span>
 			<div class="row clearfix">
 				<div class="button-demo flr">
-					<a href="<c:url value='/'/> " class="btn btn-default">IR A
+					<a href="<c:url value='/homeRFC'/> " class="btn btn-default">IR A
 						INICIO</a>
 				</div>
 			</div>
