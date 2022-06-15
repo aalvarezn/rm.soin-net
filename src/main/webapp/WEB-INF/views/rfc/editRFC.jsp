@@ -58,6 +58,8 @@
 	rel="stylesheet" type="text/css">
 
 
+	<!-- Vis Plugin Js -->
+	<script src="<c:url value='/static/plugins/vis/vis-network.js'/>"></script>
 
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
@@ -115,6 +117,7 @@ tr.selected {
 
 	<section>
 		<%@include file="../release/trackingReleaseModal.jsp"%>
+		<%@include file="../rfc/treeModal.jsp"%>
 		<!-- addObjectModal -->
 		<%@include file="../release/addObjectModal.jsp"%>
 		<!-- #END# addObjectModal -->

@@ -5,7 +5,10 @@ var origForm=null;
 var $dtRFCs;
 var $dtRFCsAdd;
 var $trackingRFCForm = $('#trackingReleaseForm');
-
+var $treeForm = $('#treeForm');
+var network = null;
+var nodes = [];
+var edges = [];
 $(function() {
 
 	activeItemMenu("managemetReleaseItem");
@@ -125,6 +128,41 @@ $(function() {
 	// $dataReleaseCheck=$dataRelease;
 	// dropDownChange();
 	// initTable();
+	
+	// If the document is clicked somewhere
+	$('#mynetwork').bind("mousedown", function (e) {
+//		alert('mynetwork')
+		// If the clicked element is not the menu
+		if (!$(e.target).parents(".node-menu").length > 0) {
+
+			// Hide it
+			$(".node-menu").hide(100);
+		}
+	});
+
+	$(".node-menu li").click(function(){
+		switch ($(this).attr("id")) {
+		case 'summary':
+			window.open(getCont() + "release/summary-" + $(this).attr("data-id"), '_blank');
+			break;
+		case 'clipboard':
+			let txt =$(this).attr("data-release");
+		    var textField = document.createElement('textarea');
+		    textField.innerText = txt;
+		    document.body.appendChild(textField);
+		    textField.select();
+		    textField.focus(); //SET FOCUS on the TEXTFIELD
+		    document.execCommand('copy');
+		    textField.remove();
+
+			notifyInfo('Copiado a portapapales');
+			break;
+		default:
+			break;
+		}
+		$(".node-menu").hide(100);
+	});
+	
 });
 function nextTab(elem) {
 	$(elem).next().find('a[data-toggle="tab"]').tab('show');
@@ -241,7 +279,7 @@ function initData(){
 			type: 'GET',
 			url: getCont() + "rfc/getRFC-"+idRFC,
 			success: function(result) {
-				
+				console.log(result.releases);
 				if(result.length!=0){
 					$dataRelease=result.releases;
 					$dataReleaseCheck=$dataRelease.slice();
@@ -299,19 +337,25 @@ function initTable(){
 							},
 							{
 								"mRender" : function(data, type, row, meta) {
-									var options = '<div class="iconLine">';
+									var options = '<div class="iconLineC">';
 
 									options = options
 									+ '<a onclick="openRFCTrackingModal('
-									+ row.id
+									+ row.id+
+									',0'
 									+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
-
+									options = options
+									+ '<a onclick="openTreeModal('
+									+ row.id+
+									',0'
+									+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">device_hub</i> </a>';
 									options = options
 									+ '<a href="'
 									+ getCont()
 									+ 'release/summary-'
 									+ row.id
 									+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
+									
 									return options;
 								},
 							} 
@@ -324,12 +368,24 @@ function initTable(){
 					});
 }
 
-function openRFCTrackingModal(idRFC) {
+function openRFCTrackingModal(idRFC,table) {
 	console.log(idRFC);
-	var dtRFC = $('#releaseTable').dataTable();
+	var dtRFC ;
+	
+	if(table==0){
+		dtRFC = $('#releaseTable').dataTable();
+	}else{
+		dtRFC = $('#releaseTableAdd').dataTable();
+	}
+	
 	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
 	console.log(idRow[0]);
-	var rowData = $dtRFCs.row(idRow[0]).data();
+	var rowData;
+		if(table==0){
+			rowData=$dtRFCs.row(idRow[0]).data();
+		}else{
+			rowData=$dtRFCsAdd.row(idRow[0]).data();
+		}
 	console.log(rowData);
 	$trackingRFCForm.find('#idRelease').val(rowData.id);
 	$trackingRFCForm.find('#releaseNumber').text(rowData.releaseNumber);
@@ -338,6 +394,174 @@ function openRFCTrackingModal(idRFC) {
 	$('#trackingReleaseModal').modal('show');
 }
 
+function openTreeModal(idRFC,table) {
+var dtRFC ;
+	
+	if(table==0){
+		dtRFC = $('#releaseTable').dataTable();
+	}else{
+		dtRFC = $('#releaseTableAdd').dataTable();
+	}
+	
+	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
+	console.log(idRow[0]);
+	var rowData;
+		if(table==0){
+			rowData=$dtRFCs.row(idRow[0]).data();
+		}else{
+			rowData=$dtRFCsAdd.row(idRow[0]).data();
+		}
+		
+		$treeForm.find('#idRelease').val(rowData.id);
+		$treeForm.find('#releaseNumber').text(rowData.releaseNumber);
+		searchTree(rowData.releaseNumber);
+	$('#treeModal').modal('show');
+}
+function searchTree(releaseNumber) {
+	console.log( getCont() + "admin/tree/tree/"+ releaseNumber + "/2");
+	$.ajax({
+		type : "GET",
+		url : getCont() + "admin/tree/tree/"+ releaseNumber + "/2",
+		timeout : 60000,
+		data : {},
+		success : function(response) {
+			console.log(response);
+			ajaxSearchTree(response);
+			
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+
+}
+
+function ajaxSearchTree(response) {
+	
+	destroy();
+	switch (response.status) {
+	case 'success':
+		draw(response.obj);
+		break;
+	case 'fail':
+		destroy();
+		swal("Error!", response.exception, "error");
+		break;
+	case 'exception':
+		destroy();
+		swal("Error!", response.exception, "error")
+		break;
+	default:
+		console.log(response.status);
+	destroy();
+	}
+}
+
+function destroy() {
+	if (network !== null) {
+		nodes = [];
+		edges = [];
+		network.destroy();
+		network = null;
+	}
+}
+
+function draw(objs) {
+	destroy();
+	if (objs == null)
+		return;
+	var data = getTreeNetwork(objs);
+	// create a network
+	var container = document.getElementById("mynetwork");
+	var options = {
+			interaction: {
+				navigationButtons: true,
+				keyboard: true,
+			},
+			nodes: {
+				shape: "box",
+				borderWidth: 2,
+				shadow: true,
+			},
+			layout: {
+				hierarchical: {
+					direction: "UD",
+					nodeSpacing: 300,
+					sortMethod: "directed"
+				}
+			}
+	};
+	network = new vis.Network(container, data, options);
+
+
+	network.on("stabilizationIterationsDone", function () {
+		network.setOptions({
+			nodes: {physics: false},
+			edges: {physics: false},
+		});
+	});
+
+	network.on("doubleClick", function(params) {
+		openReference(params);
+	});
+
+	network.once('stabilized', function() {
+		var scaleOption = { scale : 0.7 };
+		network.moveTo(scaleOption);
+	})
+/*
+	network.on("oncontext", function (params) {
+		params.event.preventDefault();
+		if (typeof this.getNodeAt(params.pointer.DOM) !== 'undefined') {
+			network.selectNodes([this.getNodeAt(params.pointer.DOM)]);
+			let node = network.body.nodes[this.getNodeAt(params.pointer.DOM)];
+			$('.node-menu li').attr('data-id', this.getNodeAt(params.pointer.DOM));
+			$('.node-menu li').attr('data-release', node.options.numberRelease);
+
+			$(".node-menu").finish().toggle(100);
+			$(".node-menu").css({
+				top: params.event.pageY + "px",
+				left: params.event.pageX + "px"
+			});
+		}else{
+			network.selectNodes([]);
+		}
+	});
+	*/
+}
+
+function getTreeNetwork(objs) {
+	for (let i = 0; i < objs.length; i++) {
+		if(!nodes.some(node => node.id === objs[i].childrenId)){
+			nodes.push({
+				id : objs[i].childrenId,
+				font: { color:'white', multi: true },
+				label : '<b>NIVEL</b>: '+ objs[i].depthNode + '\n'
+				+'<b>'+ objs[i].children + '</b>\n'
+				+ '<b>ESTADO</b>: '+objs[i].status,
+				margin: { top: 10, right: 10, bottom: 10, left: 10 },
+				color: getColorNode(objs[i].status),
+				numberRelease: objs[i].children,
+				level: objs[i].depthNode,
+			});
+		}
+		if (objs[i].fatherId)
+			edges.push({
+				from : objs[i].childrenId,
+				to : objs[i].fatherId,
+			});
+	}
+
+	return {
+		nodes : nodes,
+		edges : edges
+	};
+}
+function openReference(properties) {
+	if (typeof properties.nodes[0] !== 'undefined') {
+		window.open(getCont() + "release/summary-" + properties.nodes[0], '_blank'); 
+	}
+}
 function loadTrackingRFC(rowData){
 	$trackingRFCForm.find('tbody tr').remove();
 	if(rowData.tracking.length == 0){
@@ -351,6 +575,11 @@ function loadTrackingRFC(rowData){
 function closeTrackingRFCModal(){
 	$trackingRFCForm[0].reset();
 	$('#trackingReleaseModal').modal('hide');
+}
+
+function closeTreeModal(){
+	$treeForm[0].reset();
+	$('#treeModal').modal('hide');
 }
 function getColorNode(status){
 	switch (status) {
@@ -401,8 +630,9 @@ function addDataToTable(){
 				
 			});
 			if(verification){
-				
-				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"}}';
+				console.log("aca estoy");
+				console.log(JSON.stringify(data.tracking));
+				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
 				$dataRelease.unshift(obj);
 				 $('#releaseTableAdd').dataTable().fnClearTable();
@@ -419,11 +649,34 @@ function addDataToTable(){
 		
 		
 	}else{
-		let text ='{"id":'+(dataRFC[0].id).toString()+',"releaseNumber":"'+(dataRFC[0].releaseNumber).toString()+'","createDate":'+dataRFC[0].createDate+',"status":{"name":"'+(dataRFC[0].status.name).toString()+'"}}';
-		const obj = JSON.parse(text);
-		$dataRelease.unshift(obj);
-		 $('#releaseTableAdd').dataTable().fnClearTable();
-		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
+		for(var x=0;x<dataRFC.length;x++){
+			
+			var data= dataRFC[x];
+			
+			$dataRelease.forEach(function(element){
+				
+				if(element.id==data.id){
+					
+					verification=false;
+					
+				}
+				
+			});
+			if(verification){
+				console.log(JSON.stringify(data.tracking));
+				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
+				const obj = JSON.parse(text);
+				$dataRelease.unshift(obj);
+				 $('#releaseTableAdd').dataTable().fnClearTable();
+				 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
+				
+			}else{
+				
+			}
+			
+			verification=true;
+			
+		}
 		 $dtRFCs.$('tr.selected').removeClass('selected');
 	}
 		return;
@@ -438,6 +691,17 @@ function reloadPreview() {
 
 function initTableAdd(){
 	$dtRFCsAdd=$('#releaseTableAdd').DataTable({
+		
+		'columnDefs' : [ {
+			'visible' : false,
+			'targets' : [ 0]
+		}, 
+		{
+			'visible' : false,
+			'targets' : [ 0]
+		}, 
+		
+		],
 			"iDisplayLength" : 15,
 			"language" : {
 				"emptyTable" : "No existen registros",
@@ -463,21 +727,31 @@ function initTableAdd(){
 					},
 					{
 						"mRender" : function(data, type, row, meta) {
-							var options = '<div class="iconLine">';
+							var options = '<div class="iconLineC">';
 
 							options = options
 							+ '<a onclick="openRFCTrackingModal('
-							+ row.id
+							+ row.id+
+							',1'
 							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
-
+							
+							options = options
+							+ '<a onclick="openTreeModal('
+							+ row.id+
+							',1'
+							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">device_hub</i> </a>';
+							
 							options = options
 							+ '<a href="'
 							+ getCont()
 							+ 'release/summary-'
 							+ row.id
 							+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
+							
+							return options;
 							return options;
 						},
+						sWidth: '30px'
 					} 
 					
 					
@@ -524,7 +798,46 @@ function dropDownChange(){
 	});
 }
 
+function removeSelectedData(){
+	var dataTableRelease = $dtRFCsAdd.rows('.selected').data();
+	console.log(dataTableRelease);
+	
+	
+	if($dataRelease.length!=0){
 
+		for(var x=0;x<dataTableRelease.length;x++){
+			
+			var data= dataTableRelease[x];
+			console.log(dataTableRelease[x]);
+			console.log($dataRelease);
+			$dataRelease.forEach(function(element,index){
+				
+				if(element.id==data.id){
+					
+					$dataRelease.splice(index,1); 
+		        	if($dataRelease.length==0){
+		    
+		        		$dataRelease=[];
+		        		 $('#releaseTableAdd').dataTable().fnClearTable();
+		        		 
+		        		 return;
+		        	}
+		        	 $('#releaseTableAdd').dataTable().fnClearTable();
+		    		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
+		    		
+		            return false; 
+					
+				}
+				
+			});
+		
+		}
+		$dtRFCs.$('tr.selected').removeClass('selected');
+	}else{
+		return;
+	}
+		
+}
 function removeData(data){
 
 	$dataRelease.forEach(function (element,index){

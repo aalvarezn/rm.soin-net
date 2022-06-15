@@ -53,12 +53,9 @@
 				</div>
 			</div>
 		</div>
-
-	</div>
-	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 			<div class="row clearfix">
-				<div class="alig_btn" style="margin-top: 10px;">
+				<div class="alig_btn" >
 					<button type="button" class="btn btn-primary setIcon"
 						onclick="addDataToTable()">
 						<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
@@ -66,10 +63,13 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+
 		<div class="row clearfix">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="table-responsive"
-					style="margin-top: 20px; margin-bottom: 20px;">
+					style="margin-top: 20px; margin-bottom: 10px;">
 					<div class="help-info">
 						<b>Releases por instalar en producción</b>
 					</div>
@@ -93,7 +93,16 @@
 
 
 		</div>
-
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+			<div class="row clearfix">
+				<div class="alig_btn" >
+					<button type="button" class="btn btn-primary setIcon"
+						onclick="removeSelectedData()">
+						<span>ELIMINAR</span><span><i class="material-icons m-t--2 ">remove</i></span>
+					</button>
+				</div>
+			</div>
+		</div>
 	</div>
 
 </div>
