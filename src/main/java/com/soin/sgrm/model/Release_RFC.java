@@ -17,9 +17,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @SuppressWarnings("serial")
@@ -28,8 +32,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Release_RFC implements Serializable, Cloneable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RELEASES_RELEASE_SQ")
-	@SequenceGenerator(name = "RELEASES_RELEASE_SQ", sequenceName = "RELEASES_RELEASE_SQ", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 
@@ -46,7 +48,10 @@ public class Release_RFC implements Serializable, Cloneable {
 			@JoinColumn(name = "RELEASE_ID") }, inverseJoinColumns = { @JoinColumn(name = "OBJETO_ID") })
 	private Set<ReleaseObject> objects = new HashSet<ReleaseObject>();
 
-
+	@OrderBy("trackingDate ASC")
+	@Fetch(value = FetchMode.SUBSELECT)
+	@OneToMany(mappedBy = "release", fetch = FetchType.EAGER)
+	private Set<ReleaseTracking> tracking = new HashSet<ReleaseTracking>();
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SOLICITADO_POR_ID", nullable = true)
@@ -114,9 +119,22 @@ public class Release_RFC implements Serializable, Cloneable {
 		this.status = status;
 	}
 
-	
 
-	
+	public Set<ReleaseTracking> getTracking() {
+		return tracking;
+	}
+
+	public void setTracking(Set<ReleaseTracking> tracking) {
+		this.tracking = tracking;
+	}
+
+	public Timestamp getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Timestamp createDate) {
+		this.createDate = createDate;
+	}
 
 	public ReleaseObject getObjectById(Integer id) {
 		for (ReleaseObject object : this.objects) {

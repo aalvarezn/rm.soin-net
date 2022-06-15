@@ -22,7 +22,7 @@
 	</div>
 	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-b-20">
 		<p>
-			<b>Tipo Cambio</b>
+			<b>Tipo cambio</b>
 		</p>
 		<div class="row clearfix">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -44,7 +44,7 @@
 			</div>
 			<div class="form-group p-l-15 m-b-0i">
 				<label id="typeChangeId_error" class="error fieldError activeError"
-					for="name" style="visibility: hidden;">Campo Requerido.</label>
+					for="name" style="visibility: hidden;">Campo requerido.</label>
 			</div>
 		</div>
 
@@ -73,7 +73,7 @@
 			</div>
 			<div class="form-group p-l-15 m-b-0i">
 				<label id="impactId_error" class="error fieldError activeError"
-					for="name" style="visibility: hidden;">Campo Requerido.</label>
+					for="name" style="visibility: hidden;">Campo requerido.</label>
 			</div>
 		</div>
 
@@ -107,7 +107,7 @@
 			</div>
 			<div class="form-group p-l-15 m-b-0i">
 				<label id="priorityId_error" class="error fieldError activeError"
-					for="name" style="visibility: hidden;">Campo Requerido.</label>
+					for="name" style="visibility: hidden;">Campo requerido.</label>
 			</div>
 		</div>
 	</div>
@@ -119,7 +119,7 @@
 
 
 	<div class='col-lg-6 col-md-6 col-sm-12 col-xs-12'>
-		<label>Fecha Inicio</label>
+		<label>Fecha inicio</label>
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
@@ -127,11 +127,11 @@
 					value="${rfc.requestDateBegin }" />
 			</div>
 			<label id="dateBegin_error" class="error fieldError" for="name"
-				style="visibility: hidden;">Campo Requerido.</label>
+				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
 	<div class='col-lg-6 col-md-6 col-sm-12 col-xs-12'>
-		<label>Fecha Fin</label>
+		<label>Fecha fin</label>
 		<div class="form-group">
 			<div class="form-line disabled">
 				<input required="required" type='text'
@@ -139,7 +139,7 @@
 					name='dateFinish' value="${rfc.requestDateFinish }" />
 			</div>
 			<label id="dateFinish_error" class="error fieldError" for="name"
-				style="visibility: hidden;">Campo Requerido.</label>
+				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -151,7 +151,7 @@
 					placeholder="Ingrese la raz&oacute;n del cambio..." style="">${rfc.reasonChange}</textarea>
 			</div>
 			<label id="rfcReason_error" class="error fieldError" for="name"
-				style="visibility: hidden;">Campo Requerido.</label>
+				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
 
@@ -165,7 +165,7 @@
 					placeholder="Ingrese el efecto si no se implementa..." style="">${rfc.effect}</textarea>
 			</div>
 			<label id="rfcEffect_error" class="error fieldError" for="name"
-				style="visibility: hidden;">Campo Requerido.</label>
+				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
 </div>

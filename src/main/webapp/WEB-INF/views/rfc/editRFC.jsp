@@ -58,6 +58,8 @@
 	rel="stylesheet" type="text/css">
 
 
+	<!-- Vis Plugin Js -->
+	<script src="<c:url value='/static/plugins/vis/vis-network.js'/>"></script>
 
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
@@ -114,6 +116,8 @@ tr.selected {
 	</section>
 
 	<section>
+		<%@include file="../release/trackingReleaseModal.jsp"%>
+		<%@include file="../rfc/treeModal.jsp"%>
 		<!-- addObjectModal -->
 		<%@include file="../release/addObjectModal.jsp"%>
 		<!-- #END# addObjectModal -->
@@ -374,6 +378,13 @@ tr.selected {
 	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
 	<script type="text/javascript"
 		src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/es.js"></script>
+	<!-- Jquery DataTable Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/jquery-datatable/fnFindCellRowIndexes.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
 
 
 	<script

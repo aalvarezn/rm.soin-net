@@ -55,7 +55,7 @@
 		<div class="">
 			<div class="row clearfix">
 				<div class="col-sm-12">
-					<h5 class="titulares">Informaci&oacute;n General</h5>
+					<h5 class="titulares">Informaci&oacute;n general</h5>
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
@@ -184,7 +184,7 @@
 			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-sm-12">
-					<h5 class="titulares">Información de Cambio</h5>
+					<h5 class="titulares">Información de cambio</h5>
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Sistemas impactados</label>
@@ -204,7 +204,7 @@
 				</div>
 
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Releases a Instalar</label>
+					<label for="">Releases a instalar en producción</label>
 
 					<div id="listSystems">
 						<ul class="nav nav-pills">
@@ -241,7 +241,7 @@
 					<textarea class="areaWidth" rows="" cols="">${rfc.requestEsp }</textarea>
 				</div>
 				<div class="col-md-6 col-lg-6 col-xs-6 col-sm-6 m-b-5">
-					<label for="">Requiere Base de datos</label>
+					<label for="">Requiere base de datos</label>
 					<div class="switch">
 						<c:choose>
 							<c:when test="${rfc.requiredBD}">
@@ -260,7 +260,7 @@
 			</div>
 			<div class="row clearfix">
 				<div class="col-sm-12">
-					<h5 class="titulares">Archivos Adjuntos</h5>
+					<h5 class="titulares">Archivos adjuntos</h5>
 				</div>
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-20">
 					<div class="clearfix">
@@ -271,7 +271,7 @@
 									<tr>
 										<th class="col-md-8 col-lg-8 col-xs-12 col-sm-12">Nombre</th>
 										<th class="col-md-4 col-lg-4 col-xs-12 col-sm-12">Fecha
-											de Carga</th>
+											de carga</th>
 									</tr>
 								</thead>
 								<tbody>

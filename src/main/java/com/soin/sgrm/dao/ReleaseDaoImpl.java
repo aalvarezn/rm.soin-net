@@ -27,6 +27,7 @@ import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.ItemObject;
@@ -628,7 +629,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		if(recordsTotal==1) {
 			crit.uniqueResult();
 		}
-		List<Release_RFC> aaData = crit.list();
+		List<Releases_WithoutObj> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -641,7 +642,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			Integer systemId)
 			throws SQLException, ParseException {
 
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_RFC.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name","Certificacion"),
 				Restrictions.eq("statuses.name","Solicitado")))

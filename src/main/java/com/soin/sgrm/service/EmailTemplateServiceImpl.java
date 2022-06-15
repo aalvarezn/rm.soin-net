@@ -571,7 +571,10 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			email.setHtml(email.getHtml().replace("{{releases}}", (temp.equals("") ? "Sin releases definidos" : temp)));
 		}
 
-
+		if (email.getHtml().contains("{{priority}}")) {
+			email.setHtml(email.getHtml().replace("{{priority}}",
+					(rfc.getPriority().getName() != null ? rfc.getPriority().getName() : "")));
+		}
 
 		if (email.getHtml().contains("{{systemsInvolved}}")) {
 			temp = "";
@@ -627,6 +630,15 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		if (email.getSubject().contains("{{typeChange}}")) {
 			email.setSubject(email.getSubject().replace("{{typeChange}}",
 					(rfc.getTypeChange().getName() != null ? rfc.getTypeChange().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{systemMain}}")) {
+			temp = "";
+			Siges codeSiges = sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+
+			temp+=codeSiges.getSystem().getName();
+			
+			email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 		}
 
 		return email;
