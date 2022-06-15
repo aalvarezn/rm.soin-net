@@ -279,11 +279,11 @@ function initData(){
 			type: 'GET',
 			url: getCont() + "rfc/getRFC-"+idRFC,
 			success: function(result) {
-				console.log(result.releases);
+
 				if(result.length!=0){
 					$dataRelease=result.releases;
 					$dataReleaseCheck=$dataRelease.slice();
-					console.log($dataRelease);
+
 				}else{
 					
 				}
@@ -369,7 +369,6 @@ function initTable(){
 }
 
 function openRFCTrackingModal(idRFC,table) {
-	console.log(idRFC);
 	var dtRFC ;
 	
 	if(table==0){
@@ -379,14 +378,12 @@ function openRFCTrackingModal(idRFC,table) {
 	}
 	
 	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
-	console.log(idRow[0]);
 	var rowData;
 		if(table==0){
 			rowData=$dtRFCs.row(idRow[0]).data();
 		}else{
 			rowData=$dtRFCsAdd.row(idRow[0]).data();
 		}
-	console.log(rowData);
 	$trackingRFCForm.find('#idRelease').val(rowData.id);
 	$trackingRFCForm.find('#releaseNumber').text(rowData.releaseNumber);
 	
@@ -404,7 +401,6 @@ var dtRFC ;
 	}
 	
 	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
-	console.log(idRow[0]);
 	var rowData;
 		if(table==0){
 			rowData=$dtRFCs.row(idRow[0]).data();
@@ -418,7 +414,6 @@ var dtRFC ;
 	$('#treeModal').modal('show');
 }
 function searchTree(releaseNumber) {
-	console.log( getCont() + "admin/tree/tree/"+ releaseNumber + "/2");
 	$.ajax({
 		type : "GET",
 		url : getCont() + "admin/tree/tree/"+ releaseNumber + "/2",
@@ -438,7 +433,6 @@ function searchTree(releaseNumber) {
 
 function ajaxSearchTree(response) {
 	
-	destroy();
 	switch (response.status) {
 	case 'success':
 		draw(response.obj);
@@ -452,7 +446,6 @@ function ajaxSearchTree(response) {
 		swal("Error!", response.exception, "error")
 		break;
 	default:
-		console.log(response.status);
 	destroy();
 	}
 }
@@ -618,8 +611,7 @@ function addDataToTable(){
 		for(var x=0;x<dataRFC.length;x++){
 			
 			var data= dataRFC[x];
-			console.log(dataRFC[x]);
-			console.log($dataRelease);
+
 			$dataRelease.forEach(function(element){
 				
 				if(element.id==data.id){
@@ -630,8 +622,6 @@ function addDataToTable(){
 				
 			});
 			if(verification){
-				console.log("aca estoy");
-				console.log(JSON.stringify(data.tracking));
 				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
 				$dataRelease.unshift(obj);
@@ -663,7 +653,6 @@ function addDataToTable(){
 				
 			});
 			if(verification){
-				console.log(JSON.stringify(data.tracking));
 				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
 				$dataRelease.unshift(obj);
@@ -800,16 +789,12 @@ function dropDownChange(){
 
 function removeSelectedData(){
 	var dataTableRelease = $dtRFCsAdd.rows('.selected').data();
-	console.log(dataTableRelease);
-	
 	
 	if($dataRelease.length!=0){
 
 		for(var x=0;x<dataTableRelease.length;x++){
 			
 			var data= dataTableRelease[x];
-			console.log(dataTableRelease[x]);
-			console.log($dataRelease);
 			$dataRelease.forEach(function(element,index){
 				
 				if(element.id==data.id){
