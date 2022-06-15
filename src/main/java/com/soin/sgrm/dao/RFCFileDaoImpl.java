@@ -35,7 +35,7 @@ public class RFCFileDaoImpl extends AbstractDao<Long, RFCFile> implements RFCFil
 				getSession().saveOrUpdate(rfcFile);
 
 				sql = String.format(
-						"INSERT INTO sgrm.\"RFC_ARCHIVORFC\" ( \"RFC_ID\", \"ARCHIVORFC_ID\") VALUES ( %s, %s ) ",
+						"INSERT INTO \"RFC_ARCHIVORFC\" ( \"RFC_ID\", \"ARCHIVORFC_ID\") VALUES ( %s, %s ) ",
 						id, rfcFile.getId());
 				query = getSession().createSQLQuery(sql);
 				query.executeUpdate();
@@ -52,7 +52,7 @@ public class RFCFileDaoImpl extends AbstractDao<Long, RFCFile> implements RFCFil
 		String sql = "";
 		Query query = null;
 		try {
-			sql = String.format("DELETE FROM sgrm.\"RFC_ARCHIVORFC\" WHERE \"ARCHIVORFC_ID\" = %s ", rfcFile.getId());
+			sql = String.format("DELETE FROM \"RFC_ARCHIVORFC\" WHERE \"ARCHIVORFC_ID\" = %s ", rfcFile.getId());
 			query = getSession().createSQLQuery(sql);
 			query.executeUpdate();
 

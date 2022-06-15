@@ -114,6 +114,7 @@ tr.selected {
 	</section>
 
 	<section>
+		<%@include file="../release/trackingReleaseModal.jsp"%>
 		<!-- addObjectModal -->
 		<%@include file="../release/addObjectModal.jsp"%>
 		<!-- #END# addObjectModal -->
@@ -374,6 +375,13 @@ tr.selected {
 	<script src="<c:url value='/static/plugins/momentjs/moment.js'/>"></script>
 	<script type="text/javascript"
 		src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/es.js"></script>
+	<!-- Jquery DataTable Plugin Js -->
+	<script
+		src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/jquery-datatable/fnFindCellRowIndexes.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
 
 
 	<script

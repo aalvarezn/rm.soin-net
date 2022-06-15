@@ -8,7 +8,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h4 class="modal-title col-blue-grey" id="largeModalLabel">Seguimiento
-					Release</h4>
+					RFC</h4>
 			</div>
 			<div class="modal-body">
 				<div class="row clearfix">

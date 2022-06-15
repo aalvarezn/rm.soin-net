@@ -10,7 +10,7 @@
 </div>
 <div class="row clearfix activeSection">
 	<div class="col-sm-12">
-		<h5 class="titulares">Informaci&oacute;n de Cambio</h5>
+		<h5 class="titulares">Informaci&oacute;n de cambio</h5>
 	</div>
 	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-b-20">
 		<p>
@@ -27,7 +27,7 @@
 			</div>
 			<div class="form-group p-l-15 m-b-0i">
 				<label id="riskId_error" class="error fieldError" for="name"
-					style="visibility: hidden;">Campo Requerido.</label>
+					style="visibility: hidden;">Campo requerido.</label>
 			</div>
 		</div>
 	</div>
@@ -40,7 +40,11 @@
 						id="releaseTable">
 						<thead>
 							<tr>
-								<th>Numero Release</th>
+								<th></th>
+								<th>Número release</th>
+								<th>Estado</th>
+								<th>Fecha de creación</th>
+								<th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -67,14 +71,18 @@
 				<div class="table-responsive"
 					style="margin-top: 20px; margin-bottom: 20px;">
 					<div class="help-info">
-						<b>Releases a instalar Prod </b>
+						<b>Releases por instalar en producción</b>
 					</div>
 					<table
 						class="table table-bordered table-striped table-hover dataTable"
 						id="releaseTableAdd">
 						<thead>
 							<tr>
-								<th>Numero Release</th>
+								<th></th>
+								<th>Número release</th>
+								<th>Estado</th>
+								<th>Fecha de creación</th>
+								<th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -83,31 +91,7 @@
 				</div>
 			</div>
 
-			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-				<label for="email_address">Requiere Base de datos</label>
-				<c:choose>
-					<c:when test="${rfc.requiredBD}">
-						<div class="switch" style="margin-top: 20px;">
-							<label>NO<input id="requiredBD" type="checkbox" value="1"
-								name="requiredBD" checked="checked"><span class="lever"></span>S&Iacute;
-							</label>
-						</div>
-					</c:when>
-					<c:otherwise>
-						<div class="switch" style="margin-top: 20px;">
-							<label>NO<input id="requiredBD" name="requiredBD"
-								type="checkbox" value="0"><span class="lever"></span>S&Iacute;
-							</label>
-						</div>
-					</c:otherwise>
-				</c:choose>
-			</div>
-			<div id="tagShow" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<label for="email_address">Ingrese nombre de BD</label>
-				<input id="form-tags" maxlength="150"
-					class="tagInit" name="tags-1" type="text"
-					value="${rfc.schemaDB}">
-			</div>
+
 		</div>
 
 	</div>

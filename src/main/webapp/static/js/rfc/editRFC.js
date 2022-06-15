@@ -4,7 +4,7 @@ let $dataReleaseCheck = [];
 var origForm=null;
 var $dtRFCs;
 var $dtRFCsAdd;
-
+var $trackingRFCForm = $('#trackingReleaseForm');
 
 $(function() {
 
@@ -19,7 +19,7 @@ $(function() {
 
 	        }
 	        else {
-	        	$dtRFCs.$('tr.selected').removeClass('selected');
+	        	// $dtRFCs.$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	          
 	        }
@@ -31,7 +31,7 @@ $(function() {
 
 	        }
 	        else {
-	        	$dtRFCsAdd.$('tr.selected').removeClass('selected');
+	        	// $dtRFCsAdd.$('tr.selected').removeClass('selected');
 	            $(this).addClass('selected');
 	          
 	        }
@@ -122,9 +122,9 @@ $(function() {
 	}else{
 		$("#tagShow").show();
 	}
-	//$dataReleaseCheck=$dataRelease;
-	//dropDownChange();
-	//initTable();
+	// $dataReleaseCheck=$dataRelease;
+	// dropDownChange();
+	// initTable();
 });
 function nextTab(elem) {
 	$(elem).next().find('a[data-toggle="tab"]').tab('show');
@@ -208,7 +208,7 @@ function sendPartialRFC() {
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
 		}),
 		success : function(response) {
-			//responseAjaxSendPartialRelease(response);
+			// responseAjaxSendPartialRelease(response);
 			changeSaveButton(false);
 			origForm = $rfcEditForm.serialize();
 			$dataReleaseCheck=$dataRelease.slice();
@@ -245,7 +245,7 @@ function initData(){
 				if(result.length!=0){
 					$dataRelease=result.releases;
 					$dataReleaseCheck=$dataRelease.slice();
-					
+					console.log($dataRelease);
 				}else{
 					
 				}
@@ -262,9 +262,13 @@ function initTable(){
 	
 	$dtRFCs=$('#releaseTable').DataTable(
 			{
+				'columnDefs' : [ {
+					'visible' : false,
+					'targets' : [ 0]
+				} ],
 				lengthMenu : [ [ 10, 25, 50, -1 ],
 					[ '10', '25', '50', 'Mostrar todo' ] ],
-						"iDisplayLength" : 5,
+						"iDisplayLength" : 15,
 						"language" : {
 							"emptyTable" : "No existen registros",
 							"zeroRecords" : "No existen registros",
@@ -279,8 +283,40 @@ function initTable(){
 						}, 
 						"aoColumns" : [
 							{
+								"mDataProp" : "id",
+							},
+							{
 								"mDataProp" : "releaseNumber",
+							},
+							{
+								
+								"mDataProp" : "status.name"
 							}
+							,{
+								"mRender" : function(data, type, row, meta) {
+									return moment(row.createDate).format('DD/MM/YYYY h:mm:ss a');
+								},
+							},
+							{
+								"mRender" : function(data, type, row, meta) {
+									var options = '<div class="iconLine">';
+
+									options = options
+									+ '<a onclick="openRFCTrackingModal('
+									+ row.id
+									+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
+
+									options = options
+									+ '<a href="'
+									+ getCont()
+									+ 'release/summary-'
+									+ row.id
+									+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
+									return options;
+								},
+							} 
+							
+							
 							],
 							responsive : true,
 							ordering : false,
@@ -288,42 +324,107 @@ function initTable(){
 					});
 }
 
+function openRFCTrackingModal(idRFC) {
+	console.log(idRFC);
+	var dtRFC = $('#releaseTable').dataTable();
+	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
+	console.log(idRow[0]);
+	var rowData = $dtRFCs.row(idRow[0]).data();
+	console.log(rowData);
+	$trackingRFCForm.find('#idRelease').val(rowData.id);
+	$trackingRFCForm.find('#releaseNumber').text(rowData.releaseNumber);
+	
+	loadTrackingRFC(rowData);
+	$('#trackingReleaseModal').modal('show');
+}
+
+function loadTrackingRFC(rowData){
+	$trackingRFCForm.find('tbody tr').remove();
+	if(rowData.tracking.length == 0){
+		$trackingRFCForm.find('tbody').append('<tr><td colspan="4" style="text-align: center;">No hay movimientos</td></tr>');
+	}
+	$.each(rowData.tracking, function(i, value) {
+		$trackingRFCForm.find('tbody').append('<tr style="padding: 10px 0px 0px 0px;" > <td><span style="background-color: '+getColorNode(value.status)+';" class="round-step"></span></td>	<td>'+value.status+'</td>	<td>'+moment(value.trackingDate).format('DD/MM/YYYY h:mm:ss a')+'</td>	<td>'+value.operator+'</td> <td>'+(value.motive && value.motive != null && value.motive != 'null' ? value.motive:'' )+'</td>	</tr>');
+	});
+}
+
+function closeTrackingRFCModal(){
+	$trackingRFCForm[0].reset();
+	$('#trackingReleaseModal').modal('hide');
+}
+function getColorNode(status){
+	switch (status) {
+	case 'Produccion':
+		return 'rgb(0, 150, 136)';
+		break;
+	case 'Certificacion':
+		return 'rgb(255, 152, 0)';
+		break;
+	case 'Solicitado':
+		return 'rgb(76, 175, 80)';
+		break;
+	case 'Borrador':
+		return 'rgb(31, 145, 243)';
+		break;
+	case 'Anulado':
+		return 'rgb(233, 30, 99)';
+		break;
+	default:
+		return 'rgb(0, 181, 212)';
+	break;
+	}
+}
+
+
 function addDataToTable(){
-	var data = $dtRFCs.row('.selected').data();
+	var dataRFC = $dtRFCs.rows('.selected').data();
+	
+	
 	var verification=true;
-	if(data!=undefined){
+	if(dataRFC!=undefined){
 		
 	
 	if($dataRelease.length!=0){
 
-		$dataRelease.forEach(function(element){
-			if(element.id==data.id){
+		for(var x=0;x<dataRFC.length;x++){
+			
+			var data= dataRFC[x];
+			console.log(dataRFC[x]);
+			console.log($dataRelease);
+			$dataRelease.forEach(function(element){
 				
-				verification=false;
+				if(element.id==data.id){
+					
+					verification=false;
+					
+				}
+				
+			});
+			if(verification){
+				
+				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"}}';
+				const obj = JSON.parse(text);
+				$dataRelease.unshift(obj);
+				 $('#releaseTableAdd').dataTable().fnClearTable();
+				 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
+				
+			}else{
 				
 			}
 			
-		});
-		if(verification){
-			let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'"}';
-			const obj = JSON.parse(text);
-			$dataRelease.unshift(obj);
-			 $('#releaseTableAdd').dataTable().fnClearTable();
-			 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-			
-		}else{
-			swal("Error!", "El release ya ha sido agregado",
-					"error", 2000);
+			verification=true;
 			
 		}
+		$dtRFCs.$('tr.selected').removeClass('selected');
+		
 		
 	}else{
-		let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'"}';
+		let text ='{"id":'+(dataRFC[0].id).toString()+',"releaseNumber":"'+(dataRFC[0].releaseNumber).toString()+'","createDate":'+dataRFC[0].createDate+',"status":{"name":"'+(dataRFC[0].status.name).toString()+'"}}';
 		const obj = JSON.parse(text);
 		$dataRelease.unshift(obj);
 		 $('#releaseTableAdd').dataTable().fnClearTable();
 		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-		
+		 $dtRFCs.$('tr.selected').removeClass('selected');
 	}
 		return;
 	}
@@ -337,25 +438,50 @@ function reloadPreview() {
 
 function initTableAdd(){
 	$dtRFCsAdd=$('#releaseTableAdd').DataTable({
-			"iDisplayLength" : 5,
+			"iDisplayLength" : 15,
 			"language" : {
 				"emptyTable" : "No existen registros",
 				"zeroRecords" : "No existen registros",
 				"processing" : "Cargando",
 			},
 		  		data: $dataRelease,
-		      columnDefs: [
-		          {
-		            targets: 0,
-		            render: function (data, type, row) {
-		            	var data="click";
-		              if (type === 'display') {
-		                return '<span title="Presione doble click para eliminar">' + row.releaseNumber + '</span>';
-		              }
-		              return data;
-		            }
-		          }
-		        ]
+		  		"aoColumns" : [
+					{
+						"mDataProp" : "id",
+					},
+					{
+						"mDataProp" : "releaseNumber",
+					},
+					{
+						
+						"mDataProp" : "status.name"
+					}
+					,{
+						"mRender" : function(data, type, row, meta) {
+							return moment(row.createDate).format('DD/MM/YYYY h:mm:ss a');
+						},
+					},
+					{
+						"mRender" : function(data, type, row, meta) {
+							var options = '<div class="iconLine">';
+
+							options = options
+							+ '<a onclick="openRFCTrackingModal('
+							+ row.id
+							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
+
+							options = options
+							+ '<a href="'
+							+ getCont()
+							+ 'release/summary-'
+							+ row.id
+							+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
+							return options;
+						},
+					} 
+					
+					
+					],
 		  });
 }
 function dropDownChange(){
