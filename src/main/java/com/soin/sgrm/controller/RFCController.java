@@ -46,6 +46,7 @@ import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
+import com.soin.sgrm.model.Tree;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Parameter;
@@ -71,6 +72,7 @@ import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
 
 import com.soin.sgrm.utils.CommonUtils;
@@ -111,6 +113,9 @@ public class RFCController extends BaseController {
 
 	@Autowired
 	EmailTemplateService emailService;
+	
+	@Autowired
+	TreeService treeService;
 	
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
@@ -666,6 +671,24 @@ public class RFCController extends BaseController {
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
 		request.setAttribute("userC", userC);
 		
+	}
+	
+
+	@RequestMapping(value = "/tree/{releaseNumber}/{depth}", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse tree(@PathVariable String releaseNumber, @PathVariable Integer depth,
+			HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			List<Tree> treeList = treeService.findTree(releaseNumber, depth);
+			res.setStatus("success");
+			res.setObj(treeList);
+		} catch (Exception e) {
+			Sentry.capture(e, "admin");
+			res.setStatus("exception");
+			res.setException("Error al procesar consulta: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 	
 }

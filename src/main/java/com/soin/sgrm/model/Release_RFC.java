@@ -65,6 +65,8 @@ public class Release_RFC implements Serializable, Cloneable {
 	@Column(name = "FECHA_CREACION")
 	private Timestamp createDate;
 
+	@Column(name = "TIENE_CAMBIOS_EN_BASE_DE_DATOS")
+	private Boolean haveSQL;
 	
 	@Column(name = "MOTIVO")
 	private String motive;
@@ -173,4 +175,13 @@ public class Release_RFC implements Serializable, Cloneable {
 		this.motive = motive;
 	}
 
+	public Boolean getHaveSQL() {
+		return haveSQL;
+	}
+
+	public void setHaveSQL(Boolean haveSQL) {
+		this.haveSQL = haveSQL;
+	}
+
+	
 }

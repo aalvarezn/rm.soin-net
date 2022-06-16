@@ -17,7 +17,12 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.JoinColumnOrFormula;
+import org.hibernate.annotations.JoinColumnsOrFormulas;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.annotations.JoinFormula;
+
+
 
 @SuppressWarnings("serial")
 @Entity
@@ -49,6 +54,10 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 	@OneToMany(mappedBy = "release", fetch = FetchType.EAGER)
 	private Set<ReleaseTracking> tracking = new HashSet<ReleaseTracking>();
 
+	
+	@Column(name = "TIENE_CAMBIOS_EN_BASE_DE_DATOS")
+	private Boolean haveSQL;
+	
 	@Column(name = "MOTIVO")
 	private String motive;
 
@@ -108,4 +117,13 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 		this.tracking = tracking;
 	}
 
+	public Boolean getHaveSQL() {
+		return haveSQL;
+	}
+
+	public void setHaveSQL(Boolean haveSQL) {
+		this.haveSQL = haveSQL;
+	}
+	
+	
 }

@@ -277,7 +277,7 @@
 					<textarea class="areaWidth" rows="" cols="">${rfc.requestEsp }</textarea>
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Requiere Base de datos</label>
+					<label for="">Requiere base de datos</label>
 					<div class="switch">
 						<c:choose>
 							<c:when test="${rfc.requiredBD}">
@@ -296,7 +296,7 @@
 				</div>
 				<c:if test="${rfc.requiredBD}">
 					<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-						<label for="">Schemas Necesarias</label>
+						<label for="">Esquemas necesarios</label>
 						<div class="form-line disabled">
 							<p>${rfc.schemaDB }</p>
 						</div>

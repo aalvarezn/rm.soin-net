@@ -69,13 +69,13 @@
 					style="">${rfc.requestEsp}</textarea>
 			</div>
 			<label id="requestEspRFC_error" class="error fieldError"
-				for="name" style="visibility: hidden;">Campo Requerido.</label>
+				for="name" style="visibility: hidden;">Campo requerido.</label>
 		</div>
 		
 	</div>
 	
 	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-				<label for="email_address">Requiere Base de datos</label>
+				<label for="email_address">Requiere base de datos</label>
 				<c:choose>
 					<c:when test="${rfc.requiredBD}">
 						<div class="switch" style="margin-top: 20px;">
