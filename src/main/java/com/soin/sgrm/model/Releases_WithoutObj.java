@@ -37,6 +37,9 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 	@Column(name = "NUMERO_RELEASE")
 	private String releaseNumber;
 
+	@Column(name = "DESCRIPCION")
+	private String description;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SISTEMA_ID", nullable = true)
 	private SystemInfo system;
@@ -54,6 +57,9 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 	@OneToMany(mappedBy = "release", fetch = FetchType.EAGER)
 	private Set<ReleaseTracking> tracking = new HashSet<ReleaseTracking>();
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "SOLICITADO_POR_ID", nullable = true)
+	private User user;
 	
 	@Column(name = "TIENE_CAMBIOS_EN_BASE_DE_DATOS")
 	private Boolean haveSQL;
@@ -123,6 +129,22 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 
 	public void setHaveSQL(Boolean haveSQL) {
 		this.haveSQL = haveSQL;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 	
 	

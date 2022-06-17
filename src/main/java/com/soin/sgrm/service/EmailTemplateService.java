@@ -38,4 +38,6 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 
 	void sendMailRFC(RFC rfcEmail, EmailTemplate email) throws Exception;
 
+	void sendMailNotify(WFRelease releaseEmail, EmailTemplate email,String user);
+
 }

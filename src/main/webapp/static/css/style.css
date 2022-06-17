@@ -11969,6 +11969,11 @@ ul.stepper>li>a::before {
 	font-size: 5px;
 	text-align: center;
 }
+.iconLineR {
+	white-space: nowrap;
+	font-size: 5px;
+	text-align: right;
+}
 
 .iconLineC>a>li {
 	font-size: 22px;

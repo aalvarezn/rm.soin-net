@@ -494,6 +494,80 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		}
 
 	}
+	
+	@Override
+	public void sendMailNotify(WFRelease releaseEmail, EmailTemplate email,String user) {
+		try {
+			MimeMessage mimeMessage = mailSender.createMimeMessage();
+			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
+			// ------------------Seccion del asunto del correo -------------------------- //
+			// Se agrega el nombre del sistema
+			if (email.getSubject().contains("{{systemName}}")) {
+				email.setSubject(email.getSubject().replace("{{systemName}}",
+						(releaseEmail.getSystem() != null ? releaseEmail.getSystem().getName() : "")));
+			}
+			// Se agrega el numero de release
+			if (email.getSubject().contains("{{releaseNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{releaseNumber}}",
+						(releaseEmail.getReleaseNumber() != null ? releaseEmail.getReleaseNumber() : "")));
+			}
+			// ------------------Seccion del cuerpo del correo -------------------------- //
+			if (email.getHtml().contains("{{releaseNumber}}")) {
+				email.setHtml(email.getHtml().replace("{{releaseNumber}}",
+						(releaseEmail.getReleaseNumber() != null ? releaseEmail.getReleaseNumber() : "")));
+			}
+
+			if (email.getHtml().contains("{{releaseStatus}}")) {
+				email.setHtml(email.getHtml().replace("{{releaseStatus}}",
+						(releaseEmail.getStatus() != null ? releaseEmail.getStatus().getName() : "")));
+			}
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}",
+						(releaseEmail.getUser().getFullName() != null ? releaseEmail.getUser().getFullName() : "")));
+			}
+			
+			if (email.getHtml().contains("{{operator}}")) {
+				email.setHtml(email.getHtml().replace("{{operator}}",
+						(user != null ? user : "")));
+			}
+
+			if (email.getHtml().contains("{{updateAt}}")) {
+				DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm a");
+				String strDate = dateFormat.format(releaseEmail.getCreateDate());
+				email.setHtml(email.getHtml().replace("{{updateAt}}", strDate));
+			}
+
+			String temp;
+			if (email.getHtml().contains("{{actors}}")) {
+				temp = "<ul>";
+
+				for (WFUser obj : releaseEmail.getNode().getActors()) {
+					temp += "<li><b> " + obj.getFullName() + "</b></li>";
+				}
+				temp += "</ul>";
+				email.setHtml(email.getHtml().replace("{{actors}}", (temp.equals("") ? "Sin actores definidos" : temp)));
+			}
+			
+			String body = email.getHtml();
+			body = Constant.getCharacterEmail(body);
+			MimeMultipart mmp = MimeMultipart(body);
+			mimeMessage.setContent(mmp);
+			mimeMessage.setSubject(email.getSubject());
+			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
+			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
+			for (WFUser toUser : releaseEmail.getNode().getUsers()) {
+				mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
+			}
+			mailSender.send(mimeMessage);
+		} catch (AddressException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 	@Override
 	public void sendMailRFC(RFC rfc, EmailTemplate email) throws Exception{
