@@ -260,5 +260,10 @@ public class ReleaseServiceImpl implements ReleaseService {
 		
 		return dao.findReleaseById(id);
 	}
+	
+	@Override
+	public Integer getDependency(int id) {
+		return dao.getDependency(id);
+	}
 
 }

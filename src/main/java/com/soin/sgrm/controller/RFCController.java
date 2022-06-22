@@ -372,6 +372,12 @@ public class RFCController extends BaseController {
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
+			
+			Set<Release_RFC> releases = rfcEdit.getReleases();
+			for(Release_RFC release:releases) {
+				release.setHaveDependecy(releaseService.getDependency(release.getId()));
+			}
+			
 			model.addAttribute("systems", systems);
 			model.addAttribute("impacts", impactService.list());
 			model.addAttribute("typeChange", typeChangeService.findAll());
@@ -397,6 +403,10 @@ public class RFCController extends BaseController {
 		try {
 
 			rfcEdit = rfcService.findById(id);
+			Set<Release_RFC> releases = rfcEdit.getReleases();
+			for(Release_RFC release:releases) {
+				release.setHaveDependecy(releaseService.getDependency(release.getId()));
+			}
 			return rfcEdit;
 
 		} catch (Exception e) {

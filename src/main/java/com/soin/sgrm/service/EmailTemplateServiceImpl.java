@@ -1,5 +1,6 @@
 package com.soin.sgrm.service;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.criterion.Criterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -584,13 +585,55 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		for (String toUser : email.getTo().split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
 		}
-		mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(rfc.getUser().getEmail()));
+		String ccFinish="";
+		String cc="";
 		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
-			for (String ccUser : email.getCc().split(",")) {
-				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			cc=email.getCc();
+			if(rfc.getSenders().trim().equals("") || rfc.getSenders()==null) {
+				ccFinish=email.getCc();
+				String[] split3=ccFinish.split(",");
+				boolean verify= ArrayUtils.contains(split3,rfc.getUser().getEmail());
+				if(!verify) {
+					ccFinish=cc+","+rfc.getUser().getEmail();
+				}
+			}else {
+				String[] split=rfc.getSenders().split(",");
+				String[] splitCC=cc.split(",");
+				for(int x=0; splitCC.length>x;x++) {
+					boolean verify= ArrayUtils.contains(split,splitCC[x]);
+					if(!verify) {
+						ccFinish=rfc.getSenders()+","+splitCC[x];
+					}
+				}
+				String[] split3=ccFinish.split(",");
+				boolean verify= ArrayUtils.contains(split3,rfc.getUser().getEmail());
+				if(!verify) {
+					ccFinish=ccFinish+","+rfc.getUser().getEmail();
+				}
+				
+			}
+		}else {
+			
+			if(rfc.getSenders().trim().equals("") || rfc.getSenders()==null) {
+					ccFinish=rfc.getUser().getEmail();
+			}else {
+				String[] split=rfc.getSenders().split(",");
+				ccFinish=rfc.getSenders();
+					boolean verify= ArrayUtils.contains(split,rfc.getUser().getEmail());
+					if(!verify) {
+						ccFinish=ccFinish+","+rfc.getUser().getEmail();
+					}
+				
+				
 			}
 		}
-		mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(rfc.getUser().getEmail()));
+		
+	
+			for (String ccUser : ccFinish.split(",")) {
+				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			
+		}
+		
 
 		mailSender.send(mimeMessage);
 	}
@@ -638,10 +681,21 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		}
 
 		if (email.getHtml().contains("{{releases}}")) {
-			temp = "";
+			temp = "<table border=1>";
+			temp+="<tr>"
+					+ "<th>Numero release</th>"
+					+ "<th>Detalle</th>"
+					+ "</tr>";
 			for (Release_RFC release : rfc.getReleases()) {
-				temp += release.getReleaseNumber() + "<br>";
+				temp+="<tr>";
+				
+				temp +="<td>"+ release.getReleaseNumber() + "</td>";
+				temp +="<td>"+ release.getDescription() + "</td>";
+				temp+="</tr>";
 			}
+			
+			
+			temp+="</table>";
 			email.setHtml(email.getHtml().replace("{{releases}}", (temp.equals("") ? "Sin releases definidos" : temp)));
 		}
 
@@ -705,6 +759,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			email.setSubject(email.getSubject().replace("{{typeChange}}",
 					(rfc.getTypeChange().getName() != null ? rfc.getTypeChange().getName() : "")));
 		}
+		
+		if (email.getHtml().contains("{{message}}")) {
+			email.setHtml(email.getHtml().replace("{{message}}",
+					(rfc.getMessage() != null ? rfc.getMessage() : "NA")));
+		}
 
 		if (email.getSubject().contains("{{systemMain}}")) {
 			temp = "";
@@ -714,6 +773,8 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			
 			email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 		}
+		
+		
 
 		return email;
 	}

@@ -14,11 +14,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.JoinColumnOrFormula;
-import org.hibernate.annotations.JoinColumnsOrFormulas;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.hibernate.annotations.JoinFormula;
 
@@ -67,6 +66,9 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 	@Column(name = "MOTIVO")
 	private String motive;
 
+	@Transient
+	private Integer haveDependecy;
+	
 	public int getId() {
 		return id;
 	}
@@ -145,6 +147,14 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public Integer getHaveDependecy() {
+		return haveDependecy;
+	}
+
+	public void setHaveDependecy(Integer haveDependecy) {
+		this.haveDependecy = haveDependecy;
 	}
 	
 	

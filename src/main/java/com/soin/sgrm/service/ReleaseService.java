@@ -75,4 +75,6 @@ public interface ReleaseService {
 
 	Release_RFC findRelease_RFCById(Integer id) throws SQLException;
 
+	Integer getDependency(int id);
+
 }

@@ -11443,6 +11443,12 @@ html.ie11 .bs-searchbox .form-control {
 	padding: 0px !important;
 	font-size: 22px;
 }
+.amarillo {
+	color: #ffdf00;
+	cursor: pointer;
+	padding: 0px !important;
+	font-size: 22px;
+}
 
 .gris:nth-child(2) {
 	margin-left: 7px;
