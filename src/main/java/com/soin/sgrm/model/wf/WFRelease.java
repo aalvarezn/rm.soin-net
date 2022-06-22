@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import java.sql.Timestamp;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +40,7 @@ public class WFRelease implements Serializable {
 	private String releaseNumber;
 
 	@Column(name = "FECHA_CREACION")
-	private Date createDate;
+	private Timestamp createDate;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SOLICITADO_POR_ID", nullable = true)
@@ -81,11 +82,11 @@ public class WFRelease implements Serializable {
 		this.releaseNumber = releaseNumber;
 	}
 
-	public Date getCreateDate() {
+	public Timestamp getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(Date createDate) {
+	public void setCreateDate(Timestamp createDate) {
 		this.createDate = createDate;
 	}
 
@@ -139,6 +140,7 @@ public class WFRelease implements Serializable {
 
 	public void convertReleaseToWFRelease(Release release) {
 		this.node = release.getNode();
+		this.createDate=release.getCreateDate();
 		this.releaseNumber = release.getReleaseNumber();
 		this.system = release.getSystem();
 		this.status = release.getStatus();

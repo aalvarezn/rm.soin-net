@@ -279,7 +279,7 @@ function initData(){
 			type: 'GET',
 			url: getCont() + "rfc/getRFC-"+idRFC,
 			success: function(result) {
-
+				console.log(result);
 				if(result.length!=0){
 					$dataRelease=result.releases;
 					$dataReleaseCheck=$dataRelease.slice();
@@ -327,6 +327,14 @@ function initTable(){
 								"mDataProp" : "releaseNumber",
 							},
 							{
+								"mDataProp" : "description",
+							},
+							{
+								
+								"mDataProp" : "user.fullName"
+							},
+							
+							{
 								
 								"mDataProp" : "status.name"
 							}
@@ -337,8 +345,12 @@ function initTable(){
 							},
 							{
 								"mRender" : function(data, type, row, meta) {
-									var options = '<div class="iconLineC">';
-
+									console.log(row);
+									var options = '<div class="iconLineR">';
+									if(row.haveSQL){
+										options = options
+										+ '<i class="material-icons verde" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">database</span></i>';
+									}
 									options = options
 									+ '<a onclick="openRFCTrackingModal('
 									+ row.id+
@@ -355,6 +367,7 @@ function initTable(){
 									+ 'release/summary-'
 									+ row.id
 									+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
+								
 									
 									return options;
 								},
@@ -416,7 +429,7 @@ var dtRFC ;
 function searchTree(releaseNumber) {
 	$.ajax({
 		type : "GET",
-		url : getCont() + "admin/tree/tree/"+ releaseNumber + "/2",
+		url : getCont() + "rfc/tree/"+ releaseNumber + "/2",
 		timeout : 60000,
 		data : {},
 		success : function(response) {
@@ -622,7 +635,9 @@ function addDataToTable(){
 				
 			});
 			if(verification){
-				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
+				console.log(JSON.stringify(data.user));
+				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+(data.description).toString()+'","user":'+JSON.stringify(data.user)+',"haveSQL":"'+data.haveSQL+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
+				console.log(text);
 				const obj = JSON.parse(text);
 				$dataRelease.unshift(obj);
 				 $('#releaseTableAdd').dataTable().fnClearTable();
@@ -653,8 +668,10 @@ function addDataToTable(){
 				
 			});
 			if(verification){
-				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
+				console.log(JSON.stringify(data.user));
+				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+(data.description).toString()+'","user":'+JSON.stringify(data.user)+',"haveSQL":"'+data.haveSQL+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
+				console.log(text);
 				$dataRelease.unshift(obj);
 				 $('#releaseTableAdd').dataTable().fnClearTable();
 				 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
@@ -704,6 +721,11 @@ function initTableAdd(){
 					},
 					{
 						"mDataProp" : "releaseNumber",
+					},{
+						"mDataProp" : "description",
+					},
+					{
+						"mDataProp" : "user.fullName",
 					},
 					{
 						
@@ -716,8 +738,11 @@ function initTableAdd(){
 					},
 					{
 						"mRender" : function(data, type, row, meta) {
-							var options = '<div class="iconLineC">';
-
+							var options = '<div class="iconLineR">';
+							if(row.haveSQL){
+								options = options
+								+ '<i class="material-icons verde" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">database</span></i>';
+							}
 							options = options
 							+ '<a onclick="openRFCTrackingModal('
 							+ row.id+

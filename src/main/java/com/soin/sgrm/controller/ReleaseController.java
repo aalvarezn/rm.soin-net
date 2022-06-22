@@ -757,8 +757,8 @@ public class ReleaseController extends BaseController {
 			Node node = nodeService.existWorkFlow(release);
 			Status status = statusService.findByName("Solicitado");
 
-//			if (node != null)
-//				release.setNode(node);
+			if (node != null) {
+			release.setNode(node);
 
 			release.setStatus(status);
 			release.setMotive(status.getMotive());
@@ -796,7 +796,26 @@ public class ReleaseController extends BaseController {
 				});
 				newThread.start();
 			}
+			
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getUsers().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+				
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				WFRelease releaseEmail = new WFRelease();
+				releaseEmail.convertReleaseToWFRelease(release);
+				String user=getUserLogin().getFullName();
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotify(releaseEmail, emailNotify,user);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
 
+				});
+				newThread.start();
+			}
+			}
 			releaseService.requestRelease(release);
 
 			return "redirect:/release/summary-" + release.getId();

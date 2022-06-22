@@ -88,6 +88,7 @@ function confirmDeleteWorkFlow(element) {
 }
 
 function deleteWorkFlow(element){
+console.log(getCont() + "wf/" + "workFlow/deleteWorkFlow/" + element);
 	blockUI();
 	$.ajax({
 		workFlow : "DELETE",

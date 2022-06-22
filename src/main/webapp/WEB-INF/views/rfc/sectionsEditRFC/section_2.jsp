@@ -42,6 +42,8 @@
 							<tr>
 								<th></th>
 								<th>Número release</th>
+								<th>Descripción</th>
+								<th>Solicitado por</th>
 								<th>Estado</th>
 								<th>Fecha de creación</th>
 								<th>Acciones</th>
@@ -80,6 +82,8 @@
 							<tr>
 								<th></th>
 								<th>Número release</th>
+								<th>Descripción</th>
+								<th>Solicitado por</th>
 								<th>Estado</th>
 								<th>Fecha de creación</th>
 								<th>Acciones</th>

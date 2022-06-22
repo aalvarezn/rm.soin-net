@@ -1,5 +1,4 @@
 
-
 package com.soin.sgrm.model;
 
 import java.io.Serializable;
@@ -39,9 +38,13 @@ public class Release_RFC implements Serializable, Cloneable {
 	@Column(name = "NUMERO_RELEASE")
 	private String releaseNumber;
 
+	
+	@Column(name = "DESCRIPCION")
+	private String description;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SISTEMA_ID", nullable = true)
-	private SystemInfo system;	
+	private SystemInfo system;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "RELEASES_RELEASE_OBJETOS", joinColumns = {
@@ -65,7 +68,9 @@ public class Release_RFC implements Serializable, Cloneable {
 	@Column(name = "FECHA_CREACION")
 	private Timestamp createDate;
 
-	
+	@Column(name = "TIENE_CAMBIOS_EN_BASE_DE_DATOS")
+	private Boolean haveSQL;
+
 	@Column(name = "MOTIVO")
 	private String motive;
 
@@ -93,8 +98,6 @@ public class Release_RFC implements Serializable, Cloneable {
 		this.system = system;
 	}
 
-	
-
 	public Set<ReleaseObject> getObjects() {
 		return objects;
 	}
@@ -118,7 +121,6 @@ public class Release_RFC implements Serializable, Cloneable {
 	public void setStatus(Status status) {
 		this.status = status;
 	}
-
 
 	public Set<ReleaseTracking> getTracking() {
 		return tracking;
@@ -163,14 +165,28 @@ public class Release_RFC implements Serializable, Cloneable {
 		return false;
 	}
 
-	
-
 	public String getMotive() {
 		return motive;
 	}
 
 	public void setMotive(String motive) {
 		this.motive = motive;
+	}
+
+	public Boolean getHaveSQL() {
+		return haveSQL;
+	}
+
+	public void setHaveSQL(Boolean haveSQL) {
+		this.haveSQL = haveSQL;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }
