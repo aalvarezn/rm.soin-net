@@ -27,7 +27,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "RFC")
-public class RFC implements Serializable {
+public class RFCList implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -109,22 +109,6 @@ public class RFC implements Serializable {
 	@Column(name = "FECHA_EJECUCION_FINAL")
 	private String requestDateFinish;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "RFC_RELEASE", joinColumns = { @JoinColumn(name = "ID_RFC") }, inverseJoinColumns = {
-			@JoinColumn(name = "ID_RELEASE") })
-	private Set<Release_RFC> releases = new HashSet<>();
-
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "RFC_ARCHIVORFC", joinColumns = { @JoinColumn(name = "RFC_ID") }, inverseJoinColumns = {
-			@JoinColumn(name = "ARCHIVORFC_ID") })
-	private Set<RFCFile> files = new HashSet<>();
-
-	@OrderBy("trackingDate ASC")
-	@Fetch(value = FetchMode.SUBSELECT)
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "rfc")
-	private Set<RFCTracking> tracking = new HashSet<RFCTracking>();
 
 	// Agregar Motivo
 	// Agregar Usuario que lo cambio
@@ -271,13 +255,7 @@ public class RFC implements Serializable {
 		this.requestDate = requestDate;
 	}
 
-	public Set<Release_RFC> getReleases() {
-		return releases;
-	}
-
-	public void setReleases(Set<Release_RFC> releases) {
-		this.releases = releases;
-	}
+	
 
 	public String[] getStrReleases() {
 		return strReleases;
@@ -335,13 +313,7 @@ public class RFC implements Serializable {
 		this.requestDateFinish = requestDateFinish;
 	}
 
-	public Set<RFCFile> getFiles() {
-		return files;
-	}
 
-	public void setFiles(Set<RFCFile> files) {
-		this.files = files;
-	}
 
 	public String getMotive() {
 		return motive;
@@ -359,13 +331,7 @@ public class RFC implements Serializable {
 		this.operator = operator;
 	}
 
-	public Set<RFCTracking> getTracking() {
-		return tracking;
-	}
 
-	public void setTracking(Set<RFCTracking> tracking) {
-		this.tracking = tracking;
-	}
 
 	public String getSchemaDB() {
 		return schemaDB;

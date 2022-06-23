@@ -50,7 +50,7 @@
 				</c:if>
 			</c:forEach>
 			<c:if test="${qaAccess}">
-				<li><a id="releasesItem" href="<c:url value='/release/qa'/> ">
+				<li><a id="releasesQAItem" href="<c:url value='/release/qa'/> ">
 						<span>Gestión QA</span>
 				</a></li>
 			</c:if>
@@ -67,7 +67,7 @@
 					</ul></li>
 			</c:if>
 			<c:if test="${managerAccess}">
-				<li><li><a id="rfcItem" href="<c:url value='/rfc/'/> "> <span>Mis
+				<li><li><a id="RFCItem" href="<c:url value='/rfc/'/> "> <span>Mis
 							RFC</span>
 				</a></li>
 					

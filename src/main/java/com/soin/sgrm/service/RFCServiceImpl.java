@@ -75,7 +75,7 @@ public class RFCServiceImpl implements RFCService {
 	@SuppressWarnings("deprecation")
 	@Override
 	public JsonSheet<RFC> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
-			Long sStatus, String dateRange, Long sPriority, Long sImpact) {
+			Long sStatus, String dateRange, int sPriority, int sImpact) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
@@ -111,22 +111,16 @@ public class RFCServiceImpl implements RFCService {
 		if (sStatus == 0) {
 			sStatus = null;
 		}
-		if (sPriority == 0) {
-			sPriority = null;
-		}
-		if (sImpact == 0) {
-			sImpact = null;
-		}
 		if (sStatus != null) {
 			
 			columns.put("status", Restrictions.eq("status.id", sStatus));
 		}
 
-		if (sPriority != null) {
+		if (sPriority != 0) {
 			alias.put("priority", "priority");
 			columns.put("priority", Restrictions.eq("priority.id", sPriority));
 		}
-		if (sImpact != null) {
+		if (sImpact != 0) {
 			alias.put("impact", "impact");
 			columns.put("impact", Restrictions.or(Restrictions.eq("impact.id", sImpact)));
 
@@ -134,7 +128,6 @@ public class RFCServiceImpl implements RFCService {
 		 
 
 		List<String> fetchs = new ArrayList<String>();
-		
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
 	}
 
@@ -192,7 +185,7 @@ public class RFCServiceImpl implements RFCService {
 
 	@Override
 	public JsonSheet<RFC> findAll2(String name, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			String sSearch, Long sStatus, String dateRange, Long sPriority, Long sImpact) {
+			String sSearch, Long sStatus, String dateRange, int sPriority, int sImpact) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
@@ -221,7 +214,7 @@ public class RFCServiceImpl implements RFCService {
 			qSrch = Restrictions.or(
 
 					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.name", sSearch, MatchMode.ANYWHERE).ignoreCase()
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
 					
 					
 					);
@@ -229,25 +222,20 @@ public class RFCServiceImpl implements RFCService {
 		if (sStatus == 0) {
 			sStatus = null;
 		}
-		if (sPriority == 0) {
-			sPriority = null;
-		}
-		if (sImpact == 0) {
-			sImpact = null;
-		}
+
 		if (sStatus != null) {
 			
 			columns.put("status", Restrictions.eq("status.id", sStatus));
 		}else {
-			columns.put("status",Restrictions.not(Restrictions.in("status.name",
-					Constant.FILTRED)));
+			columns.put("status",Restrictions.in("status.name",
+					Constant.FILTREDRFC));
 		}
 
-		if (sPriority != null) {
+		if (sPriority != 0) {
 			alias.put("priority", "priority");
 			columns.put("priority", Restrictions.eq("priority.id", sPriority));
 		}
-		if (sImpact != null) {
+		if (sImpact != 0) {
 			alias.put("impact", "impact");
 			columns.put("impact", Restrictions.or(Restrictions.eq("impact.id", sImpact)));
 
@@ -257,7 +245,9 @@ public class RFCServiceImpl implements RFCService {
 		 
 
 		List<String> fetchs = new ArrayList<String>();
-		
+		fetchs.add("releases");
+		fetchs.add("files");
+		fetchs.add("tracking");
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
 	}
 
