@@ -134,7 +134,7 @@ $(function() {
 	
 	// If the document is clicked somewhere
 	$('#mynetwork').bind("mousedown", function (e) {
-//		alert('mynetwork')
+// alert('mynetwork')
 		// If the clicked element is not the menu
 		if (!$(e.target).parents(".node-menu").length > 0) {
 
@@ -154,7 +154,7 @@ $(function() {
 		    textField.innerText = txt;
 		    document.body.appendChild(textField);
 		    textField.select();
-		    textField.focus(); //SET FOCUS on the TEXTFIELD
+		    textField.focus(); // SET FOCUS on the TEXTFIELD
 		    document.execCommand('copy');
 		    textField.remove();
 
@@ -521,24 +521,17 @@ function draw(objs) {
 		network.moveTo(scaleOption);
 	})
 /*
-	network.on("oncontext", function (params) {
-		params.event.preventDefault();
-		if (typeof this.getNodeAt(params.pointer.DOM) !== 'undefined') {
-			network.selectNodes([this.getNodeAt(params.pointer.DOM)]);
-			let node = network.body.nodes[this.getNodeAt(params.pointer.DOM)];
-			$('.node-menu li').attr('data-id', this.getNodeAt(params.pointer.DOM));
-			$('.node-menu li').attr('data-release', node.options.numberRelease);
-
-			$(".node-menu").finish().toggle(100);
-			$(".node-menu").css({
-				top: params.event.pageY + "px",
-				left: params.event.pageX + "px"
-			});
-		}else{
-			network.selectNodes([]);
-		}
-	});
-	*/
+ * network.on("oncontext", function (params) { params.event.preventDefault(); if
+ * (typeof this.getNodeAt(params.pointer.DOM) !== 'undefined') {
+ * network.selectNodes([this.getNodeAt(params.pointer.DOM)]); let node =
+ * network.body.nodes[this.getNodeAt(params.pointer.DOM)]; $('.node-menu
+ * li').attr('data-id', this.getNodeAt(params.pointer.DOM)); $('.node-menu
+ * li').attr('data-release', node.options.numberRelease);
+ * 
+ * $(".node-menu").finish().toggle(100); $(".node-menu").css({ top:
+ * params.event.pageY + "px", left: params.event.pageX + "px" }); }else{
+ * network.selectNodes([]); } });
+ */
 }
 
 function getTreeNetwork(objs) {
@@ -620,7 +613,13 @@ function addDataToTable(){
 	var dataRFC = $dtRFCs.rows('.selected').data();
 	var verification=true;
 	var verification2=false;
-	var text ='';
+	var text ='`<table id="table" class="table tableIni table-bordered table-striped table-hover" border=1>' +
+			'<thead>' +
+			'<tr>'+
+			'<th>Numero release</th>'+
+			'</tr>' +
+			'</thead>'+
+			'<tbody>';
 	if(dataRFC!=undefined){
 	if(dataRFC.length!=0){
 		
@@ -637,7 +636,7 @@ function addDataToTable(){
 
 			if(!verification){
 			
-				 text+="\n"+data.releaseNumber+"\n";
+				 text+='<tr><td>'+data.releaseNumber+'</tr></td>';
 				
 			}else{
 				
@@ -646,12 +645,12 @@ function addDataToTable(){
 			verification=true;
 			
 		}
+	text+='</tr></tbody></table>`';
 		if(verification2){
-			
+			console.log(text);
 			Swal.fire({
-				title: '\u00BFEst\u00e1s seguro que desea agregar?',
-				text: "Los siguientes Releases seleccionados tienen dependencias en estado borrado o solicitado desea continuar:" +
-						"\n" +text,
+				title: '\u00BFEst\u00e1s seguro que desea agregar?\nLos siguientes releases tienen dependencias en estado solicitado o borrado:',
+				html:text,		
 				icon: 'question',
 				showCancelButton: true,
 				customClass: 'swal-wide',
