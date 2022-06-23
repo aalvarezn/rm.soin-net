@@ -85,7 +85,7 @@
 					class="form-control"
 					placeholder="Ingrese un mensaje..." style="">${rfc.message}</textarea>
 			</div>
-			<label id="rfcReason_error" class="error fieldError" for="name"
+			<label id="messagePer_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 		</div>

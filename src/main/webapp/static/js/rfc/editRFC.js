@@ -351,11 +351,11 @@ function initTable(){
 									var options = '<div class="iconLineR">';
 									if(row.haveSQL){
 										options = options
-										+ '<i class="material-icons verde" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">database</span></i>';
+										+ '<a onclick="" title="Tiene base de datos"><i class="material-icons verde" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">database</span></i></a>';
 									}
 									if(row.haveDependecy>0){
 										options = options
-										+ '<i class="material-icons amarillo" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">warning</span></i>';
+										+ '<a onclick="" title="Tiene dependencias"><i class="material-icons naranja" style="font-size: 25px;"><span class="material-symbols-outlined">warning</span></i></a>';
 									}
 									options = options
 									+ '<a onclick="openRFCTrackingModal('
@@ -366,7 +366,7 @@ function initTable(){
 									+ '<a onclick="openTreeModal('
 									+ row.id+
 									',0'
-									+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">device_hub</i> </a>';
+									+ ')" title="Árbol de dependencias"><i class="material-icons gris" style="font-size: 25px;">device_hub</i> </a>';
 									options = options
 									+ '<a href="'
 									+ getCont()
@@ -824,17 +824,17 @@ function initTableAdd(){
 							var options = '<div class="iconLineR">';
 							if(row.haveSQL){
 								options = options
-								+ '<i class="material-icons verde" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">database</span></i>';
+								+ '<a onclick="" title="Tiene base de datos"><i class="material-icons verde" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">database</span></i></a>';
 							}
 							if(row.haveDependecy>0){
 								options = options
-								+ '<i class="material-icons amarillo" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">warning</span></i>';
+								+ '<a onclick="" title="Tiene dependencias"><i class="material-icons naranja" style="font-size: 25px;"><span class="material-symbols-outlined">warning</span></i></a>';
 							}
 							options = options
 							+ '<a onclick="openRFCTrackingModal('
 							+ row.id+
 							',1'
-							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
+							+ ')" title="Arbol de dependencias"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
 							
 							options = options
 							+ '<a onclick="openTreeModal('
