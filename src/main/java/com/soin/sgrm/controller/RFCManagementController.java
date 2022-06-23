@@ -89,23 +89,23 @@ public class RFCManagementController extends BaseController{
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			String sSearch = request.getParameter("sSearch");
 			 Long statusId;
-			 Long priorityId;
-			 Long impactId;
+			 int priorityId;
+			 int impactId;
 			if (request.getParameter("statusId").equals("")) {
 				statusId = null;
 			} else {
 				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
 			}
 			if (request.getParameter("priorityId").equals("")) {
-				priorityId = null;
+				priorityId = 0;
 			} else {
-				priorityId = (long) Integer.parseInt(request.getParameter("priorityId"));
+				priorityId =  Integer.parseInt(request.getParameter("priorityId"));
 			}
 			
 			if (request.getParameter("impactId").equals("")) {
-				impactId = null;
+				impactId = 0;
 			} else {
-				impactId = (long) Integer.parseInt(request.getParameter("impactId"));
+				impactId = Integer.parseInt(request.getParameter("impactId"));
 			}
 			String dateRange = request.getParameter("dateRange");
 

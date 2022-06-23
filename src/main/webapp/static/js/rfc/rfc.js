@@ -53,7 +53,7 @@ $(function() {
 	});
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
-	activeItemMenu("managerRFCItem");
+	activeItemMenu("RFCItem");
 	dropDownChange();
 	$("#addRFCSection").hide();
 	$fmRFC.find("#sId").selectpicker('val',"");
