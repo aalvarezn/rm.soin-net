@@ -20,9 +20,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.JoinFormula;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @SuppressWarnings("serial")
@@ -74,6 +76,10 @@ public class Release_RFC implements Serializable, Cloneable {
 	@Column(name = "MOTIVO")
 	private String motive;
 
+	//@JoinFormula(value = "SELECT COUNT(rr.ID) FROM RELEASES_RELEASE rr WHERE rr.ID IN (SELECT rrd.TO_RELEASE_ID  FROM RELEASES_RELEASE_DEPENDENCIAS rrd WHERE FROM_RELEASE_ID =id) AND rr.ESTADO_ID IN(SELECT re.ID FROM RELEASES_ESTADO re WHERE re.NOMBRE IN('Borrador', 'Solicitado'))")
+	@Transient
+	private Integer haveDependecy;
+	
 	public int getId() {
 		return id;
 	}
@@ -189,4 +195,13 @@ public class Release_RFC implements Serializable, Cloneable {
 		this.description = description;
 	}
 
+	public Integer getHaveDependecy() {
+		return haveDependecy;
+	}
+
+	public void setHaveDependecy(Integer haveDependecy) {
+		this.haveDependecy = haveDependecy;
+	}
+	
+	
 }

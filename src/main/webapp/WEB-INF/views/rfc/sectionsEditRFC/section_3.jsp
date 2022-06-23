@@ -95,7 +95,7 @@
 			</div>
 			<div id="tagShow" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<label for="email_address">Ingrese nombre de BD</label>
-				<input id="form-tags" maxlength="150"
+				<input id="bd" maxlength="150"
 					class="tagInit" name="tags-1" type="text"
 					value="${rfc.schemaDB}">
 			</div>

@@ -66,4 +66,6 @@ public interface ReleaseDao {
 
 	Release_RFC findRelease_RFCById(Integer id);
 
+	Integer getDependency(int id);
+
 }

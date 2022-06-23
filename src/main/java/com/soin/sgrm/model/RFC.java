@@ -1,6 +1,5 @@
 package com.soin.sgrm.model;
 
-
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -26,8 +25,6 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
-
-
 @Entity
 @Table(name = "RFC")
 public class RFC implements Serializable {
@@ -48,7 +45,7 @@ public class RFC implements Serializable {
 
 	@Column(name = "REQUIERE_BD")
 	private Boolean requiredBD;
-	
+
 	@Column(name = "RAZON_CAMBIO")
 	private String reasonChange;
 
@@ -60,31 +57,36 @@ public class RFC implements Serializable {
 
 	@Column(name = "EVIDENCIA")
 	private String evidence;
-	
 
 	@Column(name = "REQUISITOS_ESP")
 	private String requestEsp;
-	
+
 	@Column(name = "PLAN_RETORNO")
 	private String returnPlan;
-	
+
 	@Column(name = "MOTIVO")
 	private String motive;
-	
+
 	@Column(name = "OPERADOR")
 	private String operator;
-	
+
 	@Column(name = "SCHEMADB")
 	private String schemaDB;
-	
+
+	@Column(name = "REMITENTES")
+	private String senders;
+
+	@Column(name = "MENSAJE_GESTOR")
+	private String message;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_PRIORIDAD", nullable = true)
 	private Priority priority;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_IMPACTO", nullable = true)
 	private Impact impact;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_CAMBIO", nullable = true)
 	private TypeChange typeChange;
@@ -92,7 +94,7 @@ public class RFC implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ESTADO", nullable = false)
 	private StatusRFC status;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_USUARIO", nullable = false)
 	private User user;
@@ -100,11 +102,9 @@ public class RFC implements Serializable {
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
-	
-	
+
 	@Column(name = "FECHA_EJECUCION_INICIO")
 	private String requestDateBegin;
-	
 
 	@Column(name = "FECHA_EJECUCION_FINAL")
 	private String requestDateFinish;
@@ -114,35 +114,34 @@ public class RFC implements Serializable {
 	@JoinTable(name = "RFC_RELEASE", joinColumns = { @JoinColumn(name = "ID_RFC") }, inverseJoinColumns = {
 			@JoinColumn(name = "ID_RELEASE") })
 	private Set<Release_RFC> releases = new HashSet<>();
-	
+
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "RFC_ARCHIVORFC", joinColumns = { @JoinColumn(name = "RFC_ID") }, inverseJoinColumns = {
 			@JoinColumn(name = "ARCHIVORFC_ID") })
 	private Set<RFCFile> files = new HashSet<>();
-	
+
 	@OrderBy("trackingDate ASC")
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "rfc")
 	private Set<RFCTracking> tracking = new HashSet<RFCTracking>();
-	
-	//Agregar Motivo
-	//Agregar Usuario que lo cambio
+
+	// Agregar Motivo
+	// Agregar Usuario que lo cambio
 	@Transient
 	private String[] strReleases;
-	
+
 	@Transient
 	private int impactId;
-	
+
 	@Transient
 	private int priorityId;
-	
+
 	@Transient
 	private Long typeChangeId;
-	
+
 	@Transient
 	private String releasesList;
-	
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -271,9 +270,6 @@ public class RFC implements Serializable {
 		this.requestDate = requestDate;
 	}
 
-
-
-
 	public Set<Release_RFC> getReleases() {
 		return releases;
 	}
@@ -377,8 +373,21 @@ public class RFC implements Serializable {
 	public void setSchemaDB(String schemaDB) {
 		this.schemaDB = schemaDB;
 	}
-	
-	
-	
+
+	public String getSenders() {
+		return senders;
+	}
+
+	public void setSenders(String senders) {
+		this.senders = senders;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
 }

@@ -60,15 +60,18 @@ $(function() {
 		sideBySide: true
 	});
 	   $("#dateBegin").on("dp.change", function (e) {
-           $('#dateFinish').data("DateTimePicker").minDate(e.date);
+		   
+           $('#dateFinish').data("DateTimePicker").minDate(e.date.add(60,'m'));
        });
 	   
 	   $("#dateFinish").on("dp.change", function (e) {
 		   if( $("#dateBegin").val()==""){
-			   $('#dateFinish').data("DateTimePicker").minDate(new Date());
-			   $("#dateBegin").val($("#dateFinish").val());   
+			  
 		   }else{
-			   $('#dateFinish').data("DateTimePicker").minDate($("#dateBegin").val());
+			   var dateI=$('#dateBegin').data("DateTimePicker").date().add(1,'hours');
+			   var date1hour=moment(dateI, "DD-MM-YYYY");
+
+			   $('#dateFinish').data("DateTimePicker").minDate(date1hour);
 		   }
 		
        });
@@ -131,7 +134,7 @@ $(function() {
 	
 	// If the document is clicked somewhere
 	$('#mynetwork').bind("mousedown", function (e) {
-//		alert('mynetwork')
+// alert('mynetwork')
 		// If the clicked element is not the menu
 		if (!$(e.target).parents(".node-menu").length > 0) {
 
@@ -151,7 +154,7 @@ $(function() {
 		    textField.innerText = txt;
 		    document.body.appendChild(textField);
 		    textField.select();
-		    textField.focus(); //SET FOCUS on the TEXTFIELD
+		    textField.focus(); // SET FOCUS on the TEXTFIELD
 		    document.execCommand('copy');
 		    textField.remove();
 
@@ -212,9 +215,9 @@ function sendPartialRFC() {
 	changeSaveButton(true);
 	var valueSchema="";
 	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('.tagInit').val('');
+		$('#bd').val('');
 	}else{
-		valueSchema=$('.tagInit').val();
+		valueSchema=$('#bd').val();
 	}
 	$.ajax({
 		// async : false,
@@ -244,6 +247,8 @@ function sendPartialRFC() {
 			evidence:$rfcEditForm.find('#evidenceRFC').val(),
 			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
+			senders:$rfcEditForm.find('#senders').val(),
+			message:$rfcEditForm.find('#messagePer').val(),
 		}),
 		success : function(response) {
 			// responseAjaxSendPartialRelease(response);
@@ -279,11 +284,9 @@ function initData(){
 			type: 'GET',
 			url: getCont() + "rfc/getRFC-"+idRFC,
 			success: function(result) {
-				console.log(result);
 				if(result.length!=0){
 					$dataRelease=result.releases;
 					$dataReleaseCheck=$dataRelease.slice();
-
 				}else{
 					
 				}
@@ -345,11 +348,14 @@ function initTable(){
 							},
 							{
 								"mRender" : function(data, type, row, meta) {
-									console.log(row);
 									var options = '<div class="iconLineR">';
 									if(row.haveSQL){
 										options = options
 										+ '<i class="material-icons verde" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">database</span></i>';
+									}
+									if(row.haveDependecy>0){
+										options = options
+										+ '<i class="material-icons amarillo" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">warning</span></i>';
 									}
 									options = options
 									+ '<a onclick="openRFCTrackingModal('
@@ -433,7 +439,6 @@ function searchTree(releaseNumber) {
 		timeout : 60000,
 		data : {},
 		success : function(response) {
-			console.log(response);
 			ajaxSearchTree(response);
 			
 		},
@@ -516,24 +521,17 @@ function draw(objs) {
 		network.moveTo(scaleOption);
 	})
 /*
-	network.on("oncontext", function (params) {
-		params.event.preventDefault();
-		if (typeof this.getNodeAt(params.pointer.DOM) !== 'undefined') {
-			network.selectNodes([this.getNodeAt(params.pointer.DOM)]);
-			let node = network.body.nodes[this.getNodeAt(params.pointer.DOM)];
-			$('.node-menu li').attr('data-id', this.getNodeAt(params.pointer.DOM));
-			$('.node-menu li').attr('data-release', node.options.numberRelease);
-
-			$(".node-menu").finish().toggle(100);
-			$(".node-menu").css({
-				top: params.event.pageY + "px",
-				left: params.event.pageX + "px"
-			});
-		}else{
-			network.selectNodes([]);
-		}
-	});
-	*/
+ * network.on("oncontext", function (params) { params.event.preventDefault(); if
+ * (typeof this.getNodeAt(params.pointer.DOM) !== 'undefined') {
+ * network.selectNodes([this.getNodeAt(params.pointer.DOM)]); let node =
+ * network.body.nodes[this.getNodeAt(params.pointer.DOM)]; $('.node-menu
+ * li').attr('data-id', this.getNodeAt(params.pointer.DOM)); $('.node-menu
+ * li').attr('data-release', node.options.numberRelease);
+ * 
+ * $(".node-menu").finish().toggle(100); $(".node-menu").css({ top:
+ * params.event.pageY + "px", left: params.event.pageX + "px" }); }else{
+ * network.selectNodes([]); } });
+ */
 }
 
 function getTreeNetwork(objs) {
@@ -613,7 +611,84 @@ function getColorNode(status){
 
 function addDataToTable(){
 	var dataRFC = $dtRFCs.rows('.selected').data();
+	var verification=true;
+	var verification2=false;
+	var text ='`<table id="table" class="table tableIni table-bordered table-striped table-hover" border=1>' +
+			'<thead>' +
+			'<tr>'+
+			'<th>Numero release</th>'+
+			'</tr>' +
+			'</thead>'+
+			'<tbody>';
+	if(dataRFC!=undefined){
+	if(dataRFC.length!=0){
+		
+	for(var x=0;x<dataRFC.length;x++){
+			
+			var data= dataRFC[x];
+
+				if(data.haveDependecy>0){
+					
+					verification=false;
+					verification2=true;
+				}
+				
+
+			if(!verification){
+			
+				 text+='<tr><td>'+data.releaseNumber+'</tr></td>';
+				
+			}else{
+				
+			}
+			
+			verification=true;
+			
+		}
+	text+='</tr></tbody></table>`';
+		if(verification2){
+			console.log(text);
+			Swal.fire({
+				title: '\u00BFEst\u00e1s seguro que desea agregar?\nLos siguientes releases tienen dependencias en estado solicitado o borrado:',
+				html:text,		
+				icon: 'question',
+				showCancelButton: true,
+				customClass: 'swal-wide',
+				cancelButtonText: 'Cancelar',
+				cancelButtonColor: '#f14747',
+				confirmButtonColor: '#3085d6',
+				confirmButtonText: 'Aceptar',
+			}).then((result) => {
+				if(result.value){
+					addAfterCheck();
+				}		
+			});
+			
+			
+		}else{
+			addAfterCheck();
+		}
+		
 	
+		
+	}else{
+		swal("Sin seleccion!", "No se ha seleccionado ningun release",
+		"warning");
+		return;
+	}
+
+	
+	}else{
+		swal("Sin seleccion!", "No se ha seleccionado ningun release",
+		"warning");
+		return;
+	}
+	
+}
+
+function addAfterCheck(){
+var dataRFC = $dtRFCs.rows('.selected').data();
+	var contador=0;
 	
 	var verification=true;
 	if(dataRFC!=undefined){
@@ -630,19 +705,18 @@ function addDataToTable(){
 				if(element.id==data.id){
 					
 					verification=false;
-					
+					contador=0;
 				}
 				
 			});
 			if(verification){
-				console.log(JSON.stringify(data.user));
-				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+(data.description).toString()+'","user":'+JSON.stringify(data.user)+',"haveSQL":"'+data.haveSQL+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
-				console.log(text);
+				var description=data.description;
+				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+description.replace(/\n|\r/g, "")+'","user":'+JSON.stringify(data.user)+',"haveSQL":'+data.haveSQL+',"haveDependecy":"'+data.haveDependecy+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
 				$dataRelease.unshift(obj);
 				 $('#releaseTableAdd').dataTable().fnClearTable();
 				 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-				
+				 contador=1;
 			}else{
 				
 			}
@@ -651,8 +725,12 @@ function addDataToTable(){
 			
 		}
 		$dtRFCs.$('tr.selected').removeClass('selected');
-		
-		
+		 if(contador=1){
+			 notifyMs('Se agregaron correctamente los releases','success');
+		 }
+		 else{
+			 notifyMs('Estos releases ya fueron agregados','error');
+		 }
 	}else{
 		for(var x=0;x<dataRFC.length;x++){
 			
@@ -663,31 +741,36 @@ function addDataToTable(){
 				if(element.id==data.id){
 					
 					verification=false;
-					
+					contador=0;
 				}
 				
 			});
 			if(verification){
-				console.log(JSON.stringify(data.user));
-				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+(data.description).toString()+'","user":'+JSON.stringify(data.user)+',"haveSQL":"'+data.haveSQL+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
+				
+				var description=""+data.description+"";
+				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+description.replace(/\n|\r/g, "")+'","user":'+JSON.stringify(data.user)+',"haveSQL":'+data.haveSQL+',"haveDependecy":"'+data.haveDependecy+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
-				console.log(text);
 				$dataRelease.unshift(obj);
 				 $('#releaseTableAdd').dataTable().fnClearTable();
 				 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-				
+				contador=1;
 			}else{
-				
+				contador=0;
 			}
 			
 			verification=true;
 			
 		}
 		 $dtRFCs.$('tr.selected').removeClass('selected');
+		 if(contador=1){
+			 notifyMs('Se agregaron correctamente los releases','success');
+		 }
+		 else{
+			 notifyMs('Estos releases ya fueron agregados','error');
+		 }
 	}
 		return;
 	}
-
 }
 
 function reloadPreview() {
@@ -742,6 +825,10 @@ function initTableAdd(){
 							if(row.haveSQL){
 								options = options
 								+ '<i class="material-icons verde" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">database</span></i>';
+							}
+							if(row.haveDependecy>0){
+								options = options
+								+ '<i class="material-icons amarillo" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">warning</span></i>';
 							}
 							options = options
 							+ '<a onclick="openRFCTrackingModal('
@@ -814,7 +901,7 @@ function dropDownChange(){
 
 function removeSelectedData(){
 	var dataTableRelease = $dtRFCsAdd.rows('.selected').data();
-	
+	if(dataTableRelease.length!=0){
 	if($dataRelease.length!=0){
 
 		for(var x=0;x<dataTableRelease.length;x++){
@@ -829,12 +916,12 @@ function removeSelectedData(){
 		    
 		        		$dataRelease=[];
 		        		 $('#releaseTableAdd').dataTable().fnClearTable();
-		        		 
+		        		 notifyMs('Se removieron correctamente los releases','success');
 		        		 return;
 		        	}
 		        	 $('#releaseTableAdd').dataTable().fnClearTable();
 		    		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-		    		
+		    		 notifyMs('Se removieron correctamente los releases','success');
 		            return false; 
 					
 				}
@@ -844,9 +931,15 @@ function removeSelectedData(){
 		}
 		$dtRFCs.$('tr.selected').removeClass('selected');
 	}else{
+		swal("Sin seleccion!", "No se ha seleccionado ningun release para remover",
+		"warning");
 		return;
 	}
-		
+	}else{
+		swal("Sin seleccion!", "No se ha seleccionado ningun release",
+		"warning");
+		return;
+	}
 }
 function removeData(data){
 
@@ -874,9 +967,9 @@ function sendRFC() {
 	changeSaveButton(true);
 	var valueSchema="";
 	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('.tagInit').val('');
+		$('#bd').val('');
 	}else{
-		valueSchema=$('.tagInit').val();
+		valueSchema=$('#bd').val();
 	}
 	$.ajax({
 		// async : false,
@@ -906,6 +999,8 @@ function sendRFC() {
 			evidence:$rfcEditForm.find('#evidenceRFC').val(),
 			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
+			senders:$rfcEditForm.find('#senders').val(),
+			message:$rfcEditForm.find('#messagePer').val(),
 		}),
 		success : function(response) {
 			responseAjaxSendRFC(response);
@@ -926,9 +1021,9 @@ function requestRFC() {
 	changeSaveButton(true);
 	var valueSchema="";
 	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('.tagInit').val('');
+		$('#bd').val('');
 	}else{
-		valueSchema=$('.tagInit').val();
+		valueSchema=$('#bd').val();
 	}
 	$.ajax({
 		// async : false,
@@ -958,6 +1053,8 @@ function requestRFC() {
 			evidence:$rfcEditForm.find('#evidenceRFC').val(),
 			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
+			senders:$rfcEditForm.find('#senders').val(),
+			message:$rfcEditForm.find('#messagePer').val(),
 		}),
 		success : function(response) {
 			responseAjaxRequestRFC(response);

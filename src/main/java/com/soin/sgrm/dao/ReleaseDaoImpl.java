@@ -1,6 +1,8 @@
 package com.soin.sgrm.dao;
 
 import java.util.Date;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.RFCFile;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObjectEdit;
@@ -630,6 +633,24 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			crit.uniqueResult();
 		}
 		List<Releases_WithoutObj> aaData = crit.list();
+		
+		for(Releases_WithoutObj release: aaData){
+			String sql = "";
+			Query query = null;
+			sql = String.format(
+					"SELECT COUNT(rr.ID) FROM RELEASES_RELEASE rr WHERE rr.ID IN (SELECT rrd.TO_RELEASE_ID  FROM RELEASES_RELEASE_DEPENDENCIAS rrd WHERE FROM_RELEASE_ID =%s) AND rr.ESTADO_ID IN(SELECT re.ID FROM RELEASES_ESTADO re WHERE re.NOMBRE IN('Borrador', 'Solicitado'))",
+					release.getId());
+			query = getSession().createSQLQuery(sql);
+			
+			BigDecimal test =(BigDecimal) query.uniqueResult();
+		   
+			  
+			   release.setHaveDependecy(test.intValueExact());
+			
+			
+		}
+		
+		
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -637,7 +658,21 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		return json;
 	}
 	
-
+	@Override
+	public Integer getDependency(int id) {
+		String sql = "";
+		Query query = null;
+		sql = String.format(
+				"SELECT COUNT(rr.ID) FROM RELEASES_RELEASE rr WHERE rr.ID IN (SELECT rrd.TO_RELEASE_ID  FROM RELEASES_RELEASE_DEPENDENCIAS rrd WHERE FROM_RELEASE_ID =%s) AND rr.ESTADO_ID IN(SELECT re.ID FROM RELEASES_ESTADO re WHERE re.NOMBRE IN('Borrador', 'Solicitado'))",
+				id);
+		query = getSession().createSQLQuery(sql);
+		
+		BigDecimal test =(BigDecimal) query.uniqueResult();
+	   
+		  
+		  return test.intValueExact();
+		
+	}
 	public Criteria criteriaBySystems1(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			Integer systemId)
 			throws SQLException, ParseException {
@@ -658,4 +693,10 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		
 		return crit;
 	}
+
+	protected Session getSession() {
+		return sessionFactory.getCurrentSession();
+	}
+
+	
 }

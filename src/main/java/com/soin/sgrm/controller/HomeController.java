@@ -98,7 +98,7 @@ public class HomeController extends BaseController {
 			return "redirect:/management/rfc/";
 		}
 
-		return "redirect:/rfc";
+		return "redirect:/rfc/";
 	}
 
 	@RequestMapping(value = "/successLogin", method = RequestMethod.GET)

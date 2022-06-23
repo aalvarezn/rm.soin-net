@@ -46,7 +46,7 @@
 								<th>Solicitado por</th>
 								<th>Estado</th>
 								<th>Fecha de creación</th>
-								<th>Acciones</th>
+								<th class="actCol" style="text-align: center;">Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -86,7 +86,7 @@
 								<th>Solicitado por</th>
 								<th>Estado</th>
 								<th>Fecha de creación</th>
-								<th>Acciones</th>
+								<th class="actCol" style="text-align: center;">Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
