@@ -1,6 +1,8 @@
 package com.soin.sgrm.dao;
 
 import java.util.Date;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,11 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.RFCFile;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.ItemObject;
@@ -284,6 +289,11 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	@Override
 	public Release findReleaseById(Integer id) {
 		Release release = (Release) sessionFactory.getCurrentSession().get(Release.class, id);
+		return release;
+	}
+	@Override
+	public Release_RFC findRelease_RFCById(Integer id) {
+		Release_RFC release = (Release_RFC) sessionFactory.getCurrentSession().get(Release_RFC.class, id);
 		return release;
 	}
 
@@ -601,4 +611,92 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		return crit;
 	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer systemId) throws SQLException, ParseException {
+		JsonSheet json = new JsonSheet();
+		Criteria crit = criteriaBySystems1( sEcho, iDisplayStart, iDisplayLength, sSearch,
+				systemId);
+
+		crit.setFirstResult(iDisplayStart);
+		crit.setMaxResults(iDisplayLength);
+
+		Criteria critCount = criteriaBySystems1( sEcho, iDisplayStart, iDisplayLength, sSearch,
+				systemId);
+
+		critCount.setProjection(Projections.rowCount());
+		Long count = (Long) critCount.uniqueResult();
+		int recordsTotal = count.intValue();
+		if(recordsTotal==1) {
+			crit.uniqueResult();
+		}
+		List<Releases_WithoutObj> aaData = crit.list();
+		
+		for(Releases_WithoutObj release: aaData){
+			String sql = "";
+			Query query = null;
+			sql = String.format(
+					"SELECT COUNT(rr.ID) FROM RELEASES_RELEASE rr WHERE rr.ID IN (SELECT rrd.TO_RELEASE_ID  FROM RELEASES_RELEASE_DEPENDENCIAS rrd WHERE FROM_RELEASE_ID =%s) AND rr.ESTADO_ID IN(SELECT re.ID FROM RELEASES_ESTADO re WHERE re.NOMBRE IN('Borrador', 'Solicitado'))",
+					release.getId());
+			query = getSession().createSQLQuery(sql);
+			
+			BigDecimal test =(BigDecimal) query.uniqueResult();
+		   
+			  
+			   release.setHaveDependecy(test.intValueExact());
+			
+			
+		}
+		
+		
+		json.setDraw(sEcho);
+		json.setRecordsTotal(recordsTotal);
+		json.setRecordsFiltered(recordsTotal);
+		json.setData(aaData);
+		return json;
+	}
+	
+	@Override
+	public Integer getDependency(int id) {
+		String sql = "";
+		Query query = null;
+		sql = String.format(
+				"SELECT COUNT(rr.ID) FROM RELEASES_RELEASE rr WHERE rr.ID IN (SELECT rrd.TO_RELEASE_ID  FROM RELEASES_RELEASE_DEPENDENCIAS rrd WHERE FROM_RELEASE_ID =%s) AND rr.ESTADO_ID IN(SELECT re.ID FROM RELEASES_ESTADO re WHERE re.NOMBRE IN('Borrador', 'Solicitado'))",
+				id);
+		query = getSession().createSQLQuery(sql);
+		
+		BigDecimal test =(BigDecimal) query.uniqueResult();
+	   
+		  
+		  return test.intValueExact();
+		
+	}
+	public Criteria criteriaBySystems1(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer systemId)
+			throws SQLException, ParseException {
+
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
+		crit.createAlias("system", "system");
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name","Certificacion"),
+				Restrictions.eq("statuses.name","Solicitado")))
+		.add(Restrictions.eq("system.id", systemId));
+		
+
+		// Valores de busqueda en la tabla
+		if (sSearch != null && !((sSearch.trim()).equals("")))
+			crit.add(Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase());
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		
+		return crit;
+	}
+
+	protected Session getSession() {
+		return sessionFactory.getCurrentSession();
+	}
+
+	
 }

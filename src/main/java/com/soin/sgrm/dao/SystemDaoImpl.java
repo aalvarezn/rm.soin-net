@@ -203,4 +203,12 @@ public class SystemDaoImpl implements SystemDao {
 		return crit.list();
 	}
 
+	
+	public List<System> listProjects(int id) {
+		   return sessionFactory.getCurrentSession().createCriteria(System.class)
+		    		.createAlias("managers","managers")
+		    		.add(Restrictions.eq("managers.id", id))
+		    		.list();
+	}
+
 }

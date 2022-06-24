@@ -90,6 +90,16 @@ public class HomeController extends BaseController {
 
 		return "redirect:/release/";
 	}
+	
+	@RequestMapping(value = "/homeRFC", method = RequestMethod.GET)
+	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+		if (request.isUserInRole("ROLE_Release Manager")) {
+			return "redirect:/management/rfc/";
+		}
+
+		return "redirect:/rfc/";
+	}
 
 	@RequestMapping(value = "/successLogin", method = RequestMethod.GET)
 	public String successLogin(HttpServletRequest request, Locale locale, Model model, HttpSession session) {

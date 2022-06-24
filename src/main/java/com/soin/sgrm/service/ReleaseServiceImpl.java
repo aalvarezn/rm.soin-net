@@ -21,6 +21,7 @@ import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.CommonUtils;
@@ -104,8 +105,8 @@ public class ReleaseServiceImpl implements ReleaseService {
 	}
 
 	@Override
-	public Release findReleaseById(Integer id) throws SQLException {
-		return dao.findReleaseById(id);
+	public Release_RFC findRelease_RFCById(Integer id) throws SQLException {
+		return dao.findRelease_RFCById(id);
 	}
 
 	@Override
@@ -246,6 +247,23 @@ public class ReleaseServiceImpl implements ReleaseService {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return "Sin Asignar";
+	}
+
+	@Override
+	public JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer systemId) throws SQLException, ParseException {
+		return dao.listReleasesBySystem( sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
+	}
+
+	@Override
+	public Release findReleaseById(Integer id) throws SQLException {
+		
+		return dao.findReleaseById(id);
+	}
+	
+	@Override
+	public Integer getDependency(int id) {
+		return dao.getDependency(id);
 	}
 
 }

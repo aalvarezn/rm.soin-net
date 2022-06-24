@@ -9,7 +9,10 @@ var formReleaseDraft = $('#formAddReleaseDraft');
 var formChangeUser = $('#changeUserForm');
 var trackingReleaseForm = $('#trackingReleaseForm');
 $(function() {
-	activeItemMenu("releasesItem");
+
+	activeItemMenu("releasesQAItem");
+	loadTableRelease('systemReleaseQA');
+	setTab();
 
 	$("#addReleaseSection").hide();
 

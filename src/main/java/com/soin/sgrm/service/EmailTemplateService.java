@@ -2,13 +2,15 @@ package com.soin.sgrm.service;
 
 import java.util.List;
 
+import com.soin.sgrm.dao.BaseDao;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
 
-public interface EmailTemplateService {
+public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 
 	List<EmailTemplate> listAll();
 
@@ -33,5 +35,9 @@ public interface EmailTemplateService {
 	void sendMail(WFRelease releaseEmail, EmailTemplate email, String motive);
 
 	void sendMailActor(WFRelease releaseEmail, EmailTemplate email);
+
+	void sendMailRFC(RFC rfcEmail, EmailTemplate email) throws Exception;
+
+	void sendMailNotify(WFRelease releaseEmail, EmailTemplate email,String user);
 
 }

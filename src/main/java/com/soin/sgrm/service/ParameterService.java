@@ -13,4 +13,6 @@ public interface ParameterService {
 	Parameter findById(Integer id);
 
 	void updateParameter(Parameter param);
+
+	Parameter getParameterByCode(Integer code);
 }

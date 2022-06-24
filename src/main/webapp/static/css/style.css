@@ -11437,6 +11437,18 @@ html.ie11 .bs-searchbox .form-control {
 	padding: 0px !important;
 	font-size: 22px;
 }
+.verde {
+	color: #196f3d;
+	cursor: pointer;
+	padding: 0px !important;
+	font-size: 22px;
+}
+.naranja {
+	color: #ff9800;
+	cursor: pointer;
+	padding: 0px !important;
+	font-size: 22px;
+}
 
 .gris:nth-child(2) {
 	margin-left: 7px;
@@ -11962,6 +11974,11 @@ ul.stepper>li>a::before {
 	white-space: nowrap;
 	font-size: 5px;
 	text-align: center;
+}
+.iconLineR {
+	white-space: nowrap;
+	font-size: 5px;
+	text-align: right;
 }
 
 .iconLineC>a>li {

@@ -29,6 +29,10 @@
 						href="<c:url value='/management/release/'/> "> <span>Gestión
 								Release</span>
 					</a></li>
+					<li><a id="managerRFCItem"
+					href="<c:url value='/management/rfc/'/> "> <span>Gestión
+							RFC</span>
+				</a></li>
 					<li><a id="managemetWorkFlowItem"
 						href="<c:url value='/management/wf/'/> "> <span>Gestión
 								Trámites</span>
@@ -46,7 +50,7 @@
 				</c:if>
 			</c:forEach>
 			<c:if test="${qaAccess}">
-				<li><a id="releasesItem" href="<c:url value='/release/qa'/> ">
+				<li><a id="releasesQAItem" href="<c:url value='/release/qa'/> ">
 						<span>Gestión QA</span>
 				</a></li>
 			</c:if>
@@ -63,6 +67,10 @@
 					</ul></li>
 			</c:if>
 			<c:if test="${managerAccess}">
+				<li><li><a id="RFCItem" href="<c:url value='/rfc/'/> "> <span>Mis
+							RFC</span>
+				</a></li>
+					
 				<li><a id="managerWorkFlowItem"
 					href="<c:url value='/manager/wf/'/> "> <span>Mis
 							Trámites</span>
