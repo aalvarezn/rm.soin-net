@@ -366,7 +366,7 @@ function initTable(){
 									+ '<a onclick="openTreeModal('
 									+ row.id+
 									',0'
-									+ ')" title="Árbol de dependencias"><i class="material-icons gris" style="font-size: 25px;">device_hub</i> </a>';
+									+ ')" title="\u00C1rbol de dependencias"><i class="material-icons gris" style="font-size: 25px;">device_hub</i> </a>';
 									options = options
 									+ '<a href="'
 									+ getCont()
@@ -672,14 +672,14 @@ function addDataToTable(){
 	
 		
 	}else{
-		swal("Sin seleccion!", "No se ha seleccionado ningun release",
+		swal("Sin selecci\u00F3n!", "No se ha seleccionado ning\u00FAn release",
 		"warning");
 		return;
 	}
 
 	
 	}else{
-		swal("Sin seleccion!", "No se ha seleccionado ningun release",
+		swal("Sin selecci\u00F3n!", "No se ha seleccionado ning\u00FAn release",
 		"warning");
 		return;
 	}
@@ -834,7 +834,7 @@ function initTableAdd(){
 							+ '<a onclick="openRFCTrackingModal('
 							+ row.id+
 							',1'
-							+ ')" title="Árbol de dependencias"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
+							+ ')" title="\u00C1rbol de dependencias"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
 							
 							options = options
 							+ '<a onclick="openTreeModal('
@@ -931,12 +931,12 @@ function removeSelectedData(){
 		}
 		$dtRFCs.$('tr.selected').removeClass('selected');
 	}else{
-		swal("Sin selecci\u00F3n!", "No se ha seleccionado ningun release para remover",
+		swal("Sin selecci\u00F3n!", "No se ha seleccionado ning\u00FAn release para remover",
 		"warning");
 		return;
 	}
 	}else{
-		swal("Sin selecci\u00F3n!", "No se ha seleccionado ningun release",
+		swal("Sin selecci\u00F3n!", "No se ha seleccionado ning\u00FAn release",
 		"warning");
 		return;
 	}
