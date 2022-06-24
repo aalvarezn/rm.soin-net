@@ -834,7 +834,7 @@ function initTableAdd(){
 							+ '<a onclick="openRFCTrackingModal('
 							+ row.id+
 							',1'
-							+ ')" title="Arbol de dependencias"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
+							+ ')" title="Árbol de dependencias"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
 							
 							options = options
 							+ '<a onclick="openTreeModal('
@@ -931,12 +931,12 @@ function removeSelectedData(){
 		}
 		$dtRFCs.$('tr.selected').removeClass('selected');
 	}else{
-		swal("Sin seleccion!", "No se ha seleccionado ningun release para remover",
+		swal("Sin selecci\u00F3n!", "No se ha seleccionado ningun release para remover",
 		"warning");
 		return;
 	}
 	}else{
-		swal("Sin seleccion!", "No se ha seleccionado ningun release",
+		swal("Sin selecci\u00F3n!", "No se ha seleccionado ningun release",
 		"warning");
 		return;
 	}
