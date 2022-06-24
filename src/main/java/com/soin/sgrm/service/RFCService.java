@@ -3,7 +3,6 @@ package com.soin.sgrm.service;
 import java.sql.SQLException;
 
 import com.soin.sgrm.model.RFC;
-import com.soin.sgrm.model.RFCList;
 import com.soin.sgrm.response.JsonSheet;
 
 public interface RFCService extends BaseService<Long, RFC>{
