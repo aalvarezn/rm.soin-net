@@ -68,7 +68,7 @@
 	</div>
 	<div class="row clearfix">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<label for="to" class="col-sm-2 col-form-label lbtxt m-t-11">Remitentes:</label>
+			<label for="to" class="col-sm-2 col-form-label lbtxt m-t-11">Destinatarios:</label>
 			<div class="col-sm-5 ">
 				<div class="form-line">
 					<input type="text" id="senders" name="senders"  value="${rfc.senders}"
@@ -85,7 +85,7 @@
 					class="form-control"
 					placeholder="Ingrese un mensaje..." style="">${rfc.message}</textarea>
 			</div>
-			<label id="rfcReason_error" class="error fieldError" for="name"
+			<label id="messagePer_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 		</div>
