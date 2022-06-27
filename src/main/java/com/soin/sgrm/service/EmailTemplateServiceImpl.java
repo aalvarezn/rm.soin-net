@@ -614,9 +614,12 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 		}else {
 			
-			if(rfc.getSenders().trim().equals("") || rfc.getSenders()==null) {
+			if( rfc.getSenders()==null) {
 					ccFinish=rfc.getUser().getEmail();
 			}else {
+				if(rfc.getSenders().trim().equals("")) {
+					ccFinish=rfc.getUser().getEmail();
+				}else {
 				String[] split=rfc.getSenders().split(",");
 				ccFinish=rfc.getSenders();
 					boolean verify= ArrayUtils.contains(split,rfc.getUser().getEmail());
@@ -624,7 +627,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 						ccFinish=ccFinish+","+rfc.getUser().getEmail();
 					}
 				
-				
+				}
 			}
 		}
 		

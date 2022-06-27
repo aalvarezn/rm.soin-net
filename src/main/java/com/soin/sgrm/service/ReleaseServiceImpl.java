@@ -266,4 +266,9 @@ public class ReleaseServiceImpl implements ReleaseService {
 		return dao.getDependency(id);
 	}
 
+	@Override
+	public void updateStatusReleaseRFC(Release_RFC release,String operator) throws Exception {
+		dao.updateStatusReleaseRFC(release,operator);
+	}
+
 }

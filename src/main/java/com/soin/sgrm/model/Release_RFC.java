@@ -65,6 +65,11 @@ public class Release_RFC implements Serializable, Cloneable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ESTADO_ID", nullable = true)
 	private Status status;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ESTADO_ANTERIOR", nullable = true)
+	private Status statusBefore;
+	
 
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHA_CREACION")
@@ -202,6 +207,16 @@ public class Release_RFC implements Serializable, Cloneable {
 	public void setHaveDependecy(Integer haveDependecy) {
 		this.haveDependecy = haveDependecy;
 	}
+
+	public Status getStatusBefore() {
+		return statusBefore;
+	}
+
+	public void setStatusBefore(Status statusBefore) {
+		this.statusBefore = statusBefore;
+	}
+	
+	
 	
 	
 }
