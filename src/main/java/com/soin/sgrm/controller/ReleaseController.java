@@ -763,10 +763,7 @@ public class ReleaseController extends BaseController {
 			release.setStatus(status);
 			release.setMotive(status.getMotive());
 			release.setOperator(getUserLogin().getFullName());
-
-			if (node != null) {
-			release.setNode(node);
-
+      
 			if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 					EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
@@ -782,6 +779,9 @@ public class ReleaseController extends BaseController {
 					newThread.start();
 				}
 			}
+			
+			if (node != null) {
+			release.setNode(node);
 
 			// si tiene un nodo y ademas tiene actor se notifica por correo
 			if (node != null && node.getActors().size() > 0) {

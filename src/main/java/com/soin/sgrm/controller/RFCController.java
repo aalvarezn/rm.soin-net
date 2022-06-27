@@ -600,7 +600,6 @@ public class RFCController extends BaseController {
 			for(Release_RFC release: releases) {
 				release.setStatusBefore(release.getStatus());
 				Status statusRelease= statusReleaseService.findByName("RFC");
-				release.setStatusBefore(release.getStatus());
 				release.setStatus(statusRelease);
 				release.setMotive(statusRelease.getMotive());
 				releaseService.updateStatusReleaseRFC(release,user);
