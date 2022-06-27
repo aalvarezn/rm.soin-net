@@ -759,7 +759,6 @@ public class ReleaseController extends BaseController {
 			release.setStatus(status);
 			release.setMotive(status.getMotive());
 			release.setOperator(getUserLogin().getFullName());
-			
 			if (node != null) {
 			release.setNode(node);
 
