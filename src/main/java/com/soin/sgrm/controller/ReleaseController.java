@@ -756,10 +756,14 @@ public class ReleaseController extends BaseController {
 			// Verificar si existe un flujo para el sistema
 			Node node = nodeService.existWorkFlow(release);
 			Status status = statusService.findByName("Solicitado");
+
+			if (node != null) {
+			release.setNode(node);
+
 			release.setStatus(status);
 			release.setMotive(status.getMotive());
 			release.setOperator(getUserLogin().getFullName());
-			
+      
 			if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 					EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
