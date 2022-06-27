@@ -764,6 +764,9 @@ public class ReleaseController extends BaseController {
 			release.setMotive(status.getMotive());
 			release.setOperator(getUserLogin().getFullName());
 
+			if (node != null) {
+			release.setNode(node);
+
 			if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 					EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
