@@ -68,4 +68,6 @@ public interface ReleaseDao {
 
 	Integer getDependency(int id);
 
+	void updateStatusReleaseRFC(Release_RFC release,String operator);
+
 }

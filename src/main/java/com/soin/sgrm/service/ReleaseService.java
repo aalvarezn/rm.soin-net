@@ -57,6 +57,8 @@ public interface ReleaseService {
 
 	void updateStatusRelease(ReleaseEdit release) throws Exception;
 
+	void updateStatusReleaseRFC(Release_RFC release,String operator) throws Exception;
+	
 	Release findReleaseById(Integer id) throws SQLException;
 
 	void saveRelease(Release release, ReleaseCreate rc) throws Exception;

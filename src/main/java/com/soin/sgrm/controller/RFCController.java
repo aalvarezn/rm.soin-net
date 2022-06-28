@@ -92,6 +92,9 @@ public class RFCController extends BaseController {
 
 	@Autowired
 	StatusRFCService statusService;
+	
+	@Autowired
+	StatusService statusReleaseService;
 
 	@Autowired
 	SystemService systemService;
@@ -592,7 +595,16 @@ public class RFCController extends BaseController {
 			 */
 
 			rfcService.update(rfc);
-
+			Set<Release_RFC> releases=  rfc.getReleases();
+			String user=getUserLogin().getFullName();
+			for(Release_RFC release: releases) {
+				release.setStatusBefore(release.getStatus());
+				Status statusRelease= statusReleaseService.findByName("RFC");
+				release.setStatus(statusRelease);
+				release.setMotive(statusRelease.getMotive());
+				releaseService.updateStatusReleaseRFC(release,user);
+			}
+			
 			return "redirect:/rfc/summaryRFC-" + rfc.getId();
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");

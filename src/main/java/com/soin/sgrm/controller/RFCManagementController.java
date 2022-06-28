@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -23,6 +24,8 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.User;
@@ -30,7 +33,9 @@ import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.RFCService;
+import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.StatusRFCService;
+import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
@@ -44,6 +49,12 @@ public class RFCManagementController extends BaseController{
 	RFCService rfcService;
 	@Autowired 
 	StatusRFCService statusService;
+	
+	@Autowired 
+	StatusService statusReleaseService;
+	
+	@Autowired 
+	ReleaseService releaseService;
 	
 	@Autowired
 	SystemService systemService;
@@ -127,7 +138,15 @@ public class RFCManagementController extends BaseController{
 		try {
 			RFC rfc = rfcService.findById(idRFC);
 			StatusRFC status = statusService.findById(idStatus);
+			String user=getUserLogin().getFullName();
 			if (status != null && status.getName().equals("Borrador")) {
+				Set<Release_RFC> releases=rfc.getReleases();
+				for(Release_RFC release: releases) {
+					release.setStatus(release.getStatusBefore());
+					release.setMotive("Devuelto al estado "+release.getStatus().getName());
+					releaseService.updateStatusReleaseRFC(release,user);
+				}
+				
 				/*if (release.getStatus().getId() != status.getId())
 					release.setRetries(release.getRetries() + 1);*/
 			}

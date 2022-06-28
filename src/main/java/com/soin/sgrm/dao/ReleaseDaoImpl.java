@@ -698,5 +698,32 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		return sessionFactory.getCurrentSession();
 	}
 
+	@Override
+	public void updateStatusReleaseRFC(Release_RFC release,String operator) {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		String sql = "";
+		Query query = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+			sql = String.format(
+					"update releases_release set estado_id = %s ,estado_anterior = %s, operador = '%s' , motivo = '%s' , fecha_creacion = sysdate where id = %s",
+					release.getStatus().getId(),
+					release.getStatusBefore().getId(),
+					operator, release.getMotive(), release.getId());
+			query = sessionObj.createSQLQuery(sql);
+			query.executeUpdate();
+
+			transObj.commit();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
+	}
+
 	
 }
