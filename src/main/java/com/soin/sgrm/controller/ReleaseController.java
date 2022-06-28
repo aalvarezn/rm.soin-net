@@ -757,8 +757,6 @@ public class ReleaseController extends BaseController {
 			Node node = nodeService.existWorkFlow(release);
 			Status status = statusService.findByName("Solicitado");
 
-			
-
 			release.setStatus(status);
 			release.setMotive(status.getMotive());
 			release.setOperator(getUserLogin().getFullName());
