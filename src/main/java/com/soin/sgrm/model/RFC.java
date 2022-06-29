@@ -98,6 +98,15 @@ public class RFC implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_USUARIO", nullable = false)
 	private User user;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ID_SIGES", nullable = false)
+	private Siges siges;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ID_SISTEMA", nullable = false)
+	private SystemInfo systemInfo;
+
 
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
@@ -137,6 +146,9 @@ public class RFC implements Serializable {
 	@Transient
 	private int priorityId;
 
+	@Transient
+	private Integer systemId;
+	
 	@Transient
 	private Long typeChangeId;
 
@@ -391,4 +403,31 @@ public class RFC implements Serializable {
 		this.message = message;
 	}
 
+	public Siges getSiges() {
+		return siges;
+	}
+
+	public void setSiges(Siges siges) {
+		this.siges = siges;
+	}
+
+	public SystemInfo getSystemInfo() {
+		return systemInfo;
+	}
+
+	public void setSystemInfo(SystemInfo systemInfo) {
+		this.systemInfo = systemInfo;
+	}
+
+	public Integer getSystemId() {
+		return systemId;
+	}
+
+	public void setSystemId(Integer systemId) {
+		this.systemId = systemId;
+	}
+	
+	
+	
+	
 }

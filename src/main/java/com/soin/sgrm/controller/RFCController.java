@@ -45,6 +45,7 @@ import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemConfiguration;
+import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.Tree;
 import com.soin.sgrm.model.EmailTemplate;
@@ -129,7 +130,7 @@ public class RFCController extends BaseController {
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
-			String userLogin = getUserLogin().getUsername();
+			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
 			List<System> systems = systemService.listProjects(getUserLogin().getId());
 			List<Priority> priorities = priorityService.list();
@@ -156,11 +157,11 @@ public class RFCController extends BaseController {
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
 			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
-			String name = getUserLogin().getUsername();
+			Integer name = getUserLogin().getId();
 			String sSearch = request.getParameter("sSearch");
 			 Long statusId;
 			 int priorityId;
-			 int impactId;
+			 int systemId;
 			if (request.getParameter("statusId").equals("")) {
 				statusId = null;
 			} else {
@@ -172,14 +173,14 @@ public class RFCController extends BaseController {
 				priorityId =  Integer.parseInt(request.getParameter("priorityId"));
 			}
 			
-			if (request.getParameter("impactId").equals("")) {
-				impactId = 0;
+			if (request.getParameter("systemId").equals("")) {
+				systemId = 0;
 			} else {
-				impactId =  Integer.parseInt(request.getParameter("impactId"));
+				systemId =  Integer.parseInt(request.getParameter("systemId"));
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, impactId);
+			rfcs = rfcService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -240,8 +241,10 @@ public class RFCController extends BaseController {
 				res.setStatus("success");
 				addRFC.setMotive("Inicio de RFC");	
 				addRFC.setOperator(user.getFullName());
+				Siges codeSiges= sigeService.findByKey("codeSiges", addRFC.getCodeProyect());
+				addRFC.setSiges(codeSiges);
 				addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect()));
-
+				addRFC.setSystemInfo(systemService.findById(addRFC.getSystemId()));
 				rfcService.save(addRFC);
 				res.setData(addRFC.getId().toString());
 				res.setMessage("Se creo correctamente el RFC!");
@@ -279,6 +282,8 @@ public class RFCController extends BaseController {
 			addRFC.setCodeProyect(rfcMod.getCodeProyect());
 			addRFC.setStatus(rfcMod.getStatus());
 			addRFC.setMotive(rfcMod.getMotive());
+			addRFC.setSiges(rfcMod.getSiges());
+			addRFC.setSystemInfo(rfcMod.getSystemInfo());
 			addRFC.setOperator(rfcMod.getUser().getFullName());
 			addRFC.setRequestDate(rfcMod.getRequestDate());
 			addRFC.setFiles(rfcMod.getFiles());
@@ -564,7 +569,7 @@ public class RFCController extends BaseController {
 		
 			
 			 rfc.setOperator(getUserLogin().getFullName());
-			 Siges siges=sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+			 Siges siges=sigeService.findById(rfc.getSiges().getId());
 			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
 				if (siges.getEmailTemplate() != null) {
 					EmailTemplate email = siges.getEmailTemplate();
@@ -683,13 +688,13 @@ public class RFCController extends BaseController {
 		}
 		return res;
 	}
-	public void loadCountsRelease(HttpServletRequest request, String name) {
+	public void loadCountsRelease(HttpServletRequest request, Integer id) {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> userC = new HashMap<String, Integer>();
-		userC.put("draft", rfcService.countByType(name, "Borrador", 1, null));
-		userC.put("requested", rfcService.countByType(name, "Solicitado", 1, null));
-		userC.put("completed", rfcService.countByType(name, "Completado", 1, null));
+		userC.put("draft", rfcService.countByType(id, "Borrador", 1, null));
+		userC.put("requested", rfcService.countByType(id, "Solicitado", 1, null));
+		userC.put("completed", rfcService.countByType(id, "Completado", 1, null));
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
 		request.setAttribute("userC", userC);
 		

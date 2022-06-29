@@ -74,9 +74,15 @@ public class SigesController extends BaseController {
 			EmailTemplate emailTemplate= emailTemplateService.findById(addSiges.getEmailTemplateId());
 			addSiges.setEmailTemplate(emailTemplate);
 			addSiges.setSystem(system);
+			Siges codeSiges= sigesService.findByKey("codeSiges", addSiges.getCodeSiges().trim());
+			if(codeSiges==null) {
 			sigesService.save(addSiges);
-
 			res.setMessage("Siges agregado!");
+			}else {
+				res.setStatus("exception");
+				res.setMessage("Error al agregar siges codigo Siges ya utilizado!");
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
 			res.setStatus("exception");
@@ -95,9 +101,22 @@ public class SigesController extends BaseController {
 			EmailTemplate emailTemplate= emailTemplateService.findById( uptSiges.getEmailTemplateId());
 			uptSiges.setEmailTemplate(emailTemplate);
 			uptSiges.setSystem(system);
-			sigesService.update(uptSiges);
+			Siges sigesCode=sigesService.findById(uptSiges.getId());
+			if(sigesCode.getCodeSiges()!=uptSiges.getCodeSiges()){
+				Siges sigesVerification=sigesService.findByKey("codeSiges", uptSiges.getCodeSiges());
+				if(sigesVerification==null) {
+					sigesService.update(uptSiges);
+					res.setMessage("Siges modificado!");
+				}else {
+					res.setStatus("exception");
+					res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
+				}
+			}else {
+				sigesService.update(uptSiges);
+				res.setMessage("Siges modificado!");
+			}
+			
 
-			res.setMessage("Siges modificado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
 			res.setStatus("exception");
