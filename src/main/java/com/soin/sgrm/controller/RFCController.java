@@ -373,14 +373,21 @@ public class RFCController extends BaseController {
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
-
+			Integer idManager= getUserLogin().getId();
+			Integer countByManager= rfcService.countByManager(idManager, rfcEdit.getId());
+			if(countByManager==0) {
+				redirectAttributes.addFlashAttribute("data", "No tiene permisos sobre el rfc ya que no formas parte de este equipo.");
+				String referer = request.getHeader("Referer");
+				return "redirect:" + referer;
+			}
+/*	
 			if (!(rfcEdit.getUser().getUsername().toLowerCase().trim())
 					.equals((user.getUsername().toLowerCase().trim()))) {
 				redirectAttributes.addFlashAttribute("data", "No tiene permisos sobre el rfc.");
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
-			
+			*/
 			Set<Release_RFC> releases = rfcEdit.getReleases();
 			for(Release_RFC release:releases) {
 				release.setHaveDependecy(releaseService.getDependency(release.getId()));

@@ -187,6 +187,11 @@ public class RFCServiceImpl implements RFCService {
 		// TODO Auto-generated method stub
 		return dao.countByType(id, type, query, ids);
 	}
+	
+	@Override
+	public Integer countByManager(Integer id, Long idRFC) {
+		return dao.countByManager(id, idRFC);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

@@ -17,4 +17,6 @@ public interface RFCService extends BaseService<Long, RFC>{
 	public JsonSheet<RFC> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			String sSearch, Long statusId, String dateRange, int priorityId, int systemId);
 
+	Integer countByManager(Integer id, Long idRFC);
+
 }
