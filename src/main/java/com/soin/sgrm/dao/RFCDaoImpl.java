@@ -95,5 +95,32 @@ public class RFCDaoImpl extends AbstractDao<Long,RFC> implements RFCDao {
 		return count.intValue();
 	}
 	
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Integer countByManager(Integer id, Long idRFC) {
+		Criteria crit = getSession().createCriteria(RFC.class);
+		crit.createAlias("user", "user");
+		crit.createAlias("status", "status");
+
+			// query #1 Obtiene mis rfc
+			List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
+			.createAlias("managers","managers")
+			.add(Restrictions.eq("managers.id", id)).list();
+			List<Integer> listaId=new ArrayList<Integer>();
+			for(SystemInfo system: systems) {
+				listaId.add(system.getId());
+			}
+			crit.createAlias("systemInfo", "systemInfo");
+			crit.add(Restrictions.in("systemInfo.id", listaId));
+			crit.add(Restrictions.eq("id", idRFC));
+
+		crit.setProjection(Projections.rowCount());
+		Long count = (Long) crit.uniqueResult();
+		return count.intValue();
+	}
+	
+	
+	
 
 }
