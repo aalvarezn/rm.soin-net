@@ -67,7 +67,7 @@
 					</ul></li>
 			</c:if>
 			<c:if test="${managerAccess}">
-				<li><li><a id="RFCItem" href="<c:url value='/rfc/'/> "> <span>Mis
+				<li><li><a id="RFCItem" href="<c:url value='/rfc/'/> "> <span>
 							RFC</span>
 				</a></li>
 					
