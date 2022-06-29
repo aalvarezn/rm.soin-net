@@ -161,6 +161,9 @@ tr.selected {
 								<span>RFC: </span>${rfc.numRequest} <input type="hidden"
 									id="rfcId" value="${rfc.id}"> <input type="hidden"
 									id="rfcNumber" value="${rfc.numRequest}">
+									 <input type="hidden"
+									id="systemInfoId" value="${rfc.systemInfo.id}">
+									
 							</h5>
 						</div>
 						<div
