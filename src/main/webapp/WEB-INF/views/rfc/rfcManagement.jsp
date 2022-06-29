@@ -164,7 +164,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Impacto</label>
+							<label>Sistemas</label>
 							<div class="form-group m-b-0">
 								<select id="systemId"
 									class="form-control show-tick selectpicker"
