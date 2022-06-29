@@ -12,7 +12,7 @@ var edges = [];
 $(function() {
 
 	activeItemMenu("managemetReleaseItem");
-	
+	 $('#systemId').selectpicker('val',$('#systemInfoId').val());
 	initTable();
 	initTableAdd();
 	initData();
@@ -45,7 +45,7 @@ $(function() {
 	 });
 	 
 	    
-	  
+	
 
 
 	$('#dateBegin').datetimepicker({
