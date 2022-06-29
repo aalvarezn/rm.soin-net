@@ -8,4 +8,6 @@ public interface RFCDao extends BaseDao<Long, RFC>{
 	void updateStatusRFC(RFC rfc, String dateChange) throws Exception;
 
 	public Integer countByType(Integer id, String type, int query, Object[] ids);
+
+	Integer countByManager(Integer id, Long idRFC);
 }
