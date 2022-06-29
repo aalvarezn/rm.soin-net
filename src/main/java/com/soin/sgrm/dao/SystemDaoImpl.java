@@ -204,6 +204,7 @@ public class SystemDaoImpl implements SystemDao {
 	}
 
 	
+	@SuppressWarnings("unchecked")
 	public List<System> listProjects(int id) {
 		   return sessionFactory.getCurrentSession().createCriteria(System.class)
 		    		.createAlias("managers","managers")

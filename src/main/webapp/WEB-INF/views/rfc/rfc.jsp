@@ -160,14 +160,14 @@
 							</div>
 						</div>
 						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Impacto</label>
+							<label>Sistemas</label>
 							<div class="form-group m-b-0">
-								<select id="impactId"
+								<select id="systemId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
-									<c:forEach items="${impacts}" var="impact">
-										<option value="${impact.id }">${impact.name }</option>
+									<c:forEach items="${systems}" var="system">
+										<option value="${system.id }">${system.name }</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -214,7 +214,7 @@
 											<tr>
 												<th></th>
 												<th>Número RFC</th>
-												<th>Impacto</th>
+												<th>Sistema</th>
 												<th>Prioridad</th>
 												<th>Solicitante</th>
 												<th>Modificado</th>
