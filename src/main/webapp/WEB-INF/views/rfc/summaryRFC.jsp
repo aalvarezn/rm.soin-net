@@ -119,7 +119,7 @@
 					<label for="email_address">Proyecto</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${rfc.codeProyect}</p>
+							<p>${rfc.systemInfo.name}</p>
 						</div>
 					</div>
 				</div>

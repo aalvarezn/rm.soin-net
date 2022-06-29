@@ -166,31 +166,18 @@
 				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
 							<label>Impacto</label>
 							<div class="form-group m-b-0">
-								<select id="impactId"
+								<select id="systemId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
-									<c:forEach items="${impacts}" var="impact">
-										<option value="${impact.id }">${impact.name }</option>
+									<c:forEach items="${systems}" var="system">
+										<option value="${system.id }">${system.name }</option>
 									</c:forEach>
 								</select>
 							</div>
 						</div>
 						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Prioridad</label>
-							<div class="form-group m-b-0">
-								<select id="priorityId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${priorities}" var="priority">
-										<option value="${priority.id }">${priority.name }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Estado</label>
+													<label>Estado</label>
 							<div class="form-group m-b-0">
 								<select id="statusId"
 									class="form-control show-tick selectpicker"
@@ -217,6 +204,7 @@
 									<tr>
 										<th>ID</th>
 										<th>Número RFC</th>
+										<th>Sistema</th>
 										<th>Solicitante</th>
 										<th>Modificado</th>
 										<th>Estado</th>

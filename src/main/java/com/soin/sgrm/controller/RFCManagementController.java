@@ -73,8 +73,8 @@ public class RFCManagementController extends BaseController{
 			RedirectAttributes redirectAttributes) {
 		try {
 			User userLogin = userService.getUserByUsername(getUserLogin().getUsername());
-			loadCountsRFC(request, userLogin.getFullName());
-			List<System> systems = systemService.listProjects(userLogin.getId());
+			loadCountsRFC(request, userLogin.getId());
+			List<System> systems = systemService.list();
 			List<Priority> priorities = priorityService.list();
 			List<StatusRFC> statuses = statusService.findAll();
 			List<Impact> impacts = impactService.list();
@@ -100,27 +100,22 @@ public class RFCManagementController extends BaseController{
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			String sSearch = request.getParameter("sSearch");
 			 Long statusId;
-			 int priorityId;
-			 int impactId;
+			 int priorityId=0;
+			 int systemId;
 			if (request.getParameter("statusId").equals("")) {
 				statusId = null;
 			} else {
 				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
 			}
-			if (request.getParameter("priorityId").equals("")) {
-				priorityId = 0;
-			} else {
-				priorityId =  Integer.parseInt(request.getParameter("priorityId"));
-			}
 			
-			if (request.getParameter("impactId").equals("")) {
-				impactId = 0;
+			if (request.getParameter("systemId").equals("")) {
+				systemId = 0;
 			} else {
-				impactId = Integer.parseInt(request.getParameter("impactId"));
+				systemId = Integer.parseInt(request.getParameter("systemId"));
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, impactId);
+			rfcs = rfcService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -193,13 +188,13 @@ public class RFCManagementController extends BaseController{
 		}
 		return res;
 	}
-	public void loadCountsRFC(HttpServletRequest request, String name) {
+	public void loadCountsRFC(HttpServletRequest request, Integer id) {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> rfcC = new HashMap<String, Integer>();
-		rfcC.put("draft", rfcService.countByType(name, "Borrador", 2, null));
-		rfcC.put("requested", rfcService.countByType(name, "Solicitado", 2, null));
-		rfcC.put("completed", rfcService.countByType(name, "Completado", 2, null));
+		rfcC.put("draft", rfcService.countByType(id, "Borrador", 2, null));
+		rfcC.put("requested", rfcService.countByType(id, "Solicitado", 2, null));
+		rfcC.put("completed", rfcService.countByType(id, "Completado", 2, null));
 		rfcC.put("all", (rfcC.get("draft") + rfcC.get("requested") + rfcC.get("completed")));
 		request.setAttribute("rfcC", rfcC);
 
