@@ -589,7 +589,8 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		String cc="";
 		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
 			cc=email.getCc();
-			if(rfc.getSenders().trim().equals("") || rfc.getSenders()==null) {
+			if(rfc.getSenders()==null) {
+				
 				ccFinish=email.getCc();
 				String[] split3=ccFinish.split(",");
 				boolean verify= ArrayUtils.contains(split3,rfc.getUser().getEmail());
@@ -597,19 +598,30 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					ccFinish=cc+","+rfc.getUser().getEmail();
 				}
 			}else {
-				String[] split=rfc.getSenders().split(",");
-				String[] splitCC=cc.split(",");
-				for(int x=0; splitCC.length>x;x++) {
-					boolean verify= ArrayUtils.contains(split,splitCC[x]);
+				if(rfc.getSenders().trim().equals("")) {
+					ccFinish=email.getCc();
+					String[] split3=ccFinish.split(",");
+					boolean verify= ArrayUtils.contains(split3,rfc.getUser().getEmail());
 					if(!verify) {
-						ccFinish=rfc.getSenders()+","+splitCC[x];
+						ccFinish=cc+","+rfc.getUser().getEmail();
+					}
+				}else {
+					
+					String[] split=rfc.getSenders().split(",");
+					String[] splitCC=cc.split(",");
+					for(int x=0; splitCC.length>x;x++) {
+						boolean verify= ArrayUtils.contains(split,splitCC[x]);
+						if(!verify) {
+							ccFinish=rfc.getSenders()+","+splitCC[x];
+						}
+					}
+					String[] split3=ccFinish.split(",");
+					boolean verify= ArrayUtils.contains(split3,rfc.getUser().getEmail());
+					if(!verify) {
+						ccFinish=ccFinish+","+rfc.getUser().getEmail();
 					}
 				}
-				String[] split3=ccFinish.split(",");
-				boolean verify= ArrayUtils.contains(split3,rfc.getUser().getEmail());
-				if(!verify) {
-					ccFinish=ccFinish+","+rfc.getUser().getEmail();
-				}
+			
 				
 			}
 		}else {
