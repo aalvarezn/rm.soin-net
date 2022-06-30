@@ -79,7 +79,7 @@ $('#tableFilters #priorityId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
-$('#tableFilters #impactId').change(function() {
+$('#tableFilters #systemId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
@@ -107,7 +107,7 @@ function initRFCTable() {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
 								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
-								{"name": "impactId", "value": $('#tableFilters #impactId').children("option:selected").val()}
+								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
@@ -117,14 +117,12 @@ function initRFCTable() {
 						{
 						
 						"mDataProp" : "numRequest"
-					}, {
-						"mRender" : function(data, type, row, meta) {
-							if(row.impact)
-								return row.impact.name;
-							else
-								return '';
-						},
-					}, {
+					},
+					{
+						
+						"mDataProp" : "systemInfo.name"
+					}
+					, {
 						"mRender" : function(data, type, row, meta) {
 							if(row.priority)
 								return row.priority.name;
@@ -150,7 +148,7 @@ function initRFCTable() {
 						"mRender" : function(data, type, row, meta) {
 							var options = '<div class="iconLine">';
 							if (row.status.name == 'Borrador') {
-								if(row.user.username == getUserName()){
+								
 									options = options
 									+ '<a onclick="editRFC('
 									+ row.id
@@ -158,7 +156,7 @@ function initRFCTable() {
 									+ '<a onclick="confirmDeleteRFC('
 									+ row.id
 									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
-								}
+								
 							}
 							if($('#isDeveloper').val()){
 								options = options
@@ -291,6 +289,7 @@ function createRFC() {
 				timeout : 60000,
 				data : JSON.stringify({
 					codeProyect : $fmRFC.find('#sigesId').val(),
+					systemId : $fmRFC.find('#sId').val()
 				}),
 				success : function(response) {
 					unblockUI();

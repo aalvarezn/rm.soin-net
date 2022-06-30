@@ -52,12 +52,12 @@ $(document).ready(function() {
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 	initImpactFormValidation
 	activeItemMenu("managerRFCItem");
-	//dropDownChange();
-	//$("#addRFCSection").hide();
-	//$fmRFC.find("#sId").selectpicker('val',"");
+	// dropDownChange();
+	// $("#addRFCSection").hide();
+	// $fmRFC.find("#sId").selectpicker('val',"");
 
 	initRFCTable();
-	//initRFCFormValidation();
+	// initRFCFormValidation();
 });
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
@@ -74,7 +74,7 @@ $('#tableFilters #priorityId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
-$('#tableFilters #impactId').change(function() {
+$('#tableFilters #systemId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
@@ -100,9 +100,8 @@ function initRFCTable() {
 					"sAjaxSource" : getCont() + "management/rfc/list",
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
-								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
 								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
-								{"name": "impactId", "value": $('#tableFilters #impactId').children("option:selected").val()}
+								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
@@ -112,6 +111,10 @@ function initRFCTable() {
 						{
 						
 						"mDataProp" : "numRequest"
+					},
+					{
+						
+						"mDataProp" : "systemInfo.name"
 					},
 					{
 						"mRender" : function(data, type, row, meta) {

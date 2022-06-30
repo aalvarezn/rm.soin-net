@@ -10,11 +10,13 @@ public interface RFCService extends BaseService<Long, RFC>{
 	
 	String generateRFCNumber(String codeProject);
 	JsonSheet<RFC> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch, Long statusId,
-			String dateRange, int priorityId,int impactId);
+			String dateRange, int priorityId,int systemId);
 
-	Integer countByType(String name, String type, int query, Object[] ids);
+	Integer countByType(Integer id, String type, int query, Object[] ids);
 
-	public JsonSheet<RFC> findAll2(String name, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			String sSearch, Long statusId, String dateRange, int priorityId, int impactId);
+	public JsonSheet<RFC> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, Long statusId, String dateRange, int priorityId, int systemId);
+
+	Integer countByManager(Integer id, Long idRFC);
 
 }

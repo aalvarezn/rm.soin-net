@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.RFCDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
@@ -34,6 +36,9 @@ public class RFCServiceImpl implements RFCService {
 
 	@Autowired
 	RFCDao dao;
+	
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	public static final Logger logger = Logger.getLogger(RFCServiceImpl.class);
 
@@ -75,7 +80,7 @@ public class RFCServiceImpl implements RFCService {
 	@SuppressWarnings("deprecation")
 	@Override
 	public JsonSheet<RFC> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
-			Long sStatus, String dateRange, int sPriority, int sImpact) {
+			Long sStatus, String dateRange, int sPriority, int systemId) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
@@ -120,9 +125,9 @@ public class RFCServiceImpl implements RFCService {
 			alias.put("priority", "priority");
 			columns.put("priority", Restrictions.eq("priority.id", sPriority));
 		}
-		if (sImpact != 0) {
-			alias.put("impact", "impact");
-			columns.put("impact", Restrictions.or(Restrictions.eq("impact.id", sImpact)));
+		if (systemId != 0) {
+			alias.put("siges", "siges");
+			columns.put("siges", Restrictions.or(Restrictions.eq("siges.system.id", systemId)));
 
 		}
 		 
@@ -178,21 +183,29 @@ public class RFCServiceImpl implements RFCService {
 	}
 
 	@Override
-	public Integer countByType(String name, String type, int query, Object[] ids) {
+	public Integer countByType(Integer id, String type, int query, Object[] ids) {
 		// TODO Auto-generated method stub
-		return dao.countByType(name, type, query, ids);
+		return dao.countByType(id, type, query, ids);
+	}
+	
+	@Override
+	public Integer countByManager(Integer id, Long idRFC) {
+		return dao.countByManager(id, idRFC);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JsonSheet<RFC> findAll2(String name, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			String sSearch, Long sStatus, String dateRange, int sPriority, int sImpact) {
+	public JsonSheet<RFC> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, Long sStatus, String dateRange, int sPriority, int systemId) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
 
+		List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
+		.createAlias("managers","managers")
+		.add(Restrictions.eq("managers.id", id)).list();
 		alias.put("status", "status");
-		alias.put("user", "user");
-		columns.put("user",(Restrictions.eq("user.username", name)));
+		
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {
 			if (range.length > 1) {
@@ -235,10 +248,17 @@ public class RFCServiceImpl implements RFCService {
 			alias.put("priority", "priority");
 			columns.put("priority", Restrictions.eq("priority.id", sPriority));
 		}
-		if (sImpact != 0) {
-			alias.put("impact", "impact");
-			columns.put("impact", Restrictions.or(Restrictions.eq("impact.id", sImpact)));
+		if (systemId != 0) {
+			alias.put("siges", "siges");
+			columns.put("siges", Restrictions.or(Restrictions.eq("siges.system.id", systemId)));
 
+		}else {
+			List<Integer> listaId=new ArrayList<Integer>();
+			for(SystemInfo system: systems) {
+				listaId.add(system.getId());
+			}
+			alias.put("systemInfo", "systemInfo");
+			columns.put("systemInfo",(Restrictions.in("systemInfo.id", listaId)));
 		}
 	
 		
@@ -248,6 +268,7 @@ public class RFCServiceImpl implements RFCService {
 		fetchs.add("releases");
 		fetchs.add("files");
 		fetchs.add("tracking");
+		fetchs.add("user");
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
 	}
 
