@@ -19,6 +19,7 @@ import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Project;
+import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemInfo;
@@ -103,8 +104,9 @@ public class SigesController extends BaseController {
 			uptSiges.setSystem(system);
 			Siges sigesCode=sigesService.findById(uptSiges.getId());
 			if(sigesCode.getCodeSiges()!=uptSiges.getCodeSiges()){
+				
 				Siges sigesVerification=sigesService.findByKey("codeSiges", uptSiges.getCodeSiges());
-				if(sigesVerification==null) {
+				if(sigesVerification.getId()==uptSiges.getId()) {
 					sigesService.update(uptSiges);
 					res.setMessage("Siges modificado!");
 				}else {
