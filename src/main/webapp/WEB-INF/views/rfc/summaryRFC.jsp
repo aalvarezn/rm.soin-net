@@ -78,8 +78,8 @@
 			</span>
 			<div class="row clearfix">
 				<div class="button-demo flr">
-					<a href="<c:url value='/homeRFC'/> " class="btn btn-default">IR A
-						INICIO</a>
+					<a href="<c:url value='/homeRFC'/> " class="btn btn-default">IR
+						A INICIO</a>
 				</div>
 			</div>
 			<div class="block-header">
@@ -317,6 +317,7 @@
 										<th class="col-md-8 col-lg-8 col-xs-8 col-sm-8">Nombre</th>
 										<th class="col-md-4 col-lg-4 col-xs-4 col-sm-4">Fecha de
 											carga</th>
+										<th class="col-md-1 col-lg-1 col-xs-12 col-sm-12">Acciones</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -326,6 +327,11 @@
 											<td>${fileRFC.name}</td>
 											<td><fmt:formatDate value="${fileRFC.revisionDate}"
 													type="both" /></td>
+											<td><a
+												href="<c:url value='/file/singleDownloadRFC-${fileRFC.id }'/>"
+												download class=""> <i class="material-icons col-cyan"
+													style="font-size: 30px;">cloud_download</i>
+											</a></td>
 										</tr>
 									</c:forEach>
 
