@@ -272,6 +272,7 @@
 										<th class="col-md-8 col-lg-8 col-xs-12 col-sm-12">Nombre</th>
 										<th class="col-md-4 col-lg-4 col-xs-12 col-sm-12">Fecha
 											de carga</th>
+											<th class="col-md-4 col-lg-4 col-xs-12 col-sm-12">Acciones</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -281,6 +282,11 @@
 											<td>${fileRFC.name}</td>
 											<td><fmt:formatDate value="${fileRFC.revisionDate}"
 													type="both" /></td>
+													<td><a
+												href="<c:url value='/file/singleDownloadRFC-${fileRFC.id }'/>"
+												download class=""> <i class="material-icons col-cyan"
+													style="font-size: 30px;">cloud_download</i>
+											</a></td>
 										</tr>
 									</c:forEach>
 
