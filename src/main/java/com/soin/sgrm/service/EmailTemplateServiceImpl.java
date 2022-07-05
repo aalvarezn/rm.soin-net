@@ -609,10 +609,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					
 					String[] split=rfc.getSenders().split(",");
 					String[] splitCC=cc.split(",");
+					ccFinish=rfc.getSenders();
 					for(int x=0; splitCC.length>x;x++) {
 						boolean verify= ArrayUtils.contains(split,splitCC[x]);
 						if(!verify) {
-							ccFinish=rfc.getSenders()+","+splitCC[x];
+							ccFinish=ccFinish+","+splitCC[x];
 						}
 					}
 					String[] split3=ccFinish.split(",");
