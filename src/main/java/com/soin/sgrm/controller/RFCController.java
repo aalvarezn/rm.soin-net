@@ -548,11 +548,12 @@ public class RFCController extends BaseController {
 			StatusRFC status = statusService.findByKey("name", "Solicitado");
 
 //			if (node != null)
+			
 //				release.setNode(node);
 
 			rfc.setStatus(status);
 			rfc.setMotive(status.getReason());
-		
+			rfc.setRequestDate((CommonUtils.getSystemTimestamp()));
 			
 			 rfc.setOperator(getUserLogin().getFullName());
 			 Siges siges=sigeService.findById(rfc.getSiges().getId());
