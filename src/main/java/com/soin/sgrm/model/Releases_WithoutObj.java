@@ -47,6 +47,7 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 	@JoinColumn(name = "ESTADO_ID", nullable = true)
 	private Status status;
 
+	
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHA_CREACION")
 	private Timestamp createDate;
