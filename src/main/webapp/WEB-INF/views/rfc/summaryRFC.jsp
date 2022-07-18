@@ -381,10 +381,9 @@
 			$("#contentSummary textarea").parent().removeClass('focused');
 			$("#contentSummary textarea").attr("disabled", true);
 			autosize($('textarea'));
-
 		});
 	</script>
 
 </body>
 
-</html>
+</html> 
