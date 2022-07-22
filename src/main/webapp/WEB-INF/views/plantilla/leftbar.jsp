@@ -62,8 +62,8 @@
 				</a></li>
 			</c:if>
 				<c:if test="${managerRequestAccess}">
-				<li><a id="releasesQAItem" href="<c:url value='/release/qa'/> ">
-						<span>Gestión QA</span>
+				<li><a id="requestItem" href="<c:url value='/request/'/> ">
+						<span>Mis Solicitudes</span>
 				</a></li>
 			</c:if>
 			<c:if test="${releaseAccess}">

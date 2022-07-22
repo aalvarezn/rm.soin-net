@@ -4,8 +4,11 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -27,6 +30,10 @@ public class TypePetition implements Serializable {
 
 	@Column(name = "DESCRIPCION")
 	private String description;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "EMAIL_ID")
+	private EmailTemplate emailTemplate;
 
 	public Long getId() {
 		return id;
@@ -50,6 +57,14 @@ public class TypePetition implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public EmailTemplate getEmailTemplate() {
+		return emailTemplate;
+	}
+
+	public void setEmailTemplate(EmailTemplate emailTemplate) {
+		this.emailTemplate = emailTemplate;
 	}
 	
 	

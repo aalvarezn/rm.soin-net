@@ -17,71 +17,71 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.StatusRequest;
+import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.StatusRequestService;
+import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
-@RequestMapping("/admin/statusRequest")
-public class StatusRFCController extends BaseController {
-	public static final Logger logger = Logger.getLogger(StatusRFCController.class);
+@RequestMapping("/admin/statusRFC")
+public class StatusRequestController extends BaseController {
+	public static final Logger logger = Logger.getLogger(StatusRequestController.class);
 
 	@Autowired
-	StatusRequestService statusRequestService;
+	StatusRFCService statusRFCService;
 	
 	
 	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
-		return "/admin/statusRequest/statusRequest";
+		return "/admin/statusRFC/statusRFC";
 	}
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<StatusRequest> statusRequests = new JsonSheet<>();
+		JsonSheet<StatusRFC> statusRFCs = new JsonSheet<>();
 		try {
-			statusRequests.setData(statusRequestService.findAll());
+			statusRFCs.setData(statusRFCService.findAll());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return statusRequests;
+		return statusRFCs;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody StatusRequest addStatusRequest) {
+	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody StatusRFC addStatusRFC) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
 
-			statusRequestService.save(addStatusRequest);
+			statusRFCService.save(addStatusRFC);
 
-			res.setMessage("Estado Solicitado agregado!");
+			res.setMessage("Status RFC agregado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "statusRequest");
+			Sentry.capture(e, "statusRFC");
 			res.setStatus("exception");
-			res.setMessage("Error al agregar Status Request!");
+			res.setMessage("Error al agregar Status RFC!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody StatusRequest uptStatusRequest) {
+	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody StatusRFC uptStatusRFC) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			statusRequestService.update(uptStatusRequest);
+			statusRFCService.update(uptStatusRFC);
 
-			res.setMessage("Estado solicitud modificado!");
+			res.setMessage("Status RFC modificado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "statusRequest");
+			Sentry.capture(e, "statusRFC");
 			res.setStatus("exception");
-			res.setMessage("Error al modificar Estado  de la Solicitud!");
+			res.setMessage("Error al modificar Status RFC!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -92,12 +92,12 @@ public class StatusRFCController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			statusRequestService.delete(id);
-			res.setMessage("Estado solicitado eliminado!");
+			statusRFCService.delete(id);
+			res.setMessage("Status RFC eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
 			res.setStatus("exception");
-			res.setMessage("Error al eliminar el estado de solicitud!");
+			res.setMessage("Error al eliminar el Status RFC!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;

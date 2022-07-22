@@ -27,9 +27,6 @@ import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.MyLevel;
 
-
-
-
 @Service("RFCService")
 @Transactional("transactionManager")
 public class RFCServiceImpl implements RFCService {
@@ -139,7 +136,7 @@ public class RFCServiceImpl implements RFCService {
 	public String verifySecuence(String partCode) {
 		String numRFC = "";
 		try {
-			int amount = existNumRelease(partCode);
+			int amount = existNumRFC(partCode);
 
 			if (amount == 0) {
 				numRFC = partCode + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
@@ -158,7 +155,6 @@ public class RFCServiceImpl implements RFCService {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return "Sin Asignar";
-
 	}
 
 	public String generateRFCNumber(String codeProject) {
@@ -178,8 +174,8 @@ public class RFCServiceImpl implements RFCService {
 	}
 
 	@Override
-	public Integer existNumRelease(String number_release) throws SQLException {
-		return dao.existNumRelease(number_release);
+	public Integer existNumRFC(String number_release) throws SQLException {
+		return dao.existNumRFC(number_release);
 	}
 
 	@Override

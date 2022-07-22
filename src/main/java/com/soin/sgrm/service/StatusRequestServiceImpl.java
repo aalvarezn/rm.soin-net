@@ -15,6 +15,7 @@ public class StatusRequestServiceImpl implements StatusRequestService{
 
 	@Autowired
 	StatusRequestDao dao;
+	
 	@Override
 	public StatusRequest findById(Long id) {
 		
