@@ -58,9 +58,6 @@
 	rel="stylesheet" type="text/css">
 
 
-	<!-- Vis Plugin Js -->
-	<script src="<c:url value='/static/plugins/vis/vis-network.js'/>"></script>
-
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
 
@@ -146,7 +143,7 @@ tr.selected {
 	</section>
 
 	<section class="content">
-		<form id="generateRFCForm" role="form">
+		<form id="generateRequestForm" role="form">
 			<input type="hidden" name="${_csrf.parameterName}"
 				value="${_csrf.token}" />
 
@@ -159,8 +156,8 @@ tr.selected {
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
 								<span>RFC: </span>${request.numRequest} <input type="hidden"
-									id="rfcId" value="${request.id}"> <input type="hidden"
-									id="rfcNumber" value="${request.numRequest}">
+									id="requestId" value="${request.id}"> <input type="hidden"
+									id="requestNumber" value="${request.numRequest}">
 									 <input type="hidden"
 									id="systemInfoId" value="${request.systemInfo.id}">
 									
@@ -243,7 +240,7 @@ tr.selected {
 									<div class="tab-pane animated fadeIn active" role="tabpanel"
 										id="step1">
 										<div class="body">
-											<%@include file="../rfc/sectionsEditRFC/section_1.jsp"%>
+											<%@include file="../request/sectionsEditR4/section_1.jsp"%>
 										</div>
 										<div class="button-demo flr">
 											<button type="button" class="btn btn-primary next-step"
@@ -392,6 +389,9 @@ tr.selected {
 
 	<script
 		src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
+		
+		<script
+		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
 
 	<!-- Custom Js -->
 	<script src="<c:url value='/static/js/admin.js'/>"></script>
@@ -403,7 +403,7 @@ tr.selected {
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 
-	<script src="<c:url value='/static/js/rfc/editRFC.js'/>"></script>
+	<script src="<c:url value='/static/js/newRequest/editRequestR4.js'/>"></script>
 	<script src="<c:url value='/static/js/rfc/rfcFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->

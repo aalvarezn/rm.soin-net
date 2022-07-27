@@ -1,6 +1,6 @@
 /** Declaración de variables globales del contexto * */
 var $dtRFCs;
-
+var $dtUsers;
 var $fmRFC = $('#formAddRFC');
 var $formChangeUser = $('#changeUserForm');
 var $trackingRFCForm = $('#trackingRFCForm');
@@ -87,6 +87,8 @@ $('#tableFilters #statusId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
+
+
 function initRFCTable() {
 	$dtRFCs = $('#dtRFCs').DataTable(
 			{
@@ -124,7 +126,7 @@ function initRFCTable() {
 					}
 					, {
 						"mRender" : function(data, type, row, meta) {
-							if(row.priority)
+							if(row.typePetition)
 								return row.typePetition.code;
 							else
 								return '';

@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -25,17 +26,19 @@ public class RequestRM_P1_R4 implements Serializable {
 	private Long id;
 	
 	@Column(name = "NOMBRE")
-	private String status;
+	private String name;
 
 	@Column(name = "CORREO")
-	private String operator;
+	private String email;
 
 	@Column(name = "TIPO")
-	private String motive;
+	private String type;
 
 	@Column(name = "PERMISOS")
 	private String permissions;
 	
+	@Column(name = "ESPECIFICACION")
+	private String espec;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_AMBIENTE", nullable = false)
@@ -45,6 +48,12 @@ public class RequestRM_P1_R4 implements Serializable {
 	@JoinColumn(name = "ID_SOLICITUD", nullable = false)
 	private RequestBase requestBase;
 
+	@Transient
+	private Integer ambientId;
+
+	@Transient
+	private Long requestBaseId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -53,28 +62,29 @@ public class RequestRM_P1_R4 implements Serializable {
 		this.id = id;
 	}
 
-	public String getStatus() {
-		return status;
+
+	public String getName() {
+		return name;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getOperator() {
-		return operator;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setOperator(String operator) {
-		this.operator = operator;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	public String getMotive() {
-		return motive;
+	public String getType() {
+		return type;
 	}
 
-	public void setMotive(String motive) {
-		this.motive = motive;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getPermissions() {
@@ -99,6 +109,30 @@ public class RequestRM_P1_R4 implements Serializable {
 
 	public void setRequestBase(RequestBase requestBase) {
 		this.requestBase = requestBase;
+	}
+
+	public String getEspec() {
+		return espec;
+	}
+
+	public void setEspec(String espec) {
+		this.espec = espec;
+	}
+
+	public Integer getAmbientId() {
+		return ambientId;
+	}
+
+	public void setAmbientId(Integer ambientId) {
+		this.ambientId = ambientId;
+	}
+
+	public Long getRequestBaseId() {
+		return requestBaseId;
+	}
+
+	public void setRequestBaseId(Long requestBaseId) {
+		this.requestBaseId = requestBaseId;
 	}
 	
 	

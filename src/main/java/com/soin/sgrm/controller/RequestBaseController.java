@@ -33,6 +33,7 @@ import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestRM_P1_R4Service;
 import com.soin.sgrm.service.SigesService;
@@ -67,6 +68,10 @@ public class RequestBaseController extends BaseController{
 	
 	@Autowired
 	RequestRM_P1_R4Service requestServiceRm4;
+	
+	
+	@Autowired
+	AmbientService ambientService;
 	
 	
 	
@@ -218,14 +223,14 @@ public class RequestBaseController extends BaseController{
 			}
 			*/
 			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
-				//List<RequestRM_P1_R4> requestsRM= requestServiceRm4.listRequestRm4( requestEdit.getId());
-				List<RequestRM_P1_R4> requestsRM =requestServiceRm4.findAll();
-				model.addAttribute("requestsRM", requestsRM);
 				model.addAttribute("request", requestEdit);
-				return "/request/editRequest";
+				model.addAttribute("systems", systems);
+				
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/editRequestR4";
 			}
 			
-			model.addAttribute("systems", systems);
+		
 
 
 			return "/rfc/editRFC";
@@ -239,4 +244,38 @@ public class RequestBaseController extends BaseController{
 		return "redirect:/";
 	}
 	
+
+	@RequestMapping(value = { "/listUser/{id}" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet<RequestRM_P1_R4> changeProject(@PathVariable Long id, Locale locale, Model model) {
+		JsonSheet<RequestRM_P1_R4> requestsRM = new JsonSheet<>();
+		try {
+			requestsRM.setData( requestServiceRm4.listRequestRm4(id));
+		} catch (Exception e) {
+			Sentry.capture(e, "requestUser");
+
+			e.printStackTrace();
+		}
+
+		return requestsRM;
+	}
+
+	@RequestMapping(path = "/addUser", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveUser(HttpServletRequest request, @RequestBody RequestRM_P1_R4 userRequestAdd) {
+		JsonResponse res = new JsonResponse();
+		try {
+		
+				userRequestAdd.setAmbient(ambientService.findById(userRequestAdd.getAmbientId()));
+				userRequestAdd.setRequestBase(requestBaseService.findById(userRequestAdd.getRequestBaseId()));
+				requestServiceRm4.save(userRequestAdd);
+				res.setStatus("success");
+				res.setMessage("Se guardo correctamente el usuario!");
+	
+		} catch (Exception e) {
+			Sentry.capture(e, "usuario");
+			res.setStatus("exception");
+			res.setMessage("Error al guardar usuario!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 }
