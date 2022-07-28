@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -34,6 +35,9 @@ public class TypePetition implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "EMAIL_ID")
 	private EmailTemplate emailTemplate;
+	
+	@Transient
+	private int emailTemplateId;
 
 	public Long getId() {
 		return id;
@@ -65,6 +69,14 @@ public class TypePetition implements Serializable {
 
 	public void setEmailTemplate(EmailTemplate emailTemplate) {
 		this.emailTemplate = emailTemplate;
+	}
+
+	public int getEmailTemplateId() {
+		return emailTemplateId;
+	}
+
+	public void setEmailTemplateId(int emailTemplateId) {
+		this.emailTemplateId = emailTemplateId;
 	}
 	
 	

@@ -61,7 +61,7 @@ $(function() {
 			return false;
 		}
 		if(formHasChanges()){
-			//sendPartialRFC();
+			sendPartialRequest();
 		}
 	});
 	
@@ -109,19 +109,19 @@ function prevTab(elem) {
 
 function formHasChanges(){
 	
-	if($requestEditForm.serialize() === origForm && compareArrays($dataRelease,$dataReleaseCheck) ){
+	if($requestEditForm.serialize() === origForm  ){
 		return false;
 	}else{
 		return true;
 	}
 }
 
-function previewRFC() {
-	$('#previewReleaseModal').modal('show');
+function previewRequest() {
+	$('#previewRequestModal').modal('show');
 }
 
-function closePreviewRFC() {
-	$('#previewReleaseModal').modal('hide');
+function closePreviewRequest() {
+	$('#previewRequestModal').modal('hide');
 }
 
 function compareArrays(arr1, arr2) {
@@ -131,48 +131,23 @@ function sendPartialRequest() {
 	var form = "#generateReleaseForm";
 	
 	changeSaveButton(true);
-	var valueSchema="";
-	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('#bd').val('');
-	}else{
-		valueSchema=$('#bd').val();
-	}
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "rfc/saveRFC",
+		url : getCont() + "request/saveRequest",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $rfcEditForm.find('#rfcId').val(),
-			codeProyect : $rfcEditForm.find('#rfcCode').val(),
-			impactId : $rfcEditForm.find('#impactId').children(
-			"option:selected").val(),
-			priorityId : $rfcEditForm.find('#priorityId').children("option:selected")
-			.val(),
-			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
-			"option:selected").val(),
-			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),	
-			schemaDB:valueSchema,
-			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
-			reasonChange : $rfcEditForm.find('#rfcReason').val(),
-			effect : $rfcEditForm.find('#rfcEffect').val(),
-			releasesList: JSON.stringify($dataRelease),
-			detail:$rfcEditForm.find('#detailRFC').val(),
-			evidence:$rfcEditForm.find('#evidenceRFC').val(),
-			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
-			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
-			senders:$rfcEditForm.find('#senders').val(),
-			message:$rfcEditForm.find('#messagePer').val(),
+			id : $requestEditForm.find('#rfcId').val(),
+			senders:$requestEditForm.find('#senders').val(),
+			message:$requestEditForm.find('#messagePer').val(),
 		}),
 		success : function(response) {
 			// responseAjaxSendPartialRelease(response);
 			changeSaveButton(false);
 			origForm = $requestEditForm.serialize();
-			$dataReleaseCheck=$dataRelease.slice();
 			reloadPreview();
 		},
 		error: function(x, t, m) {
@@ -184,11 +159,11 @@ function sendPartialRequest() {
 
 function changeSaveButton(save){
 	if(save){
-		$rfcEditForm.find('#btnSave').find('#btnText').text('GUARDANDO');
-		$rfcEditForm.find('#btnSave').find('#btnIcon').text('cached');
+		$requestEditForm.find('#btnSave').find('#btnText').text('GUARDANDO');
+		$requestEditForm.find('#btnSave').find('#btnIcon').text('cached');
 	}else{
-		$rfcEditForm.find('#btnSave').find('#btnText').text('GUARDAR');
-		$rfcEditForm.find('#btnSave').find('#btnIcon').text('check_box');
+		$requestEditForm.find('#btnSave').find('#btnText').text('GUARDAR');
+		$requestEditForm.find('#btnSave').find('#btnIcon').text('check_box');
 	}
 }
 $('#systemId').change(function() {
@@ -270,7 +245,7 @@ function initUserTable() {
 							
 									options = options
 
-									+ '<a onclick="confirmDeleteRFC('
+									+ '<a onclick="confirmDeleteUser('
 									+ row.id
 									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
 								
@@ -284,7 +259,33 @@ function initUserTable() {
 
 
 
-
+function confirmDeleteUser(index){
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "DELETE",
+				url : getCont() + "request/deleteUser/"+index,
+				timeout : 60000,
+				data : {},
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtUser.ajax.reload();
+					//$mdSiges.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					
+				}
+			});
+		}
+	});
+}
 
 
 function addUser(){
@@ -354,6 +355,7 @@ function addUser(){
 					*/
 					resetSpaces();
 					$dtUser.ajax.reload();
+					reloadPreview();
 					//$mdImpact.modal('hide');
 				},
 				error : function(x, t, m) {
@@ -383,12 +385,10 @@ function initRequestFormValidation() {
 		rules : {
 			'name':{
 				required : true,
-				minlength : 2,
 				maxlength : 20,
 			},
 			'email':{
 				required :true,
-				minlength : 2,
 				maxlength : 20,
 			},
 			'ambientId':{
@@ -397,6 +397,13 @@ function initRequestFormValidation() {
 			'espec':{
 				required:true,
 				minlength : 2,			
+			},
+			'type':{
+				required:true,		
+			}
+			,
+			'permission':{
+				required:true,		
 			}
 				
 			
@@ -405,12 +412,10 @@ function initRequestFormValidation() {
 			
 			'name' : {
 				required : "Ingrese un valor",
-				minlength : "Debe ser un minimo de dos caracteres",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
 			'email' : {
 				required : "Ingrese un valor",
-				minlength : "Debe ser un minimo de dos caracteres",
 				maxlength : "No puede poseer mas de {0} caracteres"
 					
 			},
@@ -421,6 +426,12 @@ function initRequestFormValidation() {
 			'espec' : {
 				required : "Ingrese un valor",
 				minlength : "Debe ser un minimo de dos caracteres"
+			},
+			'type':{
+				required:"Se debe seleccionar una casilla",		
+			},
+			'permission':{
+				required:"Se debe seleccionar al menos una opcion",		
 			}
 		},
 		highlight,
@@ -704,51 +715,29 @@ function removeData(data){
 }
 
 function sendRequest() {
-	var form = "#generateReleaseForm";
+	var form = "#generateRequestForm";
 	changeSaveButton(true);
 	changeSaveButton(true);
 	var valueSchema="";
-	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('#bd').val('');
-	}else{
-		valueSchema=$('#bd').val();
-	}
+
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "rfc/saveRFC",
+		url : getCont() + "request/saveRequest",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $rfcEditForm.find('#rfcId').val(),
-			codeProyect : $rfcEditForm.find('#rfcCode').val(),
-			impactId : $rfcEditForm.find('#impactId').children(
-			"option:selected").val(),
-			priorityId : $rfcEditForm.find('#priorityId').children("option:selected")
-			.val(),
-			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
-			"option:selected").val(),
-			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),
-			schemaDB:valueSchema,
-			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
-			reasonChange : $rfcEditForm.find('#rfcReason').val(),
-			effect : $rfcEditForm.find('#rfcEffect').val(),
-			releasesList: JSON.stringify($dataRelease),
-			detail:$rfcEditForm.find('#detailRFC').val(),
-			evidence:$rfcEditForm.find('#evidenceRFC').val(),
-			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
-			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
-			senders:$rfcEditForm.find('#senders').val(),
-			message:$rfcEditForm.find('#messagePer').val(),
+			id : $requestEditForm.find('#requestId').val(),
+			senders:$requestEditForm.find('#senders').val(),
+			message:$requestEditForm.find('#messagePer').val(),
 		}),
 		success : function(response) {
-			responseAjaxSendRFC(response);
+			responseAjaxSendRequest(response);
 			changeSaveButton(false);
-			origForm = $rfcEditForm.serialize();
-			$dataReleaseCheck=$dataRelease.slice();
+			origForm = $requestEditForm.serialize();
+			//$dataReleaseCheck=$dataRelease.slice();
 			reloadPreview();
 		},
 		error: function(x, t, m) {
@@ -758,48 +747,24 @@ function sendRequest() {
 	});
 }
 
-function requestRFC() {
+function requestRequest() {
 	
 	changeSaveButton(true);
-	var valueSchema="";
-	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('#bd').val('');
-	}else{
-		valueSchema=$('#bd').val();
-	}
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "rfc/saveRFC",
+		url : getCont() + "request/saveRequest",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $rfcEditForm.find('#rfcId').val(),
-			codeProyect : $rfcEditForm.find('#rfcCode').val(),
-			impactId : $rfcEditForm.find('#impactId').children(
-			"option:selected").val(),
-			priorityId : $rfcEditForm.find('#priorityId').children("option:selected")
-			.val(),
-			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
-			"option:selected").val(),
-			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),
-			schemaDB:valueSchema,
-			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
-			reasonChange : $rfcEditForm.find('#rfcReason').val(),
-			effect : $rfcEditForm.find('#rfcEffect').val(),
-			releasesList: JSON.stringify($dataRelease),
-			detail:$rfcEditForm.find('#detailRFC').val(),
-			evidence:$rfcEditForm.find('#evidenceRFC').val(),
-			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
-			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
-			senders:$rfcEditForm.find('#senders').val(),
-			message:$rfcEditForm.find('#messagePer').val(),
+			id : $requestEditForm.find('#requestId').val(),
+			senders:$requestEditForm.find('#senders').val(),
+			message:$requestEditForm.find('#messagePer').val(),
 		}),
 		success : function(response) {
-			responseAjaxRequestRFC(response);
+			responseAjaxRequestRequest(response);
 			changeSaveButton(false);
 			origForm = $rfcEditForm.serialize();
 			$dataReleaseCheck=$dataRelease.slice();
@@ -812,17 +777,17 @@ function requestRFC() {
 	});
 }
 
-function responseAjaxRequestRFC(response) {
+function responseAjaxRequestRequest(response) {
 	if (response != null) {
 		switch (response.status) {
 		case 'success':
 			resetErrors();
 			reloadPreview();
-			window.location = getCont() + "rfc/updateRFC/"
-			+  $rfcEditForm.find('#rfcId').val();
+			window.location = getCont() + "request/updateRequest/"
+			+  $requestEditForm.find('#requestId').val();
 			break;
 		case 'fail':
-			showRFCErrors(response.errors);
+			showRequestErrors(response.errors);
 			countErrorsByStep();
 			var numItems = $('.yourclass').length
 			swal("Avance guardado!", "El formulario a\u00FAn posee campos incompletos.",
@@ -839,18 +804,18 @@ function responseAjaxRequestRFC(response) {
 
 
 
-function responseAjaxSendRFC(response) {
+function responseAjaxSendRequest(response) {
 	if (response != null) {
 		switch (response.status) {
 		case 'success':
 			resetErrors();
 			reloadPreview();
-			swal("Correcto!", "RFC guardado correctamente.",
+			swal("Correcto!", "Solicitud guardada correctamente.",
 					"success", 2000)
 					$('#generateReleaseForm #applyFor').show();
 			break;
 		case 'fail':
-			showRFCErrors(response.errors);
+			showRequestErrors(response.errors);
 			countErrorsByStep();
 			var numItems = $('.yourclass').length
 			swal("Avance guardado!", "El formulario a\u00FAn posee campos incompletos.",
@@ -872,21 +837,21 @@ function resetErrors() {
 	$('.labelCount_Error').css("visibility", "hidden");
 }
 
-function showRFCErrors(errors) {
+function showRequestErrors(errors) {
 	resetErrors();// Eliminamos las etiquetas de errores previas
 	var error = errors;
 	for (var i = 0; i < error.length; i++) {
 		// Se modifica el texto de la advertencia y se agrega la de activeError
-		$rfcEditForm.find(" #" + error[i].key + "_error").text(
+		$requestEditForm.find(" #" + error[i].key + "_error").text(
 				error[i].message);
-		$rfcEditForm.find(" #" + error[i].key + "_error").css("visibility",
+		$requestEditForm.find(" #" + error[i].key + "_error").css("visibility",
 		"visible");
-		$rfcEditForm.find(" #" + error[i].key + "_error").attr("class",
+		$requestEditForm.find(" #" + error[i].key + "_error").attr("class",
 		"error fieldError activeError");
 		// Si es input||textarea se marca el line en rojo
-		if ($rfcEditForm.find(" #" + error[i].key).is("input")
-				|| $rfcEditForm.find(" #" + error[i].key).is("textarea")) {
-			$rfcEditForm.find(" #" + error[i].key).parent().attr("class",
+		if ($requestEditForm.find(" #" + error[i].key).is("input")
+				|| $requestEditForm.find(" #" + error[i].key).is("textarea")) {
+			$requestEditForm.find(" #" + error[i].key).parent().attr("class",
 			"form-line error fieldErrorLine");
 		}
 	}

@@ -40,6 +40,8 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestRM_P1_R4;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.WFRelease;
@@ -59,6 +61,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	RequestRM_P1_R4Service requestServiceR4;
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -879,5 +884,172 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	public List<EmailTemplate> findAll() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void sendMailRequestR4(RequestBase requestEmail, EmailTemplate email) throws Exception {
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
+		email = fillEmail(email, requestEmail);
+		String body = email.getHtml();
+		body = Constant.getCharacterEmail(body);
+		MimeMultipart mmp = MimeMultipart(body);
+		mimeMessage.setContent(mmp);
+		mimeMessage.setSubject(email.getSubject());
+		mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
+		mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
+		for (String toUser : email.getTo().split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
+		}
+		String ccFinish="";
+		String cc="";
+		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
+			cc=email.getCc();
+			if(requestEmail.getSenders()==null) {
+				
+				ccFinish=email.getCc();
+				String[] split3=ccFinish.split(",");
+				boolean verify= ArrayUtils.contains(split3,requestEmail.getUser().getEmail());
+				if(!verify) {
+					ccFinish=cc+","+requestEmail.getUser().getEmail();
+				}
+			}else {
+				if(requestEmail.getSenders().trim().equals("")) {
+					ccFinish=email.getCc();
+					String[] split3=ccFinish.split(",");
+					boolean verify= ArrayUtils.contains(split3,requestEmail.getUser().getEmail());
+					if(!verify) {
+						ccFinish=cc+","+requestEmail.getUser().getEmail();
+					}
+				}else {
+					
+					String[] split=requestEmail.getSenders().split(",");
+					String[] splitCC=cc.split(",");
+					ccFinish=requestEmail.getSenders();
+					for(int x=0; splitCC.length>x;x++) {
+						boolean verify= ArrayUtils.contains(split,splitCC[x]);
+						if(!verify) {
+							ccFinish=ccFinish+","+splitCC[x];
+						}
+					}
+					String[] split3=ccFinish.split(",");
+					boolean verify= ArrayUtils.contains(split3,requestEmail.getUser().getEmail());
+					if(!verify) {
+						ccFinish=ccFinish+","+requestEmail.getUser().getEmail();
+					}
+				}
+			
+				
+			}
+		}else {
+			
+			if( requestEmail.getSenders()==null) {
+					ccFinish=requestEmail.getUser().getEmail();
+			}else {
+				if(requestEmail.getSenders().trim().equals("")) {
+					ccFinish=requestEmail.getUser().getEmail();
+				}else {
+				String[] split=requestEmail.getSenders().split(",");
+				ccFinish=requestEmail.getSenders();
+					boolean verify= ArrayUtils.contains(split,requestEmail.getUser().getEmail());
+					if(!verify) {
+						ccFinish=ccFinish+","+requestEmail.getUser().getEmail();
+					}
+				
+				}
+			}
+		}
+		
+	
+			for (String ccUser : ccFinish.split(",")) {
+				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			
+		}
+		
+
+		mailSender.send(mimeMessage);
+	}
+	
+	public EmailTemplate fillEmail(EmailTemplate email, RequestBase request) {
+		String temp = "";
+		/* ------ body ------ */
+		if (email.getHtml().contains("{{userName}}")) {
+			email.setHtml(email.getHtml().replace("{{userName}}",
+					(request.getUser().getFullName() != null ? request.getUser().getFullName() : "")));
+		}
+
+		if (email.getHtml().contains("{{requestNumber}}")) {
+			email.setHtml(email.getHtml().replace("{{requestNumber}}",
+					(request.getNumRequest() != null ? request.getNumRequest() : "")));
+		}
+
+		if (email.getHtml().contains("{{projectCode}}")) {
+			String projectCode = request.getCodeProyect()!= null ? request.getCodeProyect() : "";
+			projectCode = projectCode.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
+		}
+
+
+		if (email.getHtml().contains("{{requestDate}}")) {
+			String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
+			requestDate = requestDate.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{requestDate}}", requestDate));
+		}
+		if (email.getHtml().contains("{{message}}")) {
+			email.setHtml(email.getHtml().replace("{{message}}",
+					(request.getMessage() != null ? request.getMessage() : "NA")));
+		}
+
+		if (email.getHtml().contains("{{users}}")) {
+			temp = "<table border=1>";
+			temp+="<tr>"
+					+ "<th>Nombre</th>"
+					+ "<th>Correo</th>"
+					+"<th>Tipo</th>"
+					+"<th>Permisos</th>"
+					+"<th>Ambiente</th>"
+					+"<th>Espec</th>"
+					+ "</tr>";
+			List<RequestRM_P1_R4> users=requestServiceR4.listRequestRm4(request.getId());
+			for (RequestRM_P1_R4 user : users) {
+				temp+="<tr>";
+				
+				temp +="<td>"+ user.getName() + "</td>";
+				temp +="<td>"+ user.getEmail() + "</td>";
+				temp +="<td>"+ user.getType() + "</td>";
+				temp +="<td>"+ user.getPermissions() + "</td>";
+				temp +="<td>"+ user.getAmbient().getName() + "</td>";
+				temp +="<td>"+ user.getEspec() + "</td>";
+				
+				temp+="</tr>";
+			}
+			
+			
+			temp+="</table>";
+			email.setHtml(email.getHtml().replace("{{users}}", (temp.equals("") ? "Sin usuarios definidos" : temp)));
+		}
+
+
+	
+
+		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{requestNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{requestNumber}}",
+					(request.getNumRequest() != null ? request.getNumRequest() : "")));
+		}
+	
+
+		if (email.getSubject().contains("{{systemMain}}")) {
+			temp = "";
+			Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+			temp+=codeSiges.getSystem().getName();
+			
+			email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+		}
+		
+		
+
+		return email;
 	}
 }

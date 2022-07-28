@@ -1,5 +1,7 @@
 package com.soin.sgrm.controller;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -7,7 +9,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,22 +23,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.collect.Sets;
 import com.google.gdata.client.appsforyourdomain.UserService;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestRM_P1_R4;
 import com.soin.sgrm.model.Siges;
+import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.TypePetition;
+import com.soin.sgrm.model.TypeRequest;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AmbientService;
+import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestRM_P1_R4Service;
 import com.soin.sgrm.service.SigesService;
@@ -42,6 +55,7 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypePetitionService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyError;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
@@ -73,6 +87,11 @@ public class RequestBaseController extends BaseController{
 	@Autowired
 	AmbientService ambientService;
 	
+	@Autowired
+	EmailTemplateService emailService;
+	
+	@Autowired
+	ParameterService parameterService;
 	
 	
 	public static final Logger logger = Logger.getLogger(RFCController.class);
@@ -278,4 +297,179 @@ public class RequestBaseController extends BaseController{
 		}
 		return res;
 	}
+	
+	@RequestMapping(value = "/deleteUser/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteUserRM4(@PathVariable Long id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			requestServiceRm4.delete(id);
+			res.setMessage("Usuario eliminado!");
+		} catch (Exception e) {
+			Sentry.capture(e, "rm4");
+			res.setStatus("exception");
+			res.setMessage("Error al eliminar el usuario!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	@RequestMapping(value = "/tiny/{id}", method = RequestMethod.GET)
+	public String indexSumm(@PathVariable Long id,HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		RequestBase requestEdit = new RequestBase();
+		try {
+			if (id == null) {
+				return "redirect:/";
+			}
+
+			requestEdit = requestBaseService.findById(id);
+
+			if (requestEdit == null) {
+				return "/plantilla/404";
+			}
+
+			if (!requestEdit.getStatus().getName().equals("Borrador")) {
+				redirectAttributes.addFlashAttribute("data", "Solicitud no disponible para editar.");
+				String referer = request.getHeader("Referer");
+				return "redirect:" + referer;
+			}
+			//Integer idManager= getUserLogin().getId();
+			/*
+			Integer countByManager= requestBaseService.countByManager(idManager, requestEdit.getId());
+			if(countByManager==0) {
+				redirectAttributes.addFlashAttribute("data", "No tiene permisos sobre la  ya que no formas parte de este equipo.");
+				String referer = request.getHeader("Referer");
+				return "redirect:" + referer;
+			}*/
+			
+			
+/*	
+			if (!(rfcEdit.getUser().getUsername().toLowerCase().trim())
+					.equals((user.getUsername().toLowerCase().trim()))) {
+				redirectAttributes.addFlashAttribute("data", "No tiene permisos sobre el rfc.");
+				String referer = request.getHeader("Referer");
+				return "redirect:" + referer;
+			}
+			*/
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+				model.addAttribute("request", requestEdit);
+				List<RequestRM_P1_R4> listUser=requestServiceRm4.listRequestRm4(requestEdit.getId());
+				model.addAttribute("listUsers", listUser);
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/sectionsEditR4/tinySummaryRequest";
+			}
+		}catch (Exception e) {
+			Sentry.capture(e, "requestSummary");
+			redirectAttributes.addFlashAttribute("data", e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/";
+		}
+		return "redirect:/";
+
+	}
+	
+	@SuppressWarnings("null")
+	@RequestMapping(value = "/saveRequest", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse saveRelease(HttpServletRequest request, @RequestBody RequestBase addRequest) {
+		User user=userService.getUserByUsername(getUserLogin().getUsername());
+		JsonResponse res = new JsonResponse();
+		ArrayList<MyError> errors = new ArrayList<MyError>();
+
+		try {
+			RequestBase requestMod = requestBaseService.findById(addRequest.getId());
+			addRequest.setTypePetition(requestMod.getTypePetition());
+			errors = validSections(addRequest, errors);
+			
+			addRequest.setUser(requestMod.getUser());
+			addRequest.setNumRequest(requestMod.getNumRequest());
+			addRequest.setCodeProyect(requestMod.getCodeProyect());
+			addRequest.setSiges(requestMod.getSiges());
+			addRequest.setOperator(user.getFullName());
+			addRequest.setStatus(requestMod.getStatus());
+			addRequest.setUser(requestMod.getUser());
+			addRequest.setRequestDate(requestMod.getRequestDate());
+			
+			addRequest.setSystemInfo(requestMod.getSystemInfo());
+			requestBaseService.update(addRequest);
+			res.setStatus("success");
+			if (errors.size() > 0) {
+				// Se adjunta lista de errores
+				res.setStatus("fail");
+				res.setErrors(errors);
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("exception");
+			res.setException("Error al guardar la solicitud: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	@RequestMapping(value = "/updateRequest/{id}", method = RequestMethod.GET)
+	public String updateRFC(@PathVariable Long id, HttpServletRequest request, Locale locale, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			RequestBase requestBase = new RequestBase();
+			requestBase = requestBaseService.findById(id);
+			//Si la solicitud no existe se regresa al inicio.
+			if (request == null) {
+				return "redirect:/homeRequest";
+			}
+			// Verificar si existe un flujo para el sistema
+
+			StatusRequest status = statusService.findByKey("name", "Solicitado");
+
+//			if (node != null)
+			
+//				release.setNode(node);
+
+			requestBase.setStatus(status);
+			requestBase.setMotive(status.getReason());
+			requestBase.setRequestDate((CommonUtils.getSystemTimestamp()));
+			
+			requestBase.setOperator(getUserLogin().getFullName());
+			 TypePetition typePettion=requestBase.getTypePetition();
+			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
+				if (typePettion.getEmailTemplate() != null) {
+					EmailTemplate email = typePettion.getEmailTemplate();
+					RequestBase requestEmail = requestBase;
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailRequestR4(requestEmail, email);
+						} catch (Exception e) {
+							Sentry.capture(e, "request");
+						}
+
+					});
+					newThread.start();
+				}
+			}
+	
+
+			requestBaseService.update(requestBase);
+
+			
+			return "redirect:/request/summaryRequest-" + requestBase.getId();
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+
+		return "redirect:/homeRequest";
+	}
+	
+	public ArrayList<MyError> validSections(RequestBase request, ArrayList<MyError> errors) {
+		if(request.getTypePetition().getCode().equals("RM-P1-R4")) {
+			List<RequestRM_P1_R4> listUser=requestServiceRm4.listRequestRm4(request.getId());
+			if(listUser.size()==0) {
+				errors.add(new MyError("requiredUser","Se requiere al menos un usuario"));
+			}
+			
+			
+		}
+
+		return errors;
+	}
+	
 }

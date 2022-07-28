@@ -541,7 +541,7 @@ public class RFCController extends BaseController {
 			}
 			// Si el release no existe se regresa al inicio.
 			if (rfc == null) {
-				return "redirect:/";
+				return "redirect:/homeRFC";
 			}
 			// Verificar si existe un flujo para el sistema
 

@@ -6,6 +6,7 @@ import com.soin.sgrm.dao.BaseDao;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
@@ -37,6 +38,9 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	void sendMailActor(WFRelease releaseEmail, EmailTemplate email);
 
 	void sendMailRFC(RFC rfcEmail, EmailTemplate email) throws Exception;
+	
+	void sendMailRequestR4(RequestBase requestEmail, EmailTemplate email) throws Exception;
+	
 
 	void sendMailNotify(WFRelease releaseEmail, EmailTemplate email,String user);
 

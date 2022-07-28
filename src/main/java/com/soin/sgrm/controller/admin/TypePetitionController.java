@@ -79,6 +79,8 @@ public class TypePetitionController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
+			EmailTemplate email=emailTemplateService.findById(uptTypePetition.getEmailTemplateId());
+			uptTypePetition.setEmailTemplate(email);
 			typePetitionService.update(uptTypePetition);
 
 			res.setMessage("Tipo solicitud modificada!");

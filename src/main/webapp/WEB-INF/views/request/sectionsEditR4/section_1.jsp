@@ -10,14 +10,15 @@
 	<div class="col-sm-12">
 		<h5 class="titulares">Solicitud de Usuario</h5>
 	</div>
-<form id="generateRequestFormUser" role="form">
+
+
+
 	<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 		<label for="name">Nombre</label>
-		<div class="form-group">
+		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<input type="text" class="form-control" id="name" maxlength="20"
-					name="name" placeholder="Ingrese un nombre">
-				
+				<input type="text" id="name" name="name" class="form-control"
+					placeholder="Ingrese el nombre">
 			</div>
 		</div>
 	</div>
@@ -45,7 +46,6 @@
 					name="type" value="Base de
 					datos"> <label for="type4">Base de
 					datos</label><br> <br>
-					<div class="help-info">Seleccione un tipo</div>
 			</div>
 		</div>
 
@@ -56,16 +56,15 @@
 		<label for="permission">Permisos</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line disabled">
-				<input type="checkbox" id="permission1" name="permission1"
+				<input type="checkbox" id="permission1" name="permission"
 					value="Lectura"> <label for="permission1">Lectura</label> <br>
-				<input type="checkbox" id="permission2" name="permission2"
+				<input type="checkbox" id="permission2" name="permission"
 					value="Escritura"> <label for="permission2">Escritura</label><br>
-				<input type="checkbox" id="permission3" name="permission3"
+				<input type="checkbox" id="permission3" name="permission"
 					value="Ejecucion"> <label for="permission3">Ejecucion</label><br>
-				<input type="checkbox" id="permission4" name="permission4"
+				<input type="checkbox" id="permission4" name="permission"
 					value="Acceso"> <label for="permission4">Acceso</label><br>
 				<br>
-			<div class="help-info">Seleccione 1 o mas permisos</div>
 			</div>
 		</div>
 
@@ -76,7 +75,7 @@
 		<p>
 			<b>Ambiente</b>
 		</p>
-		<div class="row clearfix">
+		<div class="form-group m-b-0i">
 			<div class="form-line">
 
 				<select id="ambientId" name="ambientId" required="required"
@@ -99,6 +98,7 @@
 		</div>
 	</div>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 		<div class="row clearfix">
 			<div class="alig_btn">
 				<button type="button" class="btn btn-primary setIcon"
@@ -108,7 +108,8 @@
 			</div>
 		</div>
 	</div>
-	</form>
+	</div>
+	
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 		<div class="row clearfix">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -134,7 +135,10 @@
 				</div>
 			</div>
 		</div>
-
+	<div class="form-group p-l-15 m-b-0i">
+				<label id="requiredUser_error" class="error fieldError activeError"
+					for="name" style="visibility: hidden;">Campo requerido.</label>
+			</div>
 	</div>
 </div>
 

@@ -120,7 +120,7 @@ tr.selected {
 		<!-- #END# addObjectModal -->
 
 		<!-- addObjectModal -->
-		<%@include file="../rfc/previewRFCModal.jsp"%>
+		<%@include file="../request/sectionsEditR4/previewRequestModal.jsp"%>
 		<!-- #END# addObjectModal -->
 
 		<!-- addFileModal -->
@@ -155,7 +155,7 @@ tr.selected {
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>RFC: </span>${request.numRequest} <input type="hidden"
+								<span>Solicitud: </span>${request.numRequest} <input type="hidden"
 									id="requestId" value="${request.id}"> <input type="hidden"
 									id="requestNumber" value="${request.numRequest}">
 									 <input type="hidden"
@@ -167,7 +167,7 @@ tr.selected {
 							class=" col-lg-6 col-md-6 col-sm-12 col-xs-12 align-right p-r-0">
 
 							<button type="button" class="btn btn-default setIcon"
-								onclick="previewRFC()" title="RESUMEN"
+								onclick="previewRequest()" title="RESUMEN"
 								style="background-color: #00294c !important; color: #ffffff; border: none !important;">
 								<span>VER RESUMEN</span><span style="margin-left: 10px;"><i
 									class="material-icons"
@@ -175,7 +175,7 @@ tr.selected {
 							</button>
 
 							<button type="button" id="btnSave"
-								class="btn btn-default setIcon" onclick="sendRFC()"
+								class="btn btn-default setIcon" onclick="sendRequest()"
 								title="GUARDAR"
 								style="background-color: #00294c !important; color: #fff; border: none !important;">
 								<span id="btnText">GUARDAR</span><span
@@ -209,29 +209,29 @@ tr.selected {
 										</a></li>
 
 										<li id="2" role="presentation" class="without-line "><a
-											href="#step2" data-toggle="tab" aria-controls="step2"
-											role="tab" title=""> <span class="round-tab"> 2 </span> <span
-												id="step2Errors" style="visibility: hidden;"
+											href="#step5" data-toggle="tab" aria-controls="step5"
+											role="tab" title=""><span
+												id="step5Errors" style="visibility: hidden;"
 												class="labelCount_Error"><i
 													class="material-icons spanError">warning</i></span>
 										</a></li>
-										<li id="3" role="presentation" class="without-line "><a
-											href="#step3" data-toggle="tab" aria-controls="step3"
-											role="tab" title=""> <span class="round-tab"> 3 </span> <span
-												id="step3Errors" style="visibility: hidden;"
+										<li id="2" role="presentation" class="without-line " ><a
+											href="#step2" data-toggle="tab" aria-controls="step2"
+											role="tab" title=""><span class="round-tab"> 2 </span>  <span
+												id="step2Errors" style="visibility: hidden;"
 												class="labelCount_Error"><i
 													class="material-icons spanError">warning</i></span>
 										</a></li>
 										<li id="4" role="presentation" class="without-line "><a
 											href="#step4" data-toggle="tab" aria-controls="step4"
-											role="tab" title=""> <span class="round-tab"> 4 </span> <span
+											role="tab" title=""> <span
 												id="step4Errors" style="visibility: hidden;"
 												class="labelCount_Error"><i
 													class="material-icons spanError">warning</i></span>
 										</a></li>
-										<li id="5" role="presentation" class="without-line"><a
-											href="#step5" data-toggle="tab" aria-controls="step5"
-											role="tab" title=""> <span class="round-tab"> 5 </span>
+										<li id="3" role="presentation" class="without-line"><a
+											href="#step3" data-toggle="tab" aria-controls="step3"
+											role="tab" title=""> <span class="round-tab"> 3 </span>
 										</a></li>
 									</ul>
 								</div>
@@ -242,10 +242,7 @@ tr.selected {
 										<div class="body">
 											<%@include file="../request/sectionsEditR4/section_1.jsp"%>
 										</div>
-										<div class="button-demo flr">
-											<button type="button" class="btn btn-primary next-step"
-												style="margin-bottom: 100px;">SIGUIENTE</button>
-										</div>
+
 									</div>
 									<!--#Step_1 -->
 
@@ -253,55 +250,22 @@ tr.selected {
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step2">
 										<div class="body">
-											<%@include file="../rfc/sectionsEditRFC/section_2.jsp"%>
+											<%@include file="../request/sectionsEditR4/section_2.jsp"%>
 										</div>
-										<div class="button-demo flr">
-											<button type="button" class="btn btn-default prev-step"
-												style="margin-bottom: 100px;">ANTERIOR</button>
-											<button type="button" class="btn btn-primary next-step"
-												style="margin-bottom: 100px;">SIGUIENTE</button>
+										<div class="button-demo flr p-t-20">
+
 										</div>
 									</div>
-									<!--#Step_2 -->
-
-									<!--Step_3 -->
+									<!--#Step_5 -->
+									<!--St.ep_5 -->
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step3">
 										<div class="body">
-											<%@include file="../rfc/sectionsEditRFC/section_3.jsp"%>
-
-										</div>
-										<div class="button-demo flr">
-											<button type="button" class="btn btn-default prev-step"
-												style="margin-bottom: 30px;">ANTERIOR</button>
-											<button type="button" class="btn btn-primary next-step"
-												style="margin-bottom: 30px;">SIGUIENTE</button>
-										</div>
-									</div>
-									<!--#Step_3 -->
-
-									<!--Step_4 -->
-									<div class="tab-pane animated fadeIn" role="tabpanel"
-										id="step4">
-										<div class="body">
-											<%@include file="../rfc/sectionsEditRFC/section_4.jsp"%>
-										</div>
-										<div class="button-demo flr">
-											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
-											<button type="button" class="btn btn-primary next-step">SIGUIENTE</button>
-										</div>
-									</div>
-									<!--#Step_4 -->
-									<!--Step_5 -->
-									<div class="tab-pane animated fadeIn" role="tabpanel"
-										id="step5">
-										<div class="body">
-											<%@include file="../rfc/sectionsEditRFC/section_5.jsp"%>
+											<%@include file="../request/sectionsEditR4/section_3.jsp"%>
 										</div>
 										<div class="button-demo flr p-t-20">
-											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
-											<%-- 											<c:if test="${release.status.name == 'Borrador'}"> --%>
-											<button id="applyFor" onclick="requestRFC()" type="button"
+
+											<button id="applyFor" onclick="requestRequest()" type="button"
 												class="btn btn-primary">SOLICITAR</button>
 											<%-- 											</c:if> --%>
 										</div>

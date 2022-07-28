@@ -12,21 +12,21 @@
 	<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
 		<div class="clearfix m-l--15">
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-				<label for="email_address">RFC</label>
+				<label for="email_address">Numero de solicitud</label>
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="releaseNumberTinySummary"
-							name="systemCode" value="${rfc.numRequest}"
+							name="systemCode" value="${request.numRequest}"
 							class="form-control" placeholder="">
 					</div>
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-				<label for="email_address">Proyecto</label>
+				<label for="email_address">Proceso al que pertenece</label>
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="systemCodeTinySummary"
-							name="systemCode" value="${rfc.codeProyect}"
+							name="systemCode" value="${request.systemInfo.name}"
 							class="form-control" placeholder="">
 					</div>
 				</div>
@@ -36,7 +36,7 @@
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="userTinySummary" name="systemCode"
-							value="${rfc.user.fullName}" class="form-control"
+							value="${request.user.fullName}" class="form-control"
 							placeholder="">
 					</div>
 				</div>
@@ -47,7 +47,7 @@
 					<div class="form-line disabled">
 						<input type="text" disabled id="dateTinySummary" name="dateCreate"
 							value='<fmt:formatDate
-										value="${rfc.requestDate }" pattern="dd/MM/YYYY HH:mm:ss"  />' class="form-control"
+										value="${request.requestDate }" pattern="dd/MM/YYYY HH:mm:ss"  />' class="form-control"
 							placeholder="">
 					</div>
 				</div>
@@ -59,7 +59,7 @@
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="statusTinySummary"
-							name="systemCode" value="${rfc.status.name }"
+							name="systemCode" value="${request.status.name }"
 							class="form-control" placeholder="">
 					</div>
 				</div>
@@ -67,3 +67,4 @@
 		</div>
 	</div>
 </div>
+

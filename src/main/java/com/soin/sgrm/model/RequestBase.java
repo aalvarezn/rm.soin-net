@@ -213,6 +213,22 @@ private static final long serialVersionUID = 1L;
 		this.tracking = tracking;
 	}
 
+	public String getSenders() {
+		return senders;
+	}
+
+	public void setSenders(String senders) {
+		this.senders = senders;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
 
 	
 
