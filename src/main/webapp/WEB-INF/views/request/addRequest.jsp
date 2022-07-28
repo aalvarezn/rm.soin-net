@@ -1,8 +1,8 @@
 
-<div id="addRFCSection">
-	<form id="formAddRFC" action="changePassword" method="post">
+<div id="addRequestSection">
+	<form id="formAddRequest" action="changePassword" method="post">
 		<input type="hidden" name="${_csrf.parameterName}"
-			value="${_csrf.token}" /> <input type="hidden" id="idRFC" value="" />
+			value="${_csrf.token}" /> <input type="hidden" id="idRequest" value="" />
 
 		<div class="m-l-15">
 
@@ -70,9 +70,9 @@
 
 	<div class="button-demo flr">
 		<button type="button" class="btn btn-default"
-			onclick="closeRFCSection()">CANCELAR</button>
-		<button id="createRFC" type="button" disabled
-			class="btn btn-primary waves-effect" onclick="createRFC()">CREAR
+			onclick="closeRequestSection()">CANCELAR</button>
+		<button id="createRequest" type="button" disabled
+			class="btn btn-primary waves-effect" onclick="createRequest()">CREAR
 			SOLICITUD</button>
 	</div>
 

@@ -10,4 +10,7 @@ public interface RequestBaseService extends BaseService<Long, RequestBase>{
 
 	String generateRequestNumber(String codeProyect,String description);
 
+	JsonSheet<RequestBase> findAllRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
+			Long statusId, String dateRange, Integer systemId, Long typePetitionId);
+
 }

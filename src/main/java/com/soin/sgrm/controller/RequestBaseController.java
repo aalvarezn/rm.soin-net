@@ -103,12 +103,8 @@ public class RequestBaseController extends BaseController{
 			Integer userLogin = getUserLogin().getId();
 			//loadCountsRelease(request, userLogin);
 			List<System> systems = systemService.listProjects(getUserLogin().getId());
-			//List<Priority> priorities = priorityService.list();
 			List<StatusRequest> statuses = statusService.findAll();
 			List<TypePetition> typePetitions=typePetitionService.findAll();
-			//List<Impact> impacts = impactService.list();
-			//model.addAttribute("priorities", priorities);
-			//model.addAttribute("impacts", impacts);
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("typePetitions",typePetitions);
 			model.addAttribute("systems", systems);
@@ -117,7 +113,6 @@ public class RequestBaseController extends BaseController{
 			e.printStackTrace();
 		}
 		return "/request/request";
-
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -457,6 +452,45 @@ public class RequestBaseController extends BaseController{
 		}
 
 		return "redirect:/homeRequest";
+	}
+	
+	@RequestMapping(value = "/summaryRequest-{id}", method = RequestMethod.GET)
+	public String summmary(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
+		User user =  userService.getUserByUsername(getUserLogin().getUsername());
+		List<System> systems = systemService.listProjects(user.getId());
+		RequestBase requestEdit = new RequestBase();
+		try {
+			if (id == null) {
+				return "redirect:/";
+			}
+
+			requestEdit = requestBaseService.findById(id);
+
+			if (requestEdit == null) {
+				return "/plantilla/404";
+			}
+
+
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+				model.addAttribute("request", requestEdit);
+				List<RequestRM_P1_R4> listUser=requestServiceRm4.listRequestRm4(requestEdit.getId());
+				model.addAttribute("listUsers", listUser);
+				model.addAttribute("statuses", statusService.findAll());
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/sectionsEditR4/summaryRequest";
+			}
+			
+
+		} catch (Exception e) {
+			Sentry.capture(e, "rfc");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina resumen de la solicitud." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/";
+		}
+
+		return "/rfc/summaryRFC";
 	}
 	
 	public ArrayList<MyError> validSections(RequestBase request, ArrayList<MyError> errors) {

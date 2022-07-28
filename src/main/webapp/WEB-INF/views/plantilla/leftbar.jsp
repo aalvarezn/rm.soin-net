@@ -37,8 +37,8 @@
 						href="<c:url value='/management/wf/'/> "> <span>Gestión
 								Trámites</span>
 					</a></li>
-					<li><a id="managemetWorkFlowItem"
-						href="<c:url value='/management/wf/'/> "> <span>Gestión
+					<li><a id="managerRequestItem"
+						href="<c:url value='/management/request/'/> "> <span>Gestión
 								Solicitudes</span>
 					</a></li>
 				</c:if>

@@ -984,7 +984,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		}
 
 		if (email.getHtml().contains("{{projectCode}}")) {
-			String projectCode = request.getCodeProyect()!= null ? request.getCodeProyect() : "";
+			String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
 			projectCode = projectCode.replace("\n", "<br>");
 			email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
 		}

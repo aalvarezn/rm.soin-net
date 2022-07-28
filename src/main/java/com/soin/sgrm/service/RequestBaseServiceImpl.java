@@ -194,4 +194,70 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 	public Integer existNumRequest(String number_release) throws SQLException {
 		return dao.existNumRequest(number_release);
 	}
+
+	@Override
+	public JsonSheet<RequestBase> findAllRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, Long statusId, String dateRange, Integer systemId, Long typePetitionId) {
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+
+		alias.put("status", "status");
+
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					columns.put("requestDate", Restrictions.between("requestDate", start, end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		Criterion qSrch = null;
+		if (sSearch != null && sSearch.length() > 0) {
+			qSrch = Restrictions.or(
+
+					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
+
+			);
+		}
+		if (statusId == 0) {
+			statusId = null;
+		}
+		if (typePetitionId == 0) {
+			typePetitionId = null;
+		}
+
+		if (typePetitionId != null) {
+
+			columns.put("typePetition", Restrictions.eq("typePetition.id", typePetitionId));
+		} 
+
+		if (statusId != null) {
+
+			columns.put("status", Restrictions.eq("status.id", statusId));
+		}
+
+		if (systemId != 0) {
+			alias.put("siges", "siges");
+			columns.put("siges", Restrictions.or(Restrictions.eq("siges.system.id", systemId)));
+
+		} 
+
+		List<String> fetchs = new ArrayList<String>();
+		/*fetchs.add("releases");
+		fetchs.add("files");
+		fetchs.add("tracking");
+		*/
+		fetchs.add("user");
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+	}
 }

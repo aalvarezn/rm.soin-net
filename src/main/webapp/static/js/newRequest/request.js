@@ -1,9 +1,9 @@
 /** Declaración de variables globales del contexto * */
 var $dtRFCs;
 var $dtUsers;
-var $fmRFC = $('#formAddRFC');
+var $fmRequest = $('#formAddRequest');
 var $formChangeUser = $('#changeUserForm');
-var $trackingRFCForm = $('#trackingRFCForm');
+var $trackingRequestForm = $('#trackingRequestForm');
 
 $(function() {
 
@@ -55,19 +55,19 @@ $(function() {
 
 	activeItemMenu("requestItem");
 	dropDownChange();
-	$("#addRFCSection").hide();
-	$fmRFC.find("#sId").selectpicker('val',"");
+	$("#addRequestSection").hide();
+	$fmRequest.find("#sId").selectpicker('val',"");
 
-	initRFCTable();
-	initRFCFormValidation();
+	initRequestTable();
+	initRequestFormValidation();
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
 	$dtRFCs.ajax.reload();
 });
-function closeTrackingRFCModal(){
-	$trackingRFCForm[0].reset();
-	$('#trackingRFCModal').modal('hide');
+function closeTrackingRequestModal(){
+	$trackingRequestForm[0].reset();
+	$('#trackingRequestModal').modal('hide');
 }
 
 $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
@@ -89,7 +89,7 @@ $('#tableFilters #statusId').change(function() {
 
 
 
-function initRFCTable() {
+function initRequestTable() {
 	$dtRFCs = $('#dtRFCs').DataTable(
 			{
 				
@@ -152,10 +152,10 @@ function initRFCTable() {
 							if (row.status.name == 'Borrador') {
 								
 									options = options
-									+ '<a onclick="editRFC('
+									+ '<a onclick="editRequest('
 									+ row.id
 									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>'
-									+ '<a onclick="confirmDeleteRFC('
+									+ '<a onclick="confirmDeleteRequest('
 									+ row.id
 									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
 								
@@ -164,14 +164,14 @@ function initRFCTable() {
 
 						
 							options = options
-							+ '<a onclick="openRFCTrackingModal('
+							+ '<a onclick="openRequestTrackingModal('
 							+ row.id
 							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
 
 							options = options
 							+ '<a href="'
 							+ getCont()
-							+ 'rfc/summaryRFC-'
+							+ 'request/summaryRequest-'
 							+ row.id
 							+ '" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
 							return options;
@@ -182,42 +182,42 @@ function initRFCTable() {
 }
 
 function changeSlide() {
-	$fmRFC.validate().resetForm();
-	$fmRFC[0].reset();
+	$fmRequest.validate().resetForm();
+	$fmRequest[0].reset();
 	resetDrops();
-	let change = $("#buttonAddRFC").is(":visible");
-	$("#buttonAddRFC").toggle();
-	let hide = change ? '#tableSection': '#addRFCSection';
-	let show = !change ? '#tableSection': '#addRFCSection';
+	let change = $("#buttonAddRequest").is(":visible");
+	$("#buttonAddRequest").toggle();
+	let hide = change ? '#tableSection': '#addRequestSection';
+	let show = !change ? '#tableSection': '#addRequestSection';
 	
 	$(hide).toggle("slide");
 	$(show).show('slide', {
 		direction : (change? 'right': 'left' )
 	}, 500);
 	if(change)
-		$("#addRFCSection").insertAfter("#tableSection");
+		$("#addRequestSection").insertAfter("#tableSection");
 	else
-		$("#tableSection").insertAfter("#addRFCSection")
+		$("#tableSection").insertAfter("#addRequestSection")
 }
 
 
-function addRFCSection() {
+function addRequestSection() {
 	changeSlide();
 }
 
 
-function closeRFCSection(){
+function closeRequestSection(){
 	changeSlide();
 }
 
-function editRFC(element) {
+function editRequest(element) {
 	var cont = getCont();
 	window.location = cont + "	request/editRequest-" + element;
 }
 
 
 
-function confirmDeleteRFC(element) {
+function confirmDeleteRequest(element) {
 	// $('#deleteReleaseModal').modal('show');
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea eliminar?',
@@ -231,25 +231,25 @@ function confirmDeleteRFC(element) {
 		confirmButtonText: 'Aceptar',
 	}).then((result) => {
 		if(result.value){
-			deleteRFC(element);
+			deleteRequest(element);
 		}		
 	});
 }
 
-function deleteRFC(element) {
+function deleteRequest(element) {
 	blockUI();
 	var cont = getCont();
 	$.ajax({
 		type : "DELETE",
-		url : cont + "rfc/" + "deleteRFC /" + element,
+		url : cont + "management/request/" + "deleteRequest /" + element,
 		timeout : 60000,
 		data : {},
 		success : function(response) {
 			switch (response.status) {
 			case 'success':
-				swal("Correcto!", "El RFC ha sido eliminado exitosamente.",
+				swal("Correcto!", "La solicitud ha sido eliminado exitosamente.",
 						"success", 2000)
-						$dtRFCs.DataTable().ajax.reload();
+						$dtRFCs.ajax.reload();
 				break;
 			case 'fail':
 				swal("Error!", response.exception, "error")
@@ -267,8 +267,8 @@ function deleteRFC(element) {
 	});
 }
 
-function createRFC() {
-	if (!$fmRFC.valid())
+function createRequest() {
+	if (!$fmRequest.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
@@ -284,10 +284,10 @@ function createRFC() {
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					codeProyect : $fmRFC.find('#sigesId').val(),
-					systemId : $fmRFC.find('#sId').val(),
-					description:$fmRFC.find('#sDescription').val(),
-					typePetitionId:$fmRFC.find('#tId').val(),
+					codeProyect : $fmRequest.find('#sigesId').val(),
+					systemId : $fmRequest.find('#sId').val(),
+					description:$fmRequest.find('#sDescription').val(),
+					typePetitionId:$fmRequest.find('#tId').val(),
 				}),
 				success : function(response) {
 					unblockUI();
@@ -309,8 +309,8 @@ function createRFC() {
 		}
 	});
 }
-function initRFCFormValidation() {
-	$fmRFC.validate({
+function initRequestFormValidation() {
+	$fmRequest.validate({
 		rules : {
 			
 			'sId':{
@@ -355,10 +355,11 @@ function initRFCFormValidation() {
 		errorPlacement
 	});
 }
+
 function dropDownChange(){
 
 	$('#sId').on('change', function(){
-		var sId =$fmRFC.find('#sId').val();
+		var sId =$fmRequest.find('#sId').val();
 		if(sId!=""){
 		$.ajax({
 			type: 'GET',
@@ -372,7 +373,7 @@ function dropDownChange(){
 					}
 					$('#sigesId').html(s);
 					$('#sigesId').prop('disabled', false);
-					$('#createRFC').prop('disabled', false);
+					$('#createRequest').prop('disabled', false);
 					$('#sigesId').selectpicker('refresh');
 				}else{
 					resetDrop();
@@ -387,27 +388,26 @@ function dropDownChange(){
 		
 	});
 }
-
-function openRFCTrackingModal(idRFC) {
+function openRequestTrackingModal(idRequest) {
 
 	var dtRFC = $('#dtRFCs').dataTable();
-	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
+	var idRow = dtRFC.fnFindCellRowIndexes(idRequest, 0); // idRow
 	var rowData = $dtRFCs.row(idRow[0]).data();
 	
-	$trackingRFCForm.find('#idRFC').val(rowData.id);
-	$trackingRFCForm.find('#rfcNumber').text(rowData.numRequest);
+	$trackingRequestForm.find('#idRequest').val(rowData.id);
+	$trackingRequestForm.find('#requestNumber').text(rowData.numRequest);
 	
-	loadTrackingRFC(rowData);
-	$('#trackingRFCModal').modal('show');
+	loadTrackingRequest(rowData);
+	$('#trackingRequestModal').modal('show');
 }
 
-function loadTrackingRFC(rowData){
-	$trackingRFCForm.find('tbody tr').remove();
+function loadTrackingRequest(rowData){
+	$trackingRequestForm.find('tbody tr').remove();
 	if(rowData.tracking.length == 0){
-		$trackingRFCForm.find('tbody').append('<tr><td colspan="4" style="text-align: center;">No hay movimientos</td></tr>');
+		$trackingRequestForm.find('tbody').append('<tr><td colspan="4" style="text-align: center;">No hay movimientos</td></tr>');
 	}
 	$.each(rowData.tracking, function(i, value) {
-		$trackingRFCForm.find('tbody').append('<tr style="padding: 10px 0px 0px 0px;" > <td><span style="background-color: '+getColorNode(value.status)+';" class="round-step"></span></td>	<td>'+value.status+'</td>	<td>'+moment(value.trackingDate).format('DD/MM/YYYY h:mm:ss a')+'</td>	<td>'+value.operator+'</td> <td>'+(value.motive && value.motive != null && value.motive != 'null' ? value.motive:'' )+'</td>	</tr>');
+		$trackingRequestForm.find('tbody').append('<tr style="padding: 10px 0px 0px 0px;" > <td><span style="background-color: '+getColorNode(value.status)+';" class="round-step"></span></td>	<td>'+value.status+'</td>	<td>'+moment(value.trackingDate).format('DD/MM/YYYY h:mm:ss a')+'</td>	<td>'+value.operator+'</td> <td>'+(value.motive && value.motive != null && value.motive != 'null' ? value.motive:'' )+'</td>	</tr>');
 	});
 }
 
@@ -435,7 +435,7 @@ function getColorNode(status){
 }
 
 function resetDrops(){
-	$fmRFC.find('#sId').selectpicker('val',  "");
+	$fmRequest.find('#sId').selectpicker('val',  "");
 	resetDrop();
 }	
 function resetDrop(){
@@ -443,7 +443,7 @@ function resetDrop(){
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 	$('#sigesId').html(s);
 	$('#sigesId').prop('disabled',true);
-	$('#createRFC').prop('disabled',true);
+	$('#createRequest').prop('disabled',true);
 	$('#sigesId').selectpicker('refresh');
 	
 }
