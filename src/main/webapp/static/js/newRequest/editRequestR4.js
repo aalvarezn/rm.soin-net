@@ -10,7 +10,7 @@ var nodes = [];
 var edges = [];
 $(function() {
 
-	//activeItemMenu("managemetReleaseItem");
+	activeItemMenu("requestItem");
 	 $('#systemId').selectpicker('val',$('#systemInfoId').val());
 	 initRequestFormValidation();
 	initUserTable();
