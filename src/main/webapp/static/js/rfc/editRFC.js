@@ -11,7 +11,7 @@ var nodes = [];
 var edges = [];
 $(function() {
 
-	activeItemMenu("managemetReleaseItem");
+	activeItemMenu("RFCItem");
 	 $('#systemId').selectpicker('val',$('#systemInfoId').val());
 	initTable();
 	initTableAdd();

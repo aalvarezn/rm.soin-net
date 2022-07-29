@@ -215,7 +215,7 @@
 												<th></th>
 												<th>Número RFC</th>
 												<th>Sistema</th>
-												<th>Prioridad</th>
+												<th>Razon de cambio</th>
 												<th>Solicitante</th>
 												<th>Modificado</th>
 												<th>Estado</th>
