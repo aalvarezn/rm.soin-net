@@ -38,10 +38,7 @@ $(function() {
 	          
 	        }
 	    } );
-	 $('#releaseTableAdd tbody').on( 'dblclick', 'tr', function () {
-		 var data = $dtRFCsAdd.row( this ).data();
-		 removeData(data);
-	 });
+
 	 
 
 	  
@@ -93,7 +90,40 @@ $(function() {
 	});
 
 
-
+	 $('#userTable tbody').on( 'click', 'tr', function () {
+		 resetSpaces();
+		 var data = $dtUser.row( this ).data();
+			$requestEditForm.find('#name').val(data.name);
+			$requestEditForm.find('#email').val(data.email);
+			if(data.type==="Ambiente"){
+				$("input[name=type][value='Ambiente']").prop("checked",true);
+			}else if(data.type==="Aplicacion"){
+				$("input[name=type][value='Aplicacion']").prop("checked",true);
+			}else if(data.type==="SGRM"){
+				$("input[name=type][value='SGRM']").prop("checked",true);
+			}else if(data.type==="Base de datos"){
+				$("input[name=type][value='Base de datos']").prop("checked",true);
+			}
+			const splitString = data.permissions.split(",");
+			for(x=0;splitString.length>x;x++){
+				if(splitString[x]==="Lectura"){
+					$('#permission1').prop('checked',true);
+				}
+				if(splitString[x]==="Escritura"){
+					$('#permission2').prop('checked',true);
+				}
+				if(splitString[x]==="Ejecucion"){
+					$('#permission3').prop('checked',true);
+				}
+				if(splitString[x]==="Acceso"){
+					$('#permission4').prop('checked',true);
+				}
+			}
+			console.log(splitString);
+			$requestEditForm.find('#espec').val(data.espec);
+			$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
+		 console.log(data);
+	 });
 
 	
 });

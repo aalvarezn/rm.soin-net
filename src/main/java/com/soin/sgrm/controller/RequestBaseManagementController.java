@@ -1,7 +1,9 @@
 package com.soin.sgrm.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,7 +83,7 @@ public class RequestBaseManagementController extends BaseController {
 			RedirectAttributes redirectAttributes) {
 		try {
 			Integer userLogin = getUserLogin().getId();
-			//loadCountsRelease(request, userLogin);
+			loadCountsRequest(request, userLogin);
 			List<System> systems = systemService.list();
 			List<StatusRequest> statuses = statusService.findAll();
 			List<TypePetition> typePetitions=typePetitionService.findAll();
@@ -216,5 +218,16 @@ public class RequestBaseManagementController extends BaseController {
 		}
 		return res;
 	}
-	
+	public void loadCountsRequest(HttpServletRequest request, Integer id) {
+		//PUser userLogin = getUserLogin();
+		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
+		Map<String, Integer> rfcC = new HashMap<String, Integer>();
+		rfcC.put("draft", requestBaseService.countByType(id, "Borrador", 2, null));
+		rfcC.put("requested", requestBaseService.countByType(id, "Solicitado", 2, null));
+		rfcC.put("completed", requestBaseService.countByType(id, "Completado", 2, null));
+		rfcC.put("all", (rfcC.get("draft") + rfcC.get("requested") + rfcC.get("completed")));
+		request.setAttribute("rfcC", rfcC);
+
+		
+	}
 }

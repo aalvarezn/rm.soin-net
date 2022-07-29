@@ -2,8 +2,10 @@ package com.soin.sgrm.controller;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -101,7 +103,7 @@ public class RequestBaseController extends BaseController{
 			RedirectAttributes redirectAttributes) {
 		try {
 			Integer userLogin = getUserLogin().getId();
-			//loadCountsRelease(request, userLogin);
+			loadCountsRelease(request, userLogin);
 			List<System> systems = systemService.listProjects(getUserLogin().getId());
 			List<StatusRequest> statuses = statusService.findAll();
 			List<TypePetition> typePetitions=typePetitionService.findAll();
@@ -504,6 +506,18 @@ public class RequestBaseController extends BaseController{
 		}
 
 		return errors;
+	}
+	
+	public void loadCountsRelease(HttpServletRequest request, Integer id) {
+		//PUser userLogin = getUserLogin();
+		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
+		Map<String, Integer> userC = new HashMap<String, Integer>();
+		userC.put("draft", requestBaseService.countByType(id, "Borrador", 1, null));
+		userC.put("requested", requestBaseService.countByType(id, "Solicitado", 1, null));
+		userC.put("completed", requestBaseService.countByType(id, "Completado", 1, null));
+		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+		request.setAttribute("userC", userC);
+		
 	}
 	
 }

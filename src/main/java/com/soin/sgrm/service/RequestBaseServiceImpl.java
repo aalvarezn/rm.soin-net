@@ -260,4 +260,10 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 		fetchs.add("user");
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
 	}
+
+	@Override
+	public Integer countByType(Integer id, String type, int query, Object[] object) {
+		
+		return dao.countByType(id, type, query, object);
+	}
 }

@@ -38,14 +38,10 @@
 		<label for="type">Tipo</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line disabled">
-				<input type="radio" id="type1" name="type" value="Ambiente"> <label
-					for="type1">Ambiente</label><br> <input type="radio"
-					id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicacion</label><br>
-				<input type="radio" id="type3" name="type" value="SGRM"> <label
-					for="type3">SGRM</label><br> <input type="radio" id="type4"
-					name="type" value="Base de
-					datos"> <label for="type4">Base de
-					datos</label><br> <br>
+					<input type="radio" id="type1" name="type" value="Ambiente"> <label	for="type1">Ambiente</label><br> 
+					<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicacion</label><br>
+					<input type="radio" id="type3" name="type" value="SGRM"> <label for="type3">SGRM</label><br> 
+					<input type="radio" id="type4" name="type" value="Base de datos"> <label for="type4">Base de datos</label><br> <br>
 			</div>
 		</div>
 
@@ -56,14 +52,10 @@
 		<label for="permission">Permisos</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line disabled">
-				<input type="checkbox" id="permission1" name="permission"
-					value="Lectura"> <label for="permission1">Lectura</label> <br>
-				<input type="checkbox" id="permission2" name="permission"
-					value="Escritura"> <label for="permission2">Escritura</label><br>
-				<input type="checkbox" id="permission3" name="permission"
-					value="Ejecucion"> <label for="permission3">Ejecucion</label><br>
-				<input type="checkbox" id="permission4" name="permission"
-					value="Acceso"> <label for="permission4">Acceso</label><br>
+				<input type="checkbox" id="permission1" name="permission" value="Lectura"> <label for="permission1">Lectura</label> <br>
+				<input type="checkbox" id="permission2" name="permission" value="Escritura"> <label for="permission2">Escritura</label><br>
+				<input type="checkbox" id="permission3" name="permission" value="Ejecucion"> <label for="permission3">Ejecucion</label><br>
+				<input type="checkbox" id="permission4" name="permission" value="Acceso"> <label for="permission4">Acceso</label><br>
 				<br>
 			</div>
 		</div>
