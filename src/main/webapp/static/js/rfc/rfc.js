@@ -124,10 +124,10 @@ function initRFCTable() {
 					}
 					, {
 						"mRender" : function(data, type, row, meta) {
-							if(row.priority)
-								return row.priority.name;
+							if(row.reasonChange)
+								return row.reasonChange;
 							else
-								return '';
+								return 'Sin razon de cambio seleccionada';
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
