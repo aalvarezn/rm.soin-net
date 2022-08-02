@@ -84,8 +84,10 @@
 	<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 		<label for="espec">Especificacion</label>
 		<div class="form-group m-b-0i">
-			<div class="form-line disabled">
-				<textarea cols="18" id="espec" name="espec"></textarea>
+		<div class="form-line">
+				<textarea rows="2" cols="" name='espec' id="espec"
+					class="form-control"
+					placeholder="Ingrese la especificacion..." style=""></textarea>
 			</div>
 		</div>
 	</div>

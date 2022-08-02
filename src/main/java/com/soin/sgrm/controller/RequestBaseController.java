@@ -36,6 +36,7 @@ import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestRM_P1_R4;
+import com.soin.sgrm.model.RequestRM_P1_R5;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
@@ -51,6 +52,7 @@ import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestRM_P1_R4Service;
+import com.soin.sgrm.service.RequestRM_P1_R5Service;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.service.SystemService;
@@ -84,7 +86,8 @@ public class RequestBaseController extends BaseController{
 	
 	@Autowired
 	RequestRM_P1_R4Service requestServiceRm4;
-	
+	@Autowired
+	RequestRM_P1_R5Service requestServiceRm5;
 	
 	@Autowired
 	AmbientService ambientService;
@@ -181,6 +184,11 @@ public class RequestBaseController extends BaseController{
 				addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),addRequest.getDescription()));
 				addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
 				requestBaseService.save(addRequest);
+				if(addRequest.getTypePetition().getCode().equals("RM-P1-R5")) {
+					RequestRM_P1_R5 requestR5=new RequestRM_P1_R5();
+					requestR5.setRequestBase(addRequest);
+					requestServiceRm5.save(requestR5);
+				}
 				res.setData(addRequest.getId().toString());
 				res.setMessage("Se creo correctamente la solicitud!");
 			}else {
@@ -241,9 +249,17 @@ public class RequestBaseController extends BaseController{
 			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("request", requestEdit);
 				model.addAttribute("systems", systems);
-				
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/editRequestR4";
+			}
+			
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
+				model.addAttribute("request", requestEdit);
+				model.addAttribute("systems", systems);
+				RequestRM_P1_R5 requestR5= requestServiceRm5.requestRm5(requestEdit.getId());
+				model.addAttribute("requestR5", requestR5);
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/editRequestR5";
 			}
 			
 		
