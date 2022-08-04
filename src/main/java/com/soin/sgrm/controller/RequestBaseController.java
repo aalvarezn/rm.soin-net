@@ -419,6 +419,37 @@ public class RequestBaseController extends BaseController{
 		}
 		return res;
 	}
+	
+	@SuppressWarnings("null")
+	@RequestMapping(value = "/saveRequestR5", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse saveRequestR5(HttpServletRequest request, @RequestBody RequestRM_P1_R5  addRequest) {
+		User user=userService.getUserByUsername(getUserLogin().getUsername());
+		JsonResponse res = new JsonResponse();
+		ArrayList<MyError> errors = new ArrayList<MyError>();
+
+		try {
+			RequestRM_P1_R5 requestMod = requestServiceRm5.findById(addRequest.getId());
+			
+			errors = validSections(addRequest, errors);
+			
+		
+			addRequest.setRequestBase(requestMod.getRequestBase());
+			requestServiceRm5.update(addRequest);
+			res.setStatus("success");
+			if (errors.size() > 0) {
+				// Se adjunta lista de errores
+				res.setStatus("fail");
+				res.setErrors(errors);
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("exception");
+			res.setException("Error al guardar la solicitud: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 	@RequestMapping(value = "/updateRequest/{id}", method = RequestMethod.GET)
 	public String updateRFC(@PathVariable Long id, HttpServletRequest request, Locale locale, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -524,6 +555,26 @@ public class RequestBaseController extends BaseController{
 		return errors;
 	}
 	
+	public ArrayList<MyError> validSections(RequestRM_P1_R5 request, ArrayList<MyError> errors) {
+			
+				
+			if(request.getJustify()=="") {
+				errors.add(new MyError("justify","Se requiere ingresar la justificacion de la solicitud"));
+			}
+			if(request.getAmbient()=="") {
+				errors.add(new MyError("ambient","Se requiere seleccionar uno o varios ambientes de cambio"));
+			}
+			if(request.getChangeService()=="") {
+				errors.add(new MyError("change","Se requiere ingresar la informacion de cambio de servicio de la solicitud"));
+			}
+			if(request.getTypeChange()=="") {
+				errors.add(new MyError("type","Se requiere seleccionar algun tipo de cambio de la solicitud"));
+			}
+			
+			
+
+		return errors;
+	}
 	public void loadCountsRelease(HttpServletRequest request, Integer id) {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());

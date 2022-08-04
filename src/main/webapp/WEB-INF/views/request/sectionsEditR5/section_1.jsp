@@ -16,11 +16,15 @@
 			<div class="form-line disabled">
 				<input type="checkbox" id="ambient1" name="ambient" value="Desarrollo"> <label for="ambient1">Desarrollo</label> <br>
 				<input type="checkbox" id="ambient2" name="ambient" value="QA"> <label for="ambient2">QA</label><br>
-				<input type="checkbox" id="ambient3" name="ambient" value="Pre-Produccion"> <label for="ambient3">Pre-Produccion</label><br>
-				<input type="checkbox" id="ambient4" name="ambient" value="Produccion"> <label for="ambient4">Produccion</label><br>
-				<input type="checkbox" id="ambient5" name="ambient" value="Otro"> <label for="ambient5">Otro(s):Indicar el nombre del ambiente</label><br>
+				<input type="checkbox" id="ambient3" name="ambient" value="Pre-Produccion"> <label for="ambient3">Pre-Producci&oacute;n</label><br>
+				<input type="checkbox" id="ambient4" name="ambient" value="Produccion"> <label for="ambient4">Producci&oacute;n</label><br>
+				<input type="checkbox" id="ambient5" name="ambient" value="Otro" onchange="changeAttributte(this)"> <label for="ambient5">Otro(s):Indicar el nombre del ambiente</label><br>
+				<input id="ambient6" maxlength="150"
+					class="tagInit" name="tags-1" type="text" hidden >
 				<br>
 			</div>
+			<label id="ambient_error" class="error fieldError" for="name"
+				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 
 	</div>
@@ -31,28 +35,28 @@
 			<c:choose>
 			<c:when test="${requestR5.typeChange == 'Ambiente'}">
 			<input type="radio" id="type1" name="type" value="Ambiente" checked> <label	for="type1">Ambiente</label><br> 
-			<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicacion</label><br>
+			<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicaci&oacute;n</label><br>
 			<input type="radio" id="type3" name="type" value="Base de datos"> <label for="type3">Base de datos</label><br> <br>
 			</c:when>
 			<c:when test="${requestR5.typeChange == 'Aplicacion'}">
 			<input type="radio" id="type1" name="type" value="Ambiente" > <label for="type1">Ambiente</label><br> 
-			<input type="radio" id="type2" name="type" value="Aplicacion" checked> <label for="type2">Aplicacion</label><br>
+			<input type="radio" id="type2" name="type" value="Aplicacion" checked> <label for="type2">Aplicaci&oacute;n</label><br>
 			<input type="radio" id="type3" name="type" value="Base de datos"> <label for="type3">Base de datos</label><br> <br>
 			</c:when>
 			<c:when test="${requestR5.typeChange == 'Base de datos'}">
 			<input type="radio" id="type1" name="type" value="Ambiente" > <label for="type1">Ambiente</label><br> 
-			<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicacion</label><br>
+			<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicaci&oacute;n</label><br>
 			<input type="radio" id="type3" name="type" value="Base de datos" checked> <label for="type3">Base de datos</label><br> <br>
 			</c:when>
 			<c:otherwise>
 			<input type="radio" id="type1" name="type" value="Ambiente" > <label for="type1">Ambiente</label><br> 
-			<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicacion</label><br>
+			<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicaci&oacute;n</label><br>
 			<input type="radio" id="type3" name="type" value="Base de datos"> <label for="type3">Base de datos</label><br> <br>
 			</c:otherwise>
 			</c:choose>	
 				<br>
 			</div>
-			<label id="rfcReason_error" class="error fieldError" for="name"
+			<label id="type_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
@@ -60,11 +64,11 @@
 		<label>Cambios de servicio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" name='rfcReason' id="rfcReason"
+				<textarea rows="2" cols="" name='change' id="change"
 					class="form-control"
-					placeholder="Ingrese la raz&oacute;n del cambio..." style=""></textarea>
+					placeholder="Ingrese la informaci&oacute;n del cambio..." style=""></textarea>
 			</div>
-			<label id="rfcReason_error" class="error fieldError" for="name"
+			<label id="change_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
@@ -72,11 +76,11 @@
 		<label>Justificaci&oacute;n de cambio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" name='rfcReason' id="rfcReason"
+				<textarea rows="2" cols="" name='justify' id="justify"
 					class="form-control"
 					placeholder="Ingrese la justificac&oacute;n del cambio..." style=""></textarea>
 			</div>
-			<label id="rfcReason_error" class="error fieldError" for="name"
+			<label id="justify_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>

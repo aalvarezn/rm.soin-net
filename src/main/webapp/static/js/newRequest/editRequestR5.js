@@ -40,7 +40,7 @@ $(function() {
 	    } );
 
 	 
-
+	 $('.tagInit').tagsInput();
 	  
 	$('.nav-tabs > li a[title]').tooltip();
 	// Wizard
@@ -89,44 +89,55 @@ $(function() {
 		width:'400px'
 	});
 
-
-	 $('#userTable tbody').on( 'click', 'tr', function () {
-		 resetSpaces();
-		 var data = $dtUser.row( this ).data();
-			$requestEditForm.find('#name').val(data.name);
-			$requestEditForm.find('#email').val(data.email);
-			if(data.type==="Ambiente"){
-				$("input[name=type][value='Ambiente']").prop("checked",true);
-			}else if(data.type==="Aplicacion"){
-				$("input[name=type][value='Aplicacion']").prop("checked",true);
-			}else if(data.type==="SGRM"){
-				$("input[name=type][value='SGRM']").prop("checked",true);
-			}else if(data.type==="Base de datos"){
-				$("input[name=type][value='Base de datos']").prop("checked",true);
+	const data=$requestEditForm.find('#ambientData').val();
+	console.log(data);
+	const splitString = data.split(",");
+	var ambients="";
+	for(x=0;splitString.length>x;x++){
+		if(splitString[x]==="Desarrollo"){
+			$('#ambient1').prop('checked',true);
+		}
+		if(splitString[x]==="QA"){
+			$('#ambient2').prop('checked',true);
+		}
+		if(splitString[x]==="Pre-Produccion"){
+			$('#ambient3').prop('checked',true);
+		}
+		if(splitString[x]==="Produccion"){
+			$('#ambient4').prop('checked',true);
+		}else if(splitString[x]!==""){
+			$('#ambient5').prop('checked',true);
+			$('#ambient6').addTag(splitString[x]);
+			if(ambients!=""){
+				ambients+=","+splitString[x];
+			}else{
+				ambients=splitString[x];
 			}
-			const splitString = data.permissions.split(",");
-			for(x=0;splitString.length>x;x++){
-				if(splitString[x]==="Lectura"){
-					$('#permission1').prop('checked',true);
-				}
-				if(splitString[x]==="Escritura"){
-					$('#permission2').prop('checked',true);
-				}
-				if(splitString[x]==="Ejecucion"){
-					$('#permission3').prop('checked',true);
-				}
-				if(splitString[x]==="Acceso"){
-					$('#permission4').prop('checked',true);
-				}
-			}
-			console.log(splitString);
-			$requestEditForm.find('#espec').val(data.espec);
-			$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
-		 console.log(data);
-	 });
+			
+			
+		}
+	}
+	if(ambients!=""){
+		$('#ambient6').importTags(ambients);
+		$('#ambient6_tagsinput').css("display","block")
+	}
+	console.log(splitString);
 
 	
 });
+
+function changeAttributte(checkElement){
+		if(checkElement.checked){
+			$('#ambient6_tagsinput').slideToggle();
+		}else{
+			$('#ambient6_tagsinput').slideToggle();
+			
+				$('#ambient6').importTags('');
+			
+			//$('#ambient6_tagsinput').removeTag('awd');
+		}
+
+}
 function nextTab(elem) {
 	$(elem).next().find('a[data-toggle="tab"]').tab('show');
 }
@@ -159,7 +170,48 @@ function compareArrays(arr1, arr2) {
 };
 function sendPartialRequest() {
 	var form = "#generateReleaseForm";
+	var ambients="";
+	if ($('#ambient1').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient1').val();
+		}
+		
+	}
+	if ($('#ambient2').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient2').val();
+		}else{
+			ambients+=","+$('#ambient2').val();
+		}
+		
+	}
+	if ($('#ambient3').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient3').val();
+		}else{
+			ambients+=","+$('#ambient3').val();
+		}
+	}
+	if ($('#ambient4').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient4').val();
+		}else{
+			ambients+=","+$('#ambient4').val();
+		}
+	}
 	
+	if ($('#ambient5').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient6').val();
+		}else{
+			ambients+=","+$('#ambient6').val();
+		}
+	}
 	changeSaveButton(true);
 	$.ajax({
 		// async : false,

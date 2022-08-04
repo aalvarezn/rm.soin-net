@@ -74,6 +74,10 @@
 
 
 <style type="text/css">
+#ambient6_tagsinput {
+ 	display:none;
+}
+
 .alert {
 	width: 20%;
 }
@@ -150,17 +154,18 @@ tr.selected {
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
-						<h5 class="font-20 greyLigth">Nueva Solicitud RM-P1-R5</h5>
+						<h5 class="font-20 greyLigth">Nueva Solicitud</h5>
 					</div>
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>Solicitud: </span>${request.numRequest} <input type="hidden"
+								<span>Solicitud RM-P1-R5: </span>${request.numRequest} <input type="hidden"
 									id="requestId" value="${request.id}"> <input type="hidden"
 									id="requestNumber" value="${request.numRequest}">
 									 <input type="hidden"
 									id="systemInfoId" value="${request.systemInfo.id}">
-									
+									<input type="hidden"
+									id="ambientData" value="${requestR5.ambient}">
 							</h5>
 						</div>
 						<div

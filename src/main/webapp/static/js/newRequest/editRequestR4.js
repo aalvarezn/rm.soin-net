@@ -104,6 +104,7 @@ $(function() {
 			}else if(data.type==="Base de datos"){
 				$("input[name=type][value='Base de datos']").prop("checked",true);
 			}
+			
 			const splitString = data.permissions.split(",");
 			for(x=0;splitString.length>x;x++){
 				if(splitString[x]==="Lectura"){
