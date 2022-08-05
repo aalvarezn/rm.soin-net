@@ -75,7 +75,7 @@ function cancelRFC(index) {
 function responseCancelRFC(response) {
 	switch (response.status) {
 	case 'success':
-		swal("Correcto!", "El release ha sido anulado exitosamente.",
+		swal("Correcto!", "El RFC ha sido anulado exitosamente.",
 				"success", 2000)
 				location.reload(true);
 		break;

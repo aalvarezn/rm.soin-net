@@ -109,6 +109,7 @@ public class RFCServiceImpl implements RFCService {
 			qSrch = Restrictions.or(
 
 					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("reasonChange", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
 					
 					);
@@ -227,6 +228,7 @@ public class RFCServiceImpl implements RFCService {
 			qSrch = Restrictions.or(
 
 					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("reasonChange", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
 					
 					
