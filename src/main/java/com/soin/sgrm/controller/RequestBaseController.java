@@ -311,6 +311,26 @@ public class RequestBaseController extends BaseController{
 		return res;
 	}
 	
+	@RequestMapping(path = "/modUser", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse updateUser(HttpServletRequest request, @RequestBody RequestRM_P1_R4 userRequestAdd) {
+		JsonResponse res = new JsonResponse();
+		try {
+		
+				userRequestAdd.setAmbient(ambientService.findById(userRequestAdd.getAmbientId()));
+				userRequestAdd.setRequestBase(requestBaseService.findById(userRequestAdd.getRequestBaseId()));
+				requestServiceRm4.update(userRequestAdd);
+				res.setStatus("success");
+				res.setMessage("Se modifico correctamente el usuario!");
+	
+		} catch (Exception e) {
+			Sentry.capture(e, "usuario");
+			res.setStatus("exception");
+			res.setMessage("Error al guardar usuario!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
 	@RequestMapping(value = "/deleteUser/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteUserRM4(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();

@@ -8,13 +8,14 @@ var $treeForm = $('#treeForm');
 var network = null;
 var nodes = [];
 var edges = [];
+var idUser;
 $(function() {
 
 	activeItemMenu("requestItem");
 	 $('#systemId').selectpicker('val',$('#systemInfoId').val());
 	 initRequestFormValidation();
 	initUserTable();
-	
+	$requestEditForm.find('#update').hide();
 	 $('#releaseTable tbody').on( 'click', 'tr', function () {
 	      if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
@@ -91,39 +92,7 @@ $(function() {
 
 
 	 $('#userTable tbody').on( 'click', 'tr', function () {
-		 resetSpaces();
-		 var data = $dtUser.row( this ).data();
-			$requestEditForm.find('#name').val(data.name);
-			$requestEditForm.find('#email').val(data.email);
-			if(data.type==="Ambiente"){
-				$("input[name=type][value='Ambiente']").prop("checked",true);
-			}else if(data.type==="Aplicacion"){
-				$("input[name=type][value='Aplicacion']").prop("checked",true);
-			}else if(data.type==="SGRM"){
-				$("input[name=type][value='SGRM']").prop("checked",true);
-			}else if(data.type==="Base de datos"){
-				$("input[name=type][value='Base de datos']").prop("checked",true);
-			}
-			
-			const splitString = data.permissions.split(",");
-			for(x=0;splitString.length>x;x++){
-				if(splitString[x]==="Lectura"){
-					$('#permission1').prop('checked',true);
-				}
-				if(splitString[x]==="Escritura"){
-					$('#permission2').prop('checked',true);
-				}
-				if(splitString[x]==="Ejecucion"){
-					$('#permission3').prop('checked',true);
-				}
-				if(splitString[x]==="Acceso"){
-					$('#permission4').prop('checked',true);
-				}
-			}
-			console.log(splitString);
-			$requestEditForm.find('#espec').val(data.espec);
-			$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
-		 console.log(data);
+		
 	 });
 
 	
@@ -274,8 +243,10 @@ function initUserTable() {
 						"mRender" : function(data, type, row, meta) {
 							var options = '<div class="iconLineC">';
 							
-									options = options
-
+									options += options
+									+ '<a onclick="showUser('
+									+ row.id
+									+ ')" title="Borrar"><i class="material-icons gris">mode_edit</i></a>'
 									+ '<a onclick="confirmDeleteUser('
 									+ row.id
 									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
@@ -288,7 +259,45 @@ function initUserTable() {
 			});
 }
 
-
+function showUser(id){
+	$requestEditForm.find('#update').show();
+	 resetSpaces();
+	 	idUser=id;
+		var dtUser = $('#userTable').dataTable();
+		var idRow = dtUser.fnFindCellRowIndexes(id, 0); // idRow
+		var data = $dtUser.row(idRow[0]).data();
+		$requestEditForm.find('#user').val(data.name);
+		$requestEditForm.find('#email').val(data.email);
+		if(data.type==="Ambiente"){
+			$("input[name=type][value='Ambiente']").prop("checked",true);
+		}else if(data.type==="Aplicacion"){
+			$("input[name=type][value='Aplicacion']").prop("checked",true);
+		}else if(data.type==="SGRM"){
+			$("input[name=type][value='SGRM']").prop("checked",true);
+		}else if(data.type==="Base de datos"){
+			$("input[name=type][value='Base de datos']").prop("checked",true);
+		}
+		
+		const splitString = data.permissions.split(",");
+		for(x=0;splitString.length>x;x++){
+			if(splitString[x]==="Lectura"){
+				$('#permission1').prop('checked',true);
+			}
+			if(splitString[x]==="Escritura"){
+				$('#permission2').prop('checked',true);
+			}
+			if(splitString[x]==="Ejecucion"){
+				$('#permission3').prop('checked',true);
+			}
+			if(splitString[x]==="Acceso"){
+				$('#permission4').prop('checked',true);
+			}
+		}
+		console.log(splitString);
+		$requestEditForm.find('#espec').val(data.espec);
+		$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
+	 console.log(data);
+}
 
 function confirmDeleteUser(index){
 	Swal.fire({
@@ -312,6 +321,89 @@ function confirmDeleteUser(index){
 				error : function(x, t, m) {
 					unblockUI();
 					
+				}
+			});
+		}
+	});
+}
+
+function modUser(){
+	var permissions="";
+	if ($('#permission1').is(":checked"))
+	{
+		if(permissions==""){
+			permissions=$('#permission1').val();
+		}
+		
+	}
+	if ($('#permission2').is(":checked"))
+	{
+		if(permissions==""){
+			permissions=$('#permission2').val();
+		}else{
+			permissions+=","+$('#permission2').val();
+		}
+		
+	}
+	if ($('#permission3').is(":checked"))
+	{
+		if(permissions==""){
+			permissions=$('#permission3').val();
+		}else{
+			permissions+=","+$('#permission3').val();
+		}
+	}
+	if ($('#permission4').is(":checked"))
+	{
+		if(permissions==""){
+			permissions=$('#permission4').val();
+		}else{
+			permissions+=","+$('#permission4').val();
+		}
+	}
+	if (!$requestEditForm.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea modificar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "POST",
+				url : getCont() + "request/modUser" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					id:idUser,
+					name : $requestEditForm.find('#user').val(),
+					email : $requestEditForm.find('#email').val(),
+					type:$("input[type='radio'][name='type']:checked").val(),
+					permissions:permissions,
+					espec:$requestEditForm.find('#espec').val(),
+					ambientId:$requestEditForm.find('#ambientId').val(),
+					requestBaseId:$('#requestId').val(),
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status);
+					/*window.location = getCont()
+					+ "request/editRequest-"
+					+ response.data;
+					*/
+					resetSpaces();
+					$requestEditForm.find('#update').hide();
+					$dtUser.ajax.reload();
+					reloadPreview();
+					//$mdImpact.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
 				}
 			});
 		}
@@ -369,7 +461,7 @@ function addUser(){
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					name : $requestEditForm.find('#name').val(),
+					name : $requestEditForm.find('#user').val(),
 					email : $requestEditForm.find('#email').val(),
 					type:$("input[type='radio'][name='type']:checked").val(),
 					permissions:permissions,
@@ -384,6 +476,7 @@ function addUser(){
 					+ "request/editRequest-"
 					+ response.data;
 					*/
+					$requestEditForm.find('#update').hide();
 					resetSpaces();
 					$dtUser.ajax.reload();
 					reloadPreview();
@@ -401,7 +494,7 @@ function addUser(){
 }
 
 function resetSpaces(){
-	$requestEditForm.find('#name').val('');
+	$requestEditForm.find('#user').val('');
 	$requestEditForm.find('#email').val('');
 	$("input:radio").attr("checked", false);
 	$('#permission1').prop('checked',false);
@@ -414,7 +507,7 @@ function resetSpaces(){
 function initRequestFormValidation() {
 	$requestEditForm.validate({
 		rules : {
-			'name':{
+			'user':{
 				required : true,
 				maxlength : 20,
 			},
@@ -441,7 +534,7 @@ function initRequestFormValidation() {
 		},
 		messages : {
 			
-			'name' : {
+			'user' : {
 				required : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},

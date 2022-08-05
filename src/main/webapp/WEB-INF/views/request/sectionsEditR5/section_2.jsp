@@ -6,14 +6,65 @@
 <%@ page import="com.soin.sgrm.model.ButtonCommand"%>
 
 
+<div class="button-demo flr">
+	<button type="button" class="btn btn-primary setIcon"
+		onclick="openAddFileModal()">
+		<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
+	</button>
+</div>
+<div class="row clearfix activeSection">
+	<div class="col-sm-12">
+		<h5 class="titulares">Archivos adjuntos</h5>
+	</div>
+</div>
+<div class="row clearfix">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<div class="table-responsive"
+			style="margin-top: 20px; margin-bottom: 20px;">
+			<table
+				class="table table-bordered table-striped table-hover dataTable"
+				id="attachedFilesTable">
+				<thead>
+					<tr>
+						<th>Nombre</th>
+						<th>Fecha Carga</th>
+						<th class="actCol"
+							style="text-align: center; padding-left: 0px; padding-right: 0px;">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach items="${request.files}" var="fileRequest">
+						<tr id="${fileRequest.id}">
+							<td>${fileRequest.name}</td>
+							<td><fmt:formatDate value="${fileRequest.revisionDate}"
+									type="both" /></td>
+							<td>
+								<div style="text-align: center">
+									<div class="iconLine">
+										<a onclick="deleteReleaseFile(${fileRequest.id})" download
+											class=""> <i class="material-icons gris"
+											style="font-size: 30px;">delete</i>
+										</a> <a href="<c:url value='/file/singleDownload-${fileRequest.id}'/>"
+											download class=""> <i class="material-icons gris"
+											style="font-size: 30px;">cloud_download</i>
+										</a>
+									</div>
+								</div>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
 <div class="row clearfix activeSection">
 	<div class="col-sm-12">
 		<h5 class="titulares">Detalles de envio</h5>
 	</div>
 	<div class="row clearfix">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<label for="to" class="col-sm-2 col-form-label lbtxt m-t-11">Destinatarios:</label>
-			<div class="col-sm-5 ">
+			<label for="to" class="col-sm-2 col-form-label lbtxt m-t-11">Destinatarios: </label>
+			<div class="col-sm-8">
 				<div class="form-line">
 					<input type="text" id="senders" name="senders"  value="${request.senders}"
 						class="form-control tagInit" placeholder="">

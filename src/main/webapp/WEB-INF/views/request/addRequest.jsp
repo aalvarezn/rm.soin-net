@@ -50,21 +50,6 @@
 
 				</div>
 			</div>
-			<div class=" row clearfix ">
-				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-					<label>Descripci&oacute;n</label>
-					<div class="form-group m-b-0">
-						<div class="form-line">
-							<textarea rows="2" class="form-control no-resize"
-								id="sDescription" name="sDescription"
-								placeholder="Ingrese una descripción..."></textarea>
-							<div class="help-info">Min. 2 caracteres</div>
-
-						</div>
-
-					</div>
-				</div>
-			</div>
 		</div>
 	</form>
 

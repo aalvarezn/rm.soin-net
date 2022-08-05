@@ -5,12 +5,15 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -76,6 +79,13 @@ private static final long serialVersionUID = 1L;
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
 	
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@Fetch(value = FetchMode.SUBSELECT)
+	@JoinTable(name = "SOLICITUD_ARCHIVOSOLICITUD", joinColumns = { @JoinColumn(name = "ID_SOLICITUD") }, inverseJoinColumns = {
+			@JoinColumn(name = "ARCHIVO_ID") })
+	private Set<RequestBaseFile> files = new HashSet<>();
+	
 	@OrderBy("trackingDate ASC")
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "rfc")
@@ -88,9 +98,7 @@ private static final long serialVersionUID = 1L;
 	@Transient
 	private Integer systemId;
 	
-	@Transient
-	private String description;
-
+	
 
 
 	public Long getId() {
@@ -197,14 +205,6 @@ private static final long serialVersionUID = 1L;
 		this.motive = motive;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public Set<RequestBaseTracking> getTracking() {
 		return tracking;
 	}
@@ -227,6 +227,14 @@ private static final long serialVersionUID = 1L;
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public Set<RequestBaseFile> getFiles() {
+		return files;
+	}
+
+	public void setFiles(Set<RequestBaseFile> files) {
+		this.files = files;
 	}
 
 

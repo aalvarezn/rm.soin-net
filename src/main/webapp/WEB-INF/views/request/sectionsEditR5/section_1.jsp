@@ -10,17 +10,19 @@
 	<div class="col-sm-12">
 		<h5 class="titulares">Solicitud de cambios en el servicio</h5>
 	</div>
-	<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+	<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
 		<label for="permission">Ambientes por cambiar</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line disabled">
+			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 				<input type="checkbox" id="ambient1" name="ambient" value="Desarrollo"> <label for="ambient1">Desarrollo</label> <br>
 				<input type="checkbox" id="ambient2" name="ambient" value="QA"> <label for="ambient2">QA</label><br>
+				</div>
 				<input type="checkbox" id="ambient3" name="ambient" value="Pre-Produccion"> <label for="ambient3">Pre-Producci&oacute;n</label><br>
 				<input type="checkbox" id="ambient4" name="ambient" value="Produccion"> <label for="ambient4">Producci&oacute;n</label><br>
-				<input type="checkbox" id="ambient5" name="ambient" value="Otro" onchange="changeAttributte(this)"> <label for="ambient5">Otro(s):Indicar el nombre del ambiente</label><br>
-				<input id="ambient6" maxlength="150"
-					class="tagInit" name="tags-1" type="text" hidden >
+				
+				<input type="checkbox" id="ambient5" name="ambient" value="Otro" onchange="changeAttributte(this)" > <label for="ambient5" style="margin-left: 15px;">Otro(s):Indicar el nombre del ambiente</label><br>
+				<input id="ambient6" maxlength="150" class="tagInit" name="tags-2" type="text"  >
 				<br>
 			</div>
 			<label id="ambient_error" class="error fieldError" for="name"
@@ -28,12 +30,13 @@
 		</div>
 
 	</div>
-		<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+		<div class="col-lg-5 col-md-5 col-sm-5 col-xs-12">
 		<label>Tipo del cambio</label>
 		<div class="form-group m-b-0i">
-			<div class="form-line">
+			<div class="form-line" style="height: 110.667px;">
 			<c:choose>
 			<c:when test="${requestR5.typeChange == 'Ambiente'}">
+			
 			<input type="radio" id="type1" name="type" value="Ambiente" checked> <label	for="type1">Ambiente</label><br> 
 			<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicaci&oacute;n</label><br>
 			<input type="radio" id="type3" name="type" value="Base de datos"> <label for="type3">Base de datos</label><br> <br>
@@ -60,7 +63,9 @@
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
-		<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+	</div>
+<div class="row clearfix" style="margin-top: 20px;">
+		<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
 		<label>Cambios de servicio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
@@ -72,7 +77,7 @@
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
-	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+	<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
 		<label>Justificaci&oacute;n de cambio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
@@ -85,6 +90,7 @@
 		</div>
 	</div>
 </div>
+
 
 
 

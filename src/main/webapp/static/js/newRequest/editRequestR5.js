@@ -119,7 +119,7 @@ $(function() {
 	}
 	if(ambients!=""){
 		$('#ambient6').importTags(ambients);
-		$('#ambient6_tagsinput').css("display","block")
+		$('#ambient6_tagsinput').css("display","flex");
 	}
 	console.log(splitString);
 
@@ -129,6 +129,7 @@ $(function() {
 function changeAttributte(checkElement){
 		if(checkElement.checked){
 			$('#ambient6_tagsinput').slideToggle();
+			$('#ambient6_tagsinput').css("display","flex")
 		}else{
 			$('#ambient6_tagsinput').slideToggle();
 			

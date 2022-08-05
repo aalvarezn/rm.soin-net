@@ -128,7 +128,7 @@ tr.selected {
 		<!-- #END# addObjectModal -->
 
 		<!-- addFileModal -->
-		<%@include file="../release/addFileModal.jsp"%>
+		<%@include file="../request/addFileModal.jsp"%>
 		<!-- #END# addFileModal -->
 
 		<!-- environmentModal -->
@@ -159,7 +159,7 @@ tr.selected {
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>Solicitud RM-P1-R5: </span>${request.numRequest} <input type="hidden"
+								<span>Solicitud: </span>${request.numRequest} <input type="hidden"
 									id="requestId" value="${request.id}"> <input type="hidden"
 									id="requestNumber" value="${request.numRequest}">
 									 <input type="hidden"
@@ -375,7 +375,7 @@ tr.selected {
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 
 	<script src="<c:url value='/static/js/newRequest/editRequestR5.js'/>"></script>
-	<script src="<c:url value='/static/js/rfc/rfcFileUpload.js'/>"></script>
+	<script src="<c:url value='/static/js/newRequest/requestFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
 	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>

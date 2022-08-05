@@ -286,7 +286,6 @@ function createRequest() {
 				data : JSON.stringify({
 					codeProyect : $fmRequest.find('#sigesId').val(),
 					systemId : $fmRequest.find('#sId').val(),
-					description:$fmRequest.find('#sDescription').val(),
 					typePetitionId:$fmRequest.find('#tId').val(),
 				}),
 				success : function(response) {
@@ -321,12 +320,6 @@ function initRequestFormValidation() {
 			},
 			'tId':{
 				required:true
-			},
-			'sDescription':{
-				required:true,
-				minlength : 2,
-				maxlength : 100,
-				
 			}
 				
 			
@@ -342,13 +335,7 @@ function initRequestFormValidation() {
 
 			'tId' : {
 				required : "Ingrese un valor"
-			},
-
-			'sDescription' : {
-				required : "Ingrese un valor",
-				minlength : "Debe ser un minimo de dos caracteres",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
+			}
 		},
 		highlight,
 		unhighlight,

@@ -711,7 +711,7 @@ public class FileController extends BaseController {
 			requestBase = requestBaseService.findById(id);
 			Siges siges = requestBase.getSiges();
 			SystemInfo system= siges.getSystem();
-			String path = system.getName() + "/" +siges.getCodeSiges()  + "/";
+			String path = system.getName() + "/" +siges.getCodeSiges()  + "/"+requestBase.getTypePetition().getCode()+"/";
 
 			path += requestBase.getNumRequest() + "/";
 			new File(basePath + path).mkdirs();
@@ -724,7 +724,7 @@ public class FileController extends BaseController {
 	}
 	
 	/**
-	 * @description: Adjunta el archivo al rfc.
+	 * @description: Adjunta el archivo al request.
 	 * @author: Anthony Alvarez N.
 	 * @return: estado de la carga del archivo.
 	 * @throws SQLException

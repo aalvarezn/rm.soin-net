@@ -11,10 +11,10 @@
 		<h5 class="titulares">Solicitud de Usuario</h5>
 	</div>
 	<div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
-		<label for="name">Nombre</label>
+		<label for="name" >Nombre</label>
 		<div class="form-group m-b-0i">
-			<div class="form-line disabled">
-				<input type="text" id="name" name="name" class="form-control"
+			<div class="form-line" style="height: 40px;">
+				<input type="text" id="user" name="user" class="form-control"
 					placeholder="Ingrese el nombre">
 			</div>
 		</div>
@@ -24,7 +24,7 @@
 	<div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
 		<label for="email_address">Correo</label>
 		<div class="form-group m-b-0i">
-			<div class="form-line disabled">
+			<div class="form-line" style="height: 40px;">
 				<input type="text" id="email" name="email" class="form-control"
 					placeholder="Ingrese el correo">
 			</div>
@@ -95,20 +95,26 @@
 	<div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
 		<label for="espec">Especificacion</label>
 		<div class="form-group m-b-0i">
-		<div class="form-line">
+		<div class="form-line" >
 				<textarea rows="2" cols="" name='espec' id="espec"
-					class="form-control"
+					class="form-control" style="height: 80px;"
 					placeholder="Ingrese la especificacion..." style=""></textarea>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+	
 		<div class="row clearfix">
+		
 			<div class="alig_btn">
+			<button id="update" type="button" class="btn btn-primary setIcon"
+					onclick="modUser()">
+					<span>MODIFICAR</span>
+				</button>
 				<button type="button" class="btn btn-primary setIcon"
 					onclick="addUser()">
-					<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
+					<span>AGREGAR</span>
 				</button>
 			</div>
 		</div>
@@ -140,11 +146,12 @@
 				</div>
 			</div>
 		</div>
-	<div class="form-group p-l-15 m-b-0i">
+<div class="form-group p-l-15 m-b-0i">
 				<label id="requiredUser_error" class="error fieldError activeError"
 					for="name" style="visibility: hidden;">Campo requerido.</label>
-			</div>
 	</div>
+	</div>
+		
 </div>
 
 
