@@ -166,6 +166,8 @@ tr.selected {
 									id="systemInfoId" value="${request.systemInfo.id}">
 									<input type="hidden"
 									id="ambientData" value="${requestR5.ambient}">
+									<input type="hidden"
+									id="requestR5Id" value="${requestR5.id}">
 							</h5>
 						</div>
 						<div

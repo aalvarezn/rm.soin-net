@@ -66,7 +66,7 @@
 			<div class="form-line">
 				<textarea rows="2" cols="" name='change' id="change"
 					class="form-control"
-					placeholder="Ingrese la informaci&oacute;n del cambio..." style=""></textarea>
+					placeholder="Ingrese la informaci&oacute;n del cambio..." style="">${requestR5.changeService }</textarea>
 			</div>
 			<label id="change_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>
@@ -78,7 +78,7 @@
 			<div class="form-line">
 				<textarea rows="2" cols="" name='justify' id="justify"
 					class="form-control"
-					placeholder="Ingrese la justificac&oacute;n del cambio..." style=""></textarea>
+					placeholder="Ingrese la justificac&oacute;n del cambio..." style="">${requestR5.justify }</textarea>
 			</div>
 			<label id="justify_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>

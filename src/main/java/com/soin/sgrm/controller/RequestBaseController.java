@@ -181,7 +181,7 @@ public class RequestBaseController extends BaseController{
 				Siges codeSiges= sigeService.findByKey("codeSiges", addRequest.getCodeProyect());
 				addRequest.setSiges(codeSiges);
 				addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
-				addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),addRequest.getDescription()));
+				addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),addRequest.getTypePetition().getCode()));
 				addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
 				requestBaseService.save(addRequest);
 				if(addRequest.getTypePetition().getCode().equals("RM-P1-R5")) {
@@ -371,6 +371,13 @@ public class RequestBaseController extends BaseController{
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/sectionsEditR4/tinySummaryRequest";
 			}
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
+				model.addAttribute("request", requestEdit);
+				RequestRM_P1_R5 requestR5=requestServiceRm5.requestRm5(requestEdit.getId());
+				model.addAttribute("requestR5", requestR5);
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/sectionsEditR5/tinySummaryRequest";
+			}
 		}catch (Exception e) {
 			Sentry.capture(e, "requestSummary");
 			redirectAttributes.addFlashAttribute("data", e.toString());
@@ -434,6 +441,10 @@ public class RequestBaseController extends BaseController{
 			
 		
 			addRequest.setRequestBase(requestMod.getRequestBase());
+			RequestBase requestBase=requestBaseService.findById(addRequest.getRequestBase().getId());
+			requestBase.setSenders(addRequest.getSenders());
+			requestBase.setMessage(addRequest.getMessage());
+			requestBaseService.update(requestBase);
 			requestServiceRm5.update(addRequest);
 			res.setStatus("success");
 			if (errors.size() > 0) {
@@ -529,6 +540,14 @@ public class RequestBaseController extends BaseController{
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/sectionsEditR4/summaryRequest";
 			}
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
+				model.addAttribute("request", requestEdit);
+				RequestRM_P1_R5 requestR5=requestServiceRm5.requestRm5(requestEdit.getId());
+				model.addAttribute("requestR5", requestR5);
+				model.addAttribute("statuses", statusService.findAll());
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/sectionsEditR5/summaryRequest";
+			}
 			
 
 		} catch (Exception e) {
@@ -558,17 +577,17 @@ public class RequestBaseController extends BaseController{
 	public ArrayList<MyError> validSections(RequestRM_P1_R5 request, ArrayList<MyError> errors) {
 			
 				
-			if(request.getJustify()=="") {
-				errors.add(new MyError("justify","Se requiere ingresar la justificacion de la solicitud"));
+			if(request.getJustify()==""||request.getJustify()==null) {
+				errors.add(new MyError("justify","Valor requerido."));
 			}
-			if(request.getAmbient()=="") {
-				errors.add(new MyError("ambient","Se requiere seleccionar uno o varios ambientes de cambio"));
+			if(request.getAmbient()==""||request.getAmbient()==null) {
+				errors.add(new MyError("ambient","Se requiere seleccionar uno o varios ambientes de cambio."));
 			}
-			if(request.getChangeService()=="") {
-				errors.add(new MyError("change","Se requiere ingresar la informacion de cambio de servicio de la solicitud"));
+			if(request.getChangeService()==""||request.getChangeService()==null) {
+				errors.add(new MyError("change","Valor requerido."));
 			}
-			if(request.getTypeChange()=="") {
-				errors.add(new MyError("type","Se requiere seleccionar algun tipo de cambio de la solicitud"));
+			if(request.getTypeChange()==""||request.getTypeChange()==null) {
+				errors.add(new MyError("type","Se requiere seleccionar un tipo de cambio de la solicitud."));
 			}
 			
 			

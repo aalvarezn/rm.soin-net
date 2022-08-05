@@ -133,57 +133,53 @@
 				</div>
 
 			</div>
-			<div class="row clearfix m-t-10">
-				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-t-10">
-					<label for="email_address">Solicitado por</label>
+
+			<div class="row clearfix">
+				<div class="col-sm-12">
+					<h5 class="titulares">Solicitud de cambios en el servicio</h5>
+				</div>
+
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+					<label for="email_address">Ambientes por cambiar</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${request.user.fullName}</p>
+							<p>${requestR5.ambient}</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+					<label for="email_address">Tipo del cambio</label>
+					<div class="form-group m-b-0i">
+						<div class="form-group m-b-0i">
+							<div class="form-line disabled">
+									<p>${requestR5.typeChange}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+					<label for="email_address">Cambios de servicio</label>
+					<div class="form-group m-b-0i">
+						<div class="form-line disabled">
+							<p>${requestR5.changeService}</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+					<label for="email_address">Justificacion de cambio</label>
+					<div class="form-group m-b-0i">
+						<div class="form-line disabled">
+							<p>${requestR5.justify}</p>
 						</div>
 					</div>
 				</div>
 
 			</div>
 
-			<div class="row clearfix">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-					<div class="row clearfix">
-						<div class="col-sm-12">
-							<h5 class="titulares">Usuarios Solicitados</h5>
-						</div>
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="table-responsive m-b-20">
-								<table
-									class="table tableIni table-bordered table-striped table-hover dataTable"
-									id="userTable">
-									<thead>
-										<tr>
-											<th>Nombre</th>
-											<th>Correo</th>
-											<th>Tipo</th>
-											<th>Permisos</th>
-											<th>Ambiente</th>
-											<th>Especificacion</th>
 
-										</tr>
-									</thead>
-									<tbody>
-										<c:forEach items="${listUsers}" var="user">
-											<tr>
-												<td>${user.name}</td>
-												<td>${user.email}</td>
-												<td>${user.type}</td>
-												<td>${user.permissions}</td>
-												<td>${user.ambient.name}</td>
-												<td>${user.espec}</td>
-											</tr>
-										</c:forEach>
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</div>
-				</div>
+
+			<div class="row clearfix">
+
 
 				<c:forEach items="${userInfo.authorities}" var="authority">
 					<c:if test="${authority.name == 'Release Manager'}">
@@ -214,7 +210,8 @@
 
 	<%@include file="../../plantilla/footer.jsp"%>
 
-	<script src="<c:url value='/static/js/newRequest/requestSummaryActions.js'/>"></script>
+	<script
+		src="<c:url value='/static/js/newRequest/requestSummaryActions.js'/>"></script>
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>

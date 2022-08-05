@@ -8,7 +8,7 @@
 
 			<div class=" row clearfix ">
 				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-					<label>Sistema</label>
+					<label>Tipo de solicitud</label>
 					<div class="form-group m-b-0">
 						<select id="tId" name="tId"
 							class="form-control show-tick selectpicker"

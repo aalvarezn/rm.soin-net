@@ -43,6 +43,12 @@ public class RequestRM_P1_R5 implements Serializable{
 	
 	@Transient
 	private Long requestBaseId;
+	
+	@Transient
+	private String message;
+	
+	@Transient
+	private String senders;
 
 	public Long getId() {
 		return id;
@@ -98,6 +104,22 @@ public class RequestRM_P1_R5 implements Serializable{
 
 	public void setRequestBaseId(Long requestBaseId) {
 		this.requestBaseId = requestBaseId;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getSenders() {
+		return senders;
+	}
+
+	public void setSenders(String senders) {
+		this.senders = senders;
 	}
 	
 	

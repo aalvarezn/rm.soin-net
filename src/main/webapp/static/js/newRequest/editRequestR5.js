@@ -105,7 +105,7 @@ $(function() {
 		}
 		if(splitString[x]==="Produccion"){
 			$('#ambient4').prop('checked',true);
-		}else if(splitString[x]!==""){
+		}else if(splitString[x]!==""&&splitString[x]!=="Desarrollo"&&splitString[x]!=="QA"&&splitString[x]!=="Pre-Produccion"&&splitString[x]!=="Produccion"){
 			$('#ambient5').prop('checked',true);
 			$('#ambient6').addTag(splitString[x]);
 			if(ambients!=""){
@@ -216,15 +216,20 @@ function sendPartialRequest() {
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "request/saveRequest",
+		url : getCont() + "request/saveRequestR5",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#rfcId').val(),
+			id : $requestEditForm.find('#requestR5Id').val(),
 			senders:$requestEditForm.find('#senders').val(),
 			message:$requestEditForm.find('#messagePer').val(),
+			ambient:ambients,
+			typeChange:$("input[type='radio'][name='type']:checked").val(),
+			changeService:$requestEditForm.find('#change').val(),
+			justify:$requestEditForm.find('#justify').val(),
+			
 		}),
 		success : function(response) {
 			// responseAjaxSendPartialRelease(response);
@@ -797,6 +802,48 @@ function removeData(data){
 }
 
 function sendRequest() {
+	var ambients="";
+	if ($('#ambient1').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient1').val();
+		}
+		
+	}
+	if ($('#ambient2').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient2').val();
+		}else{
+			ambients+=","+$('#ambient2').val();
+		}
+		
+	}
+	if ($('#ambient3').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient3').val();
+		}else{
+			ambients+=","+$('#ambient3').val();
+		}
+	}
+	if ($('#ambient4').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient4').val();
+		}else{
+			ambients+=","+$('#ambient4').val();
+		}
+	}
+	
+	if ($('#ambient5').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient6').val();
+		}else{
+			ambients+=","+$('#ambient6').val();
+		}
+	}
 	var form = "#generateRequestForm";
 	changeSaveButton(true);
 	changeSaveButton(true);
@@ -805,15 +852,19 @@ function sendRequest() {
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "request/saveRequest",
+		url : getCont() + "request/saveRequestR5",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#requestId').val(),
+			id : $requestEditForm.find('#requestR5Id').val(),
 			senders:$requestEditForm.find('#senders').val(),
 			message:$requestEditForm.find('#messagePer').val(),
+			ambient:ambients,
+			typeChange:$("input[type='radio'][name='type']:checked").val(),
+			changeService:$requestEditForm.find('#change').val(),
+			justify:$requestEditForm.find('#justify').val(),
 		}),
 		success : function(response) {
 			responseAjaxSendRequest(response);
@@ -830,20 +881,66 @@ function sendRequest() {
 }
 
 function requestRequest() {
+	var ambients="";
+	if ($('#ambient1').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient1').val();
+		}
+		
+	}
+	if ($('#ambient2').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient2').val();
+		}else{
+			ambients+=","+$('#ambient2').val();
+		}
+		
+	}
+	if ($('#ambient3').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient3').val();
+		}else{
+			ambients+=","+$('#ambient3').val();
+		}
+	}
+	if ($('#ambient4').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient4').val();
+		}else{
+			ambients+=","+$('#ambient4').val();
+		}
+	}
 	
+	if ($('#ambient5').is(":checked"))
+	{
+		if(ambients==""){
+			ambients=$('#ambient6').val();
+		}else{
+			ambients+=","+$('#ambient6').val();
+		}
+	}
 	changeSaveButton(true);
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "request/saveRequest",
+		url : getCont() + "request/saveRequestR5",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#requestId').val(),
+			id : $requestEditForm.find('#requestR5Id').val(),
 			senders:$requestEditForm.find('#senders').val(),
 			message:$requestEditForm.find('#messagePer').val(),
+			ambient:ambients,
+			typeChange:$("input[type='radio'][name='type']:checked").val(),
+			changeService:$requestEditForm.find('#change').val(),
+			justify:$requestEditForm.find('#justify').val(),
+			
 		}),
 		success : function(response) {
 			responseAjaxRequestRequest(response);

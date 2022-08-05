@@ -10,13 +10,10 @@
 	<div class="col-sm-12">
 		<h5 class="titulares">Solicitud de Usuario</h5>
 	</div>
-
-
-
-	<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+	<div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
 		<label for="name">Nombre</label>
 		<div class="form-group m-b-0i">
-			<div class="form-line">
+			<div class="form-line disabled">
 				<input type="text" id="name" name="name" class="form-control"
 					placeholder="Ingrese el nombre">
 			</div>
@@ -24,7 +21,7 @@
 	</div>
 
 
-	<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+	<div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
 		<label for="email_address">Correo</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line disabled">
@@ -33,37 +30,8 @@
 			</div>
 		</div>
 	</div>
-
-	<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-		<label for="type">Tipo</label>
-		<div class="form-group m-b-0i">
-			<div class="form-line disabled">
-					<input type="radio" id="type1" name="type" value="Ambiente"> <label	for="type1">Ambiente</label><br> 
-					<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicacion</label><br>
-					<input type="radio" id="type3" name="type" value="SGRM"> <label for="type3">SGRM</label><br> 
-					<input type="radio" id="type4" name="type" value="Base de datos"> <label for="type4">Base de datos</label><br> <br>
-			</div>
-		</div>
-
-	</div>
-
-
-	<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-		<label for="permission">Permisos</label>
-		<div class="form-group m-b-0i">
-			<div class="form-line disabled">
-				<input type="checkbox" id="permission1" name="permission" value="Lectura"> <label for="permission1">Lectura</label> <br>
-				<input type="checkbox" id="permission2" name="permission" value="Escritura"> <label for="permission2">Escritura</label><br>
-				<input type="checkbox" id="permission3" name="permission" value="Ejecucion"> <label for="permission3">Ejecucion</label><br>
-				<input type="checkbox" id="permission4" name="permission" value="Acceso"> <label for="permission4">Acceso</label><br>
-				<br>
-			</div>
-		</div>
-
-	</div>
-
-
-	<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+	
+	<div class="col-lg-3 col-md-3 col-sm-8 col-xs-8">
 		<p>
 			<b>Ambiente</b>
 		</p>
@@ -81,7 +49,50 @@
 		</div>
 	</div>
 
-	<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+	
+</div>
+
+<div class="row clearfix" style="margin-top: 50px;">
+
+<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+		<label for="type">Tipo</label>
+		<div class="form-group m-b-0i">
+			<div class="form-line disabled">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+			<input type="radio" id="type1" name="type" value="Ambiente"> <label	for="type1">Ambiente</label><br> 
+					<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicacion</label><br>
+			</div>
+			
+				<input type="radio" id="type3" name="type" value="SGRM"> <label for="type3">SGRM</label><br> 
+				<input type="radio" id="type4" name="type" value="Base de datos"> <label for="type4">Base de datos</label><br> <br>
+
+					
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+		<label for="permission">Permisos</label>
+		<div class="form-group m-b-0i">
+			<div class="form-line disabled">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<input type="checkbox" id="permission1" name="permission" value="Lectura"> <label for="permission1">Lectura</label> <br>
+				<input type="checkbox" id="permission2" name="permission" value="Escritura"> <label for="permission2">Escritura</label><br>
+				</div>
+				<input type="checkbox" id="permission3" name="permission" value="Ejecucion"> <label for="permission3">Ejecucion</label><br>
+				<input type="checkbox" id="permission4" name="permission" value="Acceso"> <label for="permission4">Acceso</label><br>
+				<br>
+			</div>
+		</div>
+
+	</div>
+
+
+
+
+	<div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
 		<label for="espec">Especificacion</label>
 		<div class="form-group m-b-0i">
 		<div class="form-line">
@@ -135,7 +146,5 @@
 			</div>
 	</div>
 </div>
-
-
 
 
