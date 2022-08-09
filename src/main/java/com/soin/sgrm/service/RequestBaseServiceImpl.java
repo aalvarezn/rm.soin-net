@@ -173,14 +173,14 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 			int amount = existNumRequest(partCode);
 
 			if (amount == 0) {
-				numRFC = partCode+"_"+description +"_SC" + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
+				numRFC = description+"_"+partCode +"_SC" + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
 				return numRFC;
 			} else {
 				if (amount < 10) {
-					numRFC = partCode +"_"+description +"_SC"+ "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+					numRFC = description +"_"+ partCode+"_SC"+ "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
 					return numRFC;
 				}
-				numRFC = partCode+"_"+description +"_SC" + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+				numRFC = description+"_"+ partCode+"_SC" + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
 				return numRFC;
 			}
 

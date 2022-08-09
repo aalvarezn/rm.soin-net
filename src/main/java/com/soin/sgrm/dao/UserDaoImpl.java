@@ -1,5 +1,7 @@
 package com.soin.sgrm.dao;
 
+import java.util.List;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +27,14 @@ public class UserDaoImpl implements UserDao{
 				.add(Restrictions.eq("username", username)).uniqueResult();
 		return user;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<User> getUserRM() {
+		List<User> users= sessionFactory.getCurrentSession().createCriteria(User.class)
+				.add(Restrictions.eq("isReleaseManager", 1)).list();
+		return users;
+	}
+
 
 }

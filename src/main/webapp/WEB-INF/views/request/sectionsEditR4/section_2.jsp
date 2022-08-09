@@ -8,7 +8,7 @@
 
 <div class="row clearfix activeSection">
 	<div class="col-sm-12">
-		<h5 class="titulares">Detalles de envio</h5>
+		<h5 class="titulares">Configuraciones extra del envio de correos</h5>
 	</div>
 	<div class="row clearfix">
 		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">

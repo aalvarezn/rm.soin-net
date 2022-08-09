@@ -1042,7 +1042,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			email.setSubject(email.getSubject().replace("{{requestNumber}}",
 					(request.getNumRequest() != null ? request.getNumRequest() : "")));
 		}
-	
+		if (email.getSubject().contains("{{projectCode}}")) {
+			String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+			projectCode = projectCode.replace("\n", "<br>");
+			email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+		}
 
 		if (email.getSubject().contains("{{systemMain}}")) {
 			temp = "";
@@ -1103,6 +1107,13 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				email.setSubject(email.getSubject().replace("{{requestNumber}}",
 						(request.getNumRequest() != null ? request.getNumRequest() : "")));
 			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+
 		
 
 			if (email.getSubject().contains("{{systemMain}}")) {

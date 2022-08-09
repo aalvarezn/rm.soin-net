@@ -35,6 +35,8 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestRM_P1_R2;
+import com.soin.sgrm.model.RequestRM_P1_R3;
 import com.soin.sgrm.model.RequestRM_P1_R4;
 import com.soin.sgrm.model.RequestRM_P1_R5;
 import com.soin.sgrm.model.Siges;
@@ -51,6 +53,8 @@ import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.RequestBaseService;
+import com.soin.sgrm.service.RequestRM_P1_R2Service;
+import com.soin.sgrm.service.RequestRM_P1_R3Service;
 import com.soin.sgrm.service.RequestRM_P1_R4Service;
 import com.soin.sgrm.service.RequestRM_P1_R5Service;
 import com.soin.sgrm.service.SigesService;
@@ -85,7 +89,14 @@ public class RequestBaseController extends BaseController{
 	com.soin.sgrm.service.UserService userService;
 	
 	@Autowired
+	RequestRM_P1_R2Service requestServiceRm2;
+	
+	@Autowired
+	RequestRM_P1_R3Service requestServiceRm3;
+	
+	@Autowired
 	RequestRM_P1_R4Service requestServiceRm4;
+	
 	@Autowired
 	RequestRM_P1_R5Service requestServiceRm5;
 	
@@ -97,6 +108,8 @@ public class RequestBaseController extends BaseController{
 	
 	@Autowired
 	ParameterService parameterService;
+	
+
 	
 	
 	public static final Logger logger = Logger.getLogger(RFCController.class);
@@ -189,6 +202,16 @@ public class RequestBaseController extends BaseController{
 					requestR5.setRequestBase(addRequest);
 					requestServiceRm5.save(requestR5);
 				}
+				if(addRequest.getTypePetition().getCode().equals("RM-P1-R3")) {
+					RequestRM_P1_R3 requestR3=new RequestRM_P1_R3();
+					requestR3.setRequestBase(addRequest);
+					requestServiceRm3.save(requestR3);
+				}
+				if(addRequest.getTypePetition().getCode().equals("RM-P1-R2")) {
+					RequestRM_P1_R2 requestR2=new RequestRM_P1_R2();
+					requestR2.setRequestBase(addRequest);
+					requestServiceRm2.save(requestR2);
+				}
 				res.setData(addRequest.getId().toString());
 				res.setMessage("Se creo correctamente la solicitud!");
 			}else {
@@ -198,9 +221,9 @@ public class RequestBaseController extends BaseController{
 			}
 	
 		} catch (Exception e) {
-			Sentry.capture(e, "rfc");
+			Sentry.capture(e, "request");
 			res.setStatus("exception");
-			res.setMessage("Error al crear RFC!");
+			res.setMessage("Error al crear solicitud!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -246,6 +269,16 @@ public class RequestBaseController extends BaseController{
 				return "redirect:" + referer;
 			}
 			*/
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
+				model.addAttribute("request", requestEdit);
+				model.addAttribute("systems", systems);
+				List<User> usersRM= userService.getUsersRM();
+				RequestRM_P1_R3 requestR3= requestServiceRm3.requestRm3(requestEdit.getId());
+				model.addAttribute("requestR5", requestR3);
+				model.addAttribute("usersRM",usersRM);
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/editRequestR3";
+			}
 			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("request", requestEdit);
 				model.addAttribute("systems", systems);
@@ -261,6 +294,16 @@ public class RequestBaseController extends BaseController{
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/editRequestR5";
 			}
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
+				model.addAttribute("request", requestEdit);
+				model.addAttribute("systems", systems);
+				RequestRM_P1_R2 requestR2= requestServiceRm2.requestRm2(requestEdit.getId());
+				model.addAttribute("requestR2", requestR2);
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/editRequestR2";
+			}
+			
+			
 			
 		
 
