@@ -217,19 +217,19 @@ function sendPartialRequest() {
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "request/saveRequestR5",
+		url : getCont() + "request/saveRequestR2",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#requestR5Id').val(),
+			id : $requestEditForm.find('#requestR2Id').val(),
 			senders:$requestEditForm.find('#senders').val(),
 			message:$requestEditForm.find('#messagePer').val(),
 			ambient:ambients,
-			typeChange:$("input[type='radio'][name='type']:checked").val(),
-			changeService:$requestEditForm.find('#change').val(),
-			justify:$requestEditForm.find('#justify').val(),
+			typeService:$("input[type='radio'][name='type']:checked").val(),
+			hierarchy:$requestEditForm.find('#hierarchy').val(),
+			requeriments:$requestEditForm.find('#requeriments').val(),
 			
 		}),
 		success : function(response) {
@@ -853,19 +853,19 @@ function sendRequest() {
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "request/saveRequestR5",
+		url : getCont() + "request/saveRequestR2",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#requestR5Id').val(),
+			id : $requestEditForm.find('#requestR2Id').val(),
 			senders:$requestEditForm.find('#senders').val(),
 			message:$requestEditForm.find('#messagePer').val(),
 			ambient:ambients,
-			typeChange:$("input[type='radio'][name='type']:checked").val(),
-			changeService:$requestEditForm.find('#change').val(),
-			justify:$requestEditForm.find('#justify').val(),
+			typeService:$("input[type='radio'][name='type']:checked").val(),
+			hierarchy:$requestEditForm.find('#hierarchy').val(),
+			requeriments:$requestEditForm.find('#requeriments').val(),
 		}),
 		success : function(response) {
 			responseAjaxSendRequest(response);
@@ -928,19 +928,19 @@ function requestRequest() {
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "request/saveRequestR5",
+		url : getCont() + "request/saveRequestR2",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#requestR5Id').val(),
+			id : $requestEditForm.find('#requestR2Id').val(),
 			senders:$requestEditForm.find('#senders').val(),
 			message:$requestEditForm.find('#messagePer').val(),
 			ambient:ambients,
-			typeChange:$("input[type='radio'][name='type']:checked").val(),
-			changeService:$requestEditForm.find('#change').val(),
-			justify:$requestEditForm.find('#justify').val(),
+			typeService:$("input[type='radio'][name='type']:checked").val(),
+			hierarchy:$requestEditForm.find('#hierarchy').val(),
+			requeriments:$requestEditForm.find('#requeriments').val(),
 			
 		}),
 		success : function(response) {

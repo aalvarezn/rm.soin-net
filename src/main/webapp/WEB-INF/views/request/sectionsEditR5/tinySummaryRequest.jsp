@@ -125,12 +125,15 @@
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
-									<p>${requestR5.typeChange}</p>
+								<p>${requestR5.typeChange}</p>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+			</div>
+
+			<div class="row clearfix">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
 					<label for="email_address">Cambios de servicio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
@@ -138,7 +141,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
 					<label for="email_address">Justificacion de cambio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
@@ -146,9 +149,8 @@
 						</div>
 					</div>
 				</div>
-
 			</div>
-						<div class="row clearfix">
+			<div class="row clearfix">
 				<div class="col-sm-12">
 					<h5 class="titulares">Archivos adjuntos</h5>
 				</div>
@@ -160,9 +162,9 @@
 								<thead>
 									<tr>
 										<th class="col-md-6 col-lg-6 col-xs-6 col-sm-6">Nombre</th>
-										<th class="col-md-5 col-lg-5 col-xs-5 col-sm-5">Fecha
-											de carga</th>
-											<th class="col-md-1 col-lg-1 col-xs-1 col-sm-1">Acciones</th>
+										<th class="col-md-5 col-lg-5 col-xs-5 col-sm-5">Fecha de
+											carga</th>
+										<th class="col-md-1 col-lg-1 col-xs-1 col-sm-1">Acciones</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -172,7 +174,7 @@
 											<td>${fileRequest.name}</td>
 											<td><fmt:formatDate value="${fileRequest.revisionDate}"
 													type="both" /></td>
-													<td class="iconLineC"><a
+											<td class="iconLineC"><a
 												href="<c:url value='/file/singleDownloadRequest-${fileRequest.id }'/>"
 												download class=""> <i class="material-icons col-cyan"
 													style="font-size: 30px;">cloud_download</i>

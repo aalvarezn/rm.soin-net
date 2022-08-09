@@ -427,6 +427,13 @@ public class RequestBaseController extends BaseController{
 				return "redirect:" + referer;
 			}
 			*/
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
+				model.addAttribute("request", requestEdit);
+				RequestRM_P1_R2 requestR2=requestServiceRm2.requestRm2(requestEdit.getId());
+				model.addAttribute("requestR2", requestR2);
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/sectionsEditR2/tinySummaryRequest";
+			}
 			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("request", requestEdit);
 				List<RequestRM_P1_R4> listUser=requestServiceRm4.listRequestRm4(requestEdit.getId());
@@ -471,7 +478,16 @@ public class RequestBaseController extends BaseController{
 			addRequest.setStatus(requestMod.getStatus());
 			addRequest.setUser(requestMod.getUser());
 			addRequest.setRequestDate(requestMod.getRequestDate());
-			
+			if(addRequest.getSenders().length()<256) {
+				addRequest.setSenders(addRequest.getSenders());
+			}else {
+				addRequest.setSenders(requestMod.getSenders());
+			}
+			if(addRequest.getMessage().length()<256) {
+				addRequest.setMessage(addRequest.getMessage());
+			}else {
+				addRequest.setMessage(requestMod.getMessage());
+			}
 			addRequest.setSystemInfo(requestMod.getSystemInfo());
 			requestBaseService.update(addRequest);
 			res.setStatus("success");
@@ -490,10 +506,8 @@ public class RequestBaseController extends BaseController{
 		return res;
 	}
 	
-	@SuppressWarnings("null")
 	@RequestMapping(value = "/saveRequestR5", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse saveRequestR5(HttpServletRequest request, @RequestBody RequestRM_P1_R5  addRequest) {
-		User user=userService.getUserByUsername(getUserLogin().getUsername());
 		JsonResponse res = new JsonResponse();
 		ArrayList<MyError> errors = new ArrayList<MyError>();
 
@@ -505,8 +519,12 @@ public class RequestBaseController extends BaseController{
 		
 			addRequest.setRequestBase(requestMod.getRequestBase());
 			RequestBase requestBase=requestBaseService.findById(addRequest.getRequestBase().getId());
-			requestBase.setSenders(addRequest.getSenders());
-			requestBase.setMessage(addRequest.getMessage());
+			if(addRequest.getSenders().length()<256) {
+				requestBase.setSenders(addRequest.getSenders());
+			}
+			if(addRequest.getMessage().length()<256) {
+				requestBase.setMessage(addRequest.getMessage());
+			}
 			requestBaseService.update(requestBase);
 			requestServiceRm5.update(addRequest);
 			res.setStatus("success");
@@ -524,6 +542,50 @@ public class RequestBaseController extends BaseController{
 		}
 		return res;
 	}
+
+	@RequestMapping(value = "/saveRequestR2", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse saveRequestR2(HttpServletRequest request, @RequestBody RequestRM_P1_R2  addRequest) {
+		User user=userService.getUserByUsername(getUserLogin().getUsername());
+		JsonResponse res = new JsonResponse();
+		ArrayList<MyError> errors = new ArrayList<MyError>();
+
+		try {
+			RequestRM_P1_R2 requestMod = requestServiceRm2.findById(addRequest.getId());
+			
+			errors = validSections(addRequest, errors);
+			
+		
+			addRequest.setRequestBase(requestMod.getRequestBase());
+			RequestBase requestBase=requestBaseService.findById(addRequest.getRequestBase().getId());
+			if(addRequest.getSenders().length()<256) {
+				requestBase.setSenders(addRequest.getSenders());
+			}
+			if(addRequest.getMessage().length()<256) {
+				requestBase.setMessage(addRequest.getMessage());
+			}
+			if(addRequest.getHierarchy().length()<256) {
+				addRequest.setHierarchy(addRequest.getHierarchy());
+			}else {
+				addRequest.setHierarchy(requestMod.getHierarchy());
+			}
+			requestBaseService.update(requestBase);
+			requestServiceRm2.update(addRequest);
+			res.setStatus("success");
+			if (errors.size() > 0) {
+				// Se adjunta lista de errores
+				res.setStatus("fail");
+				res.setErrors(errors);
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("exception");
+			res.setException("Error al guardar la solicitud: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
 	@RequestMapping(value = "/updateRequest/{id}", method = RequestMethod.GET)
 	public String updateRFC(@PathVariable Long id, HttpServletRequest request, Locale locale, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -593,7 +655,16 @@ public class RequestBaseController extends BaseController{
 			if (requestEdit == null) {
 				return "/plantilla/404";
 			}
-
+			
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
+				model.addAttribute("request", requestEdit);
+				RequestRM_P1_R2 requestR2=requestServiceRm2.requestRm2(requestEdit.getId());
+				model.addAttribute("requestR2", requestR2);
+				model.addAttribute("statuses", statusService.findAll());
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/sectionsEditR2/summaryRequest";
+			}
+			
 
 			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("request", requestEdit);
@@ -632,10 +703,54 @@ public class RequestBaseController extends BaseController{
 			}
 			
 			
+			if(request.getSenders()!=null) {
+				if(request.getSenders().length()>256) {
+					errors.add(new MyError("messagePer","La cantidad de caracteres no puede ser mayor a 256"));
+				}	
+			}
+			if(request.getMessage()!=null) {
+				if(request.getMessage().length()>256) {
+					errors.add(new MyError("messagePer","La cantidad de caracteres no puede ser mayor a 256"));
+				}	
+			}
 		}
 
 		return errors;
 	}
+	
+	public ArrayList<MyError> validSections(RequestRM_P1_R2 request, ArrayList<MyError> errors) {
+		
+		
+		if(request.getHierarchy()==""||request.getHierarchy()==null) {
+			errors.add(new MyError("hierarchy","Valor requerido."));
+		}
+
+		if(request.getAmbient()==""||request.getAmbient()==null) {
+			errors.add(new MyError("ambient","Se requiere seleccionar uno o varios ambientes de cambio."));
+		}
+		if(request.getRequeriments()==""||request.getRequeriments()==null) {
+			errors.add(new MyError("requeriments","Valor requerido."));
+		}
+		
+		if(request.getSenders()!=null) {
+			if(request.getSenders().length()>256) {
+				errors.add(new MyError("messagePer","La cantidad de caracteres no puede ser mayor a 256"));
+			}	
+		}
+		if(request.getMessage()!=null) {
+			if(request.getMessage().length()>256) {
+				errors.add(new MyError("messagePer","La cantidad de caracteres no puede ser mayor a 256"));
+			}	
+		}
+		if(request.getHierarchy()!=null) {
+			if(request.getHierarchy().length()>256) {
+				errors.add(new MyError("hierarchy","La cantidad de caracteres no puede ser mayor a 256"));
+			}	
+		}
+		
+
+	return errors;
+}
 	
 	public ArrayList<MyError> validSections(RequestRM_P1_R5 request, ArrayList<MyError> errors) {
 			
@@ -653,7 +768,16 @@ public class RequestBaseController extends BaseController{
 				errors.add(new MyError("type","Se requiere seleccionar un tipo de cambio de la solicitud."));
 			}
 			
-			
+			if(request.getSenders()!=null) {
+				if(request.getSenders().length()>256) {
+					errors.add(new MyError("messagePer","La cantidad de caracteres no puede ser mayor a 256"));
+				}	
+			}
+			if(request.getMessage()!=null) {
+				if(request.getMessage().length()>256) {
+					errors.add(new MyError("messagePer","La cantidad de caracteres no puede ser mayor a 256"));
+				}	
+			}
 
 		return errors;
 	}

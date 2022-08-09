@@ -10,6 +10,7 @@
 	<div class="col-sm-12">
 		<h5 class="titulares">Solicitud de cambios en el servicio</h5>
 	</div>
+	
 	<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
 		<label for="permission">Ambientes por cambiar</label>
 		<div class="form-group m-b-0i">
@@ -30,7 +31,7 @@
 		</div>
 
 	</div>
-		<div class="col-lg-5 col-md-5 col-sm-5 col-xs-12">
+		<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
 		<label>Tipo del cambio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line" style="height: 110.667px;">
@@ -63,9 +64,15 @@
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
+	
+</div>
+<div class="row clearfix">
+	<div class="col-sm-12">
+	<h5>* Nota si se desea adjuntar imagenes subirlas por favor en el siguiente paso</h5>
+	</div>
 	</div>
 <div class="row clearfix" style="margin-top: 20px;">
-		<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+		<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 		<label>Cambios de servicio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
@@ -77,7 +84,7 @@
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
-	<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 		<label>Justificaci&oacute;n de cambio</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">

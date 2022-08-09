@@ -6,13 +6,14 @@
 <%@ page import="com.soin.sgrm.model.ButtonCommand"%>
 
 
+
+<div class="row clearfix activeSection">
 <div class="button-demo flr">
 	<button type="button" class="btn btn-primary setIcon"
 		onclick="openAddFileModal()">
 		<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
 	</button>
 </div>
-<div class="row clearfix activeSection">
 	<div class="col-sm-12">
 		<h5 class="titulares">Archivos adjuntos</h5>
 	</div>

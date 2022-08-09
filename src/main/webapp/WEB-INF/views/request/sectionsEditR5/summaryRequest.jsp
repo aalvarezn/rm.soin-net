@@ -157,7 +157,11 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+
+
+			</div>
+	<div class="row clearfix">
+					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
 					<label for="email_address">Cambios de servicio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
@@ -165,7 +169,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
 					<label for="email_address">Justificacion de cambio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
@@ -173,9 +177,7 @@
 						</div>
 					</div>
 				</div>
-
-			</div>
-
+	</div>
 
 
 			<div class="row clearfix">

@@ -154,10 +154,10 @@ tr.selected {
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
-						<h5 class="font-20 greyLigth">Nueva Solicitud</h5>
+						<h5 class="font-20 greyLigth">Nueva solicitud</h5>
 					</div>
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
-						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+						<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
 								<span>Solicitud: </span>${request.numRequest} <input type="hidden"
 									id="requestId" value="${request.id}"> <input type="hidden"
@@ -171,7 +171,7 @@ tr.selected {
 							</h5>
 						</div>
 						<div
-							class=" col-lg-6 col-md-6 col-sm-12 col-xs-12 align-right p-r-0">
+							class=" col-lg-5 col-md-5 col-sm-12 col-xs-12 align-right p-r-0">
 
 							<button type="button" class="btn btn-default setIcon"
 								onclick="previewRequest()" title="RESUMEN"

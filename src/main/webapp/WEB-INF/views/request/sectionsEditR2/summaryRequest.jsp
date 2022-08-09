@@ -136,48 +136,46 @@
 
 			<div class="row clearfix">
 				<div class="col-sm-12">
-					<h5 class="titulares">Solicitud de cambios en el servicio</h5>
-				</div>
-
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Ambientes por cambiar</label>
-					<div class="form-group m-b-0i">
-						<div class="form-line disabled">
-							<p>${requestR5.ambient}</p>
-						</div>
-					</div>
+					<h5 class="titulares">Solicitud de nuevos servicios</h5>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Tipo del cambio</label>
+					<label for="email_address">Tipo de Servicio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
-									<p>${requestR5.typeChange}</p>
+								<p>${requestR2.typeService}</p>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Cambios de servicio</label>
+					<label for="email_address">Ambientes por cambiar</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR5.changeService}</p>
+							<p>${requestR2.ambient}</p>
 						</div>
 					</div>
 				</div>
+
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Justificacion de cambio</label>
+					<label for="email_address">Jerarquia de ambientes</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR5.justify}</p>
+							<p>${requestR2.hierarchy}</p>
 						</div>
 					</div>
 				</div>
-
 			</div>
-
-
-
+			<div class="row clearfix">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
+					<label for="email_address">Requerimientos de servicio</label>
+					<div class="form-group m-b-0i">
+						<div class="form-line disabled">
+							<p>${requestR2.requeriments}</p>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="row clearfix">
 				<div class="col-sm-12">
 					<h5 class="titulares">Archivos adjuntos</h5>
