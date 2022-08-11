@@ -358,6 +358,7 @@ tr.selected {
 		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
 
 
+
 	<script
 		src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
 		

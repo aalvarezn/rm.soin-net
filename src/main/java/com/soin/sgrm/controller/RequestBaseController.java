@@ -274,7 +274,7 @@ public class RequestBaseController extends BaseController{
 				model.addAttribute("systems", systems);
 				List<User> usersRM= userService.getUsersRM();
 				RequestRM_P1_R3 requestR3= requestServiceRm3.requestRm3(requestEdit.getId());
-				model.addAttribute("requestR5", requestR3);
+				model.addAttribute("requestR3", requestR3);
 				model.addAttribute("usersRM",usersRM);
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/editRequestR3";
@@ -433,6 +433,13 @@ public class RequestBaseController extends BaseController{
 				model.addAttribute("requestR2", requestR2);
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/sectionsEditR2/tinySummaryRequest";
+			}
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
+				model.addAttribute("request", requestEdit);
+				RequestRM_P1_R3 requestR3=requestServiceRm3.requestRm3(requestEdit.getId());
+				model.addAttribute("requestR3", requestR3);
+				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				return "/request/sectionsEditR4/tinySummaryRequest";
 			}
 			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("request", requestEdit);

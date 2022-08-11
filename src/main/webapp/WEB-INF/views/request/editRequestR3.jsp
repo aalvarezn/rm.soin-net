@@ -70,7 +70,9 @@
 <link rel="stylesheet"
 	href="<c:url value='/static/plugins/jquery-file-upload/css/jquery.fileupload-ui.css'/>" />
 
-
+<link
+	href="<c:url value='/static/plugins/multi-select/css/multi-select.css'/>"
+	rel="stylesheet" type="text/css">
 
 
 <style type="text/css">
@@ -90,7 +92,15 @@
 table.dataTable tbody tr.selected {
 	background-color: #b0bed9;
 }
-
+.btn dropdown-toggle btn-default bs-placeholder{
+	display:none;
+}
+btn dropdown-toggle btn-default bs-placeholder{
+	display:none;
+}
+.filter-option-inner-inner{
+display:none;
+}
 tr.selected {
 	background-color: #acbad4;
 }
@@ -354,7 +364,8 @@ tr.selected {
 		src="<c:url value='/static/plugins/jquery-datatable/fnFindCellRowIndexes.js'/>"></script>
 	<script
 		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
-
+	<script
+		src="<c:url value='/static/plugins/multi-select/js/jquery.multi-select.js'/>"></script>
 
 	<script
 		src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>

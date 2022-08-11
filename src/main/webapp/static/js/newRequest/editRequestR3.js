@@ -89,43 +89,23 @@ $(function() {
 		width:'400px'
 	});
 
-	const data=$requestEditForm.find('#ambientData').val();
-	console.log(data);
-	const splitString = data.split(",");
-	var ambients="";
-	for(x=0;splitString.length>x;x++){
-		if(splitString[x]==="Desarrollo"){
-			$('#ambient1').prop('checked',true);
-		}
-		if(splitString[x]==="QA"){
-			$('#ambient2').prop('checked',true);
-		}
-		if(splitString[x]==="Pre-Produccion"){
-			$('#ambient3').prop('checked',true);
-		}
-		if(splitString[x]==="Produccion"){
-			$('#ambient4').prop('checked',true);
-		}else if(splitString[x]!==""&&splitString[x]!=="Desarrollo"&&splitString[x]!=="QA"&&splitString[x]!=="Pre-Produccion"&&splitString[x]!=="Produccion"){
-			$('#ambient5').prop('checked',true);
-			$('#ambient6').addTag(splitString[x]);
-			if(ambients!=""){
-				ambients+=","+splitString[x];
-			}else{
-				ambients=splitString[x];
-			}
-			
-			
-		}
-	}
-	if(ambients!=""){
-		$('#ambient6').importTags(ambients);
-		$('#ambient6_tagsinput').css("display","flex");
-	}
-	console.log(splitString);
 
-	
 });
-
+$(function() {
+	$('#userGroups').multiSelect(
+			{
+			  selectableHeader: "<div class='custom-header'>Usuarios RM</div>",
+			  selectionHeader: "<div class='custom-header'>Usuarios RM asignados</div>",
+			  afterSelect : function(values) {
+				  $requestEditForm.find("#userGroups option[id='" + values + "']").attr("selected", "selected");
+			  },
+			  afterDeselect : function(values) {
+				  $requestEditForm.find("#userGroups option[id='" + values + "']").removeAttr('selected');
+			  }
+			});
+	$requestEditForm.find("#ms-userGroups").find(".ms-selectable").before('<label for="name">Usuarios RM</label>');
+	$requestEditForm.find("#ms-userGroups").find(".ms-selection").before('<label for="name">Usuarios RM Asignados</label>');
+});
 function changeAttributte(checkElement){
 		if(checkElement.checked){
 			$('#ambient6_tagsinput').slideToggle();
