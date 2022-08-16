@@ -29,7 +29,20 @@ function initDataTable() {
 						{
 							"mDataProp" : 'description'
 						},
-						
+						{
+							render : function(data, type, row, meta) {
+								var options = '<div class="iconLineC">';
+								if(row.status){
+									options += '<a onclick="softDeleteRequest('+row.id+')" title="Editar"><i class="material-icons gris" style="font-size: 30px;">check_circle</i></a>';
+									}else{
+										options += '<a onclick="softDeleteRequest('+row.id+')" title="Editar"><i class="material-icons gris" style="font-size: 30px;">cancel</i></a>';
+									}
+								
+								options += ' </div>';
+
+								return options;
+							}
+						},
 						{
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';
@@ -48,6 +61,76 @@ function initDataTable() {
 			});
 }
 
+function softDeleteRequest(index) {	
+	console.log(index);
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea modificar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "PUT",
+				url : getCont() + "admin/typePetition/"+index ,
+				timeout : 60000,
+				data : {},
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtTypePetition.ajax.reload();
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					
+				}
+			});
+		}
+	});
+}
+
+function deleteSoftRequest(index) {
+			let cont = getCont();
+			blockUI();
+			$.ajax({
+				async : false,
+				type : "POST",
+				url : cont + "admin/request/" + "softDelete",
+				timeout : 60000,
+				data : {
+					requestId : index
+				},
+				success : function(response) {
+					ajaxDeleteSoftRequest(response, index);
+				},
+				error : function(x, t, m) {
+					notifyAjaxError(x, t, m);
+				}
+			});
+}
+
+function ajaxDeleteSoftRequest(response, index) {
+ switch (response.status) {
+ case 'success':
+	$('#requestTable').find('#softDeleteRequest_'+index).attr("onclick",'softDeleteRequest('+index+','+response.obj+')');
+		if(response.obj == true){
+		$('#requestTable').find('#softDeleteRequest_'+index).text('check_circle');
+		swal("Correcto!", "Requerimiento activado correctamente.", "success", 2000)
+		}else{
+		$('#requestTable').find('#softDeleteRequest_'+index).text('cancel');
+		swal("Correcto!", "Requerimiento desactivado correctamente.", "success", 2000)
+		}
+		break;
+		case 'fail':
+		swal("Error!", response.exception, "error")
+		break;
+		case 'exception':
+		swal("Exception!", response.exception, "warning")
+		break;
+		default:
+		location.reload();
+		}
+}
 function showTypePetition(index){
 	$fmTypePetition.validate().resetForm();
 	$fmTypePetition[0].reset();

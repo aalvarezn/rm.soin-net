@@ -50,5 +50,10 @@ public class TypePetitionServiceImpl implements TypePetitionService  {
 	public void update(TypePetition model) {
 		dao.update(model);
 	}
+	@Override
+	public List<TypePetition> listTypePetition(){
+		return dao.listTypePetition();
+	
+	}
 
 }

@@ -129,7 +129,7 @@ public class RequestBaseController extends BaseController{
 			loadCountsRelease(request, userLogin);
 			List<System> systems = systemService.listProjects(getUserLogin().getId());
 			List<StatusRequest> statuses = statusService.findAll();
-			List<TypePetition> typePetitions=typePetitionService.findAll();
+			List<TypePetition> typePetitions=typePetitionService.listTypePetition();
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("typePetitions",typePetitions);
 			model.addAttribute("systems", systems);

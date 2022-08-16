@@ -93,17 +93,25 @@ public class TypePetitionController extends BaseController {
 		return res;
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse delete(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
+			TypePetition typeUpt=typePetitionService.findById(id);
+			if(typeUpt.getStatus()==1) {
+				typeUpt.setStatus(0);
+				res.setMessage("Tipo solicitud desactivado!");
+			}else {
+				typeUpt.setStatus(1);
+				res.setMessage("Tipo solicitud activada!");
+			}
 			res.setStatus("success");
-			typePetitionService.delete(id);
-			res.setMessage("Tipo solicitud eliminada!");
+			typePetitionService.update(typeUpt);
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "typePetition");
 			res.setStatus("exception");
-			res.setMessage("Error al eliminar el Tipo solicitud!");
+			res.setMessage("Error al modificaar el Tipo solicitud!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;

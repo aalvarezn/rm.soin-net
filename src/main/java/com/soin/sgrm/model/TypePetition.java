@@ -32,6 +32,9 @@ public class TypePetition implements Serializable {
 	@Column(name = "DESCRIPCION")
 	private String description;
 	
+	@Column(name = "ESTADO")
+	private Integer status;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "EMAIL_ID")
 	private EmailTemplate emailTemplate;
@@ -78,6 +81,15 @@ public class TypePetition implements Serializable {
 	public void setEmailTemplateId(int emailTemplateId) {
 		this.emailTemplateId = emailTemplateId;
 	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	
 	
 	
 	
