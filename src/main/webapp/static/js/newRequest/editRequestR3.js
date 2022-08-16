@@ -61,7 +61,18 @@ $(function() {
 			sendPartialRequest();
 		}
 	});
-	
+	$('#userGroups').multiSelect(
+			{
+			  selectableHeader: "<div class='custom-header'>Usuarios RM</div>",
+			  selectionHeader: "<div class='custom-header'>Usuarios RM asignados</div>",
+			  afterSelect : function(values) {
+				  console.log(values);
+				  $requestEditForm.find("#userGroups option[id='" + values + "']").attr("selected", "selected");
+			  },
+			  afterDeselect : function(values) {
+				  $requestEditForm.find("#userGroups option[id='" + values + "']").removeAttr('selected');
+			  }
+			});
 	
 	var toggle = $('.picker-switch a[data-action="togglePicker"]');
 	
@@ -89,23 +100,39 @@ $(function() {
 		width:'400px'
 	});
 
+	chargeUserRm();
+});
 
-});
-$(function() {
-	$('#userGroups').multiSelect(
-			{
-			  selectableHeader: "<div class='custom-header'>Usuarios RM</div>",
-			  selectionHeader: "<div class='custom-header'>Usuarios RM asignados</div>",
-			  afterSelect : function(values) {
-				  $requestEditForm.find("#userGroups option[id='" + values + "']").attr("selected", "selected");
-			  },
-			  afterDeselect : function(values) {
-				  $requestEditForm.find("#userGroups option[id='" + values + "']").removeAttr('selected');
-			  }
-			});
-	$requestEditForm.find("#ms-userGroups").find(".ms-selectable").before('<label for="name">Usuarios RM</label>');
-	$requestEditForm.find("#ms-userGroups").find(".ms-selection").before('<label for="name">Usuarios RM Asignados</label>');
-});
+window.onload = function () {
+	chargeUserRm();
+  }
+function chargeUserRm(){
+
+	var r3Id=$('#requestR3Id').val();
+	
+	$.ajax({
+		type: 'GET',
+		url: getCont() + "request/getR3-"+r3Id,
+		success: function(result) {
+			console.log(result);
+			for (var i = 0, l = result.userRM.length; i < l; i++) {
+				$requestEditForm.find('#userGroups option').each(
+						function(index, element) {
+							if (element.id == result.userRM[i].id) {
+								console.log(Array.from(element.id));
+								var numero=[];
+								numero.push(element.id);
+								console.log(numero);
+							
+								$requestEditForm.find("#userGroups option[id='" + numero + "']").attr("selected", "selected");
+							}
+						});
+			}
+		}
+	});
+	
+	$('#userGroups').multiSelect("refresh");
+}
 function changeAttributte(checkElement){
 		if(checkElement.checked){
 			$('#ambient6_tagsinput').slideToggle();
@@ -150,66 +177,23 @@ function compareArrays(arr1, arr2) {
 	return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0;
 };
 function sendPartialRequest() {
-	var form = "#generateReleaseForm";
-	var ambients="";
-	if ($('#ambient1').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient1').val();
-		}
-		
-	}
-	if ($('#ambient2').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient2').val();
-		}else{
-			ambients+=","+$('#ambient2').val();
-		}
-		
-	}
-	if ($('#ambient3').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient3').val();
-		}else{
-			ambients+=","+$('#ambient3').val();
-		}
-	}
-	if ($('#ambient4').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient4').val();
-		}else{
-			ambients+=","+$('#ambient4').val();
-		}
-	}
-	
-	if ($('#ambient5').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient6').val();
-		}else{
-			ambients+=","+$('#ambient6').val();
-		}
-	}
+	let groupIds = getGroupsId($requestEditForm, "#userGroups");
+	console.log(JSON.stringify(groupIds));
 	changeSaveButton(true);
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "request/saveRequestR5",
+		url : getCont() + "request/saveRequestR3",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#requestR5Id').val(),
+			id : $requestEditForm.find('#requestR3Id').val(),
 			senders:$requestEditForm.find('#senders').val(),
+			usersRMId:groupIds,
 			message:$requestEditForm.find('#messagePer').val(),
-			ambient:ambients,
-			typeChange:$("input[type='radio'][name='type']:checked").val(),
-			changeService:$requestEditForm.find('#change').val(),
-			justify:$requestEditForm.find('#justify').val(),
+			connectionMethod:$requestEditForm.find('#connectionMethod').val(),
 			
 		}),
 		success : function(response) {
@@ -357,39 +341,7 @@ function confirmDeleteUser(index){
 
 
 function addUser(){
-	var permissions="";
-	if ($('#permission1').is(":checked"))
-	{
-		if(permissions==""){
-			permissions=$('#permission1').val();
-		}
-		
-	}
-	if ($('#permission2').is(":checked"))
-	{
-		if(permissions==""){
-			permissions=$('#permission2').val();
-		}else{
-			permissions+=","+$('#permission2').val();
-		}
-		
-	}
-	if ($('#permission3').is(":checked"))
-	{
-		if(permissions==""){
-			permissions=$('#permission3').val();
-		}else{
-			permissions+=","+$('#permission3').val();
-		}
-	}
-	if ($('#permission4').is(":checked"))
-	{
-		if(permissions==""){
-			permissions=$('#permission4').val();
-		}else{
-			permissions+=","+$('#permission4').val();
-		}
-	}
+	
 	if (!$requestEditForm.valid())
 		return;
 	Swal.fire({
@@ -783,69 +735,27 @@ function removeData(data){
 }
 
 function sendRequest() {
-	var ambients="";
-	if ($('#ambient1').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient1').val();
-		}
-		
-	}
-	if ($('#ambient2').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient2').val();
-		}else{
-			ambients+=","+$('#ambient2').val();
-		}
-		
-	}
-	if ($('#ambient3').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient3').val();
-		}else{
-			ambients+=","+$('#ambient3').val();
-		}
-	}
-	if ($('#ambient4').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient4').val();
-		}else{
-			ambients+=","+$('#ambient4').val();
-		}
-	}
+	let groupIds = getGroupsId($requestEditForm, "#userGroups");
 	
-	if ($('#ambient5').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient6').val();
-		}else{
-			ambients+=","+$('#ambient6').val();
-		}
-	}
 	var form = "#generateRequestForm";
 	changeSaveButton(true);
 	changeSaveButton(true);
 	var valueSchema="";
-
+	console.log(groupIds);
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "request/saveRequestR5",
+		url : getCont() + "request/saveRequestR3",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#requestR5Id').val(),
+			id : $requestEditForm.find('#requestR3Id').val(),
 			senders:$requestEditForm.find('#senders').val(),
+			usersRMId:groupIds,
 			message:$requestEditForm.find('#messagePer').val(),
-			ambient:ambients,
-			typeChange:$("input[type='radio'][name='type']:checked").val(),
-			changeService:$requestEditForm.find('#change').val(),
-			justify:$requestEditForm.find('#justify').val(),
+			connectionMethod:$requestEditForm.find('#connectionMethod').val(),
 		}),
 		success : function(response) {
 			responseAjaxSendRequest(response);
@@ -861,66 +771,25 @@ function sendRequest() {
 	});
 }
 
+
 function requestRequest() {
-	var ambients="";
-	if ($('#ambient1').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient1').val();
-		}
-		
-	}
-	if ($('#ambient2').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient2').val();
-		}else{
-			ambients+=","+$('#ambient2').val();
-		}
-		
-	}
-	if ($('#ambient3').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient3').val();
-		}else{
-			ambients+=","+$('#ambient3').val();
-		}
-	}
-	if ($('#ambient4').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient4').val();
-		}else{
-			ambients+=","+$('#ambient4').val();
-		}
-	}
-	
-	if ($('#ambient5').is(":checked"))
-	{
-		if(ambients==""){
-			ambients=$('#ambient6').val();
-		}else{
-			ambients+=","+$('#ambient6').val();
-		}
-	}
+	let groupIds = getGroupsId($requestEditForm, "#userGroups");
+	console.log(JSON.stringify(groupIds));
 	changeSaveButton(true);
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "request/saveRequestR5",
+		url : getCont() + "request/saveRequestR3",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#requestR5Id').val(),
+			id : $requestEditForm.find('#requestR3Id').val(),
 			senders:$requestEditForm.find('#senders').val(),
+			usersRMId:groupIds,
 			message:$requestEditForm.find('#messagePer').val(),
-			ambient:ambients,
-			typeChange:$("input[type='radio'][name='type']:checked").val(),
-			changeService:$requestEditForm.find('#change').val(),
-			justify:$requestEditForm.find('#justify').val(),
+			connectionMethod:$requestEditForm.find('#connectionMethod').val(),
 			
 		}),
 		success : function(response) {
@@ -1035,4 +904,11 @@ function countErrorsByStep() {
 	}
 }
 
+function getGroupsId(form, name){
+	let list = [];
+	form.find(name).children("option:selected").each(function(j) {
+		list.push(Number($(this).attr('id')));
+	});
+	return list;
+}
 

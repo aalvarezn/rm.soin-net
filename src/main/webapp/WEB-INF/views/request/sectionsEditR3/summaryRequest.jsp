@@ -131,53 +131,31 @@
 						</div>
 					</div>
 				</div>
-
 			</div>
-
-			<div class="row clearfix">
+				<div class="row clearfix">
 				<div class="col-sm-12">
-					<h5 class="titulares">Solicitud de cambios en el servicio</h5>
+					<h5 class="titulares">Lista de colaboradores con acceso a la herramienta</h5>
 				</div>
 
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Ambientes por cambiar</label>
+				<div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 p-t-10">
+					<label for="email_address">Usuarios RM asignados</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR5.ambient}</p>
+						${requestR3.listNames}
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Tipo del cambio</label>
+				<div class="col-lg-8 col-md-8 col-sm-6 col-xs-6 p-t-10">
+					<label for="email_address">Metodo de conexion</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
-									<p>${requestR5.typeChange}</p>
+									<p>${requestR3.connectionMethod}</p>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Cambios de servicio</label>
-					<div class="form-group m-b-0i">
-						<div class="form-line disabled">
-							<p>${requestR5.changeService}</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Justificacion de cambio</label>
-					<div class="form-group m-b-0i">
-						<div class="form-line disabled">
-							<p>${requestR5.justify}</p>
-						</div>
-					</div>
-				</div>
-
 			</div>
-
-
-
 			<div class="row clearfix">
 				<div class="col-sm-12">
 					<h5 class="titulares">Archivos adjuntos</h5>

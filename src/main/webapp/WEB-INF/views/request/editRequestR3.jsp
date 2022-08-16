@@ -19,11 +19,6 @@
 <link href="<c:url value='/static/plugins/animate-css/animate.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Bootstrap Material Datetime Picker Css -->
-<link
-	href="<c:url value='/static/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css'/>"
-	rel="stylesheet" type="text/css">
-
 <!-- Morris Chart Css-->
 <link href="<c:url value='/static/plugins/morrisjs/morris.css'/>"
 	rel="stylesheet" type="text/css">
@@ -33,53 +28,50 @@
 	href="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css'/>"
 	rel="stylesheet" type="text/css">
 
-<!-- Bootstrap Select Css -->
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<!-- <!-- Bootstrap Select Css -->
+<!-- <link rel="stylesheet" -->
+<!-- 	href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css"> -->
 
 <!-- Sweetalert Css -->
 <link href="<c:url value='/static/plugins/sweetalert/sweetalert.css'/>"
-	rel="stylesheet" type="text/css">
+	rel="stylesheet" />
+
+<!-- Materialize Css -->
+<%-- <link href="<c:url value='/static/plugins/materialize-css/css/materialize.css'/>" --%>
+<!-- 	rel="stylesheet" /> -->
 
 <!-- Custom Css -->
 <link href="<c:url value='/static/css/style.css'/>" rel="stylesheet"
 	type="text/css">
+
+<!-- Bootstrap Select Css -->
+<!-- <link -->
+<%-- 	href="<c:url value='/static/plugins/bootstrap-select/css/bootstrap-select.css'/>" --%>
+<!-- 	rel="stylesheet" type="text/css"> -->
+
 <link rel="stylesheet"
 	href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-
-
-<!-- TagInput Js -->
-<link
-	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
-	rel="stylesheet" type="text/css">
 
 <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
 <link href="<c:url value='/static/css/themes/all-themes.css'/>"
 	rel="stylesheet" type="text/css">
 
-
-<link rel="stylesheet" type="text/css"
-	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
-
-<!-- Linearicons -->
-<link rel="stylesheet"
-	href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
-
-<link rel="stylesheet"
-	href="<c:url value='/static/plugins/jquery-file-upload/css/jquery.fileupload.css'/>" />
-<link rel="stylesheet"
-	href="<c:url value='/static/plugins/jquery-file-upload/css/jquery.fileupload-ui.css'/>" />
-
 <link
 	href="<c:url value='/static/plugins/multi-select/css/multi-select.css'/>"
 	rel="stylesheet" type="text/css">
-
+	
+<!-- TagInput Js -->
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 
 <style type="text/css">
 #ambient6_tagsinput {
  	display:none;
 }
-
+[data-toggle="dropdown"]{
+	display:none;
+}
 .alert {
 	width: 20%;
 }
@@ -92,18 +84,20 @@
 table.dataTable tbody tr.selected {
 	background-color: #b0bed9;
 }
-.btn dropdown-toggle btn-default bs-placeholder{
+.dropdown-menu open{
 	display:none;
 }
-btn dropdown-toggle btn-default bs-placeholder{
+.dropdown-toggle{
 	display:none;
 }
+
 .filter-option-inner-inner{
 display:none;
 }
 tr.selected {
 	background-color: #acbad4;
 }
+
 </style>
 
 </head>
@@ -175,7 +169,8 @@ tr.selected {
 									 <input type="hidden"
 									id="systemInfoId" value="${request.systemInfo.id}">
 									<input type="hidden"
-									id="requestR5Id" value="${requestR3.id}">
+									id="requestR3Id" value="${requestR3.id}">
+								
 							</h5>
 						</div>
 						<div

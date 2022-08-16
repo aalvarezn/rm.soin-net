@@ -8,12 +8,18 @@
 
 <div class="row clearfix activeSection">
 	<div class="col-sm-12">
-		<h5 class="titulares">Solicitud de cambios en el servicio</h5>
+		<h5 class="titulares">Registro de herramienta y acceso a usuarios</h5>
+		
 	</div>
-	<div class="awd">
+	
+	<div class="form-group m-b-0i">
+	<div class="form-line">
 	<div role="tabpanel" class="tab-pane" id="tabRoles">
 		<div class="row m-t-20">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<label>Lista de colaboradores con acceso a la herramienta</label>
+			</div>
 				<select class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id='userGroups' multiple='multiple'>
 					<c:forEach items="${usersRM}" var="user">
 						<option id="${user.id}" value='${user.id}'>${user.fullName}</option>
@@ -22,6 +28,12 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+	<label id="userRM_error" class="error fieldError"
+				for="name" style="visibility: hidden;">Campo requerido.</label>
+	</div>
+	</div>
+	
 </div>
 </div>
 <div class="row clearfix" style="margin-top: 20px;">
@@ -29,7 +41,7 @@
 		<label>Metodo de conexion</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" name='change' id="change"
+				<textarea rows="2" cols="" name='connectionMethod' id="connectionMethod"
 					class="form-control"
 					placeholder="Ingrese la informaci&oacute;n del metodo de conexion..."
 					style="">${requestR3.connectionMethod }</textarea>

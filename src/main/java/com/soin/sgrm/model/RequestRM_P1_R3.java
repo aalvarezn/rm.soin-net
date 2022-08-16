@@ -2,6 +2,7 @@ package com.soin.sgrm.model;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -15,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -40,12 +42,25 @@ public class RequestRM_P1_R3 implements Serializable{
 	@JoinColumn(name = "ID_SOLICITUD", nullable = false)
 	private RequestBase requestBase;
 	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "R3_USUARIO", joinColumns = { @JoinColumn(name = "ID_SOLICITUDR3") }, inverseJoinColumns = {
 			@JoinColumn(name = "ID_USER") })
 	private Set<User> userRM= new HashSet<>();
 
+	@Transient
+	List<Integer> usersRMId;
+	
+	@Transient
+	private String message;
+	
+	@Transient
+	private String senders;
+	
+	@Transient
+	private String listNames;
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -77,6 +92,62 @@ public class RequestRM_P1_R3 implements Serializable{
 	public void setUserRM(Set<User> userRM) {
 		this.userRM = userRM;
 	}
+
+	public List<Integer> getUsersRMId() {
+		return usersRMId;
+	}
+
+	public void setUsersRMId(List<Integer> usersRMId) {
+		this.usersRMId = usersRMId;
+	}
 	
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getSenders() {
+		return senders;
+	}
+
+	public void setSenders(String senders) {
+		this.senders = senders;
+	}
+
+	public void checkUserRmExists(Set<User> usersNews) {
+		this.userRM.retainAll(usersNews);
+		// Agrego los nuevos ambients
+		for (User user : usersNews) {
+			if (!existUserRm(user.getId())) {
+				this.userRM.add(user);
+			}
+		}
+	}
+
+	public boolean existUserRm(Integer id) {
+		for (User user : this.userRM) {
+			if (user.getId() == id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getListNames() {
+		String listNames = "<ul>";
+		for (User user : this.userRM) {
+			listNames += "<li> " + user.getFullName() + "</li>";
+			
+		}
+		listNames += "</ul>";
+		return listNames;
+	}
+
+	public void setListNames(String listNames) {
+		this.listNames = listNames;
+	}
 	
 }

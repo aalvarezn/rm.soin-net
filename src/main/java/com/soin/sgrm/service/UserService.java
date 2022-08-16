@@ -12,5 +12,7 @@ public interface UserService {
 	User getUserByUsername(String username);
 
 	List<User> getUsersRM();
+
+	User findUserById(Integer id);
 	
 }

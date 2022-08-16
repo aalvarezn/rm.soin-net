@@ -3,6 +3,7 @@ package com.soin.sgrm.controller;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
@@ -18,6 +20,9 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Sets;
 import com.google.gdata.client.appsforyourdomain.UserService;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.Authority;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
@@ -48,6 +54,7 @@ import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.model.TypeRequest;
 import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
@@ -438,8 +445,7 @@ public class RequestBaseController extends BaseController{
 				model.addAttribute("request", requestEdit);
 				RequestRM_P1_R3 requestR3=requestServiceRm3.requestRm3(requestEdit.getId());
 				model.addAttribute("requestR3", requestR3);
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/sectionsEditR4/tinySummaryRequest";
+				return "/request/sectionsEditR3/tinySummaryRequest";
 			}
 			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("request", requestEdit);
@@ -592,6 +598,76 @@ public class RequestBaseController extends BaseController{
 		}
 		return res;
 	}
+	/*@RequestMapping(value = "/updateUser", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse updateUserInfo(HttpServletRequest request,
+			@Valid @ModelAttribute("UserInfo") UserInfo user, BindingResult errors, ModelMap model, Locale locale,
+			HttpSession session)
+	*/
+	@RequestMapping(value = "/saveRequestR3", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse saveRequestR3(HttpServletRequest request, @RequestBody RequestRM_P1_R3  addRequest) {
+		User user=userService.getUserByUsername(getUserLogin().getUsername());
+		JsonResponse res = new JsonResponse();
+		ArrayList<MyError> errors = new ArrayList<MyError>();
+
+		try {
+			RequestRM_P1_R3 requestMod = requestServiceRm3.findById(addRequest.getId());
+			addRequest.setRequestBase(requestMod.getRequestBase());
+			User temp = null;
+			Set<User> authsUser = new HashSet<>();
+			for (Integer index : addRequest.getUsersRMId()) {
+				temp = userService.findUserById(index);
+				if (temp != null) {
+					authsUser.add(temp);
+				}
+			}
+			addRequest.checkUserRmExists(authsUser);
+			errors = validSections(addRequest, errors);
+			RequestBase requestBase=requestBaseService.findById(addRequest.getRequestBase().getId());
+			if(addRequest.getSenders().length()<256) {
+				requestBase.setSenders(addRequest.getSenders());
+			}
+			if(addRequest.getMessage().length()<256) {
+				requestBase.setMessage(addRequest.getMessage());
+			}
+
+			requestBaseService.update(requestBase);
+			requestServiceRm3.update(addRequest);
+			res.setStatus("success");
+			if (errors.size() > 0) {
+				// Se adjunta lista de errores
+				res.setStatus("fail");
+				res.setErrors(errors);
+			}
+
+
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("exception");
+			res.setException("Error al guardar la solicitud: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/getR3-{id}", method = RequestMethod.GET)
+	public @ResponseBody RequestRM_P1_R3 getRequestR3(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) {
+		RequestRM_P1_R3 requestRM_P1_R3 = new RequestRM_P1_R3();
+
+		try {
+
+			requestRM_P1_R3 = requestServiceRm3.findById(id);
+
+			return requestRM_P1_R3;
+
+		} catch (Exception e) {
+			Sentry.capture(e, "requestR3");
+			redirectAttributes.addFlashAttribute("data", e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+
+		return requestRM_P1_R3;
+	}
 	
 	@RequestMapping(value = "/updateRequest/{id}", method = RequestMethod.GET)
 	public String updateRFC(@PathVariable Long id, HttpServletRequest request, Locale locale, HttpSession session,
@@ -671,8 +747,13 @@ public class RequestBaseController extends BaseController{
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/sectionsEditR2/summaryRequest";
 			}
-			
-
+			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
+				model.addAttribute("request", requestEdit);
+				RequestRM_P1_R3 requestR3=requestServiceRm3.requestRm3(requestEdit.getId());
+				model.addAttribute("requestR3", requestR3);
+				model.addAttribute("statuses", statusService.findAll());
+				return "/request/sectionsEditR3/summaryRequest";
+			}
 			if(requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("request", requestEdit);
 				List<RequestRM_P1_R4> listUser=requestServiceRm4.listRequestRm4(requestEdit.getId());
@@ -724,6 +805,30 @@ public class RequestBaseController extends BaseController{
 
 		return errors;
 	}
+	
+	public ArrayList<MyError> validSections(RequestRM_P1_R3 request, ArrayList<MyError> errors) {
+		
+		
+		if(request.getUserRM().size()==0) {
+				errors.add(new MyError("userRM","Debe seleccionar al menos a un usuario del departamento de RM"));
+		}
+		
+		
+		if(request.getSenders()!=null) {
+			if(request.getSenders().length()>256) {
+				errors.add(new MyError("messagePer","La cantidad de caracteres no puede ser mayor a 256"));
+			}	
+		}
+		if(request.getMessage()!=null) {
+			if(request.getMessage().length()>256) {
+				errors.add(new MyError("messagePer","La cantidad de caracteres no puede ser mayor a 256"));
+			}	
+		}
+
+		
+
+	return errors;
+}
 	
 	public ArrayList<MyError> validSections(RequestRM_P1_R2 request, ArrayList<MyError> errors) {
 		

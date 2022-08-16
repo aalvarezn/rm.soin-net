@@ -13,4 +13,6 @@ public interface UserDao {
 
 	List<User> getUserRM();
 
+	User findUserById(Integer id);
+
 }
