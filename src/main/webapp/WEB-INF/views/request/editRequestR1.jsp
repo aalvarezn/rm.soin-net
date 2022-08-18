@@ -159,15 +159,13 @@ tr.selected {
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>Solicitud: </span>${request.numRequest} <input type="hidden"
+								<span>Codigo Oportunidad: </span>${request.numRequest} <input type="hidden"
 									id="requestId" value="${request.id}"> <input type="hidden"
 									id="requestNumber" value="${request.numRequest}">
 									 <input type="hidden"
 									id="systemInfoId" value="${request.systemInfo.id}">
 									<input type="hidden"
-									id="ambientData" value="${requestR2.ambient}">
-									<input type="hidden"
-									id="requestR2Id" value="${requestR2.id}">
+									id="requestR1Id" value="${requestR1.id}">
 							</h5>
 						</div>
 						<div
@@ -247,7 +245,7 @@ tr.selected {
 									<div class="tab-pane animated fadeIn active" role="tabpanel"
 										id="step1">
 										<div class="body">
-											<%@include file="../request/sectionsEditR2/section_1.jsp"%>
+											<%@include file="../request/sectionsEditR1/section_1.jsp"%>
 										</div>
 
 									</div>
@@ -257,7 +255,7 @@ tr.selected {
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step2">
 										<div class="body">
-											<%@include file="../request/sectionsEditR2/section_2.jsp"%>
+											<%@include file="../request/sectionsEditR1/section_2.jsp"%>
 										</div>
 										<div class="button-demo flr p-t-20">
 
@@ -268,7 +266,7 @@ tr.selected {
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step3">
 										<div class="body">
-											<%@include file="../request/sectionsEditR2/section_3.jsp"%>
+											<%@include file="../request/sectionsEditR1/section_3.jsp"%>
 										</div>
 										<div class="button-demo flr p-t-20">
 
@@ -375,7 +373,7 @@ tr.selected {
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 
-	<script src="<c:url value='/static/js/newRequest/editRequestR2.js'/>"></script>
+	<script src="<c:url value='/static/js/newRequest/editRequestR1.js'/>"></script>
 	<script src="<c:url value='/static/js/newRequest/requestFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->

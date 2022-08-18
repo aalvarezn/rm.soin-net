@@ -1,6 +1,7 @@
 package com.soin.sgrm.service;
 
 import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.response.JsonSheet;
 
 public interface RequestBaseService extends BaseService<Long, RequestBase>{
@@ -15,5 +16,7 @@ public interface RequestBaseService extends BaseService<Long, RequestBase>{
 
 
 	Integer countByType(Integer id, String type, int query, Object[] ids);
+
+	RequestBaseR1 findByR1(Long id);
 
 }

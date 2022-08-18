@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.RequestBaseDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.CommonUtils;
@@ -41,7 +42,10 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 	public RequestBase findById(Long id) {
 		return dao.getById(id);
 	}
-
+	@Override
+	public RequestBaseR1 findByR1(Long id) {
+		return dao.getByIdR1(id);
+	}
 	@Override
 	public RequestBase findByKey(String name, String value) {
 		// TODO Auto-generated method stub

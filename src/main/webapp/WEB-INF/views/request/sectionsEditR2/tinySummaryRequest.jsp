@@ -111,15 +111,6 @@
 				<div class="col-sm-12">
 					<h5 class="titulares">Solicitud de cambios en el servicio</h5>
 				</div>
-
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Ambientes por cambiar</label>
-					<div class="form-group m-b-0i">
-						<div class="form-line disabled">
-							<p>${requestR5.ambient}</p>
-						</div>
-					</div>
-				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
 					<label for="email_address">Tipo de Servicio</label>
 					<div class="form-group m-b-0i">

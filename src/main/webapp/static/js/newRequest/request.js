@@ -2,6 +2,7 @@
 var $dtRFCs;
 var $dtUsers;
 var $fmRequest = $('#formAddRequest');
+var $fmR1 = $('#formAddR1');
 var $formChangeUser = $('#changeUserForm');
 var $trackingRequestForm = $('#trackingRequestForm');
 
@@ -61,8 +62,9 @@ $(function() {
 
 	initRequestTable();
 	initRequestFormValidation();
+	initRequestR1FormValidation();
 	$('#createR1').hide();
-	$('#divOpp').hide();
+
 	
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
@@ -346,24 +348,126 @@ function initRequestFormValidation() {
 		errorPlacement
 	});
 }
+
+function initRequestR1FormValidation() {
+	$fmR1.validate({
+		rules : {
+			
+			'sId2':{
+				required : true
+			},
+			'tId2':{
+				required :true
+			},
+			'sCode':{
+				required:true,
+				minlength : 5,
+				maxlength : 50,
+				
+			}
+				
+			
+		},
+		messages : {
+			
+			'sId2' : {
+				required : "Ingrese un valor"
+			},
+			'sCode' : {
+				required : "Ingrese un valor",
+				minlength : "Debe contener mas de {0} caracteres",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+
+			'tId2' : {
+				required : "Ingrese un valor"
+			}
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
+	});
+}
+
+
+function createRequestR1() {
+	if (!$fmR1.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "POST",
+				url : getCont() + "request/" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					codeOpportunity : $fmR1.find('#sCode').val(),
+					systemId : $fmR1.find('#sId2').val(),
+					typePetitionId:$fmR1.find('#tId2').val(),
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status);
+					window.location = getCont()
+					+ "request/editRequest-"
+					+ response.data;
+					
+					//$dtImpact.ajax.reload();
+					//$mdImpact.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					console.log(x);
+					console.log(t);
+					console.log(m);
+				}
+			});
+		}
+	});
+}
 function dropDownChangeRequest(){
 	$('#tId').on('change', function(){
-		var typeRequest =$fmRequest.find('#tId option:selected').text();
+		var typeRequest =$('#tId option:selected').text();
+		console.log(typeRequest);
 		if(typeRequest==='RM-P1-R1'){
+			$('#formAddRequest').attr( "hidden",true);
+			$('#formAddR1').attr( "hidden",false);
+			$('#sigesId').prop('disabled', false);
 			$('#createRequest').hide();
 			$('#createR1').show();
-			$('#divSiges').hide();
-			$('#divOpp').show();
-			$('#sigesId').prop('disabled', false);
-			$('#createRequest').prop('display', 'none');
 			$('#sId').selectpicker('refresh');
-			$fmRequest.find('#sId').selectpicker('val',  "");
+			$('#sId2').selectpicker('val',  "");
+			$('#tId2').selectpicker('val',  $('#tId').val());
+			
 		}else{
 			resetDrop();
+			console.log("awdawd");
+			$('#formAddR1').attr( "hidden",true);
+			$('#formAddRequest').attr( "hidden",false);
+
+		}
+	});
+	
+	$('#tId2').on('change', function(){
+		var typeRequest =$('#tId2 option:selected').text();
+		console.log(typeRequest);
+		if(typeRequest==='RM-P1-R1'){
+		
+		}else{
+			resetDrop();
+			console.log("awdawd");
+			$('#formAddR1').attr( "hidden",true);
+			$('#formAddRequest').attr( "hidden",false);
+			$('#sId').selectpicker('val',  "");
+			$('#tId').selectpicker('val',  $('#tId2').val());
 			$('#createRequest').show();
 			$('#createR1').hide();
-			$('#divSiges').show();
-			$('#divOpp').hide();
 		}
 	});
 }

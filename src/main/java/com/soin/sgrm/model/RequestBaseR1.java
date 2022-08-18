@@ -27,7 +27,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "SOLICITUD")
-public class RequestBase implements Serializable  {
+public class RequestBaseR1 implements Serializable  {
 private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -65,10 +65,6 @@ private static final long serialVersionUID = 1L;
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ESTADO", nullable = false)
 	private StatusRequest status;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_SIGES", nullable = false)
-	private Siges siges;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_SISTEMA", nullable = false)
@@ -165,15 +161,6 @@ private static final long serialVersionUID = 1L;
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
-
-	public Siges getSiges() {
-		return siges;
-	}
-
-	public void setSiges(Siges siges) {
-		this.siges = siges;
-	}
-
 	public SystemInfo getSystemInfo() {
 		return systemInfo;
 	}

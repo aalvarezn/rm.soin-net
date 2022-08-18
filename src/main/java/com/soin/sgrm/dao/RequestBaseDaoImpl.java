@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestRM_P1_R1;
 import com.soin.sgrm.model.SystemInfo;
 
 @Repository
@@ -87,5 +89,11 @@ public class RequestBaseDaoImpl extends AbstractDao<Long, RequestBase> implement
 		crit.setProjection(Projections.rowCount());
 		Long count = (Long) crit.uniqueResult();
 		return count.intValue();
+	}
+	@Override
+	public RequestBaseR1 getByIdR1(Long id) {
+	    return (RequestBaseR1) getSession().createCriteria(RequestBaseR1.class)
+	    		.add(Restrictions.eq("id", id))
+	    		.uniqueResult();
 	}
 }
