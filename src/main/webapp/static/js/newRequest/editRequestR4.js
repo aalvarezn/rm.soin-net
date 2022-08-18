@@ -1,6 +1,5 @@
 var $requestEditForm = $('#generateRequestForm');
-var $dataRelease = [];
-let $dataReleaseCheck = [];
+
 var origForm=null;
 var $dtUser;
 var $trackingRFCForm = $('#trackingReleaseForm');
@@ -46,14 +45,7 @@ $(function() {
 	$('.nav-tabs > li a[title]').tooltip();
 	// Wizard
 	$('.stepper a[data-toggle="tab"]').on('show.bs.tab', function(e) {
-		if($dataRelease!=0){
-			 $('#releaseTableAdd').dataTable().fnClearTable();
-			 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-		}else{
-			$('#releaseTableAdd').dataTable().fnClearTable();
-		}
-		
-		
+
 		var $target = $(e.target);
 		if ($target.parent().hasClass('disabled')) {
 			return false;
@@ -140,7 +132,7 @@ function sendPartialRequest() {
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $requestEditForm.find('#rfcId').val(),
+			id : $requestEditForm.find('#requestId').val(),
 			senders:$requestEditForm.find('#senders').val(),
 			message:$requestEditForm.find('#messagePer').val(),
 		}),
@@ -170,27 +162,7 @@ $('#systemId').change(function() {
 	
 	$dtRFCs.ajax.reload();
 });
-function initData(){
-	var idRFC=$('#rfcId').val();
-	
-		$.ajax({
-			type: 'GET',
-			url: getCont() + "rfc/getRFC-"+idRFC,
-			success: function(result) {
-				if(result.length!=0){
-					$dataRelease=result.releases;
-					$dataReleaseCheck=$dataRelease.slice();
-				}else{
-					
-				}
-				
-				
-			}
-		});
-		
-		
-	
-}
+
 
 function initUserTable() {
 	var idRequest=$('#requestId').val();
@@ -563,280 +535,12 @@ function initRequestFormValidation() {
 		errorPlacement
 	});
 }
-function addAfterCheck(){
-var dataRFC = $dtRFCs.rows('.selected').data();
-	var contador=0;
-	
-	var verification=true;
-	if(dataRFC!=undefined){
-		
-	
-	if($dataRelease.length!=0){
-
-		for(var x=0;x<dataRFC.length;x++){
-			
-			var data= dataRFC[x];
-
-			$dataRelease.forEach(function(element){
-				
-				if(element.id==data.id){
-					
-					verification=false;
-					contador=0;
-				}
-				
-			});
-			if(verification){
-				var description=data.description;
-				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+description.replace(/\n|\r/g, "")+'","user":'+JSON.stringify(data.user)+',"haveSQL":'+data.haveSQL+',"haveDependecy":"'+data.haveDependecy+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
-				const obj = JSON.parse(text);
-				$dataRelease.unshift(obj);
-				 $('#releaseTableAdd').dataTable().fnClearTable();
-				 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-				 contador=1;
-			}else{
-				
-			}
-			
-			verification=true;
-			
-		}
-		$dtRFCs.$('tr.selected').removeClass('selected');
-		 if(contador=1){
-			 notifyMs('Se agregaron correctamente los releases','success');
-		 }
-		 else{
-			 notifyMs('Estos releases ya fueron agregados','error');
-		 }
-	}else{
-		for(var x=0;x<dataRFC.length;x++){
-			
-			var data= dataRFC[x];
-			
-			$dataRelease.forEach(function(element){
-				
-				if(element.id==data.id){
-					
-					verification=false;
-					contador=0;
-				}
-				
-			});
-			if(verification){
-				
-				var description=""+data.description+"";
-				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+description.replace(/\n|\r/g, "")+'","user":'+JSON.stringify(data.user)+',"haveSQL":'+data.haveSQL+',"haveDependecy":"'+data.haveDependecy+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
-				const obj = JSON.parse(text);
-				$dataRelease.unshift(obj);
-				 $('#releaseTableAdd').dataTable().fnClearTable();
-				 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-				contador=1;
-			}else{
-				contador=0;
-			}
-			
-			verification=true;
-			
-		}
-		 $dtRFCs.$('tr.selected').removeClass('selected');
-		 if(contador=1){
-			 notifyMs('Se agregaron correctamente los releases','success');
-		 }
-		 else{
-			 notifyMs('Estos releases ya fueron agregados','error');
-		 }
-	}
-		return;
-	}
-}
 
 function reloadPreview() {
 	var src = $("#tinySummary").attr("src")
 	$("#tinySummary").attr("src", src)
 }
 
-function initTableAdd(){
-	$dtRFCsAdd=$('#releaseTableAdd').DataTable({
-		
-		'columnDefs' : [ {
-			'visible' : false,
-			'targets' : [ 0]
-		}, 
-		{
-			'visible' : false,
-			'targets' : [ 0]
-		}, 
-		
-		],
-			"iDisplayLength" : 15,
-			"language" : {
-				"emptyTable" : "No existen registros",
-				"zeroRecords" : "No existen registros",
-				"processing" : "Cargando",
-			},
-		  		data: $dataRelease,
-		  		"aoColumns" : [
-					{
-						"mDataProp" : "id",
-					},
-					{
-						"mDataProp" : "releaseNumber",
-					},{
-						"mDataProp" : "description",
-					},
-					{
-						"mDataProp" : "user.fullName",
-					},
-					{
-						
-						"mDataProp" : "status.name"
-					}
-					,{
-						"mRender" : function(data, type, row, meta) {
-							return moment(row.createDate).format('DD/MM/YYYY h:mm:ss a');
-						},
-					},
-					{
-						"mRender" : function(data, type, row, meta) {
-							var options = '<div class="iconLineR">';
-							if(row.haveSQL){
-								options = options
-								+ '<a onclick="" title="Tiene base de datos"><i class="material-icons verde" style="font-size: 25px;margin-right: 5px;"><span class="material-symbols-outlined">database</span></i></a>';
-							}
-							if(row.haveDependecy>0){
-								options = options
-								+ '<a onclick="" title="Tiene dependencias"><i class="material-icons naranja" style="font-size: 25px;"><span class="material-symbols-outlined">warning</span></i></a>';
-							}
-							options = options
-							+ '<a onclick="openRFCTrackingModal('
-							+ row.id+
-							',1'
-							+ ')" title="\u00C1rbol de dependencias"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
-							
-							options = options
-							+ '<a onclick="openTreeModal('
-							+ row.id+
-							',1'
-							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">device_hub</i> </a>';
-							
-							options = options
-							+ '<a href="'
-							+ getCont()
-							+ 'release/summary-'
-							+ row.id
-							+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
-							
-							return options;
-							return options;
-						},
-						sWidth: '30px'
-					} 
-					
-					
-					],
-		  });
-}
-function dropDownChange(){
-
-	$('#systemId').on('change', function(){
-		var sId =$rfcEditForm.find('#systemId').val();
-		if(sId!=""){
-			$dtRFCs = $('#releaseTable').DataTable(
-					{
-						lengthMenu : [ [ 10, 25, 50, -1 ],
-							[ '10', '25', '50', 'Mostrar todo' ] ],
-							"iDisplayLength" : 10,
-							"language" : optionLanguaje,
-							"iDisplayStart" : 0,
-							"processing" : true,
-							"serverSide" : true,
-							"sAjaxSource" : getCont() + "rfc/changeRelease",
-							"fnServerParams" : function(aoData) {
-							},
-							"aoColumns" : [ {
-								"mDataProp" : "releaseNumber"
-							},
-							{
-								"mRender" : function(data, type, row, meta) {
-									let options = 'a';
-									return options;
-								}
-							}
-							
-							],
-							ordering : false,
-							select:{
-								style:'multi'
-							}
-					});
-		}else{
-			resetDrop();
-		}
-		
-	});
-}
-
-function removeSelectedData(){
-	var dataTableRelease = $dtRFCsAdd.rows('.selected').data();
-	if(dataTableRelease.length!=0){
-	if($dataRelease.length!=0){
-
-		for(var x=0;x<dataTableRelease.length;x++){
-			
-			var data= dataTableRelease[x];
-			$dataRelease.forEach(function(element,index){
-				
-				if(element.id==data.id){
-					
-					$dataRelease.splice(index,1); 
-		        	if($dataRelease.length==0){
-		    
-		        		$dataRelease=[];
-		        		 $('#releaseTableAdd').dataTable().fnClearTable();
-		        		 notifyMs('Se removieron correctamente los releases','success');
-		        		 return;
-		        	}
-		        	 $('#releaseTableAdd').dataTable().fnClearTable();
-		    		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-		    		 notifyMs('Se removieron correctamente los releases','success');
-		            return false; 
-					
-				}
-				
-			});
-		
-		}
-		$dtRFCs.$('tr.selected').removeClass('selected');
-	}else{
-		swal("Sin selecci\u00F3n!", "No se ha seleccionado ning\u00FAn release para remover",
-		"warning");
-		return;
-	}
-	}else{
-		swal("Sin selecci\u00F3n!", "No se ha seleccionado ning\u00FAn release",
-		"warning");
-		return;
-	}
-}
-function removeData(data){
-
-	$dataRelease.forEach(function (element,index){
-        if(element.id == data.id){
-        	$dataRelease.splice(index,1); 
-        	if($dataRelease.length==0){
-    
-        		$dataRelease=[];
-        		 $('#releaseTableAdd').dataTable().fnClearTable();
-        		 
-        		 return;
-        	}
-        	 $('#releaseTableAdd').dataTable().fnClearTable();
-    		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-    		
-            return false; 
-        }
-});
-}
 
 function sendRequest() {
 	var form = "#generateRequestForm";
@@ -861,7 +565,6 @@ function sendRequest() {
 			responseAjaxSendRequest(response);
 			changeSaveButton(false);
 			origForm = $requestEditForm.serialize();
-			//$dataReleaseCheck=$dataRelease.slice();
 			reloadPreview();
 		},
 		error: function(x, t, m) {
@@ -891,7 +594,6 @@ function requestRequest() {
 			responseAjaxRequestRequest(response);
 			changeSaveButton(false);
 			origForm = $rfcEditForm.serialize();
-			$dataReleaseCheck=$dataRelease.slice();
 			reloadPreview();
 		},
 		error: function(x, t, m) {

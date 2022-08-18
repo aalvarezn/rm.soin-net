@@ -61,7 +61,9 @@ public class TypePetitionController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-
+			addTypePetition.setStatus(1);
+			EmailTemplate email=emailTemplateService.findById(addTypePetition.getEmailTemplateId());
+			addTypePetition.setEmailTemplate(email);
 			typePetitionService.save(addTypePetition);
 
 			res.setMessage("Tipo solicitud agregada!");
@@ -81,8 +83,10 @@ public class TypePetitionController extends BaseController {
 			res.setStatus("success");
 			EmailTemplate email=emailTemplateService.findById(uptTypePetition.getEmailTemplateId());
 			uptTypePetition.setEmailTemplate(email);
+			TypePetition petitionOld=typePetitionService.findById(uptTypePetition.getId());
+			uptTypePetition.setStatus(petitionOld.getStatus());
 			typePetitionService.update(uptTypePetition);
-
+			
 			res.setMessage("Tipo solicitud modificada!");
 		} catch (Exception e) {
 			Sentry.capture(e, "typeChange");

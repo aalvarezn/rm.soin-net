@@ -49,6 +49,7 @@ import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseFile;
+import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.service.DocTemplateService;
@@ -706,12 +707,20 @@ public class FileController extends BaseController {
 	 * @throws SQLException
 	 **/
 	public String createPathRequest(Long id, String basePath) throws SQLException {
-		RequestBase  requestBase;
+		RequestBaseR1  requestBase;
 		try {
-			requestBase = requestBaseService.findById(id);
-			Siges siges = requestBase.getSiges();
-			SystemInfo system= siges.getSystem();
-			String path = system.getName() + "/" +siges.getCodeSiges()  + "/"+requestBase.getTypePetition().getCode()+"/";
+			String path="";
+			requestBase = requestBaseService.findByR1(id);
+			if(!requestBase.getTypePetition().getCode().equals("RM-P1-R1")) {
+				RequestBase newRequestBase =requestBaseService.findById(id);
+				Siges siges = newRequestBase.getSiges();
+				SystemInfo system= siges.getSystem();
+				 path = system.getName() + "/" +siges.getCodeSiges()  + "/"+requestBase.getTypePetition().getCode()+"/";
+			}else {
+				SystemInfo system= requestBase.getSystemInfo();
+				path = system.getName() + "/"+requestBase.getTypePetition().getCode()+"/";
+			}
+			
 
 			path += requestBase.getNumRequest() + "/";
 			new File(basePath + path).mkdirs();

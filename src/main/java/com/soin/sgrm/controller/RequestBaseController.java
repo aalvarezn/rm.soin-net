@@ -61,6 +61,7 @@ import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.RequestBaseR1Service;
 import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestRM_P1_R1Service;
 import com.soin.sgrm.service.RequestRM_P1_R2Service;
@@ -92,6 +93,9 @@ public class RequestBaseController extends BaseController {
 	@Autowired
 	RequestBaseService requestBaseService;
 
+	@Autowired
+	RequestBaseR1Service requestBaseR1Service;
+	
 	@Autowired
 	TypePetitionService typePetitionService;
 
@@ -148,7 +152,7 @@ public class RequestBaseController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<RequestBase> requests = new JsonSheet<>();
+		JsonSheet<RequestBaseR1> requests = new JsonSheet<>();
 		try {
 
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
@@ -181,7 +185,7 @@ public class RequestBaseController extends BaseController {
 
 			String dateRange = request.getParameter("dateRange");
 
-			requests = requestBaseService.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
+			requests = requestBaseR1Service.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
 					dateRange, systemId, typePetitionId);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -775,8 +779,8 @@ public class RequestBaseController extends BaseController {
 	public String updateRFC(@PathVariable Long id, HttpServletRequest request, Locale locale, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
-			RequestBase requestBase = new RequestBase();
-			requestBase = requestBaseService.findById(id);
+			RequestBaseR1 requestBase = new RequestBaseR1();
+			requestBase = requestBaseService.findByR1(id);
 			// Si la solicitud no existe se regresa al inicio.
 			if (request == null) {
 				return "redirect:/homeRequest";
@@ -798,7 +802,7 @@ public class RequestBaseController extends BaseController {
 			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
 				if (typePettion.getEmailTemplate() != null) {
 					EmailTemplate email = typePettion.getEmailTemplate();
-					RequestBase requestEmail = requestBase;
+					RequestBaseR1 requestEmail = requestBase;
 					Thread newThread = new Thread(() -> {
 						try {
 							emailService.sendMailRequestR4(requestEmail, email);
@@ -810,8 +814,25 @@ public class RequestBaseController extends BaseController {
 					newThread.start();
 				}
 			}
-
-			requestBaseService.update(requestBase);
+			RequestBase requestBaseNew= new RequestBase();
+			requestBaseNew.setCodeProyect(requestBase.getCodeProyect());
+			requestBaseNew.setFiles(requestBase.getFiles());
+			requestBaseNew.setId(requestBase.getId());
+			requestBaseNew.setTypePetition(requestBase.getTypePetition());
+			requestBaseNew.setMessage(requestBase.getMessage());
+			requestBaseNew.setSenders(requestBase.getSenders());
+			requestBaseNew.setStatus(requestBase.getStatus());
+			requestBaseNew.setSystemInfo(requestBase.getSystemInfo());
+			requestBaseNew.setNumRequest(requestBase.getNumRequest());
+			requestBaseNew.setMotive(requestBase.getMotive());
+			requestBaseNew.setOperator(requestBase.getOperator());
+			requestBaseNew.setUser(requestBase.getUser());
+			requestBaseNew.setTracking(requestBase.getTracking());
+			requestBaseNew.setRequestDate(requestBase.getRequestDate());
+			if(!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
+				requestBaseNew.setSiges(requestBaseService.findById(id).getSiges());
+			}
+			requestBaseService.update(requestBaseNew);
 
 			return "redirect:/request/summaryRequest-" + requestBase.getId();
 		} catch (Exception e) {
@@ -827,18 +848,26 @@ public class RequestBaseController extends BaseController {
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
 		User user = userService.getUserByUsername(getUserLogin().getUsername());
 		List<System> systems = systemService.listProjects(user.getId());
-		RequestBase requestEdit = new RequestBase();
+		RequestBaseR1 requestEdit = new RequestBaseR1();
 		try {
 			if (id == null) {
 				return "redirect:/";
 			}
 
-			requestEdit = requestBaseService.findById(id);
+			requestEdit = requestBaseService.findByR1(id);
 
 			if (requestEdit == null) {
 				return "/plantilla/404";
 			}
 
+			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
+				model.addAttribute("request", requestEdit);
+				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
+				model.addAttribute("requestR1", requestR1);
+				model.addAttribute("statuses", statusService.findAll());
+				return "/request/sectionsEditR1/summaryRequest";
+			}
+			
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
 				model.addAttribute("request", requestEdit);
 				RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(requestEdit.getId());
@@ -1014,9 +1043,9 @@ public class RequestBaseController extends BaseController {
 		// PUser userLogin = getUserLogin();
 		// List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> userC = new HashMap<String, Integer>();
-		userC.put("draft", requestBaseService.countByType(id, "Borrador", 1, null));
-		userC.put("requested", requestBaseService.countByType(id, "Solicitado", 1, null));
-		userC.put("completed", requestBaseService.countByType(id, "Completado", 1, null));
+		userC.put("draft", requestBaseR1Service.countByType(id, "Borrador", 1, null));
+		userC.put("requested", requestBaseR1Service.countByType(id, "Solicitado", 1, null));
+		userC.put("completed", requestBaseR1Service.countByType(id, "Completado", 1, null));
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
 		request.setAttribute("userC", userC);
 

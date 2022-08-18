@@ -41,6 +41,8 @@ import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestRM_P1_R1;
 import com.soin.sgrm.model.RequestRM_P1_R2;
 import com.soin.sgrm.model.RequestRM_P1_R3;
 import com.soin.sgrm.model.RequestRM_P1_R4;
@@ -64,6 +66,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	RequestRM_P1_R1Service requestServiceR1;
 	
 	@Autowired
 	RequestRM_P1_R2Service requestServiceR2;
@@ -897,7 +902,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	}
 
 	@Override
-	public void sendMailRequestR4(RequestBase requestEmail, EmailTemplate email) throws Exception {
+	public void sendMailRequestR4(RequestBaseR1 requestEmail, EmailTemplate email) throws Exception {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 		email = fillEmail(email, requestEmail);
@@ -980,7 +985,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		mailSender.send(mimeMessage);
 	}
 	
-	public EmailTemplate fillEmail(EmailTemplate email, RequestBase request) {
+	public EmailTemplate fillEmail(EmailTemplate email, RequestBaseR1 request) {
 		String temp = "";
 		
 		if(request.getTypePetition().getCode().equals("RM-P1-R4")) {
@@ -1005,7 +1010,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		if (email.getHtml().contains("{{requestDate}}")) {
 			String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
 			requestDate = requestDate.replace("\n", "<br>");
-			email.setHtml(email.getHtml().replace("{{requestDate}}", requestDate));
+			email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
 		}
 		if (email.getHtml().contains("{{message}}")) {
 			email.setHtml(email.getHtml().replace("{{message}}",
@@ -1087,7 +1092,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{requestDate}}")) {
 				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
 				requestDate = requestDate.replace("\n", "<br>");
-				email.setHtml(email.getHtml().replace("{{requestDate}}", requestDate));
+				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
 			}
 			if (email.getHtml().contains("{{message}}")) {
 				email.setHtml(email.getHtml().replace("{{message}}",
@@ -1154,7 +1159,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{requestDate}}")) {
 				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
 				requestDate = requestDate.replace("\n", "<br>");
-				email.setHtml(email.getHtml().replace("{{requestDate}}", requestDate));
+				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
 			}
 			if (email.getHtml().contains("{{message}}")) {
 				email.setHtml(email.getHtml().replace("{{message}}",
@@ -1221,7 +1226,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{requestDate}}")) {
 				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
 				requestDate = requestDate.replace("\n", "<br>");
-				email.setHtml(email.getHtml().replace("{{requestDate}}", requestDate));
+				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
 			}
 			if (email.getHtml().contains("{{message}}")) {
 				email.setHtml(email.getHtml().replace("{{message}}",
@@ -1247,9 +1252,6 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				projectCode = projectCode.replace("\n", "<br>");
 				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
 			}
-
-		
-
 			if (email.getSubject().contains("{{systemMain}}")) {
 				temp = "";
 				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
@@ -1258,6 +1260,60 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				
 				email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 			}
+		}else if(request.getTypePetition().getCode().equals("RM-P1-R1")) {
+			RequestRM_P1_R1 requestRM1=requestServiceR1.requestRm1(request.getId());
+			/* ------ body ------ */
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}",
+						(request.getUser().getFullName() != null ? request.getUser().getFullName() : "")));
+			}
+
+			if (email.getHtml().contains("{{requestNumber}}")) {
+				email.setHtml(email.getHtml().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getHtml().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
+			}
+
+
+			if (email.getHtml().contains("{{requestDate}}")) {
+				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString(): "";
+				requestDate = requestDate.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+			}
+			if (email.getHtml().contains("{{message}}")) {
+				email.setHtml(email.getHtml().replace("{{message}}",
+						(request.getMessage() != null ? request.getMessage() : "NA")));
+			}
+			if (email.getHtml().contains("{{requeriments}}")) {
+				email.setHtml(email.getHtml().replace("{{requeriments}}",
+						(requestRM1.getInitialRequeriments()!= null ? requestRM1.getInitialRequeriments() : "NA")));
+			}
+			if (email.getHtml().contains("{{timeAnswer}}")) {
+				email.setHtml(email.getHtml().replace("{{timeAnswer}}",
+						(requestRM1.getTimeAnswer() != null ? requestRM1.getTimeAnswer() : "NA")));
+			}
+			if (email.getHtml().contains("{{observations}}")) {
+				email.setHtml(email.getHtml().replace("{{observations}}",
+						(requestRM1.getObservations() != null ? requestRM1.getObservations() : "NA")));
+			}
+
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{codeOpor}}")) {
+				email.setSubject(email.getSubject().replace("{{codeOpor}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+			
 		}
 
 		return email;

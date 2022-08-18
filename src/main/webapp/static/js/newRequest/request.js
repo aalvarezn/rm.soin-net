@@ -407,7 +407,7 @@ function createRequestR1() {
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					codeOpportunity : $fmR1.find('#sCode').val(),
+					codeOpportunity : $fmR1.find('#sCode').val().toUpperCase(),
 					systemId : $fmR1.find('#sId2').val(),
 					typePetitionId:$fmR1.find('#tId2').val(),
 				}),

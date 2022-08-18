@@ -24,6 +24,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.model.System;
@@ -32,6 +33,7 @@ import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.RequestBaseR1Service;
 import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestRM_P1_R4Service;
 import com.soin.sgrm.service.SigesService;
@@ -58,6 +60,9 @@ public class RequestBaseManagementController extends BaseController {
 	
 	@Autowired
 	RequestBaseService requestBaseService;
+	
+	@Autowired
+	RequestBaseR1Service requestBaseR1Service;
 	
 	@Autowired
 	TypePetitionService typePetitionService;
@@ -100,7 +105,7 @@ public class RequestBaseManagementController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<RequestBase> requests = new JsonSheet<>();
+		JsonSheet<RequestBaseR1> requests = new JsonSheet<>();
 		try {
 
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
@@ -134,7 +139,7 @@ public class RequestBaseManagementController extends BaseController {
 	
 			String dateRange = request.getParameter("dateRange");
 
-			requests = requestBaseService.findAllRequest(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,systemId,typePetitionId);
+			requests = requestBaseR1Service.findAllRequest(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,systemId,typePetitionId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,16 +155,34 @@ public class RequestBaseManagementController extends BaseController {
 			@RequestParam(value = "motive", required = true) String motive) {
 		JsonResponse res = new JsonResponse();
 		try {
-			RequestBase requestBase = requestBaseService.findById(idRequest);
+			RequestBaseR1 requestBase = requestBaseService.findByR1(idRequest);
 			StatusRequest status = statusService.findById(idStatus);
 			String user=getUserLogin().getFullName();
-
+	
 			requestBase.setStatus(status);
 			requestBase.setOperator(getUserLogin().getFullName());
 			requestBase.setRequestDate((CommonUtils.getSystemTimestamp()));
 			
 			requestBase.setMotive(motive);
-			requestBaseService.update(requestBase);
+			RequestBase requestBaseNew= new RequestBase();
+			requestBaseNew.setCodeProyect(requestBase.getCodeProyect());
+			requestBaseNew.setFiles(requestBase.getFiles());
+			requestBaseNew.setId(requestBase.getId());
+			requestBaseNew.setTypePetition(requestBase.getTypePetition());
+			requestBaseNew.setMessage(requestBase.getMessage());
+			requestBaseNew.setSenders(requestBase.getSenders());
+			requestBaseNew.setStatus(requestBase.getStatus());
+			requestBaseNew.setSystemInfo(requestBase.getSystemInfo());
+			requestBaseNew.setNumRequest(requestBase.getNumRequest());
+			requestBaseNew.setMotive(requestBase.getMotive());
+			requestBaseNew.setOperator(requestBase.getOperator());
+			requestBaseNew.setUser(requestBase.getUser());
+			requestBaseNew.setTracking(requestBase.getTracking());
+			requestBaseNew.setRequestDate(requestBase.getRequestDate());
+			if(!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
+				requestBaseNew.setSiges(requestBaseService.findById(idRequest).getSiges());
+			}
+			requestBaseService.update(requestBaseNew);
 			res.setStatus("success");
 
 		} catch (Exception e) {
@@ -222,9 +245,9 @@ public class RequestBaseManagementController extends BaseController {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> rfcC = new HashMap<String, Integer>();
-		rfcC.put("draft", requestBaseService.countByType(id, "Borrador", 2, null));
-		rfcC.put("requested", requestBaseService.countByType(id, "Solicitado", 2, null));
-		rfcC.put("completed", requestBaseService.countByType(id, "Completado", 2, null));
+		rfcC.put("draft", requestBaseR1Service.countByType(id, "Borrador", 2, null));
+		rfcC.put("requested", requestBaseR1Service.countByType(id, "Solicitado", 2, null));
+		rfcC.put("completed", requestBaseR1Service.countByType(id, "Completado", 2, null));
 		rfcC.put("all", (rfcC.get("draft") + rfcC.get("requested") + rfcC.get("completed")));
 		request.setAttribute("rfcC", rfcC);
 
