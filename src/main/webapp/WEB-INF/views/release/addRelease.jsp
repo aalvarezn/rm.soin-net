@@ -88,8 +88,8 @@
 						<div class="form-line">
 							<textarea rows="1" class="form-control no-resize"
 								id="requirement_name" name="requirement_name" maxlength="30"
-								placeholder="Ingrese una búsqueda..."></textarea>
-							<div class="help-info">Min. 2 caracteres</div>
+								placeholder="Ingrese una búsqueda..." onkeypress="return verifyLetters(event)"></textarea>
+							<div class="help-info">Min. 2 caracteres y Max.30 caracteres</div>
 						</div>
 						<label id="requirement_name_error" class="error" for="name"
 							style="visibility: hidden">Campo Requerido.</label>
