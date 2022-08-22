@@ -158,7 +158,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Jerarquia de ambientes</label>
+					<label for="email_address">Jerarquía de ambientes</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${requestR2.hierarchy}</p>

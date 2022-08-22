@@ -163,7 +163,7 @@
 											<th>Tipo</th>
 											<th>Permisos</th>
 											<th>Ambiente</th>
-											<th>Especificacion</th>
+											<th>Especificación</th>
 
 										</tr>
 									</thead>

@@ -61,7 +61,7 @@
 						<span>Gestión QA</span>
 				</a></li>
 			</c:if>
-				<c:if test="${managerRequestAccess}">
+				<c:if test="${managerAccess}">
 				<li><a id="requestItem" href="<c:url value='/request/'/> ">
 						<span>Mis Solicitudes</span>
 				</a></li>

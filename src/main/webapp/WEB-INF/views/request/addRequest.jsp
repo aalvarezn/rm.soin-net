@@ -93,7 +93,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-					<label>Codigo de oportunidad</label>
+					<label>C&oacute;digo de oportunidad</label>
 					<div class="form-group m-b-0">
 						<input type="text" class="form-control" id="sCode" maxlength="50"
 							name="sCode" placeholder="Ingrese un código"

@@ -38,12 +38,12 @@
 </div>
 <div class="row clearfix" style="margin-top: 20px;">
 	<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-		<label>Metodo de conexion</label>
+		<label>Método de conexi&oacute;n</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
 				<textarea rows="2" cols="" name='connectionMethod' id="connectionMethod"
 					class="form-control"
-					placeholder="Ingrese la informaci&oacute;n del metodo de conexion..."
+					placeholder="Ingrese la informaci&oacute;n del metodo de conexi&oacute;n..."
 					style="">${requestR3.connectionMethod }</textarea>
 			</div>
 			<label id="connectionMethod_error" class="error fieldError"

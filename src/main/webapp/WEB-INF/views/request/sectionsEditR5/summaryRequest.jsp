@@ -170,7 +170,7 @@
 					</div>
 				</div>
 				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Justificacion de cambio</label>
+					<label for="email_address">Justificaci&oacute;n de cambio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${requestR5.justify}</p>

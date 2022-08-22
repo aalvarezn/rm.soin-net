@@ -300,22 +300,6 @@ public class RequestBaseController extends BaseController {
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
-			// Integer idManager= getUserLogin().getId();
-			/*
-			 * Integer countByManager= requestBaseService.countByManager(idManager,
-			 * requestEdit.getId()); if(countByManager==0) {
-			 * redirectAttributes.addFlashAttribute("data",
-			 * "No tiene permisos sobre la  ya que no formas parte de este equipo."); String
-			 * referer = request.getHeader("Referer"); return "redirect:" + referer; }
-			 */
-
-			/*
-			 * if (!(rfcEdit.getUser().getUsername().toLowerCase().trim())
-			 * .equals((user.getUsername().toLowerCase().trim()))) {
-			 * redirectAttributes.addFlashAttribute("data",
-			 * "No tiene permisos sobre el rfc."); String referer =
-			 * request.getHeader("Referer"); return "redirect:" + referer; }
-			 */
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
 				model.addAttribute("request", requestEdit);
 				model.addAttribute("systems", systems);
@@ -462,22 +446,6 @@ public class RequestBaseController extends BaseController {
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
-			// Integer idManager= getUserLogin().getId();
-			/*
-			 * Integer countByManager= requestBaseService.countByManager(idManager,
-			 * requestEdit.getId()); if(countByManager==0) {
-			 * redirectAttributes.addFlashAttribute("data",
-			 * "No tiene permisos sobre la  ya que no formas parte de este equipo."); String
-			 * referer = request.getHeader("Referer"); return "redirect:" + referer; }
-			 */
-
-			/*
-			 * if (!(rfcEdit.getUser().getUsername().toLowerCase().trim())
-			 * .equals((user.getUsername().toLowerCase().trim()))) {
-			 * redirectAttributes.addFlashAttribute("data",
-			 * "No tiene permisos sobre el rfc."); String referer =
-			 * request.getHeader("Referer"); return "redirect:" + referer; }
-			 */
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
 				model.addAttribute("request", requestEdit);
 				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
@@ -702,13 +670,6 @@ public class RequestBaseController extends BaseController {
 		return res;
 	}
 
-	/*
-	 * @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
-	 * public @ResponseBody JsonResponse updateUserInfo(HttpServletRequest request,
-	 * 
-	 * @Valid @ModelAttribute("UserInfo") UserInfo user, BindingResult errors,
-	 * ModelMap model, Locale locale, HttpSession session)
-	 */
 	@RequestMapping(value = "/saveRequestR3", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse saveRequestR3(HttpServletRequest request,
 			@RequestBody RequestRM_P1_R3 addRequest) {
@@ -789,9 +750,6 @@ public class RequestBaseController extends BaseController {
 
 			StatusRequest status = statusService.findByKey("name", "Solicitado");
 
-//			if (node != null)
-
-//				release.setNode(node);
 
 			requestBase.setStatus(status);
 			requestBase.setMotive(status.getReason());
@@ -963,6 +921,11 @@ public class RequestBaseController extends BaseController {
 		if (request.getUserRM().size() == 0) {
 			errors.add(new MyError("userRM", "Debe seleccionar al menos a un usuario del departamento de RM"));
 		}
+		
+		if (request.getConnectionMethod() == "" || request.getConnectionMethod() == null) {
+			errors.add(new MyError("connectionMethod", "Valor requerido."));
+		}
+
 
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
@@ -1040,8 +1003,6 @@ public class RequestBaseController extends BaseController {
 	}
 
 	public void loadCountsRelease(HttpServletRequest request, Integer id) {
-		// PUser userLogin = getUserLogin();
-		// List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> userC = new HashMap<String, Integer>();
 		userC.put("draft", requestBaseR1Service.countByType(id, "Borrador", 1, null));
 		userC.put("requested", requestBaseR1Service.countByType(id, "Solicitado", 1, null));

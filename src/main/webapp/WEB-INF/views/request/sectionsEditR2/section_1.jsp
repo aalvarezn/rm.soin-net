@@ -16,15 +16,15 @@
 			<div class="form-line" style="height: 110.667px;">
 			<c:choose>
 			<c:when test="${requestR2.typeService == 'Estandar'}">
-			<input type="radio" id="type1" name="type" value="Estandar" checked> <label	for="type1">Estandar</label><br> 
+			<input type="radio" id="type1" name="type" value="Estandar" checked> <label	for="type1">Estándar</label><br> 
 			<input type="radio" id="type2" name="type" value="Completo"> <label for="type2">Completo</label><br>
 			</c:when>
 			<c:when test="${requestR2.typeService == 'Completo'}">
-			<input type="radio" id="type1" name="type" value="Estandar" > <label	for="type1">Estandar</label><br> 
+			<input type="radio" id="type1" name="type" value="Estandar" > <label	for="type1">Estándar</label><br> 
 			<input type="radio" id="type2" name="type" value="Completo" checked> <label for="type2">Completo</label><br>
 			</c:when>	
 			<c:otherwise>
-			<input type="radio" id="type1" name="type" value="Estandar" > <label	for="type1">Estandar</label><br> 
+			<input type="radio" id="type1" name="type" value="Estandar" > <label	for="type1">Estándar</label><br> 
 			<input type="radio" id="type2" name="type" value="Completo" > <label for="type2">Completo</label><br>
 			</c:otherwise>
 			</c:choose>	
@@ -58,12 +58,12 @@
 	</div>
 <div class="row clearfix" style="margin-top: 20px;">
 		<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-		<label>Jeraquia de ambientes</label>
+		<label>Jerarquía de ambientes</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
 				<textarea rows="2" cols="" name='hierarchy' id="hierarchy"
 					class="form-control"
-					placeholder="Ingrese la jeraquia de ambientes..." style="">${requestR2.hierarchy }</textarea>
+					placeholder="Ingrese la jerarquía de ambientes..." style="">${requestR2.hierarchy }</textarea>
 			</div>
 			<label id="hierarchy_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>

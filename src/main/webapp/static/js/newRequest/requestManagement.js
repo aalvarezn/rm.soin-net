@@ -1,4 +1,4 @@
-var $dtRFCs;
+var $dtRequests;
 
 var $formChangeStatus = $('#changeStatusForm');
 var $formChangeUser = $('#changeUserForm');
@@ -62,29 +62,29 @@ $(document).ready(function() {
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 
 $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val('');
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 
 $('#tableFilters #typePetitionId').change(function() {
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 
 $('#tableFilters #systemId').change(function() {
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 
 $('#tableFilters #statusId').change(function() {
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 
 
 function initRFCTable() {
-	$dtRFCs = $('#dtRFCs').DataTable(
+	$dtRequests = $('#dtRequests').DataTable(
 			{
 				
 				'columnDefs' : [ {
@@ -169,9 +169,9 @@ function initRFCTable() {
 }
 
 function openRequestTrackingModal(idRequest) {
-	var dtRFC = $('#dtRFCs').dataTable();
-	var idRow = dtRFC.fnFindCellRowIndexes(idRequest, 0); // idRow
-	var rowData = $dtRFCs.row(idRow[0]).data();
+	var dtRequests = $('#dtRequests').dataTable();
+	var idRow = dtRequests.fnFindCellRowIndexes(idRequest, 0); // idRow
+	var rowData = $dtRequests.row(idRow[0]).data();
 	$trackingRequestForm.find('#idRequest').val(rowData.id);
 	$trackingRequestForm.find('#requestNumber').text(rowData.numRequest);
 	
@@ -249,7 +249,7 @@ function deleteRequest(element) {
 			case 'success':
 				swal("Correcto!", "La solicitud ha sido anulada exitosamente.",
 						"success", 2000)
-						$dtRFCs.ajax.reload();
+						$dtRequests.ajax.reload();
 				break;
 			case 'fail':
 				swal("Error!", response.exception, "error")
@@ -268,9 +268,9 @@ function deleteRequest(element) {
 }
 
 function changeStatusRequest(idRequest) {
-	var dtRFC = $('#dtRFCs').dataTable();
-	var idRow = dtRFC.fnFindCellRowIndexes(idRequest, 0); // idRow
-	var rowData = $dtRFCs.row(idRow[0]).data();
+	var dtRequests = $('#dtRequests').dataTable();
+	var idRow = dtRequests.fnFindCellRowIndexes(idRequest, 0); // idRow
+	var rowData = $dtRequests.row(idRow[0]).data();
 	$formChangeStatus[0].reset();
 	$formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#idRequest').val(idRequest);
@@ -310,7 +310,7 @@ function responseStatusRequest(response) {
 	case 'success':
 		swal("Correcto!", "La solicitud ha sido modificado exitosamente.",
 				"success", 2000);
-		$dtRFCs.ajax.reload();
+		$dtRequests.ajax.reload();
 		closeChangeStatusModal();
 		break;
 	case 'fail':

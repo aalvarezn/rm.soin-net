@@ -68,7 +68,7 @@
 </div>
 <div class="row clearfix">
 	<div class="col-sm-12">
-	<h5>* Nota si se desea adjuntar imagenes subirlas por favor en el siguiente paso</h5>
+	<h5>* Nota si se desea adjuntar imágenes subirlas por favor en el siguiente paso</h5>
 	</div>
 	</div>
 <div class="row clearfix" style="margin-top: 20px;">

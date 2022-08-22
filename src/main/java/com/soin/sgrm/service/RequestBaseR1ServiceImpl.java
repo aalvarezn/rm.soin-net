@@ -127,8 +127,8 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 		}
 
 		if (systemId != 0) {
-			alias.put("siges", "siges");
-			columns.put("siges", Restrictions.or(Restrictions.eq("siges.system.id", systemId)));
+			alias.put("systemInfo", "systemInfo");
+			columns.put("siges", Restrictions.or(Restrictions.eq("systemInfo.id", systemId)));
 
 		} else {
 			List<Integer> listaId = new ArrayList<Integer>();
@@ -203,8 +203,8 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 		}
 
 		if (systemId != 0) {
-			alias.put("siges", "siges");
-			columns.put("siges", Restrictions.or(Restrictions.eq("siges.system.id", systemId)));
+			alias.put("systemInfo", "systemInfo");
+			columns.put("siges", Restrictions.or(Restrictions.eq("systemInfo.id", systemId)));
 
 		} 
 

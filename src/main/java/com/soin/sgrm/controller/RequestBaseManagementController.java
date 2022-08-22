@@ -242,8 +242,6 @@ public class RequestBaseManagementController extends BaseController {
 		return res;
 	}
 	public void loadCountsRequest(HttpServletRequest request, Integer id) {
-		//PUser userLogin = getUserLogin();
-		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> rfcC = new HashMap<String, Integer>();
 		rfcC.put("draft", requestBaseR1Service.countByType(id, "Borrador", 2, null));
 		rfcC.put("requested", requestBaseR1Service.countByType(id, "Solicitado", 2, null));

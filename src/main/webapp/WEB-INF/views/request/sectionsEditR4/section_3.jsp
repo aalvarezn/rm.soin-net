@@ -12,7 +12,7 @@
 	<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
 		<div class="clearfix m-l--15">
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-				<label for="email_address">Numero de solicitud</label>
+				<label for="email_address">Número de solicitud</label>
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="releaseNumberTinySummary"

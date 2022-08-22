@@ -60,7 +60,7 @@
 			<div class="form-line disabled">
 			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 			<input type="radio" id="type1" name="type" value="Ambiente"> <label	for="type1">Ambiente</label><br> 
-					<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicacion</label><br>
+					<input type="radio" id="type2" name="type" value="Aplicacion"> <label for="type2">Aplicación</label><br>
 			</div>
 			
 				<input type="radio" id="type3" name="type" value="SGRM"> <label for="type3">SGRM</label><br> 
@@ -81,7 +81,7 @@
 				<input type="checkbox" id="permission1" name="permission" value="Lectura"> <label for="permission1">Lectura</label> <br>
 				<input type="checkbox" id="permission2" name="permission" value="Escritura"> <label for="permission2">Escritura</label><br>
 				</div>
-				<input type="checkbox" id="permission3" name="permission" value="Ejecucion"> <label for="permission3">Ejecucion</label><br>
+				<input type="checkbox" id="permission3" name="permission" value="Ejecucion"> <label for="permission3">Ejecución</label><br>
 				<input type="checkbox" id="permission4" name="permission" value="Acceso"> <label for="permission4">Acceso</label><br>
 				<br>
 			</div>
@@ -93,12 +93,12 @@
 
 
 	<div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
-		<label for="espec">Especificacion</label>
+		<label for="espec">Especificación</label>
 		<div class="form-group m-b-0i">
 		<div class="form-line" >
 				<textarea rows="2" cols="" name='espec' id="espec"
 					class="form-control" style="height: 80px;"
-					placeholder="Ingrese la especificacion..." style=""></textarea>
+					placeholder="Ingrese la especificación..." style=""></textarea>
 			</div>
 		</div>
 	</div>
@@ -136,7 +136,7 @@
 								<th>Tipo</th>
 								<th>Permisos</th>
 								<th>Ambiente</th>
-								<th>Especificacion</th>
+								<th>Especificación</th>
 								<th class="actCol" style="text-align: center;">Acciones</th>
 							</tr>
 						</thead>

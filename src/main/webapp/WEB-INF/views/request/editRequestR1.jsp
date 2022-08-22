@@ -159,7 +159,7 @@ tr.selected {
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>Codigo Oportunidad: </span>${request.numRequest} <input type="hidden"
+								<span>Código de oportunidad: </span>${request.numRequest} <input type="hidden"
 									id="requestId" value="${request.id}"> <input type="hidden"
 									id="requestNumber" value="${request.numRequest}">
 									 <input type="hidden"

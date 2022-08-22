@@ -208,7 +208,7 @@
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<div class="body ">
 								<div class="body table-responsive">
-									<table id="dtRFCs"
+									<table id="dtRequests"
 										class="table table-bordered table-striped table-hover dataTable">
 										<thead>
 											<tr>

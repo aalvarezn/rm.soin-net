@@ -1,5 +1,5 @@
 /** Declaración de variables globales del contexto * */
-var $dtRFCs;
+var $dtRequests;
 var $dtUsers;
 var $fmRequest = $('#formAddRequest');
 var $fmR1 = $('#formAddR1');
@@ -69,7 +69,7 @@ $(function() {
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 function closeTrackingRequestModal(){
 	$trackingRequestForm[0].reset();
@@ -78,25 +78,25 @@ function closeTrackingRequestModal(){
 
 $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val('');
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 
 $('#tableFilters #typePetitionId').change(function() {
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 
 $('#tableFilters #systemId').change(function() {
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 
 $('#tableFilters #statusId').change(function() {
-	$dtRFCs.ajax.reload();
+	$dtRequests.ajax.reload();
 });
 
 
 
 function initRequestTable() {
-	$dtRFCs = $('#dtRFCs').DataTable(
+	$dtRequests = $('#dtRequests').DataTable(
 			{
 				
 				'columnDefs' : [ {
@@ -255,7 +255,7 @@ function deleteRequest(element) {
 			case 'success':
 				swal("Correcto!", "La solicitud ha sido eliminado exitosamente.",
 						"success", 2000)
-						$dtRFCs.ajax.reload();
+						$dtRequests.ajax.reload();
 				break;
 			case 'fail':
 				swal("Error!", response.exception, "error")
@@ -505,9 +505,9 @@ function dropDownChange(){
 }
 function openRequestTrackingModal(idRequest) {
 
-	var dtRFC = $('#dtRFCs').dataTable();
-	var idRow = dtRFC.fnFindCellRowIndexes(idRequest, 0); // idRow
-	var rowData = $dtRFCs.row(idRow[0]).data();
+	var dtRequest = $('#dtRequests').dataTable();
+	var idRow = dtRequest.fnFindCellRowIndexes(idRequest, 0); // idRow
+	var rowData = $dtRequests.row(idRow[0]).data();
 	
 	$trackingRequestForm.find('#idRequest').val(rowData.id);
 	$trackingRequestForm.find('#requestNumber').text(rowData.numRequest);

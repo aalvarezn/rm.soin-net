@@ -173,32 +173,32 @@ function responseFileUpload(response, idRow) {
 
 }
 
-function addReleaseFileRow(rfcFile) {
+function addReleaseFileRow(requestFile) {
 
 	var attachedFilesTable = $('#attachedFilesTable').DataTable();
-	var myDate = new Date(rfcFile.revisionDate);
-	if ($('table#attachedFilesTable ').find('#' + rfcFile.id).length != 0) {
-		attachedFilesTable.row($('#attachedFilesTable #' + rfcFile.id))
+	var myDate = new Date(requestFile.revisionDate);
+	if ($('table#attachedFilesTable ').find('#' + requestFile.id).length != 0) {
+		attachedFilesTable.row($('#attachedFilesTable #' + requestFile.id))
 				.remove().draw();
 	}
 
 	attachedFilesTable.row
 			.add(
 					[
-						rfcFile.name,
+						requestFile.name,
 							myDate.toLocaleString(),
 							'<div style="text-align: center">'
 									+ '<div class="iconLine">'
 									+ '<a onclick="deleteReleaseFile('
-									+ rfcFile.id
+									+ requestFile.id
 									+ ')" download="" class=""> <i class="material-icons gris" style="font-size: 30px;">delete</i>'
 									+ '</a>'
 									+ '<a href="'
 									+ getCont()
 									+ 'file/singleDownloadRequest-'
-									+ rfcFile.id
+									+ requestFile.id
 									+ '" download="" class=""> <i class="material-icons gris" style="font-size: 30px;">cloud_download</i>'
-									+ '</a>' + '</div>' + '</div>' ]).node().id = rfcFile.id;
+									+ '</a>' + '</div>' + '</div>' ]).node().id = requestFile.id;
 	attachedFilesTable.draw();
 }
 
