@@ -14,6 +14,11 @@ $(function() {
 	setTab();
 	$("#addReleaseSection").hide();
 
+
+		  $("#requirement_name").on('paste', function(e){
+		    e.preventDefault();
+		  });
+
 	$('input[name="daterange"]').daterangepicker({
 		"autoUpdateInput": false,
 		"opens": 'left',
@@ -78,6 +83,23 @@ $('#formAddReleaseDraft #requirement_name').keydown(function( event ) {
 	}
 });
 
+function verifyLetters(e){
+	key=e.keyCode || e. which;
+	teclado=String.fromCharCode(key);
+	letras="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYYZ_";
+	especiales="95";
+	
+	teclado_especial=false;
+	
+	for(var i in especiales){
+		if(key==especiales[i]){
+			teclado_especial=true;
+		}
+	}
+	if(letras.indexOf(teclado)==-1&&!teclado_especial){
+		return false;
+	}
+}
 function loadTableRelease(nameTable) {
 	if (releaseTable != undefined) {
 		releaseTable.destroy();
@@ -336,6 +358,12 @@ $("input[name=group1]").on("change", function() {
 		$("#listRequirement").show()
 		$('#requirement_name').autocomplete('enable');
 	}
+	
+	if ($("input[name='group1']:checked").val() != 'TPO/BT'){
+		$("#requirement_name").attr("placeholder", 'Escriba un texto corto y si necesita separar palabras usar "_" para separarlo');
+	}else{
+		$("#requirement_name").attr("placeholder", "Ingrese una b\u00FAsqueda...");
+	}
 });
 
 function setTab() {
@@ -358,7 +386,9 @@ function changeSlide() {
 		direction : 'right'
 	}, 500);
 	$("#addReleaseSection").insertAfter("#tableSection");
+	$("#requirement_name").attr("placeholder", "Ingrese una b\u00FAsqueda...");
 }
+
 
 function openAddReleaseSection() {
 	$('#createRelease').show();
@@ -574,7 +604,7 @@ function createRelease() {
 				description : description,
 				observations : observations,
 				requeriment : requeriment,
-				requirement_name : requirement_name
+				requirement_name : requirement_name.toUpperCase()
 			},
 			success : function(response) {
 				switch (response.status) {
