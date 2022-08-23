@@ -52,7 +52,7 @@ $(function() {
 		format: 'DD/MM/YYYY hh:mm a',
 		maxDate : new Date()
 	});
-	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+	//$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
 	activeItemMenu("requestItem");
 	dropDownChange();
