@@ -85,18 +85,18 @@ $('#formAddReleaseDraft #requirement_name').keydown(function( event ) {
 
 function verifyLetters(e){
 	key=e.keyCode || e. which;
-	teclado=String.fromCharCode(key);
-	letras="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYYZ_";
-	especiales="95";
+	keyboard=String.fromCharCode(key);
+	characters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYYZ_1234567890";
+	specials="95";
 	
-	teclado_especial=false;
+	special_keyboard=false;
 	
-	for(var i in especiales){
-		if(key==especiales[i]){
-			teclado_especial=true;
+	for(var i in specials){
+		if(key==specials[i]){
+			special_keyboard=true;
 		}
 	}
-	if(letras.indexOf(teclado)==-1&&!teclado_especial){
+	if(characters.indexOf(keyboard)==-1&&!special_keyboard){
 		return false;
 	}
 }
