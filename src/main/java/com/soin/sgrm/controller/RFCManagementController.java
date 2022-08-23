@@ -210,6 +210,27 @@ public class RFCManagementController extends BaseController{
 		}
 		return res;
 	}
+	@RequestMapping(value = "/cancelRFC", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse cancelRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "idRFC", required = true) Long idRFC) {
+		JsonResponse res = new JsonResponse();
+		try {
+			RFC rfc = rfcService.findById(idRFC);
+			StatusRFC status = statusService.findByKey("name","Anulado");
+			rfc.setStatus(status);
+			rfc.setOperator(getUserLogin().getFullName());
+			rfc.setMotive(status.getReason());
+			rfcService.update(rfc);
+			res.setStatus("success");
+
+		}  catch (Exception e) {
+			Sentry.capture(e, "rfcManagement");
+			res.setStatus("exception");
+			res.setException("Error al cancelar el rfc: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 	public void loadCountsRFC(HttpServletRequest request, Integer id) {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
