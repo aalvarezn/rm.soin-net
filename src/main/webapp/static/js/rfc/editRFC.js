@@ -44,10 +44,6 @@ $(function() {
 		 removeData(data);
 	 });
 	 
-	    
-	
-
-
 	$('#dateBegin').datetimepicker({
 		locale: 'es',
 		format: 'DD/MM/YYYY hh:mm a',

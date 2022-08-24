@@ -46,8 +46,8 @@ public class SigesController extends BaseController {
 	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("systems", systemService.listAll());
-		model.addAttribute("system", new Project());
+		model.addAttribute("systems",systemService.listAll());
+		model.addAttribute("system",new Project());
 		model.addAttribute("emailTemplates",emailTemplateService.listAll());
 		model.addAttribute("emailTemplate",new EmailTemplate());
 		return "/admin/siges/siges";
@@ -71,7 +71,7 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			SystemInfo system= systemService.findSystemInfoById( addSiges.getSystemId());
+			SystemInfo system= systemService.findSystemInfoById(addSiges.getSystemId());
 			EmailTemplate emailTemplate= emailTemplateService.findById(addSiges.getEmailTemplateId());
 			addSiges.setEmailTemplate(emailTemplate);
 			addSiges.setSystem(system);

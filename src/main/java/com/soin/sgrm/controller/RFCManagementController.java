@@ -1,5 +1,6 @@
 package com.soin.sgrm.controller;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +25,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
@@ -123,6 +125,27 @@ public class RFCManagementController extends BaseController{
 		return rfcs;
 	}
 	
+	@RequestMapping(value = "/cancelRFC", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse cancelRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "idRFC", required = true) Long idRFC) {
+		JsonResponse res = new JsonResponse();
+		try {
+			RFC rfc = rfcService.findById(idRFC);
+			StatusRFC status = statusService.findByKey("name","Anulado");
+			rfc.setStatus(status);
+			rfc.setOperator(getUserLogin().getFullName());
+			rfc.setMotive(status.getReason());
+			rfcService.update(rfc);
+			res.setStatus("success");
+
+		}  catch (Exception e) {
+			Sentry.capture(e, "rfcManagement");
+			res.setStatus("exception");
+			res.setException("Error al cancelar el rfc: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 	@RequestMapping(value = "/statusRFC", method = RequestMethod.GET)
 	public @ResponseBody JsonResponse draftRFC(HttpServletRequest request, Model model,
 			@RequestParam(value = "idRFC", required = true) Long idRFC,
@@ -188,27 +211,7 @@ public class RFCManagementController extends BaseController{
 		}
 		return res;
 	}
-	@RequestMapping(value = "/cancelRFC", method = RequestMethod.GET)
-	public @ResponseBody JsonResponse cancelRelease(HttpServletRequest request, Model model,
-			@RequestParam(value = "idRFC", required = true) Long idRFC) {
-		JsonResponse res = new JsonResponse();
-		try {
-			RFC rfc = rfcService.findById(idRFC);
-			StatusRFC status = statusService.findByKey("name","Anulado");
-			rfc.setStatus(status);
-			rfc.setOperator(getUserLogin().getFullName());
-			rfc.setMotive(status.getReason());
-			rfcService.update(rfc);
-			res.setStatus("success");
 
-		}  catch (Exception e) {
-			Sentry.capture(e, "rfcManagement");
-			res.setStatus("exception");
-			res.setException("Error al cancelar el rfc: " + e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-		}
-		return res;
-	}
 	public void loadCountsRFC(HttpServletRequest request, Integer id) {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
