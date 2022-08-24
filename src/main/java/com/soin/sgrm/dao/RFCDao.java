@@ -3,7 +3,7 @@ package com.soin.sgrm.dao;
 import com.soin.sgrm.model.RFC;
 
 public interface RFCDao extends BaseDao<Long, RFC>{
-	public Integer existNumRelease(String number_release);
+	public Integer existNumRFC(String number_release);
 	
 	void updateStatusRFC(RFC rfc, String dateChange) throws Exception;
 

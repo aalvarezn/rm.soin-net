@@ -167,21 +167,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="row clearfix m-t-10">
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
-					<div class="form-group m-b-0i">
-						<div class="form-group m-b-0i">
-							<div class="form-line disabled">
-								<p>
-									<fmt:formatDate value="${rfc.requestDate }"
-										pattern="dd/MM/YYYY HH:mm:ss" />
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+
 			<div class="row clearfix m-t-10">
 				<div class="col-sm-12">
 					<h5 class="titulares">Fecha y hora propuesta para ejecutar el
@@ -207,12 +193,10 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10" style="margin-top: 30px;">
 					<label for="">Raz&oacute;n del cambio.</label>
 					<textarea class="areaWidth" rows="" cols="">${rfc.reasonChange }</textarea>
 				</div>
-
-
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Efecto si no se implementa el cambio.</label>
 					<textarea class="areaWidth" rows="" cols="">${rfc.effect }</textarea>
