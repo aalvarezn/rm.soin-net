@@ -96,8 +96,8 @@
 					<label>C&oacute;digo de oportunidad</label>
 					<div class="form-group m-b-0">
 						<input type="text" class="form-control" id="sCode" maxlength="50"
-							name="sCode" placeholder="Ingrese un código"
-							style="height: 60px;">
+							name="sCode" placeholder="Escriba un texto corto '_' para separarlo"
+							style="height: 60px; padding-bottom: 20px;" onkeypress="return verifyLetters(event)">
 						<div class="help-info">Máx. 50 caracteres</div>
 					</div>
 

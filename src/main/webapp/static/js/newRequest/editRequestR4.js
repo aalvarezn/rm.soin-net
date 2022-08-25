@@ -78,9 +78,9 @@ $(function() {
 		$('html, body').animate({scrollTop: '0px'}, 300);
 	});
 	origForm = $requestEditForm.serialize();
-	$('.tagInit').tagsInput({
-		width:'400px'
-	});
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
 
 
 	 $('#userTable tbody').on( 'click', 'tr', function () {
@@ -265,10 +265,8 @@ function showUser(id){
 				$('#permission4').prop('checked',true);
 			}
 		}
-		console.log(splitString);
 		$requestEditForm.find('#espec').val(data.espec);
 		$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
-	 console.log(data);
 }
 
 function confirmDeleteUser(index){

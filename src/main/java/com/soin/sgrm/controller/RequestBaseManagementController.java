@@ -54,35 +54,34 @@ public class RequestBaseManagementController extends BaseController {
 
 	@Autowired
 	SigesService sigeService;
-	
+
 	@Autowired
 	StatusRequestService statusService;
-	
+
 	@Autowired
 	RequestBaseService requestBaseService;
-	
+
 	@Autowired
 	RequestBaseR1Service requestBaseR1Service;
-	
+
 	@Autowired
 	TypePetitionService typePetitionService;
-	
+
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
-	
+
 	@Autowired
 	RequestRM_P1_R4Service requestServiceRm4;
-	
-	
+
 	@Autowired
 	AmbientService ambientService;
-	
+
 	@Autowired
 	EmailTemplateService emailService;
-	
+
 	@Autowired
 	ParameterService parameterService;
-	
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -91,9 +90,9 @@ public class RequestBaseManagementController extends BaseController {
 			loadCountsRequest(request, userLogin);
 			List<System> systems = systemService.list();
 			List<StatusRequest> statuses = statusService.findAll();
-			List<TypePetition> typePetitions=typePetitionService.findAll();
+			List<TypePetition> typePetitions = typePetitionService.findAll();
 			model.addAttribute("statuses", statuses);
-			model.addAttribute("typePetitions",typePetitions);
+			model.addAttribute("typePetitions", typePetitions);
 			model.addAttribute("systems", systems);
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
@@ -101,7 +100,7 @@ public class RequestBaseManagementController extends BaseController {
 		}
 		return "/request/requestManagement";
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
@@ -116,37 +115,37 @@ public class RequestBaseManagementController extends BaseController {
 			Long statusId;
 			Integer systemId;
 			Long typePetitionId;
-			//int priorityId;
-			//int systemId;
+			// int priorityId;
+			// int systemId;
 			if (request.getParameter("statusId").equals("")) {
 				statusId = null;
 			} else {
 				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
 			}
-			
+
 			if (request.getParameter("typePetitionId").equals("")) {
 				typePetitionId = null;
 			} else {
 				typePetitionId = (long) Integer.parseInt(request.getParameter("typePetitionId"));
 			}
-			
+
 			if (request.getParameter("systemId").equals("")) {
 				systemId = 0;
 			} else {
-				systemId =  Integer.parseInt(request.getParameter("systemId"));
+				systemId = Integer.parseInt(request.getParameter("systemId"));
 			}
-			
-	
+
 			String dateRange = request.getParameter("dateRange");
 
-			requests = requestBaseR1Service.findAllRequest(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,systemId,typePetitionId);
+			requests = requestBaseR1Service.findAllRequest(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
+					dateRange, systemId, typePetitionId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return requests;
 	}
-	
+
 	@RequestMapping(value = "/statusRequest", method = RequestMethod.GET)
 	public @ResponseBody JsonResponse draftRFC(HttpServletRequest request, Model model,
 			@RequestParam(value = "idRequest", required = true) Long idRequest,
@@ -157,14 +156,14 @@ public class RequestBaseManagementController extends BaseController {
 		try {
 			RequestBaseR1 requestBase = requestBaseService.findByR1(idRequest);
 			StatusRequest status = statusService.findById(idStatus);
-			String user=getUserLogin().getFullName();
-	
+			String user = getUserLogin().getFullName();
+
 			requestBase.setStatus(status);
 			requestBase.setOperator(getUserLogin().getFullName());
 			requestBase.setRequestDate((CommonUtils.getSystemTimestamp()));
-			
+
 			requestBase.setMotive(motive);
-			RequestBase requestBaseNew= new RequestBase();
+			RequestBase requestBaseNew = new RequestBase();
 			requestBaseNew.setCodeProyect(requestBase.getCodeProyect());
 			requestBaseNew.setFiles(requestBase.getFiles());
 			requestBaseNew.setId(requestBase.getId());
@@ -179,7 +178,7 @@ public class RequestBaseManagementController extends BaseController {
 			requestBaseNew.setUser(requestBase.getUser());
 			requestBaseNew.setTracking(requestBase.getTracking());
 			requestBaseNew.setRequestDate(requestBase.getRequestDate());
-			if(!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
+			if (!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
 				requestBaseNew.setSiges(requestBaseService.findById(idRequest).getSiges());
 			}
 			requestBaseService.update(requestBaseNew);
@@ -193,7 +192,7 @@ public class RequestBaseManagementController extends BaseController {
 		}
 		return res;
 	}
-	
+
 	@RequestMapping(value = "/deleteRequest/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteRequest(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
@@ -201,13 +200,13 @@ public class RequestBaseManagementController extends BaseController {
 			res.setStatus("success");
 			RequestBase requestBase = requestBaseService.findById(id);
 			if (requestBase.getStatus().getName().equals("Borrador")) {
-				
-					StatusRequest status = statusService.findByKey("name", "Anulado");
-					requestBase.setStatus(status);
-					requestBase.setMotive(status.getReason());
-					requestBase.setOperator(getUserLogin().getFullName());
-					requestBaseService.update(requestBase);
-				
+
+				StatusRequest status = statusService.findByKey("name", "Anulado");
+				requestBase.setStatus(status);
+				requestBase.setMotive(status.getReason());
+				requestBase.setOperator(getUserLogin().getFullName());
+				requestBaseService.update(requestBase);
+
 			} else {
 				res.setStatus("fail");
 				res.setException("La acción no se pudo completar, la solicitud no esta en estado de Borrador.");
@@ -220,20 +219,21 @@ public class RequestBaseManagementController extends BaseController {
 		}
 		return res;
 	}
+
 	@RequestMapping(value = "/cancelRequest", method = RequestMethod.GET)
 	public @ResponseBody JsonResponse cancelRelease(HttpServletRequest request, Model model,
 			@RequestParam(value = "idRequest", required = true) Long idRequest) {
 		JsonResponse res = new JsonResponse();
 		try {
 			RequestBase requestBase = requestBaseService.findById(idRequest);
-			StatusRequest status = statusService.findByKey("name","Anulado");
+			StatusRequest status = statusService.findByKey("name", "Anulado");
 			requestBase.setStatus(status);
 			requestBase.setOperator(getUserLogin().getFullName());
 			requestBase.setMotive(status.getReason());
 			requestBaseService.update(requestBase);
 			res.setStatus("success");
 
-		}  catch (Exception e) {
+		} catch (Exception e) {
 			Sentry.capture(e, "requestManagement");
 			res.setStatus("exception");
 			res.setException("Error al cancelar la solicitud: " + e.getMessage());
@@ -241,6 +241,7 @@ public class RequestBaseManagementController extends BaseController {
 		}
 		return res;
 	}
+
 	public void loadCountsRequest(HttpServletRequest request, Integer id) {
 		Map<String, Integer> rfcC = new HashMap<String, Integer>();
 		rfcC.put("draft", requestBaseR1Service.countByType(id, "Borrador", 2, null));
@@ -249,6 +250,5 @@ public class RequestBaseManagementController extends BaseController {
 		rfcC.put("all", (rfcC.get("draft") + rfcC.get("requested") + rfcC.get("completed")));
 		request.setAttribute("rfcC", rfcC);
 
-		
 	}
 }

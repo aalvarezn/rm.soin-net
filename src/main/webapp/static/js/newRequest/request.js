@@ -93,7 +93,23 @@ $('#tableFilters #statusId').change(function() {
 	$dtRequests.ajax.reload();
 });
 
-
+function verifyLetters(e){
+	key=e.keyCode || e. which;
+	keyboard=String.fromCharCode(key);
+	characters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYYZ_1234567890";
+	specials="95";
+	
+	special_keyboard=false;
+	
+	for(var i in specials){
+		if(key==specials[i]){
+			special_keyboard=true;
+		}
+	}
+	if(characters.indexOf(keyboard)==-1&&!special_keyboard){
+		return false;
+	}
+}
 
 function initRequestTable() {
 	$dtRequests = $('#dtRequests').DataTable(
@@ -434,7 +450,6 @@ function createRequestR1() {
 function dropDownChangeRequest(){
 	$('#tId').on('change', function(){
 		var typeRequest =$('#tId option:selected').text();
-		console.log(typeRequest);
 		if(typeRequest==='RM-P1-R1'){
 			$('#formAddRequest').attr( "hidden",true);
 			$('#formAddR1').attr( "hidden",false);
@@ -447,7 +462,6 @@ function dropDownChangeRequest(){
 			
 		}else{
 			resetDrop();
-			console.log("awdawd");
 			$('#formAddR1').attr( "hidden",true);
 			$('#formAddRequest').attr( "hidden",false);
 
@@ -456,12 +470,10 @@ function dropDownChangeRequest(){
 	
 	$('#tId2').on('change', function(){
 		var typeRequest =$('#tId2 option:selected').text();
-		console.log(typeRequest);
 		if(typeRequest==='RM-P1-R1'){
 		
 		}else{
 			resetDrop();
-			console.log("awdawd");
 			$('#formAddR1').attr( "hidden",true);
 			$('#formAddRequest').attr( "hidden",false);
 			$('#sId').selectpicker('val',  "");
