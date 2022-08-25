@@ -9,40 +9,72 @@
 	<div class="col-sm-12">
 		<h5 class="titulares">Configuraciones extra del envio de correos</h5>
 	</div>
-	<div class="row clearfix">
-		<c:choose>
-			<c:when test="${ccs.size() >0}">
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-					<label for="to" class="col-sm-2 col-form-label lbtxt m-t-11">Destinatarios:
-					</label>
-					<div class="col-sm-6" style="margin-left: 29px;">
-						<div class="form-line">
-							<ul class="nav nav-pills">
-								<c:forEach items="${ccs}" var="cc">
-									<li class="nav-item dependency m-r-10">${cc}</li>
-								</c:forEach>
-							</ul>
-						</div>
+
+	<c:choose>
+		<c:when test="${ccs.size() >0}">
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<label for="to" class="col-sm-2 col-form-label lbtxt m-t-11">Destinatarios:
+				</label>
+				<div class="col-sm-6" style="margin-left: 29px;">
+					<div class="form-line">
+						<ul class="nav nav-pills">
+							<c:forEach items="${ccs}" var="cc">
+								<li class="nav-item dependency m-r-10">${cc}</li>
+							</c:forEach>
+						</ul>
 					</div>
 				</div>
-			</c:when>
-			<c:otherwise>
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-					<label for="to" class="col-sm-4 col-form-label lbtxt m-t-11"
-						style="width: 165px;">Destinatarios: </label>
-					<div class="col-sm-6">
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<label for="to" class="col-sm-4 col-form-label lbtxt m-t-11"
+					style="width: 165px; margin-bottom: 20px;">Otros
+					destinatarios: </label>
+				<div class="col-sm-6">
+					<div class="form-line">
+						<input type="text" id="senders" name="senders" value="${senders}"
+							class="form-control tagInitMail" placeholder="">
+					</div>
+				</div>
+			</div>
+
+		</c:when>
+		<c:otherwise>
+			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+				<label for="to" class="col-sm-4 col-form-label lbtxt m-t-11"
+					style="width: 165px;">Destinatarios: </label>
+				<div class="col-sm-6">
+					<div class="form-group m-b-0">
 						<div class="form-line">
 							<input type="text" id="senders" name="senders" value="${senders}"
 								class="form-control tagInitMail" placeholder="">
 						</div>
+						<label id="senders_error" class="error fieldError activeError"
+							for="name" style="visibility: hidden;">Valor requerido.</label>
 					</div>
 				</div>
-			</c:otherwise>
-		</c:choose>
-
-
+			</div>
+			<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<label>Mensaje personalizado</label>
+					<div class="form-group m-b-0i">
+						<div class="form-line">
+							<textarea rows="2" cols="" name='messagePer' id="messagePer"
+								class="form-control" placeholder="Ingrese un mensaje..."
+								style="">${message}</textarea>
+						</div>
+						<label id="messagePer_error" class="error fieldError" for="name"
+							style="visibility: hidden;">Campo requerido.</label>
+					</div>
+				</div>
+			</div>
+		</c:otherwise>
+	</c:choose>
+</div>
+<c:if test="${ccs.size()> 0}">
+	<div class="row clearfix">
 		<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+				style="margin-top: 20px;">
 				<label>Mensaje personalizado</label>
 				<div class="form-group m-b-0i">
 					<div class="form-line">
@@ -55,19 +87,4 @@
 			</div>
 		</div>
 	</div>
-	<c:if test="${ccs.size() >0}">
-	<div class="row clearfix">
-		<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-			<label for="to" class="col-sm-4 col-form-label lbtxt m-t-11"
-				style="width: 165px;">Destinatarios extras: </label>
-			<div class="col-sm-6">
-				<div class="form-line">
-					<input type="text" id="senders" name="senders" value="${senders}"
-						class="form-control tagInitMail" placeholder="">
-				</div>
-			</div>
-		</div>
-	</div>
-   </c:if>
-
-</div>
+</c:if>
