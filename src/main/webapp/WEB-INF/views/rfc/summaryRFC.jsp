@@ -211,14 +211,9 @@
 
 					<div id="listSystems">
 						<ul class="nav nav-pills">
-
-
 							<c:forEach items="${systemsImplicated}" var="system">
-
 								<li class="nav-item dependency m-r-10">${system}</li>
-
 							</c:forEach>
-
 						</ul>
 					</div>
 				</div>

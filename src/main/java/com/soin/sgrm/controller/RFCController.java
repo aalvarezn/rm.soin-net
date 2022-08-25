@@ -377,6 +377,9 @@ public class RFCController extends BaseController {
 			model.addAttribute("typeChange", typeChangeService.findAll());
 			model.addAttribute("priorities", priorityService.list());
 			model.addAttribute("rfc", rfcEdit);
+			model.addAttribute("senders", rfcEdit.getSenders());
+			model.addAttribute("message", rfcEdit.getMessage());
+			model.addAttribute("ccs", getCC(rfcEdit.getSiges().getEmailTemplate().getCc()));
 
 			return "/rfc/editRFC";
 
@@ -703,6 +706,19 @@ public class RFCController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
+	}
+	
+
+	public List<String> getCC(String ccs) {
+		
+		List<String> getCC = new ArrayList<String>();
+		if(ccs!=null) {
+			ccs.split(",");
+			for (String cc : ccs.split(",")) {
+				getCC.add(cc);
+				}
+		}
+		return getCC;
 	}
 	
 }

@@ -44,8 +44,9 @@ $(function() {
 			sideBySide: true
 		});
 		
-	 $('.tagInit').tagsInput();
-	  
+		 $('.tagInitMail').tagsInput({
+			 placeholder: 'Ingrese los correos'
+		 });
 	$('.nav-tabs > li a[title]').tooltip();
 	// Wizard
 	$('.stepper a[data-toggle="tab"]').on('show.bs.tab', function(e) {

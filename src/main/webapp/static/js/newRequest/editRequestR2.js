@@ -38,9 +38,13 @@ $(function() {
 	    } );
 
 	 
-	 $('.tagInit').tagsInput();
-	  
-	$('.nav-tabs > li a[title]').tooltip();
+	 $('.tagInit').tagsInput({
+		 placeholder: 'Ingrese los nombres de los ambientes'
+	 });
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
+	 $('.nav-tabs > li a[title]').tooltip();
 	// Wizard
 	$('.stepper a[data-toggle="tab"]').on('show.bs.tab', function(e) {
 		var $target = $(e.target);
@@ -80,7 +84,6 @@ $(function() {
 	});
 
 	const data=$requestEditForm.find('#ambientData').val();
-	console.log(data);
 	const splitString = data.split(",");
 	var ambients="";
 	for(x=0;splitString.length>x;x++){
@@ -111,9 +114,7 @@ $(function() {
 		$('#ambient6').importTags(ambients);
 		$('#ambient6_tagsinput').css("display","flex");
 	}
-	console.log(splitString);
 
-	
 });
 
 function changeAttributte(checkElement){
