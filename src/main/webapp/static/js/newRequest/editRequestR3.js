@@ -36,9 +36,9 @@ $(function() {
 	        }
 	    } );
 
-	 
-	 $('.tagInit').tagsInput();
-	  
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 }); 
 	$('.nav-tabs > li a[title]').tooltip();
 	// Wizard
 	$('.stepper a[data-toggle="tab"]').on('show.bs.tab', function(e) {
@@ -55,7 +55,6 @@ $(function() {
 			  selectableHeader: "<div class='custom-header'>Usuarios RM</div>",
 			  selectionHeader: "<div class='custom-header'>Usuarios RM asignados</div>",
 			  afterSelect : function(values) {
-				  console.log(values);
 				  $requestEditForm.find("#userGroups option[id='" + values + "']").attr("selected", "selected");
 			  },
 			  afterDeselect : function(values) {
@@ -103,16 +102,12 @@ function chargeUserRm(){
 		type: 'GET',
 		url: getCont() + "request/getR3-"+r3Id,
 		success: function(result) {
-			console.log(result);
 			for (var i = 0, l = result.userRM.length; i < l; i++) {
 				$requestEditForm.find('#userGroups option').each(
 						function(index, element) {
 							if (element.id == result.userRM[i].id) {
-								console.log(Array.from(element.id));
 								var numero=[];
 								numero.push(element.id);
-								console.log(numero);
-							
 								$requestEditForm.find("#userGroups option[id='" + numero + "']").attr("selected", "selected");
 							}
 						});
@@ -167,7 +162,6 @@ function compareArrays(arr1, arr2) {
 };
 function sendPartialRequest() {
 	let groupIds = getGroupsId($requestEditForm, "#userGroups");
-	console.log(JSON.stringify(groupIds));
 	changeSaveButton(true);
 	$.ajax({
 		// async : false,
@@ -293,7 +287,6 @@ function sendRequest() {
 	changeSaveButton(true);
 	changeSaveButton(true);
 	var valueSchema="";
-	console.log(groupIds);
 	$.ajax({
 		// async : false,
 		type : "PUT",
@@ -325,7 +318,6 @@ function sendRequest() {
 
 function requestRequest() {
 	let groupIds = getGroupsId($requestEditForm, "#userGroups");
-	console.log(JSON.stringify(groupIds));
 	changeSaveButton(true);
 	$.ajax({
 		// async : false,

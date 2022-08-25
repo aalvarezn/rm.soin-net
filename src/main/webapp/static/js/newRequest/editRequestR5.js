@@ -49,12 +49,11 @@ $(function() {
 		$('html, body').animate({scrollTop: '0px'}, 300);
 	});
 	origForm = $requestEditForm.serialize();
-	$('.tagInit').tagsInput({
-		width:'400px'
-	});
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
 
 	const data=$requestEditForm.find('#ambientData').val();
-	console.log(data);
 	const splitString = data.split(",");
 	var ambients="";
 	for(x=0;splitString.length>x;x++){
@@ -85,7 +84,6 @@ $(function() {
 		$('#ambient6').importTags(ambients);
 		$('#ambient6_tagsinput').css("display","flex");
 	}
-	console.log(splitString);
 
 	
 });

@@ -9,6 +9,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.mail.Message;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -95,7 +97,7 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	RequestBaseR1Service requestBaseR1Service;
-	
+
 	@Autowired
 	TypePetitionService typePetitionService;
 
@@ -185,8 +187,8 @@ public class RequestBaseController extends BaseController {
 
 			String dateRange = request.getParameter("dateRange");
 
-			requests = requestBaseR1Service.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
-					dateRange, systemId, typePetitionId);
+			requests = requestBaseR1Service.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
+					statusId, dateRange, systemId, typePetitionId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -215,7 +217,7 @@ public class RequestBaseController extends BaseController {
 						addRequest.setOperator(user.getFullName());
 						Siges codeSiges = sigeService.findByKey("codeSiges", addRequest.getCodeProyect());
 						addRequest.setSiges(codeSiges);
-						
+
 						addRequest.setNumRequest(addRequest.getCodeOpportunity());
 						addRequest.setCodeProyect((addRequest.getCodeOpportunity()));
 						addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
@@ -300,9 +302,11 @@ public class RequestBaseController extends BaseController {
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
+			model.addAttribute("request", requestEdit);
+			model.addAttribute("senders", requestEdit.getSenders());
+			model.addAttribute("message", requestEdit.getMessage());
+			model.addAttribute("ccs", getCC(requestEdit.getTypePetition().getEmailTemplate().getCc()));
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
-				model.addAttribute("request", requestEdit);
-				model.addAttribute("systems", systems);
 				List<User> usersRM = userService.getUsersRM();
 				RequestRM_P1_R3 requestR3 = requestServiceRm3.requestRm3(requestEdit.getId());
 				model.addAttribute("requestR3", requestR3);
@@ -311,23 +315,17 @@ public class RequestBaseController extends BaseController {
 				return "/request/editRequestR3";
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
-				model.addAttribute("request", requestEdit);
-				model.addAttribute("systems", systems);
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/editRequestR4";
 			}
 
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
-				model.addAttribute("request", requestEdit);
-				model.addAttribute("systems", systems);
 				RequestRM_P1_R5 requestR5 = requestServiceRm5.requestRm5(requestEdit.getId());
 				model.addAttribute("requestR5", requestR5);
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/editRequestR5";
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
-				model.addAttribute("request", requestEdit);
-				model.addAttribute("systems", systems);
 				RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(requestEdit.getId());
 				model.addAttribute("requestR2", requestR2);
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
@@ -335,15 +333,13 @@ public class RequestBaseController extends BaseController {
 			}
 
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
-				model.addAttribute("request", requestEdit);
-				model.addAttribute("systems", systems);
 				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
 				model.addAttribute("requestR1", requestR1);
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/editRequestR1";
 			}
 
-			return "/rfc/editRFC";
+			return "redirect:/homeRequest";
 
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
@@ -351,7 +347,7 @@ public class RequestBaseController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 
-		return "redirect:/";
+		return "redirect:/homeRequest";
 	}
 
 	@RequestMapping(value = { "/listUser/{id}" }, method = RequestMethod.GET)
@@ -594,7 +590,7 @@ public class RequestBaseController extends BaseController {
 			if (addRequest.getMessage().length() < 256) {
 				requestBaseR1.setMessage(addRequest.getMessage());
 			}
-			RequestBase requestBase= new RequestBase();
+			RequestBase requestBase = new RequestBase();
 			requestBase.setCodeProyect(requestBaseR1.getCodeProyect());
 			requestBase.setFiles(requestBaseR1.getFiles());
 			requestBase.setId(requestBaseR1.getId());
@@ -626,7 +622,7 @@ public class RequestBaseController extends BaseController {
 		}
 		return res;
 	}
-	
+
 	@RequestMapping(value = "/saveRequestR2", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse saveRequestR2(HttpServletRequest request,
 			@RequestBody RequestRM_P1_R2 addRequest) {
@@ -750,7 +746,6 @@ public class RequestBaseController extends BaseController {
 
 			StatusRequest status = statusService.findByKey("name", "Solicitado");
 
-
 			requestBase.setStatus(status);
 			requestBase.setMotive(status.getReason());
 			requestBase.setRequestDate((CommonUtils.getSystemTimestamp()));
@@ -772,7 +767,7 @@ public class RequestBaseController extends BaseController {
 					newThread.start();
 				}
 			}
-			RequestBase requestBaseNew= new RequestBase();
+			RequestBase requestBaseNew = new RequestBase();
 			requestBaseNew.setCodeProyect(requestBase.getCodeProyect());
 			requestBaseNew.setFiles(requestBase.getFiles());
 			requestBaseNew.setId(requestBase.getId());
@@ -787,7 +782,7 @@ public class RequestBaseController extends BaseController {
 			requestBaseNew.setUser(requestBase.getUser());
 			requestBaseNew.setTracking(requestBase.getTracking());
 			requestBaseNew.setRequestDate(requestBase.getRequestDate());
-			if(!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
+			if (!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
 				requestBaseNew.setSiges(requestBaseService.findById(id).getSiges());
 			}
 			requestBaseService.update(requestBaseNew);
@@ -825,7 +820,7 @@ public class RequestBaseController extends BaseController {
 				model.addAttribute("statuses", statusService.findAll());
 				return "/request/sectionsEditR1/summaryRequest";
 			}
-			
+
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
 				model.addAttribute("request", requestEdit);
 				RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(requestEdit.getId());
@@ -868,6 +863,7 @@ public class RequestBaseController extends BaseController {
 
 		return "/rfc/summaryRFC";
 	}
+
 	public ArrayList<MyError> validSections(RequestRM_P1_R1 request, ArrayList<MyError> errors) {
 
 		if (request.getTimeAnswer() == "" || request.getTimeAnswer() == null) {
@@ -883,7 +879,12 @@ public class RequestBaseController extends BaseController {
 
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
-				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+			}else {
+				MyError error=getErrorSenders(request.getSenders());
+				if(error!=null) {
+					errors.add(error);
+				}
 			}
 		}
 		if (request.getMessage() != null) {
@@ -894,6 +895,7 @@ public class RequestBaseController extends BaseController {
 
 		return errors;
 	}
+
 	public ArrayList<MyError> validSections(RequestBase request, ArrayList<MyError> errors) {
 		if (request.getTypePetition().getCode().equals("RM-P1-R4")) {
 			List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(request.getId());
@@ -903,8 +905,14 @@ public class RequestBaseController extends BaseController {
 
 			if (request.getSenders() != null) {
 				if (request.getSenders().length() > 256) {
-					errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+					errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+				}else {
+					MyError error=getErrorSenders(request.getSenders());
+					if(error!=null) {
+						errors.add(error);
+					}
 				}
+				
 			}
 			if (request.getMessage() != null) {
 				if (request.getMessage().length() > 256) {
@@ -921,15 +929,19 @@ public class RequestBaseController extends BaseController {
 		if (request.getUserRM().size() == 0) {
 			errors.add(new MyError("userRM", "Debe seleccionar al menos a un usuario del departamento de RM"));
 		}
-		
+
 		if (request.getConnectionMethod() == "" || request.getConnectionMethod() == null) {
 			errors.add(new MyError("connectionMethod", "Valor requerido."));
 		}
 
-
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
-				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+			}else {
+				MyError error=getErrorSenders(request.getSenders());
+				if(error!=null) {
+					errors.add(error);
+				}
 			}
 		}
 		if (request.getMessage() != null) {
@@ -956,8 +968,14 @@ public class RequestBaseController extends BaseController {
 
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
-				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+			}else {
+				MyError error=getErrorSenders(request.getSenders());
+				if(error!=null) {
+					errors.add(error);
+				}
 			}
+			
 		}
 		if (request.getMessage() != null) {
 			if (request.getMessage().length() > 256) {
@@ -990,7 +1008,12 @@ public class RequestBaseController extends BaseController {
 
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
-				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+			}else {
+				MyError error=getErrorSenders(request.getSenders());
+				if(error!=null) {
+					errors.add(error);
+				}
 			}
 		}
 		if (request.getMessage() != null) {
@@ -1011,5 +1034,34 @@ public class RequestBaseController extends BaseController {
 		request.setAttribute("userC", userC);
 
 	}
+	public MyError getErrorSenders(String senders) {
+	
+		String[] listSenders = senders.split(",");
+		String to_invalid="";
+		for (int i = 0; i < listSenders.length; i++) {
+			if (!CommonUtils.isValidEmailAddress(listSenders[i])) {
+				if(to_invalid.equals("")) {
+					to_invalid +=listSenders[i];
+				}else {
+					to_invalid +=","+listSenders[i];
+				}
+				
+			}
+		}
+		if (!to_invalid.equals("")) {
+			return new MyError("senders", "dirección(es) inválida(s) " + to_invalid);	
+		}
+		return null;
+	}
+	public List<String> getCC(String ccs) {
 
+		List<String> getCC = new ArrayList<String>();
+		if (ccs != null) {
+			ccs.split(",");
+			for (String cc : ccs.split(",")) {
+				getCC.add(cc);
+			}
+		}
+		return getCC;
+	}
 }

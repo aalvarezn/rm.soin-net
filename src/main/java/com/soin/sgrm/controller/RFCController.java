@@ -377,6 +377,9 @@ public class RFCController extends BaseController {
 			model.addAttribute("typeChange", typeChangeService.findAll());
 			model.addAttribute("priorities", priorityService.list());
 			model.addAttribute("rfc", rfcEdit);
+			model.addAttribute("senders", rfcEdit.getSenders());
+			model.addAttribute("message", rfcEdit.getMessage());
+			model.addAttribute("ccs", getCC(rfcEdit.getSiges().getEmailTemplate().getCc()));
 
 			return "/rfc/editRFC";
 
@@ -643,9 +646,45 @@ public class RFCController extends BaseController {
 
 		if (rfc.getRequestEsp().equals(""))
 			errors.add(new MyError("requestEspRFC", "Valor requerido."));
+		
+		if (rfc.getSenders() != null) {
+			if (rfc.getSenders().length() > 256) {
+				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+			}else {
+				MyError error=getErrorSenders(rfc.getSenders());
+				if(error!=null) {
+					errors.add(error);
+				}
+			}
+		}
+		if (rfc.getMessage() != null) {
+			if (rfc.getMessage().length() > 256) {
+				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+			}
+		}
+		
 		return errors;
 	}
-
+	public MyError getErrorSenders(String senders) {
+		
+		String[] listSenders = senders.split(",");
+		String to_invalid="";
+		for (int i = 0; i < listSenders.length; i++) {
+			if (!CommonUtils.isValidEmailAddress(listSenders[i])) {
+				if(to_invalid.equals("")) {
+					to_invalid +=listSenders[i];
+				}else {
+					to_invalid +=","+listSenders[i];
+				}
+				
+			}
+		}
+		if (!to_invalid.equals("")) {
+			return new MyError("senders", "dirección(es) inválida(s) " + to_invalid);	
+		}
+		return null;
+	}
+	
 	@RequestMapping(value = "/deleteRFC/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteRFC(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
@@ -703,6 +742,19 @@ public class RFCController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
+	}
+	
+
+	public List<String> getCC(String ccs) {
+		
+		List<String> getCC = new ArrayList<String>();
+		if(ccs!=null) {
+			ccs.split(",");
+			for (String cc : ccs.split(",")) {
+				getCC.add(cc);
+				}
+		}
+		return getCC;
 	}
 	
 }
