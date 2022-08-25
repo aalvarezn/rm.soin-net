@@ -115,6 +115,10 @@ $(function() {
 		$('html, body').animate({scrollTop: '0px'}, 300);
 	});
 	origForm = $rfcEditForm.serialize();
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
+
 	$('.tagInit').tagsInput({
 		width:'400px'
 	});

@@ -43,9 +43,13 @@
 				<label for="to" class="col-sm-4 col-form-label lbtxt m-t-11"
 					style="width: 165px;">Destinatarios: </label>
 				<div class="col-sm-6">
-					<div class="form-line">
-						<input type="text" id="senders" name="senders" value="${senders}"
-							class="form-control tagInitMail" placeholder="">
+					<div class="form-group m-b-0">
+						<div class="form-line">
+							<input type="text" id="senders" name="senders" value="${senders}"
+								class="form-control tagInitMail" placeholder="">
+						</div>
+						<label id="senders_error" class="error fieldError activeError"
+							for="name" style="visibility: hidden;">Valor requerido.</label>
 					</div>
 				</div>
 			</div>
@@ -67,20 +71,20 @@
 	</c:choose>
 </div>
 <c:if test="${ccs.size()> 0}">
-<div class="row clearfix">
-	<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-			style="margin-top: 20px;">
-			<label>Mensaje personalizado</label>
-			<div class="form-group m-b-0i">
-				<div class="form-line">
-					<textarea rows="2" cols="" name='messagePer' id="messagePer"
-						class="form-control" placeholder="Ingrese un mensaje..." style="">${message}</textarea>
+	<div class="row clearfix">
+		<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+				style="margin-top: 20px;">
+				<label>Mensaje personalizado</label>
+				<div class="form-group m-b-0i">
+					<div class="form-line">
+						<textarea rows="2" cols="" name='messagePer' id="messagePer"
+							class="form-control" placeholder="Ingrese un mensaje..." style="">${message}</textarea>
+					</div>
+					<label id="messagePer_error" class="error fieldError" for="name"
+						style="visibility: hidden;">Campo requerido.</label>
 				</div>
-				<label id="messagePer_error" class="error fieldError" for="name"
-					style="visibility: hidden;">Campo requerido.</label>
 			</div>
 		</div>
 	</div>
-</div>
 </c:if>
