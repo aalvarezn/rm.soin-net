@@ -93,6 +93,9 @@ table.dataTable tbody tr.selected {
 tr.selected {
 	background-color: #acbad4;
 }
+.noclick {
+  pointer-events: none;
+}
 </style>
 
 </head>
@@ -246,7 +249,7 @@ tr.selected {
 											<%@include file="../rfc/sectionsEditRFC/section_1.jsp"%>
 										</div>
 										<div class="button-demo flr">
-											<button type="button" class="btn btn-primary next-step"
+											<button type="button" id="nextStep" class="btn btn-primary next-step"
 												style="margin-bottom: 100px;">SIGUIENTE</button>
 										</div>
 									</div>
@@ -259,7 +262,7 @@ tr.selected {
 											<%@include file="../rfc/sectionsEditRFC/section_2.jsp"%>
 										</div>
 										<div class="button-demo flr">
-											<button type="button" class="btn btn-default prev-step"
+											<button type="button"  class="btn btn-default prev-step"
 												style="margin-bottom: 100px;">ANTERIOR</button>
 											<button type="button" class="btn btn-primary next-step"
 												style="margin-bottom: 100px;">SIGUIENTE</button>
