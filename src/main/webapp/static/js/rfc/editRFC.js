@@ -277,9 +277,32 @@ $('#systemId').change(function() {
 	
 	$dtRFCs.ajax.reload();
 });
+function chargeData(charge){
+	if(charge){
+		$('#1').addClass("noclick"); 
+		$('#2').addClass("noclick"); 
+		$('#3').addClass("noclick"); 
+		$('#4').addClass("noclick"); 
+		$('#5').addClass("noclick");
+		$('#nextStep').prop('disabled', true);
+		$('#btnSave').prop('disabled', true);
+	
+	}else{
+		setTimeout(() => {
+			$('#1').removeClass("noclick"); 
+			$('#2').removeClass("noclick"); 
+			$('#3').removeClass("noclick"); 
+			$('#4').removeClass("noclick"); 
+			$('#5').removeClass("noclick"); 
+			$('#btnSave').prop('disabled', false);
+			$('#nextStep').prop('disabled', false);
+			}, 1000);
+
+	}
+}
 function initData(){
 	var idRFC=$('#rfcId').val();
-	
+	chargeData(true);
 		$.ajax({
 			type: 'GET',
 			url: getCont() + "rfc/getRFC-"+idRFC,
@@ -287,8 +310,9 @@ function initData(){
 				if(result.length!=0){
 					$dataRelease=result.releases;
 					$dataReleaseCheck=$dataRelease.slice();
+					chargeData(false);
 				}else{
-					
+					chargeData(false);
 				}
 				
 				
