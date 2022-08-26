@@ -281,7 +281,7 @@ function initRequestFormValidation() {
 				required:"Se debe seleccionar una casilla",		
 			},
 			'permission':{
-				required:"Se debe seleccionar al menos una opcion",		
+				required:"Se debe seleccionar al menos una opci\u00F3n",		
 			}
 		},
 		highlight,
