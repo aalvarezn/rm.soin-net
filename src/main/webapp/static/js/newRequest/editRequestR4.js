@@ -484,6 +484,7 @@ function initRequestFormValidation() {
 			'email':{
 				required :true,
 				maxlength : 20,
+		        email: true
 			},
 			'ambientId':{
 				required:true,		
@@ -510,7 +511,8 @@ function initRequestFormValidation() {
 			},
 			'email' : {
 				required : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
+				maxlength : "No puede poseer mas de {0} caracteres",
+				email:"Ingrese un correo v\u00E1lido"
 					
 			},
 
@@ -525,7 +527,7 @@ function initRequestFormValidation() {
 				required:"Se debe seleccionar una casilla",		
 			},
 			'permission':{
-				required:"Se debe seleccionar al menos una opcion",		
+				required:"Se debe seleccionar al menos una opci\u00F3n",		
 			}
 		},
 		highlight,
