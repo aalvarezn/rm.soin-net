@@ -437,11 +437,21 @@ public class RFCController extends BaseController {
 			systemsImplicated.add(codeSiges.getSystem().getName());
 			String nameSystem = "";
 			boolean validate = true;
+			Integer totalObjects= 0;
+			List<ReleaseObject> listObjects= new ArrayList<ReleaseObject>();
 			Set<Release_RFC> releases = rfc.getReleases();
 			if (releases != null) {
 				if (releases.size() != 0) {
 					for (Release_RFC release : releases) {
 						nameSystem = release.getSystem().getName();
+						if(release.getObjects()!=null) {
+							 totalObjects+= release.getObjects().size();
+							 Set<ReleaseObject> objects=release.getObjects();
+							 for(ReleaseObject object: objects) {
+								 listObjects.add(object);
+							 }
+						}
+						
 						for (String system : systemsImplicated) {
 							if (system.equals(nameSystem)) {
 								validate = false;
@@ -463,7 +473,8 @@ public class RFCController extends BaseController {
 			model.addAttribute("codeSiges", codeSiges);
 			model.addAttribute("systemsImplicated", systemsImplicated);
 			model.addAttribute("rfc", rfc);
-
+			model.addAttribute("totalObjects",totalObjects);
+			model.addAttribute("listObjects",listObjects);
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
 			redirectAttributes.addFlashAttribute("data",
@@ -498,10 +509,19 @@ public class RFCController extends BaseController {
 			String nameSystem = "";
 			boolean validate = true;
 			Set<Release_RFC> releases = rfc.getReleases();
+			List<ReleaseObject> listObjects= new ArrayList<ReleaseObject>();
+			Integer totalObjects= 0;
 			if (releases != null) {
 				if (releases.size() != 0) {
 					for (Release_RFC release : releases) {
 						nameSystem = release.getSystem().getName();
+						if(release.getObjects()!=null) {
+							 totalObjects+= release.getObjects().size();
+							 Set<ReleaseObject> objects=release.getObjects();
+							 for(ReleaseObject object: objects) {
+								 listObjects.add(object);
+							 }
+						}
 						for (String system : systemsImplicated) {
 							if (system.equals(nameSystem)) {
 								validate = false;
@@ -522,6 +542,8 @@ public class RFCController extends BaseController {
 			model.addAttribute("codeSiges", codeSiges);
 			model.addAttribute("systemsImplicated", systemsImplicated);
 			model.addAttribute("rfc", rfc);
+			model.addAttribute("totalObjects",totalObjects);
+			model.addAttribute("listObjects",listObjects);
 
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
