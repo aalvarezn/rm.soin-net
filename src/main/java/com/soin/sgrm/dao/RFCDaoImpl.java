@@ -23,13 +23,12 @@ public class RFCDaoImpl extends AbstractDao<Long,RFC> implements RFCDao {
 	private SessionFactory sessionFactory;
 	
 	@Override
-	public Integer existNumRelease(String numRequest) {
+	public Integer existNumRFC(String numRequest) {
 		Criteria crit = getSession().createCriteria(RFC.class);
 		crit.add(Restrictions.like("numRequest", numRequest, MatchMode.ANYWHERE));
 		crit.setProjection(Projections.rowCount());
 		Long count = (Long) crit.uniqueResult();
 		int recordsTotal = count.intValue();
-
 		return recordsTotal;
 
 	}
