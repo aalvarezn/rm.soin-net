@@ -85,6 +85,10 @@ public class Release_RFC implements Serializable, Cloneable {
 	@Transient
 	private Integer haveDependecy;
 	
+	@Transient
+	private Integer numObjects;
+	
+	
 	public int getId() {
 		return id;
 	}
@@ -214,6 +218,18 @@ public class Release_RFC implements Serializable, Cloneable {
 
 	public void setStatusBefore(Status statusBefore) {
 		this.statusBefore = statusBefore;
+	}
+
+	public Integer getNumObjects() {
+		if(this.objects!=null) {
+			setNumObjects(objects.size());
+		}
+		return numObjects;
+	}
+
+	public void setNumObjects(Integer numObjects) {
+		
+		this.numObjects = numObjects;
 	}
 	
 	
