@@ -225,6 +225,7 @@ public class RFCServiceImpl implements RFCService {
 
 		Criterion qSrch = null;
 		if (sSearch != null && sSearch.length() > 0) {
+			alias.put("user", "user");
 			qSrch = Restrictions.or(
 
 					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),

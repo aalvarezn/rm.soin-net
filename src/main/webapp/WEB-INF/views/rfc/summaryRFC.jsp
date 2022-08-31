@@ -207,7 +207,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 m-t-10">
 					<label for="">Raz&oacute;n del cambio.</label>
 					<textarea class="areaWidth" rows="" cols="">${rfc.reasonChange }</textarea>
 				</div>
@@ -255,6 +255,73 @@
 						</ul>
 					</div>
 				</div>
+				<c:if test="${totalObjects>0}">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+						<div class="row clearfix">
+							<div class="col-sm-12">
+								<h5 class="titulares">Releases y cantidad de objetos a
+									instalar</h5>
+							</div>
+
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="table-responsive m-b-20">
+									<table
+										class="table tableIni table-bordered table-striped table-hover dataTable"
+										id="userTable">
+										<thead>
+											<tr>
+												<th>Número Release</th>
+												<th>Total Objetos</th>
+											</tr>
+										</thead>
+										<tbody>
+											<c:forEach items="${rfc.releases}" var="release">
+												<tr>
+													<td>${release.releaseNumber}</td>
+													<td>${release.objects.size()}</td>
+												</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+									<label for="">Total de objetos a instalar:
+										${totalObjects }</label>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+						<div class="row clearfix">
+							<div class="col-sm-12">
+								<h5 class="titulares">Objetos a instalar</h5>
+							</div>
+
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="table-responsive m-b-20">
+									<table
+										class="table tableIni table-bordered table-striped table-hover dataTable"
+										id="userTable">
+										<thead>
+											<tr>
+												<th>Nombre objeto</th>
+												<th>Descripción</th>
+											</tr>
+										</thead>
+										<tbody>
+											<c:forEach items="${listObjects}" var="object">
+												<tr>
+													<td>${object.name}</td>
+													<td>${object.description}</td>
+												</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</c:if>
 			</div>
 			<div class="row clearfix">
 				<div class="col-sm-12">
@@ -386,4 +453,4 @@
 
 </body>
 
-</html> 
+</html>
