@@ -95,7 +95,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">RFC NÂ°</label>
+					<label for="email_address">RFC N°</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${rfc.numRequest}</p>
@@ -103,7 +103,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creaciÃ³n</label>
+					<label for="email_address">Fecha de creación</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -167,7 +167,21 @@
 					</div>
 				</div>
 			</div>
-
+			<div class="row clearfix m-t-10">
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+					<label for="email_address">Fecha de creación</label>
+					<div class="form-group m-b-0i">
+						<div class="form-group m-b-0i">
+							<div class="form-line disabled">
+								<p>
+									<fmt:formatDate value="${rfc.requestDate }"
+										pattern="dd/MM/YYYY HH:mm:ss" />
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-sm-12">
 					<h5 class="titulares">Fecha y hora propuesta para ejecutar el
@@ -197,6 +211,8 @@
 					<label for="">Raz&oacute;n del cambio.</label>
 					<textarea class="areaWidth" rows="" cols="">${rfc.reasonChange }</textarea>
 				</div>
+
+
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Efecto si no se implementa el cambio.</label>
 					<textarea class="areaWidth" rows="" cols="">${rfc.effect }</textarea>
@@ -204,22 +220,27 @@
 			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-sm-12">
-					<h5 class="titulares">InformaciÃ³n de Cambio</h5>
+					<h5 class="titulares">Información de Cambio</h5>
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Sistemas impactados</label>
 
 					<div id="listSystems">
 						<ul class="nav nav-pills">
+
+
 							<c:forEach items="${systemsImplicated}" var="system">
+
 								<li class="nav-item dependency m-r-10">${system}</li>
+
 							</c:forEach>
+
 						</ul>
 					</div>
 				</div>
 
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Releases a instalar en producciÃ³n</label>
+					<label for="">Releases a instalar en producción</label>
 
 					<div id="listSystems">
 						<ul class="nav nav-pills">
@@ -249,7 +270,7 @@
 										id="userTable">
 										<thead>
 											<tr>
-												<th>NÃºmero Release</th>
+												<th>Número Release</th>
 												<th>Total Objetos</th>
 											</tr>
 										</thead>
@@ -283,7 +304,7 @@
 										<thead>
 											<tr>
 												<th>Nombre objeto</th>
-												<th>DescripciÃ³n</th>
+												<th>Descripción</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -328,12 +349,12 @@
 						<c:choose>
 							<c:when test="${rfc.requiredBD}">
 								<label>No<input type="checkbox" checked="checked"
-									disabled="disabled"><span class="lever"></span>SÃ­
+									disabled="disabled"><span class="lever"></span>Sí
 								</label>
 							</c:when>
 							<c:otherwise>
 								<label>No<input type="checkbox" disabled="disabled"><span
-									class="lever"></span>SÃ­
+									class="lever"></span>Sí
 								</label>
 							</c:otherwise>
 						</c:choose>
