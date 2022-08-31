@@ -95,7 +95,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">RFC N°</label>
+					<label for="email_address">RFC NÂ°</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${rfc.numRequest}</p>
@@ -103,7 +103,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaciÃ³n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -193,7 +193,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10" style="margin-top: 30px;">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 m-t-10">
 					<label for="">Raz&oacute;n del cambio.</label>
 					<textarea class="areaWidth" rows="" cols="">${rfc.reasonChange }</textarea>
 				</div>
@@ -204,7 +204,7 @@
 			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-sm-12">
-					<h5 class="titulares">Información de Cambio</h5>
+					<h5 class="titulares">InformaciÃ³n de Cambio</h5>
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Sistemas impactados</label>
@@ -219,7 +219,7 @@
 				</div>
 
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Releases a instalar en producción</label>
+					<label for="">Releases a instalar en producciÃ³n</label>
 
 					<div id="listSystems">
 						<ul class="nav nav-pills">
@@ -234,6 +234,73 @@
 						</ul>
 					</div>
 				</div>
+				<c:if test="${totalObjects>0}">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+						<div class="row clearfix">
+							<div class="col-sm-12">
+								<h5 class="titulares">Releases y cantidad de objetos a
+									instalar</h5>
+							</div>
+
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="table-responsive m-b-20">
+									<table
+										class="table tableIni table-bordered table-striped table-hover dataTable"
+										id="userTable">
+										<thead>
+											<tr>
+												<th>NÃºmero Release</th>
+												<th>Total Objetos</th>
+											</tr>
+										</thead>
+										<tbody>
+											<c:forEach items="${rfc.releases}" var="release">
+												<tr>
+													<td>${release.releaseNumber}</td>
+													<td>${release.objects.size()}</td>
+												</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+									<label for="">Total de objetos a instalar:
+										${totalObjects }</label>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+						<div class="row clearfix">
+							<div class="col-sm-12">
+								<h5 class="titulares">Objetos a instalar</h5>
+							</div>
+
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="table-responsive m-b-20">
+									<table
+										class="table tableIni table-bordered table-striped table-hover dataTable"
+										id="userTable">
+										<thead>
+											<tr>
+												<th>Nombre objeto</th>
+												<th>DescripciÃ³n</th>
+											</tr>
+										</thead>
+										<tbody>
+											<c:forEach items="${listObjects}" var="object">
+												<tr>
+													<td>${object.name}</td>
+													<td>${object.description}</td>
+												</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</c:if>
 			</div>
 			<div class="row clearfix">
 				<div class="col-sm-12">
@@ -261,12 +328,12 @@
 						<c:choose>
 							<c:when test="${rfc.requiredBD}">
 								<label>No<input type="checkbox" checked="checked"
-									disabled="disabled"><span class="lever"></span>Sí
+									disabled="disabled"><span class="lever"></span>SÃ­
 								</label>
 							</c:when>
 							<c:otherwise>
 								<label>No<input type="checkbox" disabled="disabled"><span
-									class="lever"></span>Sí
+									class="lever"></span>SÃ­
 								</label>
 							</c:otherwise>
 						</c:choose>
@@ -365,4 +432,4 @@
 
 </body>
 
-</html> 
+</html>
