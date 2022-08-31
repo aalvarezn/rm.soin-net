@@ -64,6 +64,8 @@ $(function() {
 			$active = $active.next();
 			e.stopPropagation();
 		}
+		
+		console.log($active);
 		nextTab($active);
 		$('html, body').animate({scrollTop: '0px'}, 300);
 	});

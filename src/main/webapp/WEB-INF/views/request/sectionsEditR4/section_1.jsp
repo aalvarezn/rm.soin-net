@@ -10,51 +10,7 @@
 	<div class="col-sm-12">
 		<h5 class="titulares">Solicitud de Usuario</h5>
 	</div>
-	<div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
-		<label for="name" >Nombre</label>
-		<div class="form-group m-b-0i">
-			<div class="form-line" style="height: 40px;">
-				<input type="text" id="user" name="user" class="form-control"
-					placeholder="Ingrese el nombre">
-			</div>
-		</div>
-	</div>
-
-
-	<div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
-		<label for="email_address">Correo</label>
-		<div class="form-group m-b-0i">
-			<div class="form-line" style="height: 40px;">
-				<input type="text" id="email" name="email" class="form-control"
-					placeholder="Ingrese el correo">
-			</div>
-		</div>
-	</div>
-	
-	<div class="col-lg-3 col-md-3 col-sm-8 col-xs-8">
-		<p>
-			<b>Ambiente</b>
-		</p>
-		<div class="form-group m-b-0i">
-			<div class="form-line">
-
-				<select id="ambientId" name="ambientId" required="required"
-					class="form-control show-tick selectpicker" data-live-search="true">
-					<option value="">-- Seleccione una opci&oacute;n --</option>
-					<c:forEach items="${ambients}" var="ambient">
-						<option value="${ambient.id }">${ambient.name }</option>
-					</c:forEach>
-				</select>
-			</div>
-		</div>
-	</div>
-
-	
-</div>
-
-<div class="row clearfix" style="margin-top: 50px;">
-
-<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 		<label for="type">Tipo</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line disabled">
@@ -88,9 +44,51 @@
 		</div>
 
 	</div>
+	
+	<div class="col-lg-3 col-md-3 col-sm-8 col-xs-8">
+		<p>
+			<b>Ambiente</b>
+		</p>
+		<div class="form-group m-b-0i">
+			<div class="form-line">
+
+				<select id="ambientId" name="ambientId" required="required"
+					class="form-control show-tick selectpicker" data-live-search="true">
+					<option value="">-- Seleccione una opci&oacute;n --</option>
+					<c:forEach items="${ambients}" var="ambient">
+						<option value="${ambient.id }">${ambient.name }</option>
+					</c:forEach>
+				</select>
+			</div>
+		</div>
+	</div>
+
+	
+</div>
+
+<div class="row clearfix" style="margin-top: 50px;">
+
+<div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
+		<label for="name" >Nombre</label>
+		<div class="form-group m-b-0i">
+			<div class="form-line" style="height: 40px;">
+				<input type="text" id="user" name="user" class="form-control"
+					placeholder="Ingrese el nombre">
+			</div>
+		</div>
+	</div>
 
 
-
+	<div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
+		<label for="email_address">Correo</label>
+		<div class="form-group m-b-0i">
+			<div class="form-line" style="height: 40px;">
+				<input type="text" id="email" name="email" class="form-control"
+					placeholder="Ingrese el correo">
+			</div>
+		</div>
+	</div>
+	
 
 	<div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
 		<label for="espec">Especificación</label>
@@ -153,5 +151,7 @@
 	</div>
 		
 </div>
+
+<%@include file="../../plantilla/mail.jsp"%>
 
 
