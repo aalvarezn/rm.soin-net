@@ -131,7 +131,7 @@ function dropDownChangeType(){
 			var x = document.getElementById('ambientId');
 			console.log(x)
 			for (i = 0; i < x.length; i++) {
-					if(x.options[i].text.toLowerCase()==='produccion'||x.options[i].text.toLowerCase()==='producci\u00F3n'){
+					if(x.options[i].text.toLowerCase().includes('produccion')||x.options[i].text.toLowerCase().includes('producci\u00F3n')){
 						
 						$('#ambientId').selectpicker('val',x.options[i].value);
 						$('#ambientId').prop('disabled', true);
