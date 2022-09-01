@@ -134,7 +134,7 @@
 										<tr>
 											<td>${user.name}</td>
 											<td>${user.email}</td>
-											<td>${user.type}</td>
+											<td>${user.type.code}</td>
 											<td>${user.permissions}</td>
 											<td>${user.ambient.name}</td>
 											<td>${user.espec}</td>

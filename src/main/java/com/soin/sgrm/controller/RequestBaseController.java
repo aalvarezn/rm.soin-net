@@ -73,6 +73,7 @@ import com.soin.sgrm.service.RequestRM_P1_R5Service;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.TypePetitionR4Service;
 import com.soin.sgrm.service.TypePetitionService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
@@ -101,6 +102,9 @@ public class RequestBaseController extends BaseController {
 	@Autowired
 	TypePetitionService typePetitionService;
 
+	@Autowired
+	TypePetitionR4Service typePetitionR4Service;
+	
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
 
@@ -315,6 +319,7 @@ public class RequestBaseController extends BaseController {
 				return "/request/editRequestR3";
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+				model.addAttribute("typesPetition",  typePetitionR4Service.listTypePetition());
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				return "/request/editRequestR4";
 			}
@@ -371,6 +376,7 @@ public class RequestBaseController extends BaseController {
 		try {
 
 			userRequestAdd.setAmbient(ambientService.findById(userRequestAdd.getAmbientId()));
+			userRequestAdd.setType(typePetitionR4Service.findById(userRequestAdd.getTypeId()));
 			userRequestAdd.setRequestBase(requestBaseService.findById(userRequestAdd.getRequestBaseId()));
 			requestServiceRm4.save(userRequestAdd);
 			res.setStatus("success");
@@ -392,6 +398,7 @@ public class RequestBaseController extends BaseController {
 		try {
 
 			userRequestAdd.setAmbient(ambientService.findById(userRequestAdd.getAmbientId()));
+			userRequestAdd.setType(typePetitionR4Service.findById(userRequestAdd.getTypeId()));
 			userRequestAdd.setRequestBase(requestBaseService.findById(userRequestAdd.getRequestBaseId()));
 			requestServiceRm4.update(userRequestAdd);
 			res.setStatus("success");

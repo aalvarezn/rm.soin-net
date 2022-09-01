@@ -31,9 +31,6 @@ public class RequestRM_P1_R4 implements Serializable {
 	@Column(name = "CORREO")
 	private String email;
 
-	@Column(name = "TIPO")
-	private String type;
-
 	@Column(name = "PERMISOS")
 	private String permissions;
 	
@@ -45,11 +42,19 @@ public class RequestRM_P1_R4 implements Serializable {
 	private Ambient ambient;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ID_TIPO_R4", nullable = false)
+	private TypePetitionR4 type;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_SOLICITUD", nullable = false)
 	private RequestBase requestBase;
 
+	
 	@Transient
 	private Integer ambientId;
+	
+	@Transient
+	private Long typeId;
 
 	@Transient
 	private Long requestBaseId;
@@ -77,14 +82,6 @@ public class RequestRM_P1_R4 implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	public String getPermissions() {
@@ -134,9 +131,22 @@ public class RequestRM_P1_R4 implements Serializable {
 	public void setRequestBaseId(Long requestBaseId) {
 		this.requestBaseId = requestBaseId;
 	}
-	
-	
-	
+
+	public TypePetitionR4 getType() {
+		return type;
+	}
+
+	public void setType(TypePetitionR4 type) {
+		this.type = type;
+	}
+
+	public Long getTypeId() {
+		return typeId;
+	}
+
+	public void setTypeId(Long typeId) {
+		this.typeId = typeId;
+	}
 	
 	
 }
