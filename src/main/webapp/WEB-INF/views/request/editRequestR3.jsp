@@ -242,13 +242,13 @@ tr.selected {
 										<div class="body">
 											<%@include file="../request/sectionsEditR3/section_1.jsp"%>
 										</div>
-										<div class="row clearfix">
-											<div class="button-demo flr">
-												<button type="button" id="nextStep"
-													class="btn btn-primary next-step"
-													style="margin-bottom: 100px;">SIGUIENTE</button>
-											</div>
+
+										<div class="button-demo flr">
+											<button type="button" id="nextStep"
+												class="btn btn-primary next-step"
+												style="margin-bottom: 100px;">SIGUIENTE</button>
 										</div>
+
 									</div>
 									<!--#Step_1 -->
 
