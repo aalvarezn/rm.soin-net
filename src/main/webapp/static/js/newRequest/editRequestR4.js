@@ -64,6 +64,8 @@ $(function() {
 			$active = $active.next();
 			e.stopPropagation();
 		}
+		
+		console.log($active);
 		nextTab($active);
 		$('html, body').animate({scrollTop: '0px'}, 300);
 	});
@@ -87,7 +89,7 @@ $(function() {
 		
 	 });
 
-	
+	 dropDownChangeType();
 });
 function nextTab(elem) {
 	$(elem).next().find('a[data-toggle="tab"]').tab('show');
@@ -119,6 +121,58 @@ function closePreviewRequest() {
 function compareArrays(arr1, arr2) {
 	return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0;
 };
+
+function dropDownChangeType(){
+	$('#typeId').on('change', function(){
+		var typeRequest =$('#typeId option:selected').text();
+		if(typeRequest==='SGRM'){
+			console.log('SGRM');
+			$('#ambientId').selectpicker('text','Produccion');
+			var x = document.getElementById('ambientId');
+			console.log(x)
+			for (i = 0; i < x.length; i++) {
+					if(x.options[i].text.toLowerCase().includes('produccion')||x.options[i].text.toLowerCase().includes('producci\u00F3n')){
+						
+						$('#ambientId').selectpicker('val',x.options[i].value);
+						$('#ambientId').prop('disabled', true);
+						
+					}
+				}
+			$('#permission1').prop('disabled', true);
+			$('#permission2').prop('disabled', true);
+			$('#permission3').prop('disabled', true);
+			$('#permission4').prop('checked',true);
+			$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+			
+		}else if(typeRequest==='VPN'){
+			console.log('VPN');
+			$('#ambientId').selectpicker('val','');
+			$('#ambientId').prop('disabled', false);
+			$('#permission1').prop('disabled', true);
+			$('#permission2').prop('disabled', true);
+			$('#permission3').prop('disabled', true);
+			$('#permission4').prop('checked',true);
+			$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+		}else{
+			$('#ambientId').selectpicker('val','');
+			$('#ambientId').prop('disabled', false);
+			$('#permission1').prop('disabled', false);
+			$('#permission2').prop('disabled', false);
+			$('#permission3').prop('disabled', false);
+			$('#permission4').prop('checked',false);
+			console.log(typeRequest==='Aplicaci\u00F3n');
+			if(typeRequest==='Ambiente'){
+				$("#espec").attr("placeholder", 'Indicar que ruta y/o directorios son los requeridos que tenga acceso');
+			}else if(typeRequest==='Aplicaci\u00F3n'){
+				$("#espec").attr("placeholder", 'Indicar a cu\u00E1les Aplicativos se requiere tenga acceso.');
+			}else if(typeRequest==='Base de datos'){
+				$("#espec").attr("placeholder", 'Indicar los esquemas y/o bases de datos que deber\u00E1 tener acceso.');
+			}else{
+				$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+			}
+		}
+	});
+}
 function sendPartialRequest() {
 	var form = "#generateReleaseForm";
 	
@@ -195,7 +249,7 @@ function initUserTable() {
 					},
 					{
 						
-						"mDataProp" : "type"
+						"mDataProp" : "type.code"
 					},
 					{
 						
@@ -240,16 +294,6 @@ function showUser(id){
 		var data = $dtUser.row(idRow[0]).data();
 		$requestEditForm.find('#user').val(data.name);
 		$requestEditForm.find('#email').val(data.email);
-		if(data.type==="Ambiente"){
-			$("input[name=type][value='Ambiente']").prop("checked",true);
-		}else if(data.type==="Aplicacion"){
-			$("input[name=type][value='Aplicacion']").prop("checked",true);
-		}else if(data.type==="SGRM"){
-			$("input[name=type][value='SGRM']").prop("checked",true);
-		}else if(data.type==="Base de datos"){
-			$("input[name=type][value='Base de datos']").prop("checked",true);
-		}
-		
 		const splitString = data.permissions.split(",");
 		for(x=0;splitString.length>x;x++){
 			if(splitString[x]==="Lectura"){
@@ -266,7 +310,45 @@ function showUser(id){
 			}
 		}
 		$requestEditForm.find('#espec').val(data.espec);
-		$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
+		
+		if(data.type.code==='SGRM'){
+			$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
+		    $('#typeId').selectpicker('val',data.type.id);
+			$('#ambientId').prop('disabled', true);
+			$('#permission1').prop('disabled', true);
+			$('#permission2').prop('disabled', true);
+			$('#permission3').prop('disabled', true);
+			$('#permission4').prop('checked',true);
+			$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+			
+		}else if(data.type.code==='VPN'){
+			console.log('VPN');
+			$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
+			$('#typeId').selectpicker('val',data.type.id);
+			$('#ambientId').prop('disabled', false);
+			$('#permission1').prop('disabled', true);
+			$('#permission2').prop('disabled', true);
+			$('#permission3').prop('disabled', true);
+			$('#permission4').prop('checked',true);
+			$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+		}else{
+			$('#typeId').selectpicker('val',data.type.id);
+			$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
+			$('#ambientId').prop('disabled', false);
+			$('#permission1').prop('disabled', false);
+			$('#permission2').prop('disabled', false);
+			$('#permission3').prop('disabled', false);
+			$('#permission4').prop('checked',false);
+			if(data.type.code==='Ambiente'){
+				$("#espec").attr("placeholder", 'Indicar que ruta y/o directorios son los requeridos que tenga acceso');
+			}else if(data.type.code==='Aplicaci\u00F3n'){
+				$("#espec").attr("placeholder", 'Indicar a cu\u00E1les Aplicativos se requiere tenga acceso.');
+			}else if(data.type.code==='Base de datos'){
+				$("#espec").attr("placeholder", 'Indicar los esquemas y/o bases de datos que deber\u00E1 tener acceso.');
+			}else{
+				$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+			}
+		}
 }
 
 function confirmDeleteUser(index){
@@ -350,10 +432,10 @@ function modUser(){
 					id:idUser,
 					name : $requestEditForm.find('#user').val(),
 					email : $requestEditForm.find('#email').val(),
-					type:$("input[type='radio'][name='type']:checked").val(),
 					permissions:permissions,
 					espec:$requestEditForm.find('#espec').val(),
 					ambientId:$requestEditForm.find('#ambientId').val(),
+					typeId:$requestEditForm.find('#typeId').val(),
 					requestBaseId:$('#requestId').val(),
 				}),
 				success : function(response) {
@@ -433,10 +515,10 @@ function addUser(){
 				data : JSON.stringify({
 					name : $requestEditForm.find('#user').val(),
 					email : $requestEditForm.find('#email').val(),
-					type:$("input[type='radio'][name='type']:checked").val(),
 					permissions:permissions,
 					espec:$requestEditForm.find('#espec').val(),
 					ambientId:$requestEditForm.find('#ambientId').val(),
+					typeId:$requestEditForm.find('#typeId').val(),
 					requestBaseId:$('#requestId').val(),
 				}),
 				success : function(response) {
@@ -471,8 +553,14 @@ function resetSpaces(){
 	$('#permission2').prop('checked',false);
 	$('#permission3').prop('checked',false);
 	$('#permission4').prop('checked',false);
+	$('#ambientId').prop('disabled', false);
+	$('#permission1').prop('disabled', false);
+	$('#permission2').prop('disabled', false);
+	$('#permission3').prop('disabled', false);
 	$requestEditForm.find('#espec').val('');
 	$requestEditForm.find('#ambientId').selectpicker('val',"");
+	$requestEditForm.find('#typeId').selectpicker('val',"");
+	$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
 }
 function initRequestFormValidation() {
 	$requestEditForm.validate({
@@ -493,7 +581,7 @@ function initRequestFormValidation() {
 				required:true,
 				minlength : 2,			
 			},
-			'type':{
+			'typeId':{
 				required:true,		
 			}
 			,
@@ -523,8 +611,8 @@ function initRequestFormValidation() {
 				required : "Ingrese un valor",
 				minlength : "Debe ser un minimo de dos caracteres"
 			},
-			'type':{
-				required:"Se debe seleccionar una casilla",		
+			'typeId':{
+				required:"Se debe seleccionar un valor",		
 			},
 			'permission':{
 				required:"Se debe seleccionar al menos una opci\u00F3n",		

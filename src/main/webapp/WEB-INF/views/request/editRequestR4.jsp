@@ -90,9 +90,10 @@ table.dataTable tbody tr.selected {
 tr.selected {
 	background-color: #acbad4;
 }
+
 input[type=radio] {
-  float: left;
-  margin-top: 4px;
+	float: left;
+	margin-top: 4px;
 }
 </style>
 
@@ -159,12 +160,12 @@ input[type=radio] {
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>Solicitud: </span>${request.numRequest} <input type="hidden"
-									id="requestId" value="${request.id}"> <input type="hidden"
-									id="requestNumber" value="${request.numRequest}">
-									 <input type="hidden"
-									id="systemInfoId" value="${request.systemInfo.id}">
-									
+								<span>Solicitud: </span>${request.numRequest} <input
+									type="hidden" id="requestId" value="${request.id}"> <input
+									type="hidden" id="requestNumber" value="${request.numRequest}">
+								<input type="hidden" id="systemInfoId"
+									value="${request.systemInfo.id}">
+
 							</h5>
 						</div>
 						<div
@@ -212,30 +213,9 @@ input[type=radio] {
 											</span>
 										</a></li>
 
-										<li id="2" role="presentation" class="without-line "><a
-											href="#step5" data-toggle="tab" aria-controls="step5"
-											role="tab" title=""><span
-												id="step5Errors" style="visibility: hidden;"
-												class="labelCount_Error"><i
-													class="material-icons spanError">warning</i></span>
-										</a></li>
-										<li id="2" role="presentation" class="without-line " ><a
-											href="#step2" data-toggle="tab" aria-controls="step2"
-											role="tab" title=""><span class="round-tab"> 2 </span>  <span
-												id="step2Errors" style="visibility: hidden;"
-												class="labelCount_Error"><i
-													class="material-icons spanError">warning</i></span>
-										</a></li>
-										<li id="4" role="presentation" class="without-line "><a
-											href="#step4" data-toggle="tab" aria-controls="step4"
-											role="tab" title=""> <span
-												id="step4Errors" style="visibility: hidden;"
-												class="labelCount_Error"><i
-													class="material-icons spanError">warning</i></span>
-										</a></li>
-										<li id="3" role="presentation" class="without-line"><a
+										<li id="3" role="presentation" class="without-line" style="margin-left: 60%;"><a
 											href="#step3" data-toggle="tab" aria-controls="step3"
-											role="tab" title=""> <span class="round-tab"> 3 </span>
+											role="tab" title=""> <span class="round-tab"> 2</span>
 										</a></li>
 									</ul>
 								</div>
@@ -246,7 +226,11 @@ input[type=radio] {
 										<div class="body">
 											<%@include file="../request/sectionsEditR4/section_1.jsp"%>
 										</div>
-
+										<div class="button-demo flr">
+											<button type="button" id="nextStep"
+												class="btn btn-primary next-step"
+												style="margin-bottom: 100px;">SIGUIENTE</button>
+										</div>
 									</div>
 									<!--#Step_1 -->
 
@@ -256,9 +240,7 @@ input[type=radio] {
 										<div class="body">
 											<%@include file="../request/sectionsEditR4/section_2.jsp"%>
 										</div>
-										<div class="button-demo flr p-t-20">
-
-										</div>
+										<div class="button-demo flr p-t-20"></div>
 									</div>
 									<!--#Step_5 -->
 									<!--St.ep_5 -->
@@ -268,9 +250,9 @@ input[type=radio] {
 											<%@include file="../request/sectionsEditR4/section_3.jsp"%>
 										</div>
 										<div class="button-demo flr p-t-20">
-
-											<button id="applyFor" onclick="requestRequest()" type="button"
-												class="btn btn-primary">SOLICITAR</button>
+											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
+											<button id="applyFor" onclick="requestRequest()"
+												type="button" class="btn btn-primary">SOLICITAR</button>
 											<%-- 											</c:if> --%>
 										</div>
 									</div>
@@ -357,8 +339,8 @@ input[type=radio] {
 
 	<script
 		src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
-		
-		<script
+
+	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
 
 	<!-- Custom Js -->

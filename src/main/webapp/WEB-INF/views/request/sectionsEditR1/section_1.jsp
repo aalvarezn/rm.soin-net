@@ -11,7 +11,7 @@
 		<h5 class="titulares">Solicitud de estimacion inicial</h5>
 	</div>
 
-	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 		<label>Requerimientos iniciales del cliente</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
@@ -24,7 +24,7 @@
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
-	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+	<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 		<label>Observaciones Generales</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
@@ -39,7 +39,7 @@
 	</div>
 
 </div>
-<div class="row clearfix" style="margin-top: 20px;margin-bottom: 250px">
+<div class="row clearfix" style="margin-top: 20px;margin-bottom: 30px">
 	<div class='col-lg-3 col-md-3 col-sm-12 col-xs-12'>
 		<label>Tiempo de respuesta</label>
 		<div class="form-group">

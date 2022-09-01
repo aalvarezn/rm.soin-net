@@ -59,7 +59,7 @@
 <link
 	href="<c:url value='/static/plugins/multi-select/css/multi-select.css'/>"
 	rel="stylesheet" type="text/css">
-	
+
 <!-- TagInput Js -->
 <link
 	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
@@ -67,11 +67,13 @@
 
 <style type="text/css">
 #ambient6_tagsinput {
- 	display:none;
+	display: none;
 }
-[data-toggle="dropdown"]{
-	display:none;
+
+[data-toggle="dropdown"] {
+	display: none;
 }
+
 .alert {
 	width: 20%;
 }
@@ -84,20 +86,22 @@
 table.dataTable tbody tr.selected {
 	background-color: #b0bed9;
 }
-.dropdown-menu open{
-	display:none;
-}
-.dropdown-toggle{
-	display:none;
+
+.dropdown-menu open {
+	display: none;
 }
 
-.filter-option-inner-inner{
-display:none;
+.dropdown-toggle {
+	display: none;
 }
+
+.filter-option-inner-inner {
+	display: none;
+}
+
 tr.selected {
 	background-color: #acbad4;
 }
-
 </style>
 
 </head>
@@ -163,14 +167,13 @@ tr.selected {
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>Solicitud: </span>${request.numRequest} <input type="hidden"
-									id="requestId" value="${request.id}"> <input type="hidden"
-									id="requestNumber" value="${request.numRequest}">
-									 <input type="hidden"
-									id="systemInfoId" value="${request.systemInfo.id}">
-									<input type="hidden"
+								<span>Solicitud: </span>${request.numRequest} <input
+									type="hidden" id="requestId" value="${request.id}"> <input
+									type="hidden" id="requestNumber" value="${request.numRequest}">
+								<input type="hidden" id="systemInfoId"
+									value="${request.systemInfo.id}"> <input type="hidden"
 									id="requestR3Id" value="${requestR3.id}">
-								
+
 							</h5>
 						</div>
 						<div
@@ -218,27 +221,14 @@ tr.selected {
 											</span>
 										</a></li>
 
-										<li id="2" role="presentation" class="without-line "><a
-											href="#step5" data-toggle="tab" aria-controls="step5"
-											role="tab" title=""><span
-												id="step5Errors" style="visibility: hidden;"
-												class="labelCount_Error"><i
-													class="material-icons spanError">warning</i></span>
-										</a></li>
-										<li id="2" role="presentation" class="without-line " ><a
+										<li id="2" role="presentation" class="without-line "
+											style="margin-left: 20%; margin-right: 20%;"><a
 											href="#step2" data-toggle="tab" aria-controls="step2"
-											role="tab" title=""><span class="round-tab"> 2 </span>  <span
+											role="tab" title=""><span class="round-tab"> 2 </span> <span
 												id="step2Errors" style="visibility: hidden;"
 												class="labelCount_Error"><i
-													class="material-icons spanError">warning</i></span>
-										</a></li>
-										<li id="4" role="presentation" class="without-line "><a
-											href="#step4" data-toggle="tab" aria-controls="step4"
-											role="tab" title=""> <span
-												id="step4Errors" style="visibility: hidden;"
-												class="labelCount_Error"><i
-													class="material-icons spanError">warning</i></span>
-										</a></li>
+													class="material-icons spanError">warning</i></span> </a></li>
+
 										<li id="3" role="presentation" class="without-line"><a
 											href="#step3" data-toggle="tab" aria-controls="step3"
 											role="tab" title=""> <span class="round-tab"> 3 </span>
@@ -253,6 +243,12 @@ tr.selected {
 											<%@include file="../request/sectionsEditR3/section_1.jsp"%>
 										</div>
 
+										<div class="button-demo flr">
+											<button type="button" id="nextStep"
+												class="btn btn-primary next-step"
+												style="margin-bottom: 100px;">SIGUIENTE</button>
+										</div>
+
 									</div>
 									<!--#Step_1 -->
 
@@ -262,8 +258,11 @@ tr.selected {
 										<div class="body">
 											<%@include file="../request/sectionsEditR3/section_2.jsp"%>
 										</div>
-										<div class="button-demo flr p-t-20">
-
+										<div class="button-demo flr">
+											<button type="button" class="btn btn-default prev-step"
+												style="margin-bottom: 100px;">ANTERIOR</button>
+											<button type="button" class="btn btn-primary next-step"
+												style="margin-bottom: 100px;">SIGUIENTE</button>
 										</div>
 									</div>
 									<!--#Step_5 -->
@@ -274,9 +273,9 @@ tr.selected {
 											<%@include file="../request/sectionsEditR3/section_3.jsp"%>
 										</div>
 										<div class="button-demo flr p-t-20">
-
-											<button id="applyFor" onclick="requestRequest()" type="button"
-												class="btn btn-primary">SOLICITAR</button>
+											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
+											<button id="applyFor" onclick="requestRequest()"
+												type="button" class="btn btn-primary">SOLICITAR</button>
 											<%-- 											</c:if> --%>
 										</div>
 									</div>
@@ -364,8 +363,8 @@ tr.selected {
 
 	<script
 		src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
-		
-		<script
+
+	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
 
 	<!-- Custom Js -->
@@ -379,7 +378,8 @@ tr.selected {
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 
 	<script src="<c:url value='/static/js/newRequest/editRequestR3.js'/>"></script>
-	<script src="<c:url value='/static/js/newRequest/requestFileUpload.js'/>"></script>
+	<script
+		src="<c:url value='/static/js/newRequest/requestFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
 	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>
