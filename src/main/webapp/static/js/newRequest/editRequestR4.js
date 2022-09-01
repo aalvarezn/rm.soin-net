@@ -166,7 +166,7 @@ function dropDownChangeType(){
 			}else if(typeRequest==='Aplicaci\u00F3n'){
 				$("#espec").attr("placeholder", 'Indicar a cu\u00E1les Aplicativos se requiere tenga acceso.');
 			}else if(typeRequest==='Base de datos'){
-				$("#espec").attr("placeholder", 'Indicar los esquemas y/o bases de datos que deber\u00E1n tener acceso.');
+				$("#espec").attr("placeholder", 'Indicar los esquemas y/o bases de datos que deber\u00E1 tener acceso.');
 			}else{
 				$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
 			}
@@ -344,7 +344,7 @@ function showUser(id){
 			}else if(data.type.code==='Aplicaci\u00F3n'){
 				$("#espec").attr("placeholder", 'Indicar a cu\u00E1les Aplicativos se requiere tenga acceso.');
 			}else if(data.type.code==='Base de datos'){
-				$("#espec").attr("placeholder", 'Indicar los esquemas y/o bases de datos que deber\u00E1n tener acceso.');
+				$("#espec").attr("placeholder", 'Indicar los esquemas y/o bases de datos que deber\u00E1 tener acceso.');
 			}else{
 				$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
 			}
