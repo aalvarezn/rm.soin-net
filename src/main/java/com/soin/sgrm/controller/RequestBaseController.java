@@ -321,6 +321,7 @@ public class RequestBaseController extends BaseController {
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("typesPetition",  typePetitionR4Service.listTypePetition());
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				model.addAttribute("SGRMList", ambientService.list("", "SGRM"));
 				return "/request/editRequestR4";
 			}
 

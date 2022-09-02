@@ -1,5 +1,4 @@
 var $requestEditForm = $('#generateRequestForm');
-
 var origForm=null;
 var $dtUser;
 var $trackingRFCForm = $('#trackingReleaseForm');
@@ -8,6 +7,7 @@ var network = null;
 var nodes = [];
 var edges = [];
 var idUser;
+var $verificationOption=false;
 $(function() {
 
 	activeItemMenu("requestItem");
@@ -128,23 +128,28 @@ function dropDownChangeType(){
 		if(typeRequest==='SGRM'){
 			console.log('SGRM');
 			$('#ambientId').selectpicker('text','Produccion');
-			var x = document.getElementById('ambientId');
+			var x = document.getElementById('sgrmId');
 			console.log(x)
 			for (i = 0; i < x.length; i++) {
 					if(x.options[i].text.toLowerCase().includes('produccion')||x.options[i].text.toLowerCase().includes('producci\u00F3n')){
+						console.log(x.options[i].text);
+						console.log(x.options[i].value);
+						  $('#ambientId').append('<option value="' + x.options[i].value + '">' + x.options[i].text + '</option>');
 						
 						$('#ambientId').selectpicker('val',x.options[i].value);
+						$('#ambientId').selectpicker('refresh');
 						$('#ambientId').prop('disabled', true);
-						
+						$verificationOption=true;
 					}
 				}
 			$('#permission1').prop('disabled', true);
 			$('#permission2').prop('disabled', true);
 			$('#permission3').prop('disabled', true);
 			$('#permission4').prop('checked',true);
-			$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+			$("#espec").attr("placeholder", 'Indique alg\u00FAn dato adicional que se deba saber.');
 			
 		}else if(typeRequest==='VPN'){
+			removeOption();
 			console.log('VPN');
 			$('#ambientId').selectpicker('val','');
 			$('#ambientId').prop('disabled', false);
@@ -152,8 +157,9 @@ function dropDownChangeType(){
 			$('#permission2').prop('disabled', true);
 			$('#permission3').prop('disabled', true);
 			$('#permission4').prop('checked',true);
-			$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+			$("#espec").attr("placeholder", 'Indique alg\u00FAn dato adicional que se deba saber.');
 		}else{
+			removeOption();
 			$('#ambientId').selectpicker('val','');
 			$('#ambientId').prop('disabled', false);
 			$('#permission1').prop('disabled', false);
@@ -168,10 +174,24 @@ function dropDownChangeType(){
 			}else if(typeRequest==='Base de datos'){
 				$("#espec").attr("placeholder", 'Indicar los esquemas y/o bases de datos que deber\u00E1 tener acceso.');
 			}else{
-				$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+				$("#espec").attr("placeholder", 'Indique alg\u00FAn dato adicional que se deba saber');
 			}
 		}
 	});
+}
+
+function removeOption(){
+	if($verificationOption){
+		$verificationOption=false;
+		var x = document.getElementById('sgrmId');
+		for (i = 0; i < x.length; i++) {
+				if(x.options[i].text.toLowerCase().includes('produccion')||x.options[i].text.toLowerCase().includes('producci\u00F3n')){
+					$('#ambientId option[value="'+x.options[i].value+'"]').remove();
+					$('#ambientId').selectpicker('refresh');
+					$('.disabled').removeClass( 'disabled' );
+				}
+			}
+	}
 }
 function sendPartialRequest() {
 	var form = "#generateReleaseForm";
@@ -312,14 +332,29 @@ function showUser(id){
 		$requestEditForm.find('#espec').val(data.espec);
 		
 		if(data.type.code==='SGRM'){
-			$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
+			
+			var x = document.getElementById('sgrmId');
+			console.log(x)
+			for (i = 0; i < x.length; i++) {
+					if(x.options[i].text.toLowerCase().includes('produccion')||x.options[i].text.toLowerCase().includes('producci\u00F3n')){
+						console.log(x.options[i].text);
+						console.log(x.options[i].value);
+						  $('#ambientId').append('<option value="' + x.options[i].value + '">' + x.options[i].text + '</option>');
+						
+						$('#ambientId').selectpicker('val',x.options[i].value);
+						$('#ambientId').selectpicker('refresh');
+						$('#ambientId').prop('disabled', true);
+						$verificationOption=true;
+					}
+				}
+			
 		    $('#typeId').selectpicker('val',data.type.id);
 			$('#ambientId').prop('disabled', true);
 			$('#permission1').prop('disabled', true);
 			$('#permission2').prop('disabled', true);
 			$('#permission3').prop('disabled', true);
 			$('#permission4').prop('checked',true);
-			$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+			$("#espec").attr("placeholder", 'Indique alg\u00FAn dato adicional que se deba saber.');
 			
 		}else if(data.type.code==='VPN'){
 			console.log('VPN');
@@ -330,7 +365,7 @@ function showUser(id){
 			$('#permission2').prop('disabled', true);
 			$('#permission3').prop('disabled', true);
 			$('#permission4').prop('checked',true);
-			$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
+			$("#espec").attr("placeholder", 'Indique alg\u00FAn dato adicional que se deba saber.');
 		}else{
 			$('#typeId').selectpicker('val',data.type.id);
 			$requestEditForm.find('#ambientId').selectpicker('val',data.ambient.id);
