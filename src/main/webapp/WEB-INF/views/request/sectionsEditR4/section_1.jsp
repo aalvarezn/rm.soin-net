@@ -27,30 +27,40 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 		<label for="permission">Permisos</label>
-		<div class="form-group m-b-0i">
+		<div class="form-group m-b-0i m-t-10">
 			<div class="form-line disabled">
-			<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-				<input type="checkbox" id="permission1" name="permission" value="Lectura"> <label for="permission1">Lectura</label> <br>
-				<input type="checkbox" id="permission2" name="permission" value="Escritura"> <label for="permission2">Escritura</label><br>
-				</div>
-				<input type="checkbox" id="permission3" name="permission" value="Ejecucion"> <label for="permission3">Ejecución</label><br>
-				<input type="checkbox" id="permission4" name="permission" value="Acceso"> <label for="permission4">Acceso</label><br>
+				<input type="checkbox" id="permission1" name="permission" value="Lectura"> <label for="permission1">Lectura</label>
+				<input type="checkbox" id="permission2" name="permission" value="Escritura"> <label for="permission2">Escritura</label>
+				<input type="checkbox" id="permission3" name="permission" value="Ejecucion"> <label for="permission3">Ejecución</label>
+				<input type="checkbox" id="permission4" name="permission" value="Acceso"> <label for="permission4">Acceso</label>
 				<br>
 			</div>
 		</div>
 
 	</div>
 	
+
+<div hidden>
+<select id="sgrmId" name="sgrmId"  
+					class="form-control show-tick selectpicker" data-live-search="true">
+					<option value="">-- Seleccione una opci&oacute;n --</option>
+					<c:forEach items="${SGRMList}" var="sgrm">
+						<option value="${sgrm.id }">${sgrm.name }</option>
+					</c:forEach>
+				</select></div>
+	
+</div>
+<div class="row clearfix" style="margin-top: 50px;">
 	<div class="col-lg-3 col-md-3 col-sm-8 col-xs-8">
 		<p>
 			<b>Ambiente</b>
 		</p>
 		<div class="form-group m-b-0i">
-			<div class="form-line">
+			<div class="form-line"  style="margin-top: 32px;">
 
-				<select id="ambientId" name="ambientId" required="required"
+				<select id="ambientId" name="ambientId" required="required" 
 					class="form-control show-tick selectpicker" data-live-search="true">
 					<option value="">-- Seleccione una opci&oacute;n --</option>
 					<c:forEach items="${ambients}" var="ambient">
@@ -60,10 +70,19 @@
 			</div>
 		</div>
 	</div>
+		
 
-	
+	<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+		<label for="espec">Especificación</label>
+		<div class="form-group m-b-0i">
+		<div class="form-line" >
+				<textarea rows="1" cols="" name='espec' id="espec"
+					class="form-control" 
+					placeholder="Indique algún dato adicional que se deba saber." style=""></textarea>
+			</div>
+		</div>
+	</div>
 </div>
-
 <div class="row clearfix" style="margin-top: 50px;">
 
 <div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
@@ -86,18 +105,7 @@
 			</div>
 		</div>
 	</div>
-	
 
-	<div class="col-lg-3 col-md-2 col-sm-12 col-xs-12">
-		<label for="espec">Especificación</label>
-		<div class="form-group m-b-0i">
-		<div class="form-line" >
-				<textarea rows="2" cols="" name='espec' id="espec"
-					class="form-control" style="height: 80px;"
-					placeholder="Ingrese la especificación..." style=""></textarea>
-			</div>
-		</div>
-	</div>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 	

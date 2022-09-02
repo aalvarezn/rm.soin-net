@@ -212,17 +212,9 @@ tr.selected {
 													<i class="material-icons spanError">warning</i>
 											</span>
 										</a></li>
-
-										<li id="2" role="presentation" class="without-line "
-											style="margin-left: 20%; margin-right: 20%;"><a
-											href="#step2" data-toggle="tab" aria-controls="step2"
-											role="tab" title=""><span class="round-tab"> 2 </span> <span
-												id="step2Errors" style="visibility: hidden;"
-												class="labelCount_Error"><i
-													class="material-icons spanError">warning</i></span> </a></li>
-										<li id="3" role="presentation" class="without-line"><a
+										<li id="2" role="presentation" class="without-line" style="margin-left: 60%;"><a
 											href="#step3" data-toggle="tab" aria-controls="step3"
-											role="tab" title=""> <span class="round-tab"> 3 </span>
+											role="tab" title=""> <span class="round-tab"> 2 </span>
 										</a></li>
 									</ul>
 								</div>
