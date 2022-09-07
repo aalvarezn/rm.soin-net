@@ -438,10 +438,10 @@
 								<div class="form-group m-b-0i">
 									<div class="form-line">
 										<textarea rows="2" cols="" id="functionalDescription"
-											maxlength="100" name="functionalDescription"
+											maxlength="500" name="functionalDescription"
 											class="form-control"
-											placeholder="Ingrese una breve descripci&oacute;n..." style="">${release.functionalDescription}</textarea>
-											<div class="help-info">M&aacute;x. 100 caracteres</div>
+											placeholder="Ingrese las dependencias no encontradas..." style="">${release.functionalDescription}</textarea>
+											<div class="help-info">M&aacute;x. 500 caracteres</div>
 									</div>
 								</div>
 							</div>
@@ -454,10 +454,10 @@
 								<div class="form-group m-b-0i">
 									<div class="form-line">
 										<textarea rows="2" cols="" id="functionalDescription"
-											maxlength="100" name="functionalDescription"
+											maxlength="500" name="functionalDescription"
 											class="form-control"
-											placeholder="Ingrese una breve descripcion..." style="">${release.functionalDescription}</textarea>
-											<div class="help-info">M&aacute;x. 100 caracteres</div>
+											placeholder="Ingrese las dependencias no encontradas..." style="">${release.functionalDescription}</textarea>
+											<div class="help-info">M&aacute;x. 500 caracteres</div>
 									</div>
 								</div>
 							</div>
