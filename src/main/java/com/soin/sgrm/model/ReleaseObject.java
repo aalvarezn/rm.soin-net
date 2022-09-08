@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -63,11 +64,14 @@ public class ReleaseObject implements Serializable, Cloneable {
 	@Value("${isSql:0}")
 	@Column(name = "SQL")
 	private int isSql;
-
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "MODULO_ID", nullable = false)
 	private Module module;
 
+	@Transient
+	private String numRelease;
+	
 	public ReleaseObject() {
 
 	}
@@ -210,6 +214,14 @@ public class ReleaseObject implements Serializable, Cloneable {
 		}
 
 		return equals;
+	}
+	
+	public String getNumRelease() {
+		return numRelease;
+	}
+
+	public void setNumRelease(String numRelease) {
+		this.numRelease = numRelease;
 	}
 
 	@Override
