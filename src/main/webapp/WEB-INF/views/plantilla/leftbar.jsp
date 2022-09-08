@@ -30,9 +30,9 @@
 								Release</span>
 					</a></li>
 					<li><a id="managerRFCItem"
-					href="<c:url value='/management/rfc/'/> "> <span>Gestión
-							RFC</span>
-				</a></li>
+						href="<c:url value='/management/rfc/'/> "> <span>Gestión
+								RFC</span>
+					</a></li>
 					<li><a id="managemetWorkFlowItem"
 						href="<c:url value='/management/wf/'/> "> <span>Gestión
 								Trámites</span>
@@ -40,6 +40,10 @@
 					<li><a id="managerRequestItem"
 						href="<c:url value='/management/request/'/> "> <span>Gestión
 								Solicitudes</span>
+					</a></li>
+					<li><a id="managerRequestItem"
+						href="<c:url value='/management/incidence/'/> "> <span>Gestión
+								Incidencias</span>
 					</a></li>
 				</c:if>
 				<c:if
@@ -52,8 +56,11 @@
 				<c:if test="${authority.name == 'QA'}">
 					<c:set var="qaAccess" value="true"></c:set>
 				</c:if>
-					<c:if test="${authority.name == 'Gestor Solicitudes'}">
+				<c:if test="${authority.name == 'Gestor Solicitudes'}">
 					<c:set var="managerRequestAccess" value="true"></c:set>
+				</c:if>
+				<c:if test="${authority.name == 'Incidencias'}">
+					<c:set var="incidenceAccess" value="true"></c:set>
 				</c:if>
 			</c:forEach>
 			<c:if test="${qaAccess}">
@@ -61,7 +68,7 @@
 						<span>Gestión QA</span>
 				</a></li>
 			</c:if>
-				<c:if test="${managerAccess}">
+			<c:if test="${managerAccess}">
 				<li><a id="requestItem" href="<c:url value='/request/'/> ">
 						<span>Mis Solicitudes</span>
 				</a></li>
@@ -79,13 +86,20 @@
 					</ul></li>
 			</c:if>
 			<c:if test="${managerAccess}">
-				<li><li><a id="RFCItem" href="<c:url value='/rfc/'/> "> <span>
+				<li>
+				<li><a id="RFCItem" href="<c:url value='/rfc/'/> "> <span>
 							RFC</span>
 				</a></li>
-					
+
 				<li><a id="managerWorkFlowItem"
 					href="<c:url value='/manager/wf/'/> "> <span>Mis
 							Trámites</span>
+				</a></li>
+			</c:if>
+					<c:if test="${incidenceAccess}">
+				<li>
+				<li><a id="IncidenceItem" href="<c:url value='/incidence/'/> "> <span>
+							Incidencias</span>
 				</a></li>
 			</c:if>
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">

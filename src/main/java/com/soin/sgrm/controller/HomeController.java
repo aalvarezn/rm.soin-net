@@ -109,6 +109,15 @@ public class HomeController extends BaseController {
 
 		return "redirect:/request/";
 	}
+	@RequestMapping(value = "/homeIncidence", method = RequestMethod.GET)
+	public String indexIncidence(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+		if (request.isUserInRole("ROLE_Release Manager")) {
+			return "redirect:/management/incidence/";
+		}
+
+		return "redirect:/incidence/";
+	}
 
 
 	@RequestMapping(value = "/successLogin", method = RequestMethod.GET)
