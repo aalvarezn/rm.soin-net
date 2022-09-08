@@ -235,14 +235,16 @@
 										id="userTable">
 										<thead>
 											<tr>
-												<th>Número Release</th>
-												<th>Total Objetos</th>
+												<th style="width: 50px;">Número Release</th>
+												<th style="width: 200px;">Descripción</th>
+												<th style="width: 100px;">Total Objetos</th>
 											</tr>
 										</thead>
 										<tbody>
 											<c:forEach items="${rfc.releases}" var="release">
 												<tr>
 													<td>${release.releaseNumber}</td>
+													<td>${release.description}</td>
 													<td>${release.objects.size()}</td>
 												</tr>
 											</c:forEach>
@@ -268,13 +270,15 @@
 										id="userTable">
 										<thead>
 											<tr>
-												<th>Nombre objeto</th>
-												<th>Descripción</th>
+												<th style="width: 50px;">Release al que pertenece</th>
+												<th style="width: 100px;">Nombre objeto</th>
+												<th style="width: 200px;">Descripción</th>
 											</tr>
 										</thead>
 										<tbody>
 											<c:forEach items="${listObjects}" var="object">
 												<tr>
+													<td>${object.numRelease}</td>
 													<td>${object.name}</td>
 													<td>${object.description}</td>
 												</tr>
