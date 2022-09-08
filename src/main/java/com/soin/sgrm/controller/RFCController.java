@@ -445,6 +445,7 @@ public class RFCController extends BaseController {
 							 totalObjects+= release.getObjects().size();
 							 Set<ReleaseObject> objects=release.getObjects();
 							 for(ReleaseObject object: objects) {
+								 object.setNumRelease(release.getReleaseNumber());
 								 listObjects.add(object);
 							 }
 						}
@@ -516,6 +517,7 @@ public class RFCController extends BaseController {
 							 totalObjects+= release.getObjects().size();
 							 Set<ReleaseObject> objects=release.getObjects();
 							 for(ReleaseObject object: objects) {
+								 object.setNumRelease(release.getReleaseNumber());
 								 listObjects.add(object);
 							 }
 						}
