@@ -1033,7 +1033,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				
 				temp +="<td>"+ user.getName() + "</td>";
 				temp +="<td>"+ user.getEmail() + "</td>";
-				temp +="<td>"+ user.getType() + "</td>";
+				temp +="<td>"+ user.getType().getCode() + "</td>";
 				temp +="<td>"+ user.getPermissions() + "</td>";
 				temp +="<td>"+ user.getAmbient().getName() + "</td>";
 				temp +="<td>"+ user.getEspec() + "</td>";
