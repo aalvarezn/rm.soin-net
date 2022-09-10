@@ -59,12 +59,14 @@
 					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
 					<li><a href="<c:url value='/admin/statusRFC/'/>">Estados RFC</a></li> 
 					<li><a href="<c:url value='/admin/statusRequest/'/>">Estados Solicitud</a></li> 
+					<li><a href="<c:url value='/admin/statusIncidence/'/>">Estados Incidencia</a></li> 
 					<li><a href="<c:url value='/admin/impact/'/>">Impacto</a></li>
 					<li><a href="<c:url value='/admin/priority/'/>">Prioridad</a></li>
 					<li><a href="<c:url value='/admin/risk/'/>">Riesgo</a></li>
 					<li><a href="<c:url value='/admin/typeChange/'/>">Tipo Cambio</a></li>
 					<li><a href="<c:url value='/admin/typePetition/'/>">Tipo Solicitud</a></li>  
-					<li><a href="<c:url value='/admin/typePetitionR4/'/>">Tipo Solicitud R4</a></li>  
+					<li><a href="<c:url value='/admin/typePetitionR4/'/>">Tipo Solicitud R4</a></li>
+					<li><a href="<c:url value='/admin/typeIncidence/'/>">Tipo Incidencia</a></li>    
 				</ul></li>
 			<!---- 	#Seccion de requerimientos ---->
 			<li class=""><a id="requestItem" href="javascript:void(0);"

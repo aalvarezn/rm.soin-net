@@ -40,7 +40,7 @@ public class IncidenceManagementController extends BaseController {
 			Sentry.capture(e, "incidenceManagement");
 			e.printStackTrace();
 		}
-		return "/incindence/incidenceManagement";
+		return "/incidence/incidenceManagement";
 
 	}
 

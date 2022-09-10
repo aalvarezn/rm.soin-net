@@ -1,17 +1,17 @@
 
-var $dtTypePetition;
-var $mdTypePetition = $('#typePetitionModal');
-var $fmTypePetition = $('#typePetitionModalForm');
+var $dtTypeIncidence;
+var $mdTypeIncidence = $('#typeIncidenceModal');
+var $fmTypeIncidence = $('#typeIncidenceModalForm');
 
 $(function() {
 	activeItemMenu("releaseItem", true);
 	initDataTable();
-	initTypePetitionFormValidation();
+	initTypeIncidenceFormValidation();
 });
 
 
 function initDataTable() {
-	$dtTypePetition = $('#typePetitionTable')
+	$dtTypeIncidence = $('#typeIncidenceTable')
 	.DataTable(
 			{
 				lengthMenu : [ [ 10, 25, 50, -1 ],
@@ -19,7 +19,7 @@ function initDataTable() {
 					"iDisplayLength" : 10,
 					"language" : optionLanguaje,
 					"iDisplayStart" : 0,
-					"sAjaxSource" : getCont() + "admin/typePetition/list",
+					"sAjaxSource" : getCont() + "admin/typeIncidence/list",
 					"fnServerParams" : function(aoData) {
 					},
 					"aoColumns" : [
@@ -47,7 +47,7 @@ function initDataTable() {
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';
 
-								options += '<a onclick="showTypePetition('
+								options += '<a onclick="showTypeIncidence('
 									+ meta.row
 									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
 
@@ -72,13 +72,13 @@ function softDeleteRequest(index) {
 			blockUI();
 			$.ajax({
 				type : "PUT",
-				url : getCont() + "admin/typePetition/"+index ,
+				url : getCont() + "admin/typeIncidence/"+index ,
 				timeout : 60000,
 				data : {},
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtTypePetition.ajax.reload();
+					$dtTypeIncidence.ajax.reload();
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -131,21 +131,21 @@ function ajaxDeleteSoftRequest(response, index) {
 		location.reload();
 		}
 }
-function showTypePetition(index){
-	$fmTypePetition.validate().resetForm();
-	$fmTypePetition[0].reset();
-	var obj = $dtTypePetition.row(index).data();
-	$fmTypePetition.find('#sId').val(obj.id);
-	$fmTypePetition.find('#sCode').val(obj.code);
-	$fmTypePetition.find('#sDescription').val(obj.description);
-	$fmTypePetition.find('#sEmailId').selectpicker('val',obj.emailTemplate.id);
-	$mdTypePetition.find('#update').show();
-	$mdTypePetition.find('#save').hide();
-	$mdTypePetition.modal('show');
+function showTypeIncidence(index){
+	$fmTypeIncidence.validate().resetForm();
+	$fmTypeIncidence[0].reset();
+	var obj = $dtTypeIncidence.row(index).data();
+	$fmTypeIncidence.find('#sId').val(obj.id);
+	$fmTypeIncidence.find('#sCode').val(obj.code);
+	$fmTypeIncidence.find('#sDescription').val(obj.description);
+	$fmTypeIncidence.find('#sEmailId').selectpicker('val',obj.emailTemplate.id);
+	$mdTypeIncidence.find('#update').show();
+	$mdTypeIncidence.find('#save').hide();
+	$mdTypeIncidence.modal('show');
 }
 
-function updateTypePetition() {
-	if (!$fmTypePetition.valid())
+function updateTypeIncidence() {
+	if (!$fmTypeIncidence.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
@@ -156,21 +156,21 @@ function updateTypePetition() {
 			blockUI();
 			$.ajax({
 				type : "PUT",
-				url : getCont() + "admin/typePetition/" ,
+				url : getCont() + "admin/typeIncidence/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					id : $fmTypePetition.find('#sId').val(),
-					code : $fmTypePetition.find('#sCode').val(),
-					description:$fmTypePetition.find('#sDescription').val(),
-					emailTemplateId :$fmTypePetition.find('#sEmailId').val()
+					id : $fmTypeIncidence.find('#sId').val(),
+					code : $fmTypeIncidence.find('#sCode').val(),
+					description:$fmTypeIncidence.find('#sDescription').val(),
+					emailTemplateId :$fmTypeIncidence.find('#sEmailId').val()
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtTypePetition.ajax.reload();
-					$mdTypePetition.modal('hide');
+					$dtTypeIncidence.ajax.reload();
+					$mdTypeIncidence.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -182,9 +182,9 @@ function updateTypePetition() {
 }
 
 
-function saveTypePetition() {
+function saveTypeIncidence() {
 	
-	if (!$fmTypePetition.valid())
+	if (!$fmTypeIncidence.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
@@ -195,20 +195,20 @@ function saveTypePetition() {
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "admin/typePetition/" ,
+				url : getCont() + "admin/typeIncidence/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					code : $fmTypePetition.find('#sCode').val(),
-					description:$fmTypePetition.find('#sDescription').val(),
-					emailTemplateId :$fmTypePetition.find('#sEmailId').val()
+					code : $fmTypeIncidence.find('#sCode').val(),
+					description:$fmTypeIncidence.find('#sDescription').val(),
+					emailTemplateId :$fmTypeIncidence.find('#sEmailId').val()
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtTypePetition.ajax.reload();
-					$mdTypePetition.modal('hide');
+					$dtTypeIncidence.ajax.reload();
+					$mdTypeIncidence.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -219,8 +219,8 @@ function saveTypePetition() {
 	});
 }
 
-function deleteTypePetition(index) {
-	var obj = $dtTypePetition.row(index).data();
+function deleteTypeIncidence(index) {
+	var obj = $dtTypeIncidence.row(index).data();
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
 		text: 'Esta acci\u00F3n no se puede reversar.',
@@ -230,14 +230,14 @@ function deleteTypePetition(index) {
 			blockUI();
 			$.ajax({
 				type : "DELETE",
-				url : getCont() + "admin/typePetition/"+obj.id ,
+				url : getCont() + "admin/typeIncidence/"+obj.id ,
 				timeout : 60000,
 				data : {},
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtTypePetition.ajax.reload();
-					$mdTypePetition.modal('hide');
+					$dtTypeIncidence.ajax.reload();
+					$mdTypeIncidence.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -248,21 +248,21 @@ function deleteTypePetition(index) {
 	});
 }
 
-function addTypePetition(){
-	$fmTypePetition.validate().resetForm();
-	$fmTypePetition[0].reset();
-	$fmTypePetition.find('#sEmailId').selectpicker('val',"");
-	$mdTypePetition.find('#save').show();
-	$mdTypePetition.find('#update').hide();
-	$mdTypePetition.modal('show');
+function addTypeIncidence(){
+	$fmTypeIncidence.validate().resetForm();
+	$fmTypeIncidence[0].reset();
+	$fmTypeIncidence.find('#sEmailId').selectpicker('val',"");
+	$mdTypeIncidence.find('#save').show();
+	$mdTypeIncidence.find('#update').hide();
+	$mdTypeIncidence.modal('show');
 }
 
-function closeTypePetition(){
-	$mdTypePetition.modal('hide');
+function closeTypeIncidence(){
+	$mdTypeIncidence.modal('hide');
 }
 
-function initTypePetitionFormValidation() {
-	$fmTypePetition.validate({
+function initTypeIncidenceFormValidation() {
+	$fmTypeIncidence.validate({
 		rules : {
 
 			'sCode' : {

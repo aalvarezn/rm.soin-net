@@ -1,17 +1,17 @@
 
-var $dtStatusRequest;
-var $mdStatusRequest = $('#statusRequestModal');
-var $fmStatusRequest = $('#statusRequestModalForm');
+var $dtStatusIncidence;
+var $mdStatusIncidence = $('#statusIncidenceModal');
+var $fmStatusIncidence = $('#statusIncidenceModalForm');
 
 $(function() {
 	activeItemMenu("releaseItem", true);
 	initDataTable();
-	initStatusRequestFormValidation();
+	initStatusIncidenceFormValidation();
 });
 
 
 function initDataTable() {
-	$dtStatusRequest = $('#statusRequestTable')
+	$dtStatusIncidence = $('#statusIncidenceTable')
 	.DataTable(
 			{
 				lengthMenu : [ [ 10, 25, 50, -1 ],
@@ -19,7 +19,7 @@ function initDataTable() {
 					"iDisplayLength" : 10,
 					"language" : optionLanguaje,
 					"iDisplayStart" : 0,
-					"sAjaxSource" : getCont() + "admin/statusRequest/list",
+					"sAjaxSource" : getCont() + "admin/statusIncidence/list",
 					"fnServerParams" : function(aoData) {
 					},
 					"aoColumns" : [
@@ -40,11 +40,11 @@ function initDataTable() {
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';
 
-								options += '<a onclick="showStatusRequest('
+								options += '<a onclick="showStatusIncidence('
 									+ meta.row
 									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
 
-								options += '<a onclick="deleteStatusRequest('
+								options += '<a onclick="deleteStatusIncidence('
 									+ meta.row
 									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
 
@@ -57,22 +57,22 @@ function initDataTable() {
 			});
 }
 
-function showStatusRequest(index){
-	$fmStatusRequest.validate().resetForm();
-	$fmStatusRequest[0].reset();
-	var obj = $dtStatusRequest.row(index).data();
-	$fmStatusRequest.find('#sId').val(obj.id);
-	$fmStatusRequest.find('#sName').val(obj.name);
-	$fmStatusRequest.find('#sCode').val(obj.code);
-	$fmStatusRequest.find('#sMotive').val(obj.reason);
-	$fmStatusRequest.find('#sDescription').val(obj.description);
-	$mdStatusRequest.find('#update').show();
-	$mdStatusRequest.find('#save').hide();
-	$mdStatusRequest.modal('show');
+function showStatusIncidence(index){
+	$fmStatusIncidence.validate().resetForm();
+	$fmStatusIncidence[0].reset();
+	var obj = $dtStatusIncidence.row(index).data();
+	$fmStatusIncidence.find('#sId').val(obj.id);
+	$fmStatusIncidence.find('#sName').val(obj.name);
+	$fmStatusIncidence.find('#sCode').val(obj.code);
+	$fmStatusIncidence.find('#sMotive').val(obj.reason);
+	$fmStatusIncidence.find('#sDescription').val(obj.description);
+	$mdStatusIncidence.find('#update').show();
+	$mdStatusIncidence.find('#save').hide();
+	$mdStatusIncidence.modal('show');
 }
 
-function updateStatusRequest() {
-	if (!$fmStatusRequest.valid())
+function updateStatusIncidence() {
+	if (!$fmStatusIncidence.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
@@ -83,22 +83,22 @@ function updateStatusRequest() {
 			blockUI();
 			$.ajax({
 				type : "PUT",
-				url : getCont() + "admin/statusRequest/" ,
+				url : getCont() + "admin/statusIncidence/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					id : $fmStatusRequest.find('#sId').val(),
-					name : $fmStatusRequest.find('#sName').val(),
-					code : $fmStatusRequest.find('#sCode').val(),
-					reason :$fmStatusRequest.find('#sMotive').val(),
-					description:$fmStatusRequest.find('#sDescription').val(),
+					id : $fmStatusIncidence.find('#sId').val(),
+					name : $fmStatusIncidence.find('#sName').val(),
+					code : $fmStatusIncidence.find('#sCode').val(),
+					reason :$fmStatusIncidence.find('#sMotive').val(),
+					description:$fmStatusIncidence.find('#sDescription').val(),
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtStatusRequest.ajax.reload();
-					$mdStatusRequest.modal('hide');
+					$dtStatusIncidence.ajax.reload();
+					$mdStatusIncidence.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -110,9 +110,9 @@ function updateStatusRequest() {
 }
 
 
-function saveStatusRequest() {
+function saveStatusIncidence() {
 	
-	if (!$fmStatusRequest.valid())
+	if (!$fmStatusIncidence.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
@@ -123,21 +123,21 @@ function saveStatusRequest() {
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "admin/statusRequest/" ,
+				url : getCont() + "admin/statusIncidence/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					name : $fmStatusRequest.find('#sName').val(),
-					code : $fmStatusRequest.find('#sCode').val(),
-					reason :$fmStatusRequest.find('#sMotive').val(),
-					description:$fmStatusRequest.find('#sDescription').val(),
+					name : $fmStatusIncidence.find('#sName').val(),
+					code : $fmStatusIncidence.find('#sCode').val(),
+					reason :$fmStatusIncidence.find('#sMotive').val(),
+					description:$fmStatusIncidence.find('#sDescription').val(),
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtStatusRequest.ajax.reload();
-					$mdStatusRequest.modal('hide');
+					$dtStatusIncidence.ajax.reload();
+					$mdStatusIncidence.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -148,8 +148,8 @@ function saveStatusRequest() {
 	});
 }
 
-function deleteStatusRequest(index) {
-	var obj = $dtStatusRequest.row(index).data();
+function deleteStatusIncidence(index) {
+	var obj = $dtStatusIncidence.row(index).data();
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
 		text: 'Esta acci\u00F3n no se puede reversar.',
@@ -159,14 +159,14 @@ function deleteStatusRequest(index) {
 			blockUI();
 			$.ajax({
 				type : "DELETE",
-				url : getCont() + "admin/statusRequest/"+obj.id ,
+				url : getCont() + "admin/statusIncidence/"+obj.id ,
 				timeout : 60000,
 				data : {},
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtStatusRequest.ajax.reload();
-					$mdStatusRequest.modal('hide');
+					$dtStatusIncidence.ajax.reload();
+					$mdStatusIncidence.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -177,20 +177,20 @@ function deleteStatusRequest(index) {
 	});
 }
 
-function addStatusRequest(){
-	$fmStatusRequest.validate().resetForm();
-	$fmStatusRequest[0].reset();
-	$mdStatusRequest.find('#save').show();
-	$mdStatusRequest.find('#update').hide();
-	$mdStatusRequest.modal('show');
+function addStatusIncidence(){
+	$fmStatusIncidence.validate().resetForm();
+	$fmStatusIncidence[0].reset();
+	$mdStatusIncidence.find('#save').show();
+	$mdStatusIncidence.find('#update').hide();
+	$mdStatusIncidence.modal('show');
 }
 
-function closeStatusRequest(){
-	$mdStatusRequest.modal('hide');
+function closeStatusIncidence(){
+	$mdStatusIncidence.modal('hide');
 }
 
-function initStatusRequestFormValidation() {
-	$fmStatusRequest.validate({
+function initStatusIncidenceFormValidation() {
+	$fmStatusIncidence.validate({
 		rules : {
 			'sCode' : {
 				required : true,

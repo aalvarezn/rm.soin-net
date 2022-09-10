@@ -14,7 +14,7 @@ import com.soin.sgrm.service.RFCService;
 
 @RestController
 @RequestMapping("/webService")
-public class WebServiceController {
+public class WebServiceController extends BaseController {
 	
 		@Autowired 
 		RFCService rfcService;

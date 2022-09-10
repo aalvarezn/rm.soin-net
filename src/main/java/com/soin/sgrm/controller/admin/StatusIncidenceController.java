@@ -17,71 +17,73 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.StatusRFC;
+import com.soin.sgrm.model.StatusIncidence;
+import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.StatusRFCService;
+import com.soin.sgrm.service.StatusIncidenceService;
+import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
-@RequestMapping("/admin/statusRFC")
-public class StatusRFCController extends BaseController {
-	public static final Logger logger = Logger.getLogger(StatusRFCController.class);
+@RequestMapping("/admin/statusIncidence")
+public class StatusIncidenceController extends BaseController {
+	public static final Logger logger = Logger.getLogger(StatusIncidenceController.class);
 
 	@Autowired
-	StatusRFCService statusRFCService;
+	StatusIncidenceService statusIncidenceService;
 	
 	
 	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
-		return "/admin/statusRFC/statusRFC";
+		return "/admin/statusIncidence/statusIncidence";
 	}
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<StatusRFC> statusRFCs = new JsonSheet<>();
+		JsonSheet<StatusIncidence> statusIncidence = new JsonSheet<>();
 		try {
-			statusRFCs.setData(statusRFCService.findAll());
+			statusIncidence.setData(statusIncidenceService.findAll());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return statusRFCs;
+		return statusIncidence;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody StatusRFC addStatusRFC) {
+	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody StatusIncidence addStatusIncidence) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
 
-			statusRFCService.save(addStatusRFC);
+			statusIncidenceService.save(addStatusIncidence);
 
-			res.setMessage("Status RFC agregado!");
+			res.setMessage("Estado incidencia agregado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "statusRFC");
+			Sentry.capture(e, "statusRequest");
 			res.setStatus("exception");
-			res.setMessage("Error al agregar Status RFC!");
+			res.setMessage("Error al agregar estado incidencia!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody StatusRFC uptStatusRFC) {
+	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody StatusIncidence uptStatusIncidence) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			statusRFCService.update(uptStatusRFC);
+			statusIncidenceService.update(uptStatusIncidence);
 
-			res.setMessage("Status RFC modificado!");
+			res.setMessage("Estado incidencia modificado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "statusRFC");
+			Sentry.capture(e, "statusIncidence");
 			res.setStatus("exception");
-			res.setMessage("Error al modificar Status RFC!");
+			res.setMessage("Error al modificar Estado  de la incidencia!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -92,12 +94,12 @@ public class StatusRFCController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			statusRFCService.delete(id);
-			res.setMessage("Status RFC eliminado!");
+			statusIncidenceService.delete(id);
+			res.setMessage("Estado incidencia eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
 			res.setStatus("exception");
-			res.setMessage("Error al eliminar el Status RFC!");
+			res.setMessage("Error al eliminar el estado de incidencia!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
