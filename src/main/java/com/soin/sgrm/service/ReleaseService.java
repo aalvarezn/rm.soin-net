@@ -14,6 +14,7 @@ import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.UserInfo;
@@ -78,5 +79,7 @@ public interface ReleaseService {
 	Release_RFC findRelease_RFCById(Integer id) throws SQLException;
 
 	Integer getDependency(int id);
+	
+	ReleaseSummaryMin findByIdMin(Integer id) throws SQLException;
 
 }

@@ -1,5 +1,6 @@
 package com.soin.sgrm.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gdata.util.ParseException;
 import com.soin.sgrm.dao.ReleaseObjectDao;
 import com.soin.sgrm.model.Dependency;
 import com.soin.sgrm.model.Release;
@@ -14,6 +16,7 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.utils.JsonSheet;
 
 @Transactional("transactionManager")
 @Service("ReleaseObjectService")
@@ -56,6 +59,12 @@ public class ReleaseObjectServiceImpl implements ReleaseObjectService {
 	@Override
 	public List<Object[]> findCoDependencies(ArrayList<ReleaseObject> objects, ReleaseUser release) {
 		return dao.findCoDependencies(objects, release);
+	}
+
+	@Override
+	public JsonSheet<?> listObjectsByReleases(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer releaseId,Integer sql) throws SQLException, ParseException{
+		return dao.listObjectsByReleases(sEcho,iDisplayStart,iDisplayLength,sSearch,releaseId,sql);
 	}
 
 }
