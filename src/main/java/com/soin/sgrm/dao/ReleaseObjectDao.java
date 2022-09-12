@@ -1,13 +1,17 @@
 package com.soin.sgrm.dao;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gdata.util.ParseException;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.utils.JsonSheet;
+
 
 public interface ReleaseObjectDao {
 
@@ -24,5 +28,7 @@ public interface ReleaseObjectDao {
 	List<Object[]> findReleaseToAddByObjectList(ArrayList<ReleaseObjectEdit> objects, ReleaseEdit release);
 	
 	List<Object[]> findCoDependencies(ArrayList<ReleaseObject> objects, ReleaseUser release);
-
+	
+	JsonSheet<?> listObjectsByReleases(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer releaseId,Integer sql) throws SQLException, ParseException;
 }
