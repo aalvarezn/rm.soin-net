@@ -203,7 +203,7 @@
 								<thead>
 									<tr>
 										<th>ID</th>
-										<th>Número RFC</th>
+										<th>Número Incidencia</th>
 										<th>Sistema</th>
 										<th>Solicitante</th>
 										<th>Modificado</th>

@@ -80,7 +80,7 @@
 				<!-- #tableSection#-->
 				<div id="tableSection">
 					<div class="block-header">
-						<h2>RFC</h2>
+						<h2>Incidencias</h2>
 					</div>
 
 					<!-- Tab PANELS -->
@@ -213,7 +213,7 @@
 										<thead>
 											<tr>
 												<th></th>
-												<th>Número RFC</th>
+												<th>Número Incidencia</th>
 												<th>Sistema</th>
 												<th>Raz&oacute;n de cambio</th>
 												<th>Solicitante</th>
