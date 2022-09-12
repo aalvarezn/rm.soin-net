@@ -61,7 +61,7 @@ $(function() {
 		maxDate : new Date()
 	});
 
-	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+
 	loadTableRelease('systemReleaseQA');
 	setTab();
 });
@@ -133,13 +133,15 @@ function loadTableRelease(nameTable) {
 						}, 
 						"aoColumns" : [
 							{
+								"sClass" : "hideColumn",
 								"mDataProp" : "id"
+							},
+							
+							{
+								"mDataProp" : "releaseNumber",
 							},
 							{
 								"mDataProp" : "system.name",
-							},
-							{
-								"mDataProp" : "releaseNumber",
 							},
 							{
 								"sClass" : "block-with-text",
