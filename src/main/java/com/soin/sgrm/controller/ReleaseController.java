@@ -36,6 +36,7 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.SystemConfiguration;
@@ -55,6 +56,7 @@ import com.soin.sgrm.service.ModifiedComponentService;
 import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.RiskService;
@@ -122,6 +124,8 @@ public class ReleaseController extends BaseController {
 	private ParameterService paramService;
 	@Autowired
 	private NodeService nodeService;
+	@Autowired 
+	ReleaseObjectService releaseObjectService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -287,9 +291,9 @@ public class ReleaseController extends BaseController {
 
 		try {
 			model.addAttribute("parameter", status);
-			ReleaseSummary release = null;
+			ReleaseSummaryMin release = null;
 			if (CommonUtils.isNumeric(status)) {
-				release = releaseService.findById(Integer.parseInt(status));
+				release = releaseService.findByIdMin(Integer.parseInt(status));
 			}
 
 			if (release == null) {
@@ -299,7 +303,6 @@ public class ReleaseController extends BaseController {
 					.findBySystemId(release.getSystem().getId());
 			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
 			model.addAttribute("dependency", new Release());
-			model.addAttribute("object", new ReleaseObject());
 			model.addAttribute("doc", new DocTemplate());
 			model.addAttribute("docs", docs);
 			model.addAttribute("release", release);
@@ -325,9 +328,9 @@ public class ReleaseController extends BaseController {
 
 		try {
 			model.addAttribute("parameter", status);
-			ReleaseSummary release = null;
+			ReleaseSummaryMin release = null;
 			if (CommonUtils.isNumeric(status)) {
-				release = releaseService.findById(Integer.parseInt(status));
+				release = releaseService.findByIdMin(Integer.parseInt(status));
 			}
 
 			if (release == null) {
@@ -337,7 +340,6 @@ public class ReleaseController extends BaseController {
 					.findBySystemId(release.getSystem().getId());
 			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
 			model.addAttribute("dependency", new Release());
-			model.addAttribute("object", new ReleaseObject());
 			model.addAttribute("doc", new DocTemplate());
 			model.addAttribute("docs", docs);
 			model.addAttribute("release", release);
@@ -923,5 +925,29 @@ public class ReleaseController extends BaseController {
 		systemC.put("all", (systemC.get("draft") + systemC.get("requested") + systemC.get("completed")));
 		request.setAttribute("systemC", systemC);
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = { "/listObjects" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet listObjects(HttpServletRequest request, Locale locale, Model model) {
+		JsonSheet<?> releaseObjects = new JsonSheet<>();
+		try {
 
+			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
+			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
+			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			String sSearch = request.getParameter("sSearch");
+			Integer releaseId =  Integer.parseInt(request.getParameter("releaseId"));
+			String sqlS=request.getParameter("sql");
+			Integer sql=0;
+			if(sqlS!=null) {
+				sql=Integer.parseInt(request.getParameter("sql"));
+			}
+
+			releaseObjects = releaseObjectService.listObjectsByReleases(sEcho, iDisplayStart, iDisplayLength, sSearch, releaseId,sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return releaseObjects;
+	}
 }

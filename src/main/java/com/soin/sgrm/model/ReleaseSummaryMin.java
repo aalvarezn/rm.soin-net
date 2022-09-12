@@ -1,5 +1,6 @@
 package com.soin.sgrm.model;
 
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ import com.soin.sgrm.model.SystemInfo;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "RELEASES_RELEASE")
-public class ReleaseSummary implements Serializable {
+public class ReleaseSummaryMin implements Serializable {
 
 	@Id
 	@Column(name = "ID")
@@ -117,10 +118,7 @@ public class ReleaseSummary implements Serializable {
 	@Column(name = "PRUEBAS_MINIMAS_SUGERIDAS_CF17")
 	private String minimal_evidence;
 
-	@OneToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "RELEASES_RELEASE_OBJETOS", joinColumns = {
-			@JoinColumn(name = "RELEASE_ID") }, inverseJoinColumns = { @JoinColumn(name = "OBJETO_ID") })
-	private Set<ReleaseObject> objects = new HashSet<ReleaseObject>();
+
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "PRIORIDAD_ID", nullable = true)
@@ -436,13 +434,6 @@ public class ReleaseSummary implements Serializable {
 		this.minimal_evidence = minimal_evidence;
 	}
 
-	public Set<ReleaseObject> getObjects() {
-		return objects;
-	}
-
-	public void setObjects(Set<ReleaseObject> objects) {
-		this.objects = objects;
-	}
 
 	public Priority getPriority() {
 		return priority;

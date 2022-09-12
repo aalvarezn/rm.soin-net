@@ -1,5 +1,6 @@
 package com.soin.sgrm.dao;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +14,10 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.DateType;
 import org.hibernate.type.IntegerType;
@@ -23,13 +27,16 @@ import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.google.gdata.util.ParseException;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_Objects;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.utils.JsonSheet;
 
 @Repository
 public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
@@ -229,6 +236,50 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 		if (list.isEmpty())
 			return null;
 		return list;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public JsonSheet<?> listObjectsByReleases(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer releaseId, Integer sql) throws SQLException, ParseException {
+		JsonSheet json = new JsonSheet();
+		Criteria crit = criteriaObjects( sEcho, iDisplayStart, iDisplayLength, sSearch,
+				releaseId,sql);
+
+		crit.setFirstResult(iDisplayStart);
+		crit.setMaxResults(iDisplayLength);
+
+		Criteria critCount = criteriaObjects( sEcho, iDisplayStart, iDisplayLength, sSearch,
+				releaseId,sql);
+
+		critCount.setProjection(Projections.rowCount());
+		Long count = (Long) critCount.uniqueResult();
+		int recordsTotal = count.intValue();
+		List<ReleaseObjectEdit> aaData = crit.list();
+		json.setDraw(sEcho);
+		json.setRecordsTotal(recordsTotal);
+		json.setRecordsFiltered(recordsTotal);
+		json.setData(aaData);
+		return json;
+	}
+	public Criteria criteriaObjects(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer systemId,Integer sql)
+			throws SQLException, ParseException {
+
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		crit.createAlias("objects", "objects")
+		.add(Restrictions.eq("releaseId", systemId));
+
+		if(sql==1) {
+			crit.add(Restrictions.eq("objects.isSql", sql));
+		}
+
+		// Valores de busqueda en la tabla
+		if (sSearch != null && !((sSearch.trim()).equals("")))
+			crit.add(Restrictions.like("objects.name", sSearch, MatchMode.ANYWHERE).ignoreCase());
+
+
+		return crit;
 	}
 
 }
