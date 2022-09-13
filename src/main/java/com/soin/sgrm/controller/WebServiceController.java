@@ -13,7 +13,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.service.RFCService;
 
 @RestController
-@RequestMapping("/webService")
+@RequestMapping("/ws/webService")
 public class WebServiceController extends BaseController {
 	
 		@Autowired 
