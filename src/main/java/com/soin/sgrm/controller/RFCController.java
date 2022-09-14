@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -39,6 +40,7 @@ import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.service.ParameterService;
@@ -103,6 +105,8 @@ public class RFCController extends BaseController {
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
 	
+	@Autowired
+	EmailReadService emailReadService;
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -781,4 +785,16 @@ public class RFCController extends BaseController {
 		return getCC;
 	}
 	
+	@RequestMapping(value = "/readEmail", method = RequestMethod.GET)
+	public String readEmails(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			emailReadService.emailRead();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "se leyo correctamente";
+
+	}
 }
