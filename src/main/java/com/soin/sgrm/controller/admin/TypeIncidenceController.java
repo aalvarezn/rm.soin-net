@@ -100,12 +100,17 @@ public class TypeIncidenceController extends BaseController {
 			if(petitionOld.getCode()!=uptTypeIncidence.getCode()){
 				
 				TypeIncidence incidenceVerification=typeIncidenceService.findByKey("code", uptTypeIncidence.getCode());
-				if(incidenceVerification.getId()==uptTypeIncidence.getId()) {
+				if(incidenceVerification==null) {
 					typeIncidenceService.update(uptTypeIncidence);
 					res.setMessage("Siges modificado!");
 				}else {
-					res.setStatus("error");
-					res.setMessage("Error al modificar tipo de incidencia este codigo ya pertenece a otro!");
+					if(incidenceVerification.getId()==uptTypeIncidence.getId()) {
+						typeIncidenceService.update(uptTypeIncidence);
+						res.setMessage("Siges modificado!");
+					}else {
+						res.setStatus("error");
+						res.setMessage("Error al modificar tipo de incidencia este codigo ya pertenece a otro!");
+					}
 				}
 			}else {
 				typeIncidenceService.update(uptTypeIncidence);

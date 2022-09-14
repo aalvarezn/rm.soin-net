@@ -73,8 +73,8 @@
 			<div class="row">
 
 				<!-- #addRFCSection#  -->
-				<%@include file="../rfc/addRFC.jsp"%>
-				<%@include file="../rfc/trackingRFCModal.jsp"%>
+				<%@include file="../incidence/addIncidence.jsp"%>
+				<%@include file="../incidence/trackingIncidenceModal.jsp"%>
 				<!-- #addRFCSection#-->
 
 				<!-- #tableSection#-->
@@ -160,19 +160,6 @@
 							</div>
 						</div>
 						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Sistemas</label>
-							<div class="form-group m-b-0">
-								<select id="systemId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${systems}" var="system">
-										<option value="${system.id }">${system.name }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
 							<label>Prioridad</label>
 							<div class="form-group m-b-0">
 								<select id="priorityId"
@@ -180,7 +167,7 @@
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
 									<c:forEach items="${priorities}" var="priority">
-										<option value="${priority.id }">${priority.name }</option>
+										<option value="${priority.id }">${priority.code }</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -213,10 +200,10 @@
 										<thead>
 											<tr>
 												<th></th>
-												<th>Número Incidencia</th>
-												<th>Sistema</th>
-												<th>Raz&oacute;n de cambio</th>
-												<th>Solicitante</th>
+												<th>Número Ticket</th>
+												<th>Titulo</th>
+												<th>Detalle del problema</th>
+												<th>Prioridad</th>
 												<th>Modificado</th>
 												<th>Estado</th>
 												<th>Acciones</th>
@@ -234,10 +221,10 @@
 				<!-- #tableSection# -->
 			</div>
 		</div>
-		<a id="buttonAddRFC" type="button"
+		<a id="buttonAddIncidence" type="button"
 			class="btn btn-primary btn-fab waves-effect fixedDown"
 			<%-- href="<c:url value='/release/release-generate'/>"> --%>
- 			onclick="addRFCSection()">
+ 			onclick="addIncidenceSection()">
 			<i class="material-icons lh-1-8">add</i>
 		</a>
 	</section>
@@ -246,7 +233,7 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-	<script src="<c:url value='/static/js/rfc/rfc.js'/>"></script>
+	<script src="<c:url value='/static/js/incidence/incidence.js'/>"></script>
 	<script type="text/javascript">
 		$('.number').countTo();
 	</script>

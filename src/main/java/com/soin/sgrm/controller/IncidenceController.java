@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -19,23 +20,30 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Impact;
+import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ImpactService;
+import com.soin.sgrm.service.IncidenceService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.SigesService;
+import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
+import com.soin.sgrm.service.TypeIncidenceService;
 
 @Controller
 @RequestMapping(value = "/incidence")
@@ -47,7 +55,7 @@ public class IncidenceController extends BaseController {
 	RFCService rfcService;
 
 	@Autowired
-	StatusRFCService statusService;
+	StatusIncidenceService statusService;
 	
 	@Autowired
 	StatusService statusReleaseService;
@@ -77,6 +85,15 @@ public class IncidenceController extends BaseController {
 	TreeService treeService;
 	
 	@Autowired
+	TypeIncidenceService priorityIncidenceService;
+	
+	@Autowired
+	IncidenceService incidenceService;
+	
+	@Autowired
+	EmailReadService emailReadService;
+	
+	@Autowired
 	com.soin.sgrm.service.UserService userService;
 	
 	
@@ -88,16 +105,12 @@ public class IncidenceController extends BaseController {
 		try {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
-			List<System> systems = systemService.listProjects(getUserLogin().getId());
-			List<Priority> priorities = priorityService.list();
-			List<StatusRFC> statuses = statusService.findAll();
-			List<Impact> impacts = impactService.list();
+			List<TypeIncidence> priorities = priorityIncidenceService.findAll();
+			List<StatusIncidence> statuses = statusService.findAll();
 			model.addAttribute("priorities", priorities);
-			model.addAttribute("impacts", impacts);
 			model.addAttribute("statuses", statuses);
-			model.addAttribute("systems", systems);
 		} catch (Exception e) {
-			Sentry.capture(e, "rfc");
+			Sentry.capture(e, "incidence");
 			e.printStackTrace();
 		}
 		return "/incidence/incidence";
@@ -107,7 +120,7 @@ public class IncidenceController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<RFC> rfcs = new JsonSheet<>();
+		JsonSheet<Incidence> incidences = new JsonSheet<>();
 		try {
 
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
@@ -136,12 +149,12 @@ public class IncidenceController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
+			incidences = incidenceService.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange, systemId, statusId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return rfcs;
+		return incidences;
 	}
 	public void loadCountsRelease(HttpServletRequest request, Integer id) {
 		//PUser userLogin = getUserLogin();
@@ -153,6 +166,19 @@ public class IncidenceController extends BaseController {
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
 		request.setAttribute("userC", userC);
 		
+	}
+	
+	@RequestMapping(value = "/readEmail", method = RequestMethod.GET)
+	public String readEmails(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			emailReadService.emailRead();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "se leyo correctamente";
+
 	}
 
 }
