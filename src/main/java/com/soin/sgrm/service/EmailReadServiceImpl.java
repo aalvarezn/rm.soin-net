@@ -17,25 +17,18 @@ public class EmailReadServiceImpl implements EmailReadService {
 
 	@Override
 	public void emailRead() throws MessagingException  {
+		java.security.Security.setProperty("jdk.tls.disabledAlgorithms", "");
 		Properties prop = new Properties();
-
-		// Deshabilitamos TLS
-		prop.setProperty("mail.pop3.starttls.enable", "false");
-		// Hay que usar SSL
-		prop.setProperty("mail.pop3.socketFactory.class","javax.net.ssl.SSLSocketFactory" );
-		prop.setProperty("mail.pop3.socketFactory.fallback", "false");
-
-		// Puerto 995 para conectarse.
-		prop.setProperty("mail.pop3.port","995");
-		prop.setProperty("mail.pop3.socketFactory.port", "995");
-		Session sesion = Session.getInstance(prop);
-		sesion.setDebug(true);
-		
-		Store store = sesion.getStore("pop3");
-		store.connect("pop.gmail.com","anthonyalvarez000@gmail.com","Heindenbergtony270894!");
+		prop.put("mail.pop3.host", "pop.gmail.com");
+		prop.put("mail.pop3.port", "995");
+		prop.put("mail.pop3.starttls.enable", "true");
+		Session emailSession = Session.getDefaultInstance(prop);
+		Store store = emailSession.getStore("pop3s");
+		store.connect("pop.gmail.com", "anthonyalvarez000@gmail.com", "bndrfrjbbszbywoi");
 		Folder folder = store.getFolder("INBOX");
 		folder.open(Folder.READ_ONLY);
-		
+
+		emailSession.setDebug(true);		
 		Message [] mensajes = folder.getMessages();
 		for (int i=0;i<mensajes.length;i++)
 		{
