@@ -1,5 +1,6 @@
 package com.soin.sgrm.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -11,11 +12,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
@@ -168,12 +171,15 @@ public class IncidenceController extends BaseController {
 		
 	}
 	
-	@RequestMapping(value = "/readEmail", method = RequestMethod.GET)
-	public String readEmails(HttpServletRequest request, Locale locale, Model model, HttpSession session,
-			RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = { "/readEmail" }, method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public String readEmails() {
 		try {
 			emailReadService.emailRead();
 		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

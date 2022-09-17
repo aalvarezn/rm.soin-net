@@ -67,4 +67,6 @@ public interface ReleaseDao {
 
 	void updateStatusReleaseRFC(Release_RFC release,String operator);
 
+	Integer findReleaseByName(String name);
+
 }

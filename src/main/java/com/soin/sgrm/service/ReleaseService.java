@@ -79,4 +79,6 @@ public interface ReleaseService {
 
 	Integer getDependency(int id);
 
+	Integer findReleaseByName(String name) throws SQLException;
+
 }

@@ -1,12 +1,17 @@
 package com.soin.sgrm.service;
 
+import java.io.IOException;
 import java.util.Properties;
 
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.search.FlagTerm;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,32 +21,66 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmailReadServiceImpl implements EmailReadService {
 
 	@Override
-	public void emailRead() throws MessagingException  {
+	public void emailRead() throws MessagingException  , IOException  {
+		java.security.Security.setProperty("jdk.tls.disabledAlgorithms", "");
 		Properties prop = new Properties();
-
-		// Deshabilitamos TLS
-		prop.setProperty("mail.pop3.starttls.enable", "false");
-		// Hay que usar SSL
-		prop.setProperty("mail.pop3.socketFactory.class","javax.net.ssl.SSLSocketFactory" );
-		prop.setProperty("mail.pop3.socketFactory.fallback", "false");
-
-		// Puerto 995 para conectarse.
-		prop.setProperty("mail.pop3.port","995");
-		prop.setProperty("mail.pop3.socketFactory.port", "995");
-		Session sesion = Session.getInstance(prop);
-		sesion.setDebug(true);
-		
-		Store store = sesion.getStore("pop3");
-		store.connect("pop.gmail.com","anthonyalvarez000@gmail.com","Heindenbergtony270894!");
-		Folder folder = store.getFolder("INBOX");
+		prop.setProperty("mail.store.protocol", "imaps");
+		Session emailSession = Session.getDefaultInstance(prop);
+		Store store = emailSession.getStore("imaps");
+		store.connect("imap.gmail.com", "anthonyalvarez000@gmail.com", "bndrfrjbbszbywoi");
+		Folder folder = store.getFolder("SOPORTE");
 		folder.open(Folder.READ_ONLY);
+			
+		Message[] unreadMessages = folder.search(
+				new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 		
-		Message [] mensajes = folder.getMessages();
-		for (int i=0;i<mensajes.length;i++)
+		emailSession.setDebug(true);		
+		//Message [] newMessage = folder.getMessages();
+		while(unreadMessages.length>0) {
+		for (int i=0;i<unreadMessages.length;i++)
 		{
-		   System.out.println("From:"+mensajes[i].getFrom()[0].toString());
-		   System.out.println("Subject:"+mensajes[i].getSubject());
+			Message newMessage=unreadMessages[i];
+		   System.out.println("From:"+newMessage.getFrom()[0].toString());
+		   System.out.println("Subject:"+newMessage.getSubject());
+		   System.out.println("Fecha enviado:"+newMessage.getSentDate());
+		  
+		   try {
+			   Multipart mp= (Multipart)newMessage.getContent();
+			   
+			   // Extraemos cada una de las partes.
+			   for (int j=0;j<mp.getCount();j++)
+			   {
+			      Part unaParte = mp.getBodyPart(j);
+			      System.out.println("Contenido:"+unaParte.getContent().toString());
+			      if (unaParte.isMimeType("multipart/*")) {
+			    	  Multipart mp2= (Multipart)unaParte.getContent();
+			    	  for (int x=0;x<mp2.getCount();x++) {
+			    		  Part otraParte = mp2.getBodyPart(x);
+					      System.out.println("Contenido:"+otraParte.getContent().toString());
+			    	  }
+			      }
+			   }
+			   if (mp.getCount() > 1) {
+				   System.out.println(mp.getCount());
+			   }
+			   System.out.println("Contenido:"+newMessage.getContent().toString());
+	        } catch (Exception ex) {
+	            System.out.println(ex);
+	        }
+		 
+		   
+		  // newMessage.setFlag(Flags.Flag.SEEN, true);
+
 		}
+		
+		folder.close(true);
+		folder = store.getFolder("INBOX");
+		folder.open(Folder.READ_WRITE);
+		unreadMessages = folder.search(
+				new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+		
+		emailSession.setDebug(true);		
+	}
 	}
 
 }

@@ -42,6 +42,10 @@ public class Incidence implements Serializable {
 	@Column(name = "NOTA_ADICIONAL")
 	private String note;
 	
+	@Column(name = "CREADO_POR")
+	private String createFor;
+	
+	
 	@Column(name = "REMITENTES")
 	private String senders;
 

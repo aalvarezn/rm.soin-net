@@ -87,6 +87,11 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public ReleaseEdit findEditById(Integer id) throws SQLException {
 		return dao.findEditById(id);
 	}
+	
+	@Override
+	public Integer findReleaseByName(String name) throws SQLException {
+		return dao.findReleaseByName(name);
+	}
 
 	@Override
 	public void save(Release release, String tpos) throws Exception {
