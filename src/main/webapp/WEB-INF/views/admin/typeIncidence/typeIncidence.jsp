@@ -19,9 +19,15 @@
 	<div class="overlay"></div>
 	<!-- #END# Overlay For Sidebars -->
 
-	<!-- Top Bar -->
-	<%@include file="../../plantilla/admin/topbar.jsp"%>
+<!-- Top Bar -->
+	<%@include file="../../plantilla/topbar.jsp"%>
 	<!-- #Top Bar -->
+
+	<section>
+		<!-- Left Sidebar -->
+		<%@include file="../../plantilla/leftbar.jsp"%>
+		<!-- #END# Left Sidebar -->
+	</section>
 
 	<section>
 		<!-- EmailModal -->
@@ -29,11 +35,7 @@
 		<!-- #END# EmailModal -->
 	</section>
 
-	<section>
-		<!-- Left Sidebar -->
-		<%@include file="../../plantilla/admin/leftbar.jsp"%>
-		<!-- #END# Left Sidebar -->
-	</section>
+
 	<section class="content m-t-90I">
 		<div class="container-fluid">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">

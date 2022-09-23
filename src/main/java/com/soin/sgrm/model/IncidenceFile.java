@@ -12,16 +12,17 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "SISTEMAS_ARCHIVO")
+@Table(name = "ARCHIVOINCIDENCIA")
 public class IncidenceFile implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SISTEMAS_ARCHIVO_SQ")
-	@SequenceGenerator(name = "SISTEMAS_ARCHIVO_SQ", sequenceName = "SISTEMAS_ARCHIVO_SQ", allocationSize = 1)
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private int id;
 

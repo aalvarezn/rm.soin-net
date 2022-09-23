@@ -26,7 +26,7 @@ import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
-@RequestMapping("/admin/statusIncidence")
+@RequestMapping("/statusIncidence")
 public class StatusIncidenceController extends BaseController {
 	public static final Logger logger = Logger.getLogger(StatusIncidenceController.class);
 

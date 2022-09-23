@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Projections;
@@ -91,10 +92,23 @@ public class IncidenceDaoImpl extends AbstractDao<Long, Incidence> implements In
 		Long count = (Long) crit.uniqueResult();
 		return count.intValue();
 	}
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public RequestBaseR1 getByIdR1(Long id) {
-	    return (RequestBaseR1) getSession().createCriteria(RequestBaseR1.class)
-	    		.add(Restrictions.eq("id", id))
+	public Incidence getIncidences(Long id) {
+		Criteria crit = getSession().createCriteria(Incidence.class);
+		List<String> fetchs=new ArrayList<String>();
+		fetchs.add("files");
+		fetchs.add("typeIncidence");
+		fetchs.add("tracking");
+		fetchs.add("user");
+		if (fetchs != null)
+			for (String itemModel : fetchs)
+				crit.setFetchMode(itemModel, FetchMode.SELECT);
+		
+	    return (Incidence)
+	    		crit.add(Restrictions.eq("id", id))
 	    		.uniqueResult();
+	    
 	}
 }

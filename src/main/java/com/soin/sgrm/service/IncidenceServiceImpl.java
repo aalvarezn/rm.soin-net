@@ -45,8 +45,8 @@ public class IncidenceServiceImpl implements IncidenceService {
 		return dao.getById(id);
 	}
 	@Override
-	public RequestBaseR1 findByR1(Long id) {
-		return dao.getByIdR1(id);
+	public Incidence getIncidences(Long id) {
+		return dao.getIncidences(id);
 	}
 	@Override
 	public Incidence findByKey(String name, String value) {
@@ -78,15 +78,14 @@ public class IncidenceServiceImpl implements IncidenceService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JsonSheet<Incidence> findAllRequest(Integer id, Integer sEcho, Integer iDisplayStart,
-			Integer iDisplayLength, String sSearch, Long statusId, String dateRange, Integer systemId,
-			Long typePetitionId) {
+	public JsonSheet<Incidence> findAllRequest( Integer sEcho, Integer iDisplayStart,
+			Integer iDisplayLength, String sSearch, Long statusId, String dateRange, Long typeId,
+			Long priorityId) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
 
-		List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
-				.createAlias("managers", "managers").add(Restrictions.eq("managers.id", id)).list();
+		
 		alias.put("status", "status");
 
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
@@ -109,48 +108,46 @@ public class IncidenceServiceImpl implements IncidenceService {
 		if (sSearch != null && sSearch.length() > 0) {
 			qSrch = Restrictions.or(
 
-					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
+					Restrictions.like("numTicket", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("createFor", sSearch, MatchMode.ANYWHERE).ignoreCase()
 
 			);
 		}
 		if (statusId == 0) {
 			statusId = null;
 		}
-		if (typePetitionId == 0) {
-			typePetitionId = null;
+		if (typeId == 0) {
+			typeId = null;
+		}
+		if (priorityId == 0) {
+			priorityId = null;
 		}
 
-		if (typePetitionId != null) {
 
-			columns.put("typePetition", Restrictions.eq("typePetition.id", typePetitionId));
+		if (typeId != null) {
+
+			columns.put("typeIncidence", Restrictions.eq("typeIncidence.id", typeId));
 		} 
 
 		if (statusId != null) {
 
 			columns.put("status", Restrictions.eq("status.id", statusId));
-		} else {
-			columns.put("status", Restrictions.in("status.name", Constant.FILTREDRFC));
 		}
 
-		if (systemId != 0) {
-			alias.put("siges", "siges");
-			columns.put("siges", Restrictions.or(Restrictions.eq("siges.system.id", systemId)));
+		if (priorityId != null) {
+			columns.put("priority", Restrictions.eq("priority.id", priorityId));
+			
 
-		} else {
-			List<Integer> listaId = new ArrayList<Integer>();
-			for (SystemInfo system : systems) {
-				listaId.add(system.getId());
-			}
-			alias.put("systemInfo", "systemInfo");
-			columns.put("systemInfo", (Restrictions.in("systemInfo.id", listaId)));
-		}
+		} 
 
 		List<String> fetchs = new ArrayList<String>();
 		/*fetchs.add("releases");
-		fetchs.add("files");
-		fetchs.add("tracking");
+		
 		*/
+		fetchs.add("files");
+		fetchs.add("typeIncidence");
+		fetchs.add("tracking");
 		fetchs.add("user");
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
 
@@ -201,71 +198,7 @@ public class IncidenceServiceImpl implements IncidenceService {
 		return dao.existNumTicket(number_release);
 	}
 
-	@Override
-	public JsonSheet<Incidence> findAllRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			String sSearch, Long statusId, String dateRange, Integer systemId, Long typePetitionId) {
-		Map<String, Object> columns = new HashMap<String, Object>();
-
-		Map<String, String> alias = new HashMap<String, String>();
-
-		alias.put("status", "status");
-
-		String[] range = (dateRange != null) ? dateRange.split("-") : null;
-		if (range != null) {
-			if (range.length > 1) {
-				try {
-					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
-					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
-					end.setHours(23);
-					end.setMinutes(59);
-					end.setSeconds(59);
-					columns.put("requestDate", Restrictions.between("requestDate", start, end));
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		Criterion qSrch = null;
-		if (sSearch != null && sSearch.length() > 0) {
-			qSrch = Restrictions.or(
-
-					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
-
-			);
-		}
-		if (statusId == 0) {
-			statusId = null;
-		}
-		if (typePetitionId == 0) {
-			typePetitionId = null;
-		}
-
-		if (typePetitionId != null) {
-
-			columns.put("typePetition", Restrictions.eq("typePetition.id", typePetitionId));
-		} 
-
-		if (statusId != null) {
-
-			columns.put("status", Restrictions.eq("status.id", statusId));
-		}
-
-		if (systemId != 0) {
-			alias.put("siges", "siges");
-			columns.put("siges", Restrictions.or(Restrictions.eq("siges.system.id", systemId)));
-
-		} 
-
-		List<String> fetchs = new ArrayList<String>();
-		/*fetchs.add("releases");
-		fetchs.add("files");
-		fetchs.add("tracking");
-		*/
-		fetchs.add("user");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
-	}
+	
 
 	@Override
 	public Integer countByType(Integer id, String type, int query, Object[] object) {

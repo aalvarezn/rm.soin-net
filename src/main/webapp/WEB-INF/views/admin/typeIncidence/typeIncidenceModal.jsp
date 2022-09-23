@@ -6,7 +6,7 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="largeModalLabel">Tipo de cambio</h4>
+				<h4 class="modal-title" id="largeModalLabel">Tipo de incidencia</h4>
 			</div>
 			<div class="modal-body">
 				<form id="typeIncidenceModalForm" action="">

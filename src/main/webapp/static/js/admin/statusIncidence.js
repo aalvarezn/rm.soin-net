@@ -4,7 +4,7 @@ var $mdStatusIncidence = $('#statusIncidenceModal');
 var $fmStatusIncidence = $('#statusIncidenceModalForm');
 
 $(function() {
-	activeItemMenu("releaseItem", true);
+	activeItemMenu("IncidenceItem", true);
 	initDataTable();
 	initStatusIncidenceFormValidation();
 });
@@ -19,7 +19,7 @@ function initDataTable() {
 					"iDisplayLength" : 10,
 					"language" : optionLanguaje,
 					"iDisplayStart" : 0,
-					"sAjaxSource" : getCont() + "admin/statusIncidence/list",
+					"sAjaxSource" : getCont() + "statusIncidence/list",
 					"fnServerParams" : function(aoData) {
 					},
 					"aoColumns" : [
@@ -83,7 +83,7 @@ function updateStatusIncidence() {
 			blockUI();
 			$.ajax({
 				type : "PUT",
-				url : getCont() + "admin/statusIncidence/" ,
+				url : getCont() + "statusIncidence/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
@@ -123,7 +123,7 @@ function saveStatusIncidence() {
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "admin/statusIncidence/" ,
+				url : getCont() + "statusIncidence/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
@@ -159,7 +159,7 @@ function deleteStatusIncidence(index) {
 			blockUI();
 			$.ajax({
 				type : "DELETE",
-				url : getCont() + "admin/statusIncidence/"+obj.id ,
+				url : getCont() + "statusIncidence/"+obj.id ,
 				timeout : 60000,
 				data : {},
 				success : function(response) {

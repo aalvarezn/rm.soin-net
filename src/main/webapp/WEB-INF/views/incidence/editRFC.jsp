@@ -58,6 +58,9 @@
 	rel="stylesheet" type="text/css">
 
 
+	<!-- Vis Plugin Js -->
+	<script src="<c:url value='/static/plugins/vis/vis-network.js'/>"></script>
+
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
 
@@ -74,10 +77,6 @@
 
 
 <style type="text/css">
-#ambient6_tagsinput {
-	display: none;
-}
-
 .alert {
 	width: 20%;
 }
@@ -93,6 +92,9 @@ table.dataTable tbody tr.selected {
 
 tr.selected {
 	background-color: #acbad4;
+}
+.noclick {
+  pointer-events: none;
 }
 </style>
 
@@ -124,11 +126,11 @@ tr.selected {
 		<!-- #END# addObjectModal -->
 
 		<!-- addObjectModal -->
-		<%@include file="../request/sectionsEditR2/previewRequestModal.jsp"%>
+		<%@include file="../rfc/previewRFCModal.jsp"%>
 		<!-- #END# addObjectModal -->
 
 		<!-- addFileModal -->
-		<%@include file="../request/addFileModal.jsp"%>
+		<%@include file="../release/addFileModal.jsp"%>
 		<!-- #END# addFileModal -->
 
 		<!-- environmentModal -->
@@ -147,32 +149,31 @@ tr.selected {
 	</section>
 
 	<section class="content">
-		<form id="generateRequestForm" role="form">
+		<form id="generateRFCForm" role="form">
 			<input type="hidden" name="${_csrf.parameterName}"
 				value="${_csrf.token}" />
 
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
-						<h5 class="font-20 greyLigth">Nueva Solicitud</h5>
+						<h5 class="font-20 greyLigth">Nuevo Ticket</h5>
 					</div>
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
-						<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>Solicitud: </span>${request.numRequest} <input
-									type="hidden" id="requestId" value="${request.id}"> <input
-									type="hidden" id="requestNumber" value="${request.numRequest}">
-								<input type="hidden" id="systemInfoId"
-									value="${request.systemInfo.id}"> <input type="hidden"
-									id="ambientData" value="${requestR2.ambient}"> <input
-									type="hidden" id="requestR2Id" value="${requestR2.id}">
+								<span>Ticket: </span>${incidence.numTicket} <input type="hidden"
+									id="rfcId" value="${incidence.id}"> <input type="hidden"
+									id="rfcNumber" value="${incidence.numTicket}">
+									 <input type="hidden"
+									id="systemInfoId" value="${rfc.systemInfo.id}">
+									
 							</h5>
 						</div>
 						<div
-							class=" col-lg-5 col-md-5 col-sm-12 col-xs-12 align-right p-r-0">
+							class=" col-lg-6 col-md-6 col-sm-12 col-xs-12 align-right p-r-0">
 
 							<button type="button" class="btn btn-default setIcon"
-								onclick="previewRequest()" title="RESUMEN"
+								onclick="previewRFC()" title="RESUMEN"
 								style="background-color: #00294c !important; color: #ffffff; border: none !important;">
 								<span>VER RESUMEN</span><span style="margin-left: 10px;"><i
 									class="material-icons"
@@ -180,7 +181,7 @@ tr.selected {
 							</button>
 
 							<button type="button" id="btnSave"
-								class="btn btn-default setIcon" onclick="sendRequest()"
+								class="btn btn-default setIcon" onclick="sendRFC()"
 								title="GUARDAR"
 								style="background-color: #00294c !important; color: #fff; border: none !important;">
 								<span id="btnText">GUARDAR</span><span
@@ -212,10 +213,20 @@ tr.selected {
 													<i class="material-icons spanError">warning</i>
 											</span>
 										</a></li>
-										<li id="2" role="presentation" class="without-line"
-											style="margin-left: 60%;"><a href="#step3"
-											data-toggle="tab" aria-controls="step3" role="tab" title="">
-												<span class="round-tab"> 2 </span>
+
+										<li id="2" role="presentation" class="without-line " style="margin-left: 22%;"><a
+											href="#step2" data-toggle="tab" aria-controls="step2"
+											role="tab" title=""> <span class="round-tab"> 2 </span> <span
+												id="step2Errors" style="visibility: hidden;"
+												class="labelCount_Error"><i
+													class="material-icons spanError">warning</i></span>
+										</a></li>
+										<li id="3" role="presentation" class="without-line " style="margin-left: 25%;"><a
+											href="#step3" data-toggle="tab" aria-controls="step3"
+											role="tab" title=""> <span class="round-tab"> 3 </span> <span
+												id="step3Errors" style="visibility: hidden;"
+												class="labelCount_Error"><i
+													class="material-icons spanError">warning</i></span>
 										</a></li>
 									</ul>
 								</div>
@@ -224,11 +235,10 @@ tr.selected {
 									<div class="tab-pane animated fadeIn active" role="tabpanel"
 										id="step1">
 										<div class="body">
-											<%@include file="../request/sectionsEditR2/section_1.jsp"%>
+											<%@include file="../incidence/sectionsEditIncidence/section_1.jsp"%>
 										</div>
 										<div class="button-demo flr">
-											<button type="button" id="nextStep"
-												class="btn btn-primary next-step"
+											<button type="button" id="nextStep" class="btn btn-primary next-step"
 												style="margin-bottom: 100px;">SIGUIENTE</button>
 										</div>
 									</div>
@@ -238,26 +248,57 @@ tr.selected {
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step2">
 										<div class="body">
-											<%@include file="../request/sectionsEditR2/section_2.jsp"%>
+											<%@include file="../incidence/sectionsEditIncidence/section_4.jsp"%>
 										</div>
 										<div class="button-demo flr">
-											<button type="button" class="btn btn-default prev-step"
+											<button type="button"  class="btn btn-default prev-step"
 												style="margin-bottom: 100px;">ANTERIOR</button>
 											<button type="button" class="btn btn-primary next-step"
 												style="margin-bottom: 100px;">SIGUIENTE</button>
 										</div>
 									</div>
-									<!--#Step_5 -->
-									<!--St.ep_5 -->
+									<!--#Step_2 -->
+
+									<!--Step_3 -->
 									<div class="tab-pane animated fadeIn" role="tabpanel"
 										id="step3">
 										<div class="body">
-											<%@include file="../request/sectionsEditR2/section_3.jsp"%>
+											<%@include file="../incidence/sectionsEditIncidence/section_5.jsp"%>
+
+										</div>
+										<div class="button-demo flr">
+											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
+											<%-- 											<c:if test="${release.status.name == 'Borrador'}"> --%>
+											<button id="applyFor" onclick="requestRFC()" type="button"
+												class="btn btn-primary">ATENDER</button>
+											<%-- 											</c:if> --%>
+										</div>
+									</div>
+									<!--#Step_3 -->
+
+									<!--Step_4 -->
+									<div class="tab-pane animated fadeIn" role="tabpanel"
+										id="step4">
+										<div class="body">
+											<%@include file="../incidence/sectionsEditIncidence/section_4.jsp"%>
+										</div>
+										<div class="button-demo flr">
+											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
+											<button type="button" class="btn btn-primary next-step">SIGUIENTE</button>
+										</div>
+									</div>
+									<!--#Step_4 -->
+									<!--Step_5 -->
+									<div class="tab-pane animated fadeIn" role="tabpanel"
+										id="step5">
+										<div class="body">
+											<%@include file="../incidence/sectionsEditIncidence/section_5.jsp"%>
 										</div>
 										<div class="button-demo flr p-t-20">
 											<button type="button" class="btn btn-default prev-step">ANTERIOR</button>
-											<button id="applyFor" onclick="requestRequest()"
-												type="button" class="btn btn-primary">SOLICITAR</button>
+											<%-- 											<c:if test="${release.status.name == 'Borrador'}"> --%>
+											<button id="applyFor" onclick="requestRFC()" type="button"
+												class="btn btn-primary">SOLICITAR</button>
 											<%-- 											</c:if> --%>
 										</div>
 									</div>
@@ -342,12 +383,8 @@ tr.selected {
 		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
 
 
-
 	<script
 		src="<c:url value='/static/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js'/>"></script>
-
-	<script
-		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
 
 	<!-- Custom Js -->
 	<script src="<c:url value='/static/js/admin.js'/>"></script>
@@ -359,9 +396,8 @@ tr.selected {
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 
-	<script src="<c:url value='/static/js/newRequest/editRequestR2.js'/>"></script>
-	<script
-		src="<c:url value='/static/js/newRequest/requestFileUpload.js'/>"></script>
+	<script src="<c:url value='/static/js/incidence/editIncidence.js'/>"></script>
+	<script src="<c:url value='/static/js/rfc/rfcFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
 	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>

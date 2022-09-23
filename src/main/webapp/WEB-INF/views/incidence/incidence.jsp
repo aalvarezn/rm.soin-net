@@ -160,6 +160,19 @@
 							</div>
 						</div>
 						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+							<label>Tipo</label>
+							<div class="form-group m-b-0">
+								<select id="typeId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="0">-- Todos --</option>
+									<c:forEach items="${typeincidences}" var="typeincidence">
+										<option value="${typeincidence.id }">${typeincidence.code }</option>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
 							<label>Prioridad</label>
 							<div class="form-group m-b-0">
 								<select id="priorityId"
@@ -167,7 +180,7 @@
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
 									<c:forEach items="${priorities}" var="priority">
-										<option value="${priority.id }">${priority.code }</option>
+										<option value="${priority.id }">${priority.name }</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -203,8 +216,10 @@
 												<th>Número Ticket</th>
 												<th>Titulo</th>
 												<th>Detalle del problema</th>
-												<th>Prioridad</th>
+												<th>Asignado A</th>
+												<th>Creado por</th>
 												<th>Modificado</th>
+												<th>Prioridad</th>
 												<th>Estado</th>
 												<th>Acciones</th>
 											</tr>

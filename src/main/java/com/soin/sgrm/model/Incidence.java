@@ -2,16 +2,25 @@ package com.soin.sgrm.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -42,18 +51,21 @@ public class Incidence implements Serializable {
 	@Column(name = "NOTA_ADICIONAL")
 	private String note;
 	
-	@Column(name = "CREADO_POR")
+	@Column(name = "GENERADO_POR")
 	private String createFor;
 	
+	
+	@Column(name = "OPERADOR")
+	private String operator;
+	
+	@Column(name = "MOTIVO")
+	private String motive;
 	
 	@Column(name = "REMITENTES")
 	private String senders;
 
-	@Column(name = "MENSAJE_GESTOR")
+	@Column(name = "MENSAJE")
 	private String message;
-	
-	@Column(name = "OPERADOR")
-	private String operator;
 	
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
@@ -64,12 +76,27 @@ public class Incidence implements Serializable {
 	private User user;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_PRIORIDAD", nullable = false)
+	@JoinColumn(name = "ID_TIPO", nullable = false)
 	private TypeIncidence typeIncidence;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ESTADO", nullable = false)
 	private StatusIncidence status;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ID_PRIORIDAD", nullable = false)
+	private PriorityIncidence priority;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@Fetch(value = FetchMode.SUBSELECT)
+	@JoinTable(name = "INCIDENCIA_ARCHIVOINCIDENCIA", joinColumns = { @JoinColumn(name = "ID_INCIDENCIA") }, inverseJoinColumns = {
+			@JoinColumn(name = "ARCHIVO_ID") })
+	private Set<IncidenceFile> files = new HashSet<>();
+
+	@OrderBy("trackingDate ASC")
+	@Fetch(value = FetchMode.SUBSELECT)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "incidence")
+	private Set<IncidenceTracking> tracking = new HashSet<IncidenceTracking>();
 	
 	public Long getId() {
 		return id;
@@ -119,28 +146,22 @@ public class Incidence implements Serializable {
 		this.note = note;
 	}
 
-	public String getSenders() {
-		return senders;
-	}
-
-	public void setSenders(String senders) {
-		this.senders = senders;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
 	public String getOperator() {
 		return operator;
 	}
 
 	public void setOperator(String operator) {
 		this.operator = operator;
+	}
+	
+	
+
+	public String getMotive() {
+		return motive;
+	}
+
+	public void setMotive(String motive) {
+		this.motive = motive;
 	}
 
 	public Timestamp getRequestDate() {
@@ -174,6 +195,55 @@ public class Incidence implements Serializable {
 	public void setStatus(StatusIncidence status) {
 		this.status = status;
 	}
+
+	public String getCreateFor() {
+		return createFor;
+	}
+
+	public void setCreateFor(String createFor) {
+		this.createFor = createFor;
+	}
+
+	public PriorityIncidence getPriority() {
+		return priority;
+	}
+
+	public void setPriority(PriorityIncidence priority) {
+		this.priority = priority;
+	}
+
+	public Set<IncidenceFile> getFiles() {
+		return files;
+	}
+
+	public void setFiles(Set<IncidenceFile> files) {
+		this.files = files;
+	}
+
+	public Set<IncidenceTracking> getTracking() {
+		return tracking;
+	}
+
+	public void setTracking(Set<IncidenceTracking> tracking) {
+		this.tracking = tracking;
+	}
+
+	public String getSenders() {
+		return senders;
+	}
+
+	public void setSenders(String senders) {
+		this.senders = senders;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
 	
 	
 }

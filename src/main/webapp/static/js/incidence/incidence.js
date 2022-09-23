@@ -51,9 +51,10 @@ $(function() {
 		format: 'DD/MM/YYYY hh:mm a',
 		maxDate : new Date()
 	});
-	//$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+	// $('input[name="daterange"]').attr('value', moment().subtract(7,
+	// 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
-	activeItemMenu("RFCItem");
+	activeItemMenu("IncidenceItem");
 	dropDownChange();
 	$("#addRFCSection").hide();
 	$fmRFC.find("#sId").selectpicker('val',"");
@@ -79,7 +80,7 @@ $('#tableFilters #priorityId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
-$('#tableFilters #systemId').change(function() {
+$('#tableFilters #typeId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
@@ -102,12 +103,12 @@ function initRFCTable() {
 					"iDisplayStart" : 0,
 					"processing" : true,
 					"serverSide" : true,
-					"sAjaxSource" : getCont() + "rfc/list",
+					"sAjaxSource" : getCont() + "incidence/list",
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
 								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
-								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
+								{"name": "typeId", "value": $('#tableFilters #typeId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
@@ -116,22 +117,29 @@ function initRFCTable() {
 						},
 						{
 						
-						"mDataProp" : "numRequest"
+						"mDataProp" : "numTicket"
 					},
 					{
 						
-						"mDataProp" : "systemInfo.name"
+						"mDataProp" : "title"
 					}
-					, {
+					,
+					{
+						
+						"mDataProp" : "detail"
+					}
+					, 
+					{
 						"mRender" : function(data, type, row, meta) {
-							if(row.reasonChange)
-								return row.reasonChange;
+							if(row.user)
+								return row.user.fullName;
 							else
-								return 'Sin razon de cambio seleccionada';
+								return 'Sin asignar';
 						},
-					}, {
+					}, 
+					{
 						"mRender" : function(data, type, row, meta) {
-							return row.user.fullName;
+							return row.createFor;
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
@@ -140,11 +148,20 @@ function initRFCTable() {
 					}, {
 						"mRender" : function(data, type, row, meta) {
 							if(row.status)
+								return row.priority.name;
+							else
+								return '';
+						},
+					}, 
+					 {
+						"mRender" : function(data, type, row, meta) {
+							if(row.status)
 								return row.status.name;
 							else
 								return '';
 						},
-					}, {
+					},
+					{
 						"mRender" : function(data, type, row, meta) {
 							var options = '<div class="iconLine">';
 							if (row.status.name == 'Borrador') {
@@ -168,7 +185,7 @@ function initRFCTable() {
 							
 
 							options = options
-							+ '<a onclick="openRFCTrackingModal('
+							+ '<a onclick="openIncidenceTrackingModal('
 							+ row.id
 							+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
 
@@ -216,7 +233,7 @@ function closeRFCSection(){
 
 function editRFC(element) {
 	var cont = getCont();
-	window.location = cont + "	rfc/editRFC-" + element;
+	window.location = cont + "	incidence/editIncidence-" + element;
 }
 
 
@@ -298,8 +315,8 @@ function createRFC() {
 					+ "rfc/editRFC-"
 					+ response.data;
 					
-					//$dtImpact.ajax.reload();
-					//$mdImpact.modal('hide');
+					// $dtImpact.ajax.reload();
+					// $mdImpact.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -370,10 +387,10 @@ function dropDownChange(){
 	});
 }
 
-function openRFCTrackingModal(idRFC) {
+function openIncidenceTrackingModal(idIncidence) {
 
 	var dtRFC = $('#dtRFCs').dataTable();
-	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
+	var idRow = dtRFC.fnFindCellRowIndexes(idIncidence, 0); // idRow
 	var rowData = $dtRFCs.row(idRow[0]).data();
 	
 	$trackingRFCForm.find('#idRFC').val(rowData.id);

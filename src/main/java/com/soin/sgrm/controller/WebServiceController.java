@@ -20,7 +20,7 @@ import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseService;
 
 @RestController
-@RequestMapping("/ws/webService")
+@RequestMapping("/ws")
 public class WebServiceController extends BaseController {
 
 	@Autowired

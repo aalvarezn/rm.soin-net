@@ -1,5 +1,7 @@
 package com.soin.sgrm.dao;
 
+import java.util.List;
+
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
@@ -12,6 +14,8 @@ public interface IncidenceDao extends BaseDao<Long, Incidence> {
 
 	Integer countByType(Integer id, String type, int query, Object[] ids);
 
-	RequestBaseR1 getByIdR1(Long id); 
+	
+
+	Incidence getIncidences(Long id); 
 
 }
