@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,7 +85,6 @@ public class RFCServiceImpl implements RFCService {
 
 		alias.put("status", "status");
 		alias.put("user", "user");
-		
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {
 			if (range.length > 1) {
@@ -104,11 +104,9 @@ public class RFCServiceImpl implements RFCService {
 		Criterion qSrch = null;
 		if (sSearch != null && sSearch.length() > 0) {
 			qSrch = Restrictions.or(
-
 					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("reasonChange", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
-					
 					);
 		}
 		if (sStatus == 0) {
@@ -131,7 +129,8 @@ public class RFCServiceImpl implements RFCService {
 		 
 
 		List<String> fetchs = new ArrayList<String>();
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+		
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 	}
 
 	public String verifySecuence(String partCode) {
@@ -268,7 +267,7 @@ public class RFCServiceImpl implements RFCService {
 		fetchs.add("files");
 		fetchs.add("tracking");
 		fetchs.add("user");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 	}
 
 }
