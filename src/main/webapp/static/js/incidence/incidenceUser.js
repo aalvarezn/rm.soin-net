@@ -1,7 +1,7 @@
 /** Declaración de variables globales del contexto * */
 var $dtRFCs;
 
-var $fmRFC = $('#formAddRFC');
+var $fmIncidence = $('#fmIncidence');
 var $formChangeUser = $('#changeUserForm');
 var $trackingRFCForm = $('#trackingRFCForm');
 
@@ -51,16 +51,14 @@ $(function() {
 		format: 'DD/MM/YYYY hh:mm a',
 		maxDate : new Date()
 	});
-	 $('input[name="daterange"]').attr('value', moment().subtract(7,
-	 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+	// $('input[name="daterange"]').attr('value', moment().subtract(7,
+	// 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
-	activeItemMenu("incidenceManagementItem", true);
-	dropDownChange();
-	$("#addRFCSection").hide();
-	$fmRFC.find("#sId").selectpicker('val',"");
-
-	initRFCTable();
-	initRFCFormValidation();
+	activeItemMenu("incidenceItem");
+	$("#addIncidenceSection").hide();
+	
+	initIncidenceTable();
+	initIncidenceFormValidation();
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -88,7 +86,7 @@ $('#tableFilters #statusId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
-function initRFCTable() {
+function initIncidenceTable() {
 	$dtRFCs = $('#dtRFCs').DataTable(
 			{
 				
@@ -103,7 +101,7 @@ function initRFCTable() {
 					"iDisplayStart" : 0,
 					"processing" : true,
 					"serverSide" : true,
-					"sAjaxSource" : getCont() + "management/incidence/list",
+					"sAjaxSource" : getCont() + "incidence/list",
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
@@ -203,13 +201,13 @@ function initRFCTable() {
 }
 
 function changeSlide() {
-	$fmRFC.validate().resetForm();
-	$fmRFC[0].reset();
+	$fmIncidence.validate().resetForm();
+	$fmIncidence[0].reset();
 	resetDrops();
-	let change = $("#buttonAddRFC").is(":visible");
-	$("#buttonAddRFC").toggle();
-	let hide = change ? '#tableSection': '#addRFCSection';
-	let show = !change ? '#tableSection': '#addRFCSection';
+	let change = $("#buttonAddIncidence").is(":visible");
+	$("#buttonAddIncidence").toggle();
+	let hide = change ? '#tableSection': '#addIncidenceSection';
+	let show = !change ? '#tableSection': '#addIncidenceSection';
 	
 	$(hide).toggle("slide");
 	$(show).show('slide', {
@@ -222,18 +220,18 @@ function changeSlide() {
 }
 
 
-function addRFCSection() {
+function addIncidenceSection() {
 	changeSlide();
 }
 
 
-function closeRFCSection(){
+function closeIncidenceSection(){
 	changeSlide();
 }
 
 function editRFC(element) {
 	var cont = getCont();
-	window.location = cont + "	management/incidence/editIncidence-" + element;
+	window.location = cont + "	incidence/editIncidence-" + element;
 }
 
 
@@ -288,8 +286,8 @@ function deleteRFC(element) {
 	});
 }
 
-function createRFC() {
-	if (!$fmRFC.valid())
+function createIncidence() {
+	if (!$fmIncidence.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
@@ -300,19 +298,19 @@ function createRFC() {
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "rfc/" ,
+				url : getCont() + "incidence/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					codeProyect : $fmRFC.find('#sigesId').val(),
-					systemId : $fmRFC.find('#sId').val()
+					typeIncidenceId : $fmIncidence.find('#tId').val(),
+					title : $fmIncidence.find('#title').val()
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status);
 					window.location = getCont()
-					+ "rfc/editRFC-"
+					+ "incidence/editIncidence-"
 					+ response.data;
 					
 					// $dtImpact.ajax.reload();
@@ -328,62 +326,32 @@ function createRFC() {
 		}
 	});
 }
-function initRFCFormValidation() {
-	$fmRFC.validate({
+function initIncidenceFormValidation() {
+	$fmIncidence.validate({
 		rules : {
 			
-			'sId':{
+			'tId':{
 				required : true
 			},
-			'sigesId':{
+			'title':{
 				required :true
 			}
 			
 		},
 		messages : {
 			
-			'sId' : {
+			'tId' : {
 				required : "Ingrese un valor"
 			},
-			'sigesId' : {
-				required : "Ingrese un valor"
+			'title' : {
+				required : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+				
 			},
 		},
 		highlight,
 		unhighlight,
 		errorPlacement
-	});
-}
-function dropDownChange(){
-
-	$('#sId').on('change', function(){
-		var sId =$fmRFC.find('#sId').val();
-		if(sId!=""){
-		$.ajax({
-			type: 'GET',
-			url: getCont() + "rfc/changeProject/"+sId,
-			success: function(result) {
-				if(result.length!=0){
-					var s = '';
-					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
-					for(var i = 0; i < result.length; i++) {
-						s += '<option value="' + result[i].codeSiges + '">' + result[i].codeSiges + '</option>';
-					}
-					$('#sigesId').html(s);
-					$('#sigesId').prop('disabled', false);
-					$('#createRFC').prop('disabled', false);
-					$('#sigesId').selectpicker('refresh');
-				}else{
-					resetDrop();
-				}
-				
-				
-			}
-		});
-		}else{
-			resetDrop();
-		}
-		
 	});
 }
 
@@ -434,7 +402,7 @@ function getColorNode(status){
 }
 
 function resetDrops(){
-	$fmRFC.find('#sId').selectpicker('val',  "");
+	$fmIncidence.find('#sId').selectpicker('val',  "");
 	resetDrop();
 }	
 function resetDrop(){

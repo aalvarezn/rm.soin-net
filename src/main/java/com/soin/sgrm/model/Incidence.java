@@ -1,5 +1,6 @@
 package com.soin.sgrm.model;
 
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -97,6 +99,9 @@ public class Incidence implements Serializable {
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "incidence")
 	private Set<IncidenceTracking> tracking = new HashSet<IncidenceTracking>();
+	
+	@Transient
+	private Long typeIncidenceId;
 	
 	public Long getId() {
 		return id;
@@ -242,6 +247,14 @@ public class Incidence implements Serializable {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public Long getTypeIncidenceId() {
+		return typeIncidenceId;
+	}
+
+	public void setTypeIncidenceId(Long typeIncidenceId) {
+		this.typeIncidenceId = typeIncidenceId;
 	}
 	
 	

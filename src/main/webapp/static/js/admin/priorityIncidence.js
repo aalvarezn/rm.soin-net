@@ -4,7 +4,7 @@ var $mdPriorityIncidence = $('#priorityIncidenceModal');
 var $fmPriorityIncidence = $('#priorityIncidenceModalForm');
 
 $(function() {
-	activeItemMenu("IncidenceItem", true);
+	activeItemMenu("incidenceManagementItem", true);
 	initDataTable();
 	initPriorityIncidenceFormValidation();
 });

@@ -154,37 +154,37 @@ public class IncidenceServiceImpl implements IncidenceService {
 	}
 
 	@Override
-	public String generateRequestNumber(String codeProject,String description) {
-		String numRequest = "";
+	public String generatTicketNumber(String nameSystem) {
+		String numTicket = "";
 		String partCode = "";
 		try {
 
-			partCode =  codeProject ;
+			
 
-			numRequest = verifySecuence(partCode,description.toUpperCase());
+			numTicket = verifySecuence(nameSystem);
 
 		} catch (Exception e) {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			numRequest = "Sin Asignar";
+			numTicket = "Sin Asignar";
 		}
-		return numRequest;
+		return numTicket;
 	}
 	
-	public String verifySecuence(String partCode,String description) {
-		String numRFC = "";
+	public String verifySecuence(String nameSystem) {
+		String numTicket = "";
 		try {
-			int amount = existNumTicket(partCode);
+			int amount = existNumTicket(nameSystem);
 
 			if (amount == 0) {
-				numRFC = description+"_"+partCode +"_SC" + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
-				return numRFC;
+				numTicket = nameSystem +"_SP" + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
+				return numTicket;
 			} else {
 				if (amount < 10) {
-					numRFC = description +"_"+ partCode+"_SC"+ "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
-					return numRFC;
+					numTicket = nameSystem+"_SP"+ "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+					return numTicket;
 				}
-				numRFC = description+"_"+ partCode+"_SC" + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
-				return numRFC;
+				numTicket = nameSystem+"_SP" + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+				return numTicket;
 			}
 
 		} catch (Exception e) {
@@ -194,8 +194,8 @@ public class IncidenceServiceImpl implements IncidenceService {
 		return "Sin Asignar";
 	}
 
-	public Integer existNumTicket(String number_release) throws SQLException {
-		return dao.existNumTicket(number_release);
+	public Integer existNumTicket(String nameSystem) throws SQLException {
+		return dao.existNumTicket(nameSystem);
 	}
 
 	
@@ -204,5 +204,79 @@ public class IncidenceServiceImpl implements IncidenceService {
 	public Integer countByType(Integer id, String type, int query, Object[] object) {
 		
 		return dao.countByType(id, type, query, object);
+	}
+	@Override
+	public JsonSheet<Incidence> findAllRequest(String email, Integer sEcho, Integer iDisplayStart,
+			Integer iDisplayLength, String sSearch, Long statusId, String dateRange, Long typeId, Long priorityId) {
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+
+		
+		alias.put("status", "status");
+
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					columns.put("requestDate", Restrictions.between("requestDate", start, end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		Criterion qSrch = null;
+		if (sSearch != null && sSearch.length() > 0) {
+			qSrch = Restrictions.or(
+
+					Restrictions.like("numTicket", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("createFor", sSearch, MatchMode.ANYWHERE).ignoreCase()
+
+			);
+		}
+		if (statusId == 0) {
+			statusId = null;
+		}
+		if (typeId == 0) {
+			typeId = null;
+		}
+		if (priorityId == 0) {
+			priorityId = null;
+		}
+
+		columns.put("createFor", Restrictions.like("createFor",email,MatchMode.ANYWHERE));
+		if (typeId != null) {
+
+			columns.put("typeIncidence", Restrictions.eq("typeIncidence.id", typeId));
+		} 
+
+		if (statusId != null) {
+
+			columns.put("status", Restrictions.eq("status.id", statusId));
+		}
+
+		if (priorityId != null) {
+			columns.put("priority", Restrictions.eq("priority.id", priorityId));
+			
+
+		} 
+
+		List<String> fetchs = new ArrayList<String>();
+		/*fetchs.add("releases");
+		
+		*/
+		fetchs.add("files");
+		fetchs.add("typeIncidence");
+		fetchs.add("tracking");
+		fetchs.add("user");
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+
 	}
 }

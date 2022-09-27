@@ -248,7 +248,7 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-	<script src="<c:url value='/static/js/incidence/incidence.js'/>"></script>
+	<script src="<c:url value='/static/js/incidence/incidenceUser.js'/>"></script>
 	<script type="text/javascript">
 		$('.number').countTo();
 	</script>

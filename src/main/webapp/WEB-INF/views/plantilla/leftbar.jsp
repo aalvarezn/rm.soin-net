@@ -41,10 +41,7 @@
 						href="<c:url value='/management/request/'/> "> <span>Gestión
 								Solicitudes</span>
 					</a></li>
-					<li><a id="managerRequestItem"
-						href="<c:url value='/management/incidence/'/> "> <span>Gestión
-								Incidencias</span>
-					</a></li>
+
 				</c:if>
 				<c:if
 					test="${authority.name == 'Gestores' or authority.name == 'Desarrolladores'}">
@@ -60,10 +57,30 @@
 					<c:set var="managerRequestAccess" value="true"></c:set>
 				</c:if>
 				<c:if test="${authority.name == 'Incidencias'}">
-
+					<c:set var="managerIncidenceAccess" value="true"></c:set>
+				</c:if>
+				<c:if test="${authority.name == 'Gestor Incidencias'}">
 					<c:set var="incidenceAccess" value="true"></c:set>
 				</c:if>
 			</c:forEach>
+			<c:if test="${managerIncidenceAccess}">
+				<!---- 	#Seccion de incidencias ---->
+				<li class=""><a id="incidenceManagementItem" href="javascript:void(0);"
+					class="menu-toggle" style="margin-right:20px;"> <span>Gestión Incidencia</span>
+				</a>
+					<ul class="ml-menu">
+						<li><a id="incidenceManagementItem"
+							href="<c:url value='/management/incidence/'/> "> Gestión Incidencia
+						</a></li>
+						<li><a href="<c:url value='/admin/typeIncidence/'/>">Tipo
+								Incidencia</a></li>
+						<li><a href="<c:url value='/admin/priorityIncidence/'/>">Prioridad
+								Incidencia</a></li>
+						<li><a href="<c:url value='/statusIncidence/'/>">Estados
+								Incidencia</a></li>
+					</ul></li>
+
+			</c:if>
 			<c:if test="${qaAccess}">
 				<li><a id="releasesQAItem" href="<c:url value='/release/qa'/> ">
 						<span>Gestión QA</span>
@@ -72,6 +89,11 @@
 			<c:if test="${managerAccess}">
 				<li><a id="requestItem" href="<c:url value='/request/'/> ">
 						<span>Mis Solicitudes</span>
+				</a></li>
+			</c:if>
+			<c:if test="${incidenceAccess}">
+				<li><a id="incidenceItem" href="<c:url value='/incidence/'/> ">
+						<span>Incidencias</span>
 				</a></li>
 			</c:if>
 			<c:if test="${releaseAccess}">
@@ -97,25 +119,7 @@
 							Trámites</span>
 				</a></li>
 			</c:if>
-			<c:if test="${incidenceAccess}">
-				<!---- 	#Seccion de reportes ---->
-				<li class=""><a id="IncidenceItem" href="javascript:void(0);"
-					class="menu-toggle"> <span>Incidencias</span>
-				</a>
-					<ul class="ml-menu">
-						<li><a id="IncidenceItem"
-							href="<c:url value='/incidence/'/> "> <span> Gestion
-									Incidencias</span>
-						</a></li>
-						<li><a href="<c:url value='/admin/typeIncidence/'/>">Tipo
-								Incidencia</a></li>
-						<li><a href="<c:url value='/admin/priorityIncidence/'/>">Prioridad
-								Incidencia</a></li>
-						<li><a href="<c:url value='/statusIncidence/'/>">Estados
-								Incidencia</a></li>
-					</ul></li>
 
-			</c:if>
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">
 					<span>Perfil de usuario</span>
 			</a></li>

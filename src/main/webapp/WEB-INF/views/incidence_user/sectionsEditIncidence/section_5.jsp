@@ -27,7 +27,7 @@
 					<div class="form-line disabled">
 						<input type="text" disabled id="systemCodeTinySummary"
 							name="systemCode" value="${incidence.user.fullName}"
-							class="form-control" placeholder="Sin Asignar">
+							class="form-control" placeholder="">
 					</div>
 				</div>
 			</div>

@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,6 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,36 +26,32 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Incidence;
-import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.PriorityIncidence;
 import com.soin.sgrm.model.RFC;
-import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
-import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.service.IncidenceService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityIncidenceService;
-import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusIncidenceService;
-import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
 import com.soin.sgrm.service.TypeIncidenceService;
+import com.soin.sgrm.utils.CommonUtils;
+import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
@@ -140,7 +135,7 @@ public class IncidenceController extends BaseController {
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
 			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
-			Integer name = getUserLogin().getId();
+			String email = getUserLogin().getEmail();
 			String sSearch = request.getParameter("sSearch");
 			Long statusId;
 			Long priorityId;
@@ -163,7 +158,7 @@ public class IncidenceController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			incidences = incidenceService.findAllRequest(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
+			incidences = incidenceService.findAllRequest(email,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
 					dateRange, typeId, priorityId);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -230,7 +225,7 @@ public class IncidenceController extends BaseController {
 			if(incidenceEdit.getTypeIncidence()!=null) {
 			model.addAttribute("ccs", getCC(incidenceEdit.getTypeIncidence().getEmailTemplate().getCc()));
 			}
-   			return "/incidence/editRFC";
+   			return "/incidence/editIncidence";
 
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
@@ -239,6 +234,41 @@ public class IncidenceController extends BaseController {
 		}
 
 		return "redirect:/";
+	}
+	
+	@RequestMapping(path = "", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody Incidence addIncidence) {
+		JsonResponse res = new JsonResponse();
+		try {
+			User user=userService.getUserByUsername(getUserLogin().getUsername());
+			StatusIncidence status = statusService.findByKey("code", "draft");
+			if(status!=null) {
+				addIncidence.setStatus(status);
+				addIncidence.setCreateFor(user.getEmail());
+				
+				addIncidence.setRequestDate(CommonUtils.getSystemTimestamp());
+				res.setStatus("success");
+				addIncidence.setMotive("Inicio de ticket");	
+				addIncidence.setOperator(user.getFullName());
+				addIncidence.setTypeIncidence(typeIncidenceService.findById(addIncidence.getTypeIncidenceId()));
+				addIncidence.setNumTicket(incidenceService.generatTicketNumber("REDIMED"));
+				
+				incidenceService.save(addIncidence);
+				res.setData(addIncidence.getId().toString());
+				res.setMessage("Se creo correctamente el ticket!");
+			}else {
+				
+				res.setStatus("exception");
+				res.setMessage("Error al crear ticket comunicarse con los administradores!");
+			}
+	
+		} catch (Exception e) {
+			Sentry.capture(e, "incidence");
+			res.setStatus("exception");
+			res.setMessage("Error al crear ticket!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 
 	public List<String> getCC(String ccs) {

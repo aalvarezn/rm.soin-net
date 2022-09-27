@@ -4,7 +4,7 @@ var $mdStatusIncidence = $('#statusIncidenceModal');
 var $fmStatusIncidence = $('#statusIncidenceModalForm');
 
 $(function() {
-	activeItemMenu("IncidenceItem", true);
+	activeItemMenu("incidenceManagementItem", true);
 	initDataTable();
 	initStatusIncidenceFormValidation();
 });

@@ -73,6 +73,7 @@
 			<div class="row">
 
 				<!-- #addRFCSection#  -->
+				<%@include file="../incidence/addIncidence.jsp"%>
 				<%@include file="../incidence/trackingIncidenceModal.jsp"%>
 				<!-- #addRFCSection#-->
 

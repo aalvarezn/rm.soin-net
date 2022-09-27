@@ -9,7 +9,7 @@ public interface IncidenceService extends BaseService<Long, Incidence>{
 
 	
 
-	String generateRequestNumber(String codeProyect,String description);
+	String generatTicketNumber(String nameSystem);
 
 
 	Integer countByType(Integer id, String type, int query, Object[] ids);
@@ -21,5 +21,9 @@ public interface IncidenceService extends BaseService<Long, Incidence>{
 
 
 	Incidence getIncidences(Long id);
+
+
+	JsonSheet<Incidence> findAllRequest(String email, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, Long statusId, String dateRange, Long typeId, Long priorityId);
 
 }

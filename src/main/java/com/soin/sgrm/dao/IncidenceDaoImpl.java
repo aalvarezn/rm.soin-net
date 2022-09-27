@@ -26,9 +26,9 @@ public class IncidenceDaoImpl extends AbstractDao<Long, Incidence> implements In
 	
 	
 	@Override
-	public Integer existNumTicket(String numRequest) {
-		Criteria crit = getSession().createCriteria(RequestBase.class);
-		crit.add(Restrictions.like("numTicket", numRequest, MatchMode.ANYWHERE));
+	public Integer existNumTicket(String nameSystem) {
+		Criteria crit = getSession().createCriteria(Incidence.class);
+		crit.add(Restrictions.like("numTicket", nameSystem, MatchMode.ANYWHERE));
 		crit.setProjection(Projections.rowCount());
 		Long count = (Long) crit.uniqueResult();
 		int recordsTotal = count.intValue();
@@ -100,6 +100,7 @@ public class IncidenceDaoImpl extends AbstractDao<Long, Incidence> implements In
 		List<String> fetchs=new ArrayList<String>();
 		fetchs.add("files");
 		fetchs.add("typeIncidence");
+		fetchs.add("priority");
 		fetchs.add("tracking");
 		fetchs.add("user");
 		if (fetchs != null)

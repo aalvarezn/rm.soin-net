@@ -28,14 +28,15 @@
 	</section>
 
 	<!-- Top Bar -->
-	<%@include file="../../plantilla/topbar.jsp"%>
+	<%@include file="../../plantilla/admin/topbar.jsp"%>
 	<!-- #Top Bar -->
 
 	<section>
 		<!-- Left Sidebar -->
-		<%@include file="../../plantilla/leftbar.jsp"%>
+		<%@include file="../../plantilla/admin/leftbar.jsp"%>
 		<!-- #END# Left Sidebar -->
-	</section>
+		</section>
+	
 	<section class="content m-t-90I">
 		<div class="container-fluid">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">

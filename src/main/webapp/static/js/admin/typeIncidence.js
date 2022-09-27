@@ -4,7 +4,7 @@ var $mdTypeIncidence = $('#typeIncidenceModal');
 var $fmTypeIncidence = $('#typeIncidenceModalForm');
 
 $(function() {
-	activeItemMenu("IncidenceItem", true);
+	activeItemMenu("incidenceManagementItem", true);
 	initDataTable();
 	initTypeIncidenceFormValidation();
 });
