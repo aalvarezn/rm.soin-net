@@ -150,7 +150,7 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 		fetchs.add("tracking");
 		*/
 		fetchs.add("user");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 
 	}
 
@@ -262,7 +262,7 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 		fetchs.add("tracking");
 		*/
 		fetchs.add("user");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 	}
 
 	@Override
