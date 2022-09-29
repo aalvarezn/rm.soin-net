@@ -147,9 +147,10 @@ public class IncidenceServiceImpl implements IncidenceService {
 		*/
 		fetchs.add("files");
 		fetchs.add("typeIncidence");
+		fetchs.add("priority");
 		fetchs.add("tracking");
 		fetchs.add("user");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 
 	}
 
@@ -274,9 +275,10 @@ public class IncidenceServiceImpl implements IncidenceService {
 		*/
 		fetchs.add("files");
 		fetchs.add("typeIncidence");
+		fetchs.add("priority");
 		fetchs.add("tracking");
 		fetchs.add("user");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 
 	}
 }

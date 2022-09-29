@@ -131,7 +131,7 @@ public class RFCServiceImpl implements RFCService {
 		 
 
 		List<String> fetchs = new ArrayList<String>();
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 	}
 
 	public String verifySecuence(String partCode) {
@@ -268,7 +268,7 @@ public class RFCServiceImpl implements RFCService {
 		fetchs.add("files");
 		fetchs.add("tracking");
 		fetchs.add("user");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias);
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 	}
 
 }

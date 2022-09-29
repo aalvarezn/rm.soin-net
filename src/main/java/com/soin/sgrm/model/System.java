@@ -96,6 +96,18 @@ public class System implements Serializable {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
+	@JoinTable(name = "SISTEMA_GESTORINCIDENCIA", joinColumns = {
+			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
+	private Set<User> managersIncidence = new HashSet<User>();
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
+	@JoinTable(name = "SISTEMA_USUARIOINCIDENCIA", joinColumns = {
+			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
+	private Set<User> usersIncidence = new HashSet<User>();
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "SISTEMA_CORREO", joinColumns = { @JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = {
 			@JoinColumn(name = "CORREO_ID") })
 	private Set<EmailTemplate> emailTemplate = new HashSet<EmailTemplate>();
@@ -105,6 +117,12 @@ public class System implements Serializable {
 
 	@Transient
 	List<Integer> userTeamId;
+	
+	@Transient
+	List<Integer> userIncidenceId;
+	
+	@Transient
+	List<Integer> managersIncidenceId;
 
 	@Transient
 	Integer leaderId;
@@ -235,6 +253,22 @@ public class System implements Serializable {
 		this.emailTemplate = emailTemplate;
 	}
 
+	public Set<User> getManagersIncidence() {
+		return managersIncidence;
+	}
+
+	public void setManagersIncidence(Set<User> managersIncidence) {
+		this.managersIncidence = managersIncidence;
+	}
+
+	public Set<User> getUsersIncidence() {
+		return usersIncidence;
+	}
+
+	public void setUsersIncidence(Set<User> usersIncidence) {
+		this.usersIncidence = usersIncidence;
+	}
+
 	public List<Integer> getManagersId() {
 		return managersId;
 	}
@@ -267,6 +301,38 @@ public class System implements Serializable {
 		}
 	}
 
+	public List<Integer> getManagersIncidenceId() {
+		return managersId;
+	}
+
+	public void setManagersIncidenceId(String managersIncidenceId) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			List<Integer> jsonList = mapper.readValue(managersIncidenceId, new TypeReference<List<Integer>>() {
+			});
+			this.managersId = jsonList;
+		} catch (Exception e) {
+			this.managersId = null;
+			Sentry.capture(e, "managersIncidence");
+		}
+	}
+
+	public List<Integer> getUserIncidenceId() {
+		return userTeamId;
+	}
+
+	public void setUserIncidenceId(String userIncidenceId) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			List<Integer> jsonList = mapper.readValue(userIncidenceId, new TypeReference<List<Integer>>() {
+			});
+			this.userTeamId = jsonList;
+		} catch (Exception e) {
+			this.userTeamId = null;
+			Sentry.capture(e, "userIncidence");
+		}
+	}
+
 	public Integer getLeaderId() {
 		return leaderId;
 	}
@@ -290,6 +356,7 @@ public class System implements Serializable {
 	public void setEmailId(Integer emailId) {
 		this.emailId = emailId;
 	}
+	
 
 	public void checkTeamsExists(Set<User> usersNews) {
 		this.userTeam.retainAll(usersNews);
@@ -322,6 +389,44 @@ public class System implements Serializable {
 
 	public boolean existUserManager(Integer id) {
 		for (User user : this.managers) {
+			if (user.getId() == id) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void checkUserIncidenceExists(Set<User> usersNews) {
+		this.usersIncidence.retainAll(usersNews);
+		// Agrego los nuevos usuarios
+		for (User user : usersNews) {
+			if (!existUserIncidence(user.getId())) {
+				this.usersIncidence.add(user);
+			}
+		}
+	}
+
+	public boolean existUserIncidence(Integer id) {
+		for (User user : this.usersIncidence) {
+			if (user.getId() == id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void checkManagersIncidenceExists(Set<User> managersNews) {
+		this.managersIncidence.retainAll(managersNews);
+		// Agrego los nuevos usuarios
+		for (User user : managersNews) {
+			if (!existManagerIncidence(user.getId())) {
+				this.managersIncidence.add(user);
+			}
+		}
+	}
+
+	public boolean existManagerIncidence(Integer id) {
+		for (User user : this.managersIncidence) {
 			if (user.getId() == id) {
 				return true;
 			}

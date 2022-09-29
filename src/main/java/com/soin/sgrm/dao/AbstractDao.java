@@ -104,16 +104,21 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 	public JsonSheet<T> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			Map<String, Object> columns, Criterion qSrch, List<String> fetchs) {
 
-		return findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, null);
+		return findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, null, 0);
 	}
 
 	@SuppressWarnings({ "unused", "unchecked" })
 	public JsonSheet<T> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias) {
+			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias,
+			Integer veri) {
 		JsonSheet<T> sheet = new JsonSheet<T>();
 
 		Criteria criteria = createEntityCriteria();
-		criteria.addOrder(Order.desc("id"));
+		if (veri == 1) {
+			criteria.addOrder(Order.desc("requestDate"));
+		} else {
+			criteria.addOrder(Order.desc("id"));
+		}
 		if (alias != null)
 			for (Map.Entry<String, String> aliasName : alias.entrySet())
 				criteria.createAlias(aliasName.getKey(), (String) aliasName.getValue());

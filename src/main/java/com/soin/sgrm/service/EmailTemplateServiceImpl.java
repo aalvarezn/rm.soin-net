@@ -890,7 +890,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Override
 	public JsonSheet<EmailTemplate> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias) {
+			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias,Integer veri) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -20,12 +20,12 @@
 	<!-- #END# Overlay For Sidebars -->
 
 <!-- Top Bar -->
-	<%@include file="../../plantilla/topbar.jsp"%>
+	<%@include file="../../plantilla/admin/topbar.jsp"%>
 	<!-- #Top Bar -->
 
 	<section>
 		<!-- Left Sidebar -->
-		<%@include file="../../plantilla/leftbar.jsp"%>
+		<%@include file="../../plantilla/admin/leftbar.jsp"%>
 		<!-- #END# Left Sidebar -->
 	</section>
 

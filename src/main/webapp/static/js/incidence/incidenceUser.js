@@ -145,10 +145,10 @@ function initIncidenceTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							if(row.status)
+							if(row.priority)
 								return row.priority.name;
 							else
-								return '';
+								return 'Sin prioridad asignada';
 						},
 					}, 
 					 {
