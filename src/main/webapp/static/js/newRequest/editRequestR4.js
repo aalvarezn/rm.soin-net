@@ -132,10 +132,7 @@ function dropDownChangeType(){
 			console.log(x)
 			for (i = 0; i < x.length; i++) {
 					if(x.options[i].text.toLowerCase().includes('produccion')||x.options[i].text.toLowerCase().includes('producci\u00F3n')){
-						console.log(x.options[i].text);
-						console.log(x.options[i].value);
 						  $('#ambientId').append('<option value="' + x.options[i].value + '">' + x.options[i].text + '</option>');
-						
 						$('#ambientId').selectpicker('val',x.options[i].value);
 						$('#ambientId').selectpicker('refresh');
 						$('#ambientId').prop('disabled', true);

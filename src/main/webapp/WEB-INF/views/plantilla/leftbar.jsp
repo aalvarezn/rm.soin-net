@@ -66,14 +66,13 @@
 			<c:if test="${managerIncidenceAccess}">
 				<!---- 	#Seccion de incidencias ---->
 				<li class=""><a id="incidenceManagementItem" href="javascript:void(0);"
-					class="menu-toggle" style="margin-right:20px;"> <span>Gestión Incidencia</span>
+					class="menu-toggle" > <span>Gestión Tickets</span>
 				</a>
 					<ul class="ml-menu">
 						<li><a id="incidenceManagementItem"
 							href="<c:url value='/management/incidence/'/> "> Gestión Incidencia
 						</a></li>
-						<li><a href="<c:url value='/admin/typeIncidence/'/>">Tipo
-								Incidencia</a></li>
+						<li><a href="<c:url value='/systemPriority/'/>">Prioridad Ticket</a></li>
 						<li><a href="<c:url value='/admin/priorityIncidence/'/>">Prioridad
 								Incidencia</a></li>
 						<li><a href="<c:url value='/statusIncidence/'/>">Estados

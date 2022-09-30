@@ -18,6 +18,8 @@ public interface SystemDao {
 	
 	List<SystemUser> listSystemUserByIds(Object[] ids);
 
+	List<System> findByManagerIncidence(Integer id);
+
 	JsonSheet<?> listSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch);
 
 	SystemInfo findByCode(String code) throws Exception;

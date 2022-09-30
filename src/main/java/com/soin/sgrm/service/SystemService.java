@@ -50,4 +50,6 @@ public interface SystemService {
 	Object[] myTeamsProyect(String name);
 	
 	List<System> listProjects(int id);
+
+	List<System> findByManagerIncidence(Integer id);
 }

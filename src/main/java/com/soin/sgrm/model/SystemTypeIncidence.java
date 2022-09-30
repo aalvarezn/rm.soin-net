@@ -15,8 +15,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "SISTEMA_PRIORIDAD")
-public class System_Priority implements Serializable{
+@Table(name = "SISTEMA_TIPOINCIDENCIA")
+public class SystemTypeIncidence implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(generator = "increment")
@@ -25,32 +25,33 @@ public class System_Priority implements Serializable{
 	private Long id;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "PRIORIDAD_ID", nullable = true)
-	private PriorityIncidence priority;
+	@JoinColumn(name = "TIPOINCIDENCIA_ID", nullable = true)
+	private TypeIncidence typeIncidence;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SISTEMA_ID", nullable = true)
 	private System system;
 
-	@Column(name = "TIME")
-	private String time;
-	
-	@Column(name = "SLA")
-	private Integer sla;
-	
-	
 	@Transient
 	Integer systemId;
 
 	@Transient
-	Long priorityId;
+	Long typeIncidenceId;
 
-	public PriorityIncidence getPriority() {
-		return priority;
+	public TypeIncidence getTypeIncidence() {
+		return typeIncidence;
 	}
 
-	public void setPriority(PriorityIncidence priority) {
-		this.priority = priority;
+	public void setTypeIncidence(TypeIncidence typeIncidence) {
+		this.typeIncidence = typeIncidence;
+	}
+
+	public Long getTypeIncidenceId() {
+		return typeIncidenceId;
+	}
+
+	public void setTypeIncidenceId(Long typeIncidenceId) {
+		this.typeIncidenceId = typeIncidenceId;
 	}
 
 	public System getSystem() {
@@ -60,37 +61,13 @@ public class System_Priority implements Serializable{
 	public void setSystem(System system) {
 		this.system = system;
 	}
-
-	public String getTime() {
-		return time;
-	}
-
-	public void setTime(String time) {
-		this.time = time;
-	}
-
-	public Integer getSla() {
-		return sla;
-	}
-
-	public void setSla(Integer sla) {
-		this.sla = sla;
-	}
-
+	
 	public Integer getSystemId() {
 		return systemId;
 	}
 
 	public void setSystemId(Integer systemId) {
 		this.systemId = systemId;
-	}
-
-	public Long getPriorityId() {
-		return priorityId;
-	}
-
-	public void setPriorityId(Long priorityId) {
-		this.priorityId = priorityId;
 	}
 
 	public Long getId() {

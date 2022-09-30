@@ -121,4 +121,10 @@ public class SystemServiceImpl implements SystemService {
 	public SystemInfo findSystemInfoById(Integer id) {
 		return dao.findById(id);
 	}
+
+	@Override
+	public List<System> findByManagerIncidence(Integer id) {
+		
+		return dao.findByManagerIncidence(id);
+	}
 }
