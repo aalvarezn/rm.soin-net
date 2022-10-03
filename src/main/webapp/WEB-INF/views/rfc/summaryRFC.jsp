@@ -103,7 +103,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -169,7 +169,7 @@
 			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -220,7 +220,7 @@
 			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-sm-12">
-					<h5 class="titulares">Información de Cambio</h5>
+					<h5 class="titulares">Informaci&oacute;n de Cambio</h5>
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Sistemas impactados</label>
@@ -240,7 +240,7 @@
 				</div>
 
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Releases a instalar en producción</label>
+					<label for="">Releases a instalar en producci&oacute;n</label>
 
 					<div id="listSystems">
 						<ul class="nav nav-pills">
@@ -270,8 +270,8 @@
 										id="userTable">
 										<thead>
 											<tr>
-												<th>Número Release</th>
-												<th>Descripción</th>
+												<th>N&uacute;mero Release</th>
+												<th>Descripci&oacute;n</th>
 												<th>Total de objetos</th>
 											</tr>
 										</thead>
@@ -307,7 +307,7 @@
 											<tr>
 												<th style="width: 338px;">Release al que pertenece</th>
 												<th style="width: 338px;">Nombre objeto</th>
-												<th>Descripción</th>
+												<th>Descripci&oacute;n</th>
 											</tr>
 										</thead>
 										<tbody>
