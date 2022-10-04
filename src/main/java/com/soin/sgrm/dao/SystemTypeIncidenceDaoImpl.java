@@ -37,7 +37,7 @@ public class SystemTypeIncidenceDaoImpl extends AbstractDao<Long, SystemTypeInci
 	public SystemTypeIncidence findByIdAndSys(Integer systemId, Long typeIncidenceId) {
 		Criteria crit = getSession().createCriteria(SystemTypeIncidence.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("priority", "priority");
+		crit.createAlias("typeIncidence", "typeIncidence");
 		crit.add( Restrictions.eq("system.id", systemId));
 		crit.add( Restrictions.eq("typeIncidence.id", typeIncidenceId));
 		SystemTypeIncidence system_Priority = (SystemTypeIncidence) crit.uniqueResult();

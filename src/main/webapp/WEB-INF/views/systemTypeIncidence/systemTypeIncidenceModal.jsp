@@ -7,8 +7,8 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="largeModalLabel">Prioridad de
-					incidencia</h4>
+				<h4 class="modal-title" id="largeModalLabel">Tipo de
+					ticket por sistema</h4>
 			</div>
 			<div class="modal-body">
 				<form id="priorityIncidenceModalForm" action="">
@@ -33,7 +33,7 @@
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<label for="name">Tipo Ticket</label>
 							<div class="form-group">
-								<select id="priorityId" disabled name="priorityId" disabled
+								<select id="typeIncidenceId" disabled name="typeIncidenceId" disabled
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="">-- Seleccione una opci&oacute;n --</option>

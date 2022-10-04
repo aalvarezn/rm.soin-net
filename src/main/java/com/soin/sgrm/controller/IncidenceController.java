@@ -112,6 +112,7 @@ public class IncidenceController extends BaseController {
 		try {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
+			List<System> systems=systemService.findByUserIncidence(userLogin);
 			List<TypeIncidence> typeIncidences = typeIncidenceService.findAll();
 			List<StatusIncidence> statuses = statusService.findAll();
 			List<PriorityIncidence> priorities = priorityIncidenceService.findAll();

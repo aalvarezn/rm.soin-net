@@ -8,7 +8,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h4 class="modal-title" id="largeModalLabel">Prioridad de
-					incidencia</h4>
+					ticket</h4>
 			</div>
 			<div class="modal-body">
 				<form id="priorityIncidenceModalForm" action="">

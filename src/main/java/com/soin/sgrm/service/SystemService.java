@@ -52,4 +52,6 @@ public interface SystemService {
 	List<System> listProjects(int id);
 
 	List<System> findByManagerIncidence(Integer id);
+
+	List<System> findByUserIncidence(Integer id);
 }

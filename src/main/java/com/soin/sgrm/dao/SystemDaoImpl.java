@@ -223,4 +223,14 @@ public class SystemDaoImpl implements SystemDao {
 		return systemList;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<System> findByUserIncidence(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("usersIncidence", "usersIncidence");
+		crit.add( Restrictions.eq("usersIncidence.id", id));
+		List<System> systemList = crit.list();
+		return systemList;
+	}
+
 }

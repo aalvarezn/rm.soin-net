@@ -73,10 +73,7 @@
 							href="<c:url value='/management/incidence/'/> "> Gestión Incidencia
 						</a></li>
 						<li><a href="<c:url value='/systemPriority/'/>">Prioridad Ticket</a></li>
-						<li><a href="<c:url value='/admin/priorityIncidence/'/>">Prioridad
-								Incidencia</a></li>
-						<li><a href="<c:url value='/statusIncidence/'/>">Estados
-								Incidencia</a></li>
+						<li><a href="<c:url value='/systemTypeIn/'/>">Tipo Ticket</a></li>
 					</ul></li>
 
 			</c:if>
@@ -92,7 +89,7 @@
 			</c:if>
 			<c:if test="${incidenceAccess}">
 				<li><a id="incidenceItem" href="<c:url value='/incidence/'/> ">
-						<span>Incidencias</span>
+						<span>Mis tickets</span>
 				</a></li>
 			</c:if>
 			<c:if test="${releaseAccess}">

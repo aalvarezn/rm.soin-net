@@ -52,7 +52,7 @@ public class SystemTypeIncidenceController extends BaseController {
 		List<com.soin.sgrm.model.System> systems = systemService.findByManagerIncidence(idUser);
 
 		model.addAttribute("systems", systems);
-		return "/systemPriority/systemPriority";
+		return "/systemTypeIncidence/systemTypeIncidence";
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -133,11 +133,11 @@ public class SystemTypeIncidenceController extends BaseController {
 		try {
 			systemTypeService.delete(id);
 			res.setStatus("success");
-			res.setMessage("Se elimino la prioridad correctamente!");
+			res.setMessage("Se elimino el tipo correctamente!");
 		} catch (Exception e) {
-			Sentry.capture(e, "systemPriority");
+			Sentry.capture(e, "systemTypeIncidence");
 			res.setStatus("error");
-			res.setMessage("Error al eliminar la prioridad!");
+			res.setMessage("Error al eliminar el tipo!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;

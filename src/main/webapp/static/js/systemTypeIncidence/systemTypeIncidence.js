@@ -4,7 +4,7 @@ var $mdPriorityIncidence = $('#priorityIncidenceModal');
 var $fmPriorityIncidence = $('#priorityIncidenceModalForm');
 var obj=null;
 $(function() {
-	activeItemMenu("ticketsItem", true);
+	activeItemMenu("incidenceManagementItem", true);
 	initDataTable();
 	initPriorityIncidenceFormValidation();
 	dropDownChange();
@@ -35,10 +35,10 @@ function initDataTable() {
 							"mDataProp" : 'system.name'
 						},
 						{
-							"mDataProp" : 'typeIncidence.name'
+							"mDataProp" : 'typeIncidence.code'
 						},{
 							"mDataProp" : 'typeIncidence.description'
-						}
+						},
 						
 						{
 							render : function(data, type, row, meta) {
@@ -69,22 +69,29 @@ function dropDownChange(){
 		if(sId!=""){
 		$.ajax({
 			type: 'GET',
-			url: getCont() + "systemTypeIn/changePriority/"+sId,
+			url: getCont() + "systemTypeIn/changeTypeIncidence/"+sId,
 			success: function(result) {
+				var verif=true;
 				if(result.length!=0){
 					var s = '';
 					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 					for(var i = 0; i < result.length; i++) {
-						s += '<option value="' + result[i].id + '">' + result[i].name + '</option>';
+						s += '<option value="' + result[i].id + '">' + result[i].code + '</option>';
+						if(obj!=null){
+							if(result[i].id!==obj.typeIncidence.id&&obj.system.id.toString()!==$fmPriorityIncidence.find('#sId').val()){
+								verif=false;
+							}
+						}
 					}
-					$('#priorityId').html(s);
-					$('#priorityId').prop('disabled', false);
+					$('#typeIncidenceId').html(s);
+					$('#typeIncidenceId').prop('disabled', false);
 					$('#save').prop('disabled', false);
 					if(obj!==null){
-						$('#priorityId').append('<option value="' + obj.priority.id + '">' + obj.priority.name + '</option>');
-						console.log("no estoy nulo");
+						if(verif){
+						$('#typeIncidenceId').append('<option value="' + obj.typeIncidence.id + '">' + obj.typeIncidence.code + '</option>');
+						}
 					}
-					$('#priorityId').selectpicker('refresh');
+					$('#typeIncidenceId').selectpicker('refresh');
 				}else{
 				
 					resetDrop();
@@ -102,16 +109,16 @@ function dropDownChange(){
 function resetDrop(){
 	var s = '';
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
-	$('#priorityId').html(s);
+	$('#typeIncidenceId').html(s);
 	
 	if(obj!==null){
-		$('#priorityId').append('<option value="' + obj.priority.id + '">' + obj.priority.name + '</option>');
-		$('#priorityId').prop('disabled', false);
+		$('#typeIncidenceId').append('<option value="' + obj.typeIncidence.id + '">' + obj.typeIncidence.code + '</option>');
+		$('#typeIncidenceId').prop('disabled', false);
 	}else{
-		$('#priorityId').prop('disabled',true);
+		$('#typeIncidenceId').prop('disabled',true);
 	}
 	$('#save').prop('disabled',true);
-	$('#priorityId').selectpicker('refresh');
+	$('#typeIncidenceId').selectpicker('refresh');
 	
 }
 
@@ -214,10 +221,10 @@ function showPriorityIncidence(index){
 	$fmPriorityIncidence.find('#sId').selectpicker('val',obj.system.id);
 	var s = '';
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
-	$('#priorityId').html(s);
-	 $('#priorityId').append('<option value="' + obj.priority.id + '">' + obj.priority.name + '</option>');
-		$('#priorityId').selectpicker('val',obj.priority.id);
-		$('#priorityId').selectpicker('refresh');
+	$('#typeIncidenceId').html(s);
+	 $('#typeIncidenceId').append('<option value="' + obj.typeIncidence.id + '">' + obj.typeIncidence.code + '</option>');
+		$('#typeIncidenceId').selectpicker('val',obj.typeIncidence.id);
+		$('#typeIncidenceId').selectpicker('refresh');
 		$fmPriorityIncidence.find('#id').val(obj.id);
 	if(obj.sla==1){
 		$('#timeDiv').attr( "hidden",false);
@@ -255,9 +262,7 @@ function updatePriorityIncidence() {
 				data : JSON.stringify({
 					id : $fmPriorityIncidence.find('#id').val(),
 					systemId : $fmPriorityIncidence.find('#sId').val(),
-					priorityId:  $fmPriorityIncidence.find('#priorityId').val(),
-					sla:$fmPriorityIncidence.find('#sla').val(),
-					time:$fmPriorityIncidence.find('#time').val()
+					typeIncidenceId:  $fmPriorityIncidence.find('#typeIncidenceId').val()
 				}),
 				success : function(response) {
 					unblockUI();
@@ -294,9 +299,7 @@ function savePriorityIncidence() {
 				timeout : 60000,
 				data : JSON.stringify({
 					systemId : $fmPriorityIncidence.find('#sId').val(),
-					priorityId:  $fmPriorityIncidence.find('#priorityId').val(),
-					sla:$fmPriorityIncidence.find('#sla').val(),
-					time:$fmPriorityIncidence.find('#time').val()
+					typeIncidenceId:  $fmPriorityIncidence.find('#typeIncidenceId').val()
 					
 				}),
 				success : function(response) {
@@ -348,12 +351,9 @@ function addPriorityIncidence(){
 	console.log(obj);
 	$fmPriorityIncidence.validate().resetForm();
 	$fmPriorityIncidence.find('#sId').selectpicker('val',  "");
-	$fmPriorityIncidence.find('#priorityId').selectpicker('val',  "");
-	$fmPriorityIncidence.find('#sla').val(0);
-	$fmPriorityIncidence.find('#time').val('00:00');
-	$('#priorityId').prop('disabled', true);
-	$('#timeDiv').attr( "hidden",true);
-	$('#priorityId').selectpicker('refresh');
+	$fmPriorityIncidence.find('#typeIncidenceId').selectpicker('val',  "");
+	$('#typeIncidenceId').prop('disabled', true);
+	$('#typeIncidenceId').selectpicker('refresh');
 	$fmPriorityIncidence[0].reset();
 	$mdPriorityIncidence.find('#save').show();
 	$mdPriorityIncidence.find('#update').hide();
@@ -371,7 +371,7 @@ function initPriorityIncidenceFormValidation() {
 			'sId' : {
 				required : true,
 			},
-			'priorityId' : {
+			'typeIncidenceId' : {
 				required : true,
 			}
 		},
@@ -380,7 +380,7 @@ function initPriorityIncidenceFormValidation() {
 			'sId' : {
 				required :  "Ingrese un valor",
 			},
-			'priorityId' : {
+			'typeIncidenceId' : {
 				required :  "Ingrese un valor",
 			}
 		},

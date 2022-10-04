@@ -49,7 +49,7 @@
 			<div class="row clearfix">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="" style="padding-top: -5pc;">
-						<h2 class="title-Adm m-t-0">Tipo Incidencia por Sistemas </h2>
+						<h2 class="title-Adm m-t-0">Tipo de ticket por Sistemas </h2>
 					</div>
 					<hr>
 				</div>
@@ -62,8 +62,8 @@
 							<thead>
 								<tr>
 									<th>Sistema</th>
-									<th>Tipo incidencia</th>
-									<th>Descripcion Incidencia</th>
+									<th>Tipo ticket</th>
+									<th>Descripcion ticket</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>

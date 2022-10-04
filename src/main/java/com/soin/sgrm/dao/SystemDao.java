@@ -52,4 +52,6 @@ public interface SystemDao {
 	
 	List<System> listProjects(int id);
 
+	List<System> findByUserIncidence(Integer id);
+
 }

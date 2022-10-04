@@ -4,7 +4,7 @@ var $mdPriorityIncidence = $('#priorityIncidenceModal');
 var $fmPriorityIncidence = $('#priorityIncidenceModalForm');
 var obj=null;
 $(function() {
-	activeItemMenu("ticketsItem", true);
+	activeItemMenu("incidenceManagementItem", true);
 	initDataTable();
 	initPriorityIncidenceFormValidation();
 	dropDownChange();
@@ -79,17 +79,24 @@ function dropDownChange(){
 			url: getCont() + "systemPriority/changePriority/"+sId,
 			success: function(result) {
 				if(result.length!=0){
+					var verif=true;
 					var s = '';
 					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 					for(var i = 0; i < result.length; i++) {
 						s += '<option value="' + result[i].id + '">' + result[i].name + '</option>';
+						if(obj!=null){
+							if(result[i].id!==obj.priority.id&&obj.system.id.toString()!==$fmPriorityIncidence.find('#sId').val()){
+								verif=false;
+							}
+						}
 					}
 					$('#priorityId').html(s);
 					$('#priorityId').prop('disabled', false);
 					$('#save').prop('disabled', false);
 					if(obj!==null){
+						if(verif){
 						$('#priorityId').append('<option value="' + obj.priority.id + '">' + obj.priority.name + '</option>');
-						console.log("no estoy nulo");
+						}
 					}
 					$('#priorityId').selectpicker('refresh');
 				}else{
