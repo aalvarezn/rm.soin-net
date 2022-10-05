@@ -17,12 +17,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.soin.sgrm.model.Errors;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseError;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemUser;
+import com.soin.sgrm.service.ErrorService;
+import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.MyLevel;
@@ -40,6 +47,15 @@ public class ReleaseManagementController extends BaseController {
 	private ReleaseService releaseService;
 	@Autowired
 	private SystemService systemService;
+	
+	@Autowired
+	private ErrorService errorService;
+	
+	@Autowired
+	private ReleaseErrorService releaseErrorService;
+	
+	@Autowired
+	private ProjectService projectService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -50,6 +66,7 @@ public class ReleaseManagementController extends BaseController {
 			model.addAttribute("systems", systemService.listSystemUser());
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
+			model.addAttribute("errors",errorService.findAll());
 		} catch (Exception e) {
 			Sentry.capture(e, "releaseManagement");
 			redirectAttributes.addFlashAttribute("data",
@@ -113,7 +130,9 @@ public class ReleaseManagementController extends BaseController {
 			@RequestParam(value = "idRelease", required = true) Integer idRelease,
 			@RequestParam(value = "idStatus", required = true) Integer idStatus,
 			@RequestParam(value = "dateChange", required = false) String dateChange,
-			@RequestParam(value = "motive", required = true) String motive) {
+			@RequestParam(value = "motive", required = true) String motive,
+			@RequestParam(value = "idError", required = false) Long idError
+			) {
 		JsonResponse res = new JsonResponse();
 		try {
 			ReleaseEdit release = releaseService.findEditById(idRelease);
@@ -121,6 +140,32 @@ public class ReleaseManagementController extends BaseController {
 			if (status != null && status.getName().equals("Borrador")) {
 				if (release.getStatus().getId() != status.getId())
 					release.setRetries(release.getRetries() + 1);
+			}else if(status != null && status.getName().equals("Error")) {
+				Errors error=errorService.findById(idError);
+				ReleaseError releaseError=new ReleaseError();
+				releaseError.setSystem(release.getSystem());
+				releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
+				releaseError.setError(error);
+				Releases_WithoutObj releaseWithObj=releaseService.findReleaseWithouObj(release.getId());
+				releaseError.setRelease(releaseWithObj);
+				releaseError.setObservations(motive);
+				releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
+				releaseErrorService.save(releaseError);
+				
+				releaseService.updateStatusRelease(release);
+				Status statusChange = statusService.findByName("Borrador");
+				release.setStatus(statusChange);
+				release.setOperator(getUserLogin().getFullName());
+
+				release.setDateChange(dateChange);
+				
+				release.setMotive(motive);
+				if (statusChange != null && statusChange.getName().equals("Borrador")) {
+					if (release.getStatus().getId() != status.getId())
+						release.setRetries(release.getRetries() + 1);
+				}
+				status=statusChange;
+				motive="Paso a borrador por "+error.getName();
 			}
 			release.setStatus(status);
 			release.setOperator(getUserLogin().getFullName());

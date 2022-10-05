@@ -37,6 +37,12 @@
 						href="<c:url value='/management/wf/'/> "> <span>Gestión
 								Trámites</span>
 					</a></li>
+				<li class=""><a id="errorItem" href="javascript:void(0);"
+					class="menu-toggle"> <span>Gestion Salidas</span>
+				</a>
+					<ul class="ml-menu">
+						<li><a href="<c:url value='/management/error/'/>">Releases</a></li>
+					</ul></li>
 				</c:if>
 				<c:if
 					test="${authority.name == 'Gestores' or authority.name == 'Desarrolladores'}">

@@ -22,6 +22,7 @@ import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.CommonUtils;
@@ -269,6 +270,12 @@ public class ReleaseServiceImpl implements ReleaseService {
 	@Override
 	public void updateStatusReleaseRFC(Release_RFC release,String operator) throws Exception {
 		dao.updateStatusReleaseRFC(release,operator);
+	}
+
+	@Override
+	public Releases_WithoutObj findReleaseWithouObj(Integer id) throws SQLException {
+		
+		return dao.findReleaseWithouObj(id);
 	}
 
 }

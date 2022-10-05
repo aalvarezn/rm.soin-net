@@ -11,6 +11,7 @@ import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.ReleaseCreate;
@@ -66,5 +67,7 @@ public interface ReleaseDao {
 	Integer getDependency(int id);
 
 	void updateStatusReleaseRFC(Release_RFC release,String operator);
+
+	Releases_WithoutObj findReleaseWithouObj(Integer id);
 
 }

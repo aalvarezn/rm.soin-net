@@ -726,5 +726,12 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		}
 	}
 
+	@Override
+	public Releases_WithoutObj findReleaseWithouObj(Integer id) {
+		Releases_WithoutObj release = (Releases_WithoutObj) sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class)
+				.add(Restrictions.eq("id", id)).uniqueResult();
+		return release;
+	}
+
 	
 }
