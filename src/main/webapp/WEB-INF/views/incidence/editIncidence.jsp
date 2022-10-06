@@ -127,7 +127,7 @@ tr.selected {
 		<!-- #END# addObjectModal -->
 
 		<!-- addObjectModal -->
-		<%@include file="../rfc/previewRFCModal.jsp"%>
+		<%@include file="../incidence/previewIncidenceModal.jsp"%>
 		<!-- #END# addObjectModal -->
 
 		<!-- addFileModal -->

@@ -55,7 +55,7 @@ $(function() {
 	 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
 	activeItemMenu("incidenceManagementItem", true);
-	dropDownChange();
+	//dropDownChange();
 	$("#addRFCSection").hide();
 	$fmRFC.find("#sId").selectpicker('val',"");
 
@@ -147,10 +147,10 @@ function initRFCTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							if(row.status)
-								return row.priority.name;
+							if(row.priority)
+								return row.priority.priority.name;
 							else
-								return '';
+								return 'Sin prioridad asignada';
 						},
 					}, 
 					 {
@@ -164,26 +164,21 @@ function initRFCTable() {
 					{
 						"mRender" : function(data, type, row, meta) {
 							var options = '<div class="iconLine">';
-							if (row.status.name == 'Borrador') {
+							if (row.status.name == 'Solicitado') {
 								
 									options = options
 									+ '<a onclick="editRFC('
 									+ row.id
-									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>'
-									+ '<a onclick="confirmDeleteRFC('
-									+ row.id
-									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
+									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
 								
 							}
-							if($('#isDeveloper').val()){
-								options = options
-								+ '<a onclick="copyRFC('
-								+ row.index
-								+ ')" title="Copiar"><i class="material-icons gris">file_copy</i> </a>';
-							}
-
 							
-
+							if(row.status.name != 'Anulado') {
+								options = options
+								+ '<a onclick="confirmDeleteRFC('+row.id+')" title="Anular"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
+							}
+							options = options
+							+ '<a onclick="changeStatusRFC('+row.id+')" title="Cambiar Estado"><i class="material-icons gris" style="font-size: 25px;">offline_pin</i></a>';
 							options = options
 							+ '<a onclick="openIncidenceTrackingModal('
 							+ row.id
@@ -192,9 +187,9 @@ function initRFCTable() {
 							options = options
 							+ '<a href="'
 							+ getCont()
-							+ 'rfc/summaryRFC-'
+							+ 'incidence/summaryIncidence-'
 							+ row.id
-							+ '" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
+							+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
 							return options;
 						},
 					} ],

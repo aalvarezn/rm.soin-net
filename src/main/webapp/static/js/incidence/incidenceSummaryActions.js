@@ -58,10 +58,10 @@ function cancelRFC(index) {
 	blockUI();
 	$.ajax({
 		type : "GET",
-		url : getCont() + "management/rfc/" + "cancelRFC",
+		url : getCont() + "management/incidence/" + "cancelIncidence",
 		timeout : 60000,
 		data : {
-			idRFC : index
+			idIncidence : index
 		},
 		success : function(response) {
 			responseCancelRFC(response);
@@ -75,7 +75,7 @@ function cancelRFC(index) {
 function responseCancelRFC(response) {
 	switch (response.status) {
 	case 'success':
-		swal("Correcto!", "El RFC ha sido anulado exitosamente.",
+		swal("Correcto!", "El ticket ha sido anulado exitosamente.",
 				"success", 2000)
 				location.reload(true);
 		break;
@@ -106,10 +106,10 @@ function saveChangeStatusModal(){
 	blockUI();
 	$.ajax({
 		type : "GET",
-		url : getCont() + "management/rfc/statusRFC",
+		url : getCont() + "management/incidence/statusIncidence",
 		timeout : 60000,
 		data : {
-			idRFC : $formChangeStatus.find('#idRFC').val(),
+			idIncidence : $formChangeStatus.find('#idRFC').val(),
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
 			motive: $formChangeStatus.find('#motive').val()
@@ -126,7 +126,7 @@ function saveChangeStatusModal(){
 function responseStatusRFC(response) {
 	switch (response.status) {
 	case 'success':
-		swal("Correcto!", "El RFC ha sido modificado exitosamente.",
+		swal("Correcto!", "El ticket ha sido modificado exitosamente.",
 				"success", 2000);
 		location.reload(true);
 		closeChangeStatusModal();

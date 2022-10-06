@@ -70,7 +70,7 @@
 				</a>
 					<ul class="ml-menu">
 						<li><a id="incidenceManagementItem"
-							href="<c:url value='/management/incidence/'/> "> Gestión Incidencia
+							href="<c:url value='/management/incidence/'/> "> Tickets
 						</a></li>
 						<li><a href="<c:url value='/systemPriority/'/>">Prioridad Ticket</a></li>
 						<li><a href="<c:url value='/systemTypeIn/'/>">Tipo Ticket</a></li>

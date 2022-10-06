@@ -1343,17 +1343,17 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				
 				ccFinish=email.getCc();
 				String[] split3=ccFinish.split(",");
-				boolean verify= ArrayUtils.contains(split3,incidenceEmail.getUser().getEmail());
+				boolean verify= ArrayUtils.contains(split3,incidenceEmail.getEmail());
 				if(!verify) {
-					ccFinish=cc+","+incidenceEmail.getUser().getEmail();
+					ccFinish=cc+","+incidenceEmail.getEmail();
 				}
 			}else {
 				if(incidenceEmail.getSenders().trim().equals("")) {
 					ccFinish=email.getCc();
 					String[] split3=ccFinish.split(",");
-					boolean verify= ArrayUtils.contains(split3,incidenceEmail.getUser().getEmail());
+					boolean verify= ArrayUtils.contains(split3,incidenceEmail.getEmail());
 					if(!verify) {
-						ccFinish=cc+","+incidenceEmail.getUser().getEmail();
+						ccFinish=cc+","+incidenceEmail.getEmail();
 					}
 				}else {
 					

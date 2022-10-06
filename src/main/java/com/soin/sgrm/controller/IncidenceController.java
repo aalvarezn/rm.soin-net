@@ -1,8 +1,12 @@
 package com.soin.sgrm.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -45,6 +49,7 @@ import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.System_Priority;
 import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.model.User;
@@ -230,10 +235,10 @@ public class IncidenceController extends BaseController {
 			 * "No tiene permisos sobre el rfc."); String referer =
 			 * request.getHeader("Referer"); return "redirect:" + referer; }
 			 */
-
+			List<System_Priority> priorities= priorityIncidenceService.findBySystem(incidenceEdit.getSystem().getId());
 			model.addAttribute("systems", systems);
 			model.addAttribute("typeChange", typeChangeService.findAll());
-			model.addAttribute("priorities", priorityIncidenceService.findBySystem(incidenceEdit.getSystem().getId()));
+			model.addAttribute("priorities", priorities);
 			model.addAttribute("typeincidences", typeIncidenceService.findBySystem(incidenceEdit.getSystem().getId()));
 			model.addAttribute("incidence", incidenceEdit);
 			model.addAttribute("senders", incidenceEdit.getSenders());
@@ -369,9 +374,17 @@ public class IncidenceController extends BaseController {
 			incidence.setStatus(status);
 			incidence.setMotive(status.getReason());
 			incidence.setRequestDate((CommonUtils.getSystemTimestamp()));
-			
 			incidence.setOperator(getUserLogin().getFullName());
 			
+			String[] time=incidence.getPriority().getTime().split(":");
+			int hours=Integer.parseInt(time[0]);
+			int minutes=Integer.parseInt(time[1]);
+			 Calendar calendar = Calendar.getInstance();
+			    calendar.setTime(incidence.getRequestDate());
+			    calendar.add(Calendar.HOUR, hours);
+			    calendar.add(Calendar.MINUTE, minutes);
+			    Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+			    incidence.setExitOptimalDate(timestamp);
 			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
 				if (incidence.getTypeIncidence().getEmailTemplate() != null) {
 					EmailTemplate email = incidence.getTypeIncidence().getEmailTemplate();
@@ -410,6 +423,62 @@ public class IncidenceController extends BaseController {
 		}
 
 		return "redirect:/homeIncidence";
+	}
+	
+	@RequestMapping(value = "/summaryIncidence-{status}", method = RequestMethod.GET)
+	public String summmary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
+		User user =  userService.getUserByUsername(getUserLogin().getUsername());
+
+		try {
+			model.addAttribute("parameter", status);
+			Incidence incidence = null;
+			if (CommonUtils.isNumeric(status)) {
+				incidence = incidenceService.getIncidences((Long.parseLong(status)));
+			}
+
+			if (incidence == null) {
+				return "redirect:/";
+			}
+			
+			model.addAttribute("incidence", incidence);
+
+		} catch (Exception e) {
+			Sentry.capture(e, "incidence");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina resumen incidence." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/homeIncidence";
+		}
+
+		return "/incidence/summaryIncidence";
+	}
+	@SuppressWarnings("null")
+	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
+	public String tinySummary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
+	
+		try {
+			model.addAttribute("parameter", status);
+			Incidence incidence = null;
+			if (CommonUtils.isNumeric(status)) {
+				incidence = incidenceService.getIncidences((Long.parseLong(status)));
+			}
+
+			if (incidence == null) {
+				return "redirect:/homeIncidence";
+			}
+
+			model.addAttribute("incidence", incidence);
+	
+		} catch (Exception e) {
+			Sentry.capture(e, "rfc");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina resumen ticket." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/";
+		}
+		return "/incidence/tinySummaryIncidence";
 	}
 	private ArrayList<MyError> validSections(Incidence addIncidence, ArrayList<MyError> errors) {
 		

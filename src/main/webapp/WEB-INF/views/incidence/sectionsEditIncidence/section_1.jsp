@@ -71,11 +71,11 @@
 						<option value="">-- Seleccione una opci&oacute;n --</option>
 						<c:forEach items="${priorities}" var="priority">
 							<c:choose>
-								<c:when test="${priority.priority.id == incidence.priority.priority.id}">
-									<option selected="selected" value="${priority.priority.id }">${priority.priority.name }</option>
+								<c:when test="${priority.id == incidence.priority.id}">
+									<option selected="selected" value="${priority.id }">${priority.priority.name }</option>
 								</c:when>
 								<c:otherwise>
-									<option value="${priority.priority.id }">${priority.priority.name }</option>
+									<option value="${priority.id }">${priority.priority.name }</option>
 								</c:otherwise>
 							</c:choose>
 

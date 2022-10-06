@@ -103,7 +103,7 @@ public class HomeController extends BaseController {
 	@RequestMapping(value = "/homeRequest", method = RequestMethod.GET)
 	public String indexRequest(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
-		if (request.isUserInRole("ROLE_Release Manager")) {
+		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
 			return "redirect:/management/request/";
 		}
 

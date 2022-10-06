@@ -73,6 +73,11 @@ public class Incidence implements Serializable {
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
 	
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "SALIDA_OPTIMA")
+	private Timestamp exitOptimalDate;
+	
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_USUARIO", nullable = false)
 	private User user;
@@ -186,6 +191,14 @@ public class Incidence implements Serializable {
 
 	public void setRequestDate(Timestamp requestDate) {
 		this.requestDate = requestDate;
+	}
+	
+	public Timestamp getExitOptimalDate() {
+		return exitOptimalDate;
+	}
+
+	public void setExitOptimalDate(Timestamp exitOptimalDate) {
+		this.exitOptimalDate = exitOptimalDate;
 	}
 
 	public User getUser() {

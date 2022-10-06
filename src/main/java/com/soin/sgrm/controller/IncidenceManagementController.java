@@ -190,7 +190,7 @@ public class IncidenceManagementController extends BaseController {
 				if (rol.getAuthority().equals("ROLE_Admin")) {
 					countRol++;
 				}
-				if (rol.getAuthority().equals("ROLE_Incidencias")) {
+				if (rol.getAuthority().equals("ROLE_Gestor Incidencias")) {
 					countRol++;
 				}
 

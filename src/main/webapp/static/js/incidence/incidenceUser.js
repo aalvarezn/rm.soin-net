@@ -192,7 +192,7 @@ function initIncidenceTable() {
 							options = options
 							+ '<a href="'
 							+ getCont()
-							+ 'rfc/summaryRFC-'
+							+ 'incidence/summaryIncidence-'
 							+ row.id
 							+ '" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
 							return options;

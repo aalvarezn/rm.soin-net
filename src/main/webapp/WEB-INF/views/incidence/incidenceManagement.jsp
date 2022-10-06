@@ -79,7 +79,7 @@
 				<!-- #tableSection#-->
 				<div id="tableSection">
 					<div class="block-header">
-						<h2>Incidencias</h2>
+						<h2>Tickets</h2>
 					</div>
 
 					<!-- Tab PANELS -->
@@ -235,12 +235,7 @@
 				<!-- #tableSection# -->
 			</div>
 		</div>
-		<a id="buttonAddIncidence" type="button"
-			class="btn btn-primary btn-fab waves-effect fixedDown"
-			<%-- href="<c:url value='/release/release-generate'/>"> --%>
- 			onclick="addIncidenceSection()">
-			<i class="material-icons lh-1-8">add</i>
-		</a>
+
 	</section>
 
 	<%@include file="../plantilla/footer.jsp"%>
