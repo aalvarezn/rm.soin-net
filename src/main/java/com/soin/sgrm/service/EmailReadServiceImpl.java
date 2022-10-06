@@ -67,13 +67,13 @@ public class EmailReadServiceImpl implements EmailReadService {
 		   incidence.setTitle(newMessage.getSubject());
 		   if(newMessage.getSubject().toLowerCase().contains("soporte-critico")) {
 			   PriorityIncidence priorityIncidence=priorityIncidenceService.findByKey("name","CRITICA");
-			   incidence.setPriority(priorityIncidence);
+			  // incidence.setPriority(priorityIncidence);
 		   }else if(newMessage.getSubject().toLowerCase().contains("soporte-alto")) {
 			   PriorityIncidence priorityIncidence=priorityIncidenceService.findByKey("name","ALTA");
-			   incidence.setPriority(priorityIncidence);
+			   //incidence.setPriority(priorityIncidence);
 		   }else if(newMessage.getSubject().toLowerCase().contains("soporte-bajo")) {
 			   PriorityIncidence priorityIncidence=priorityIncidenceService.findByKey("name","BAJA");
-			   incidence.setPriority(priorityIncidence);
+			   //incidence.setPriority(priorityIncidence);
 		   }
 		   System.out.println("Fecha enviado:"+newMessage.getSentDate());
 		   Timestamp date=new Timestamp(newMessage.getSentDate().getTime());

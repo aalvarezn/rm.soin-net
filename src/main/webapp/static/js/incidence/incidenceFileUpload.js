@@ -124,7 +124,7 @@ function uploadInputFile(f, idRow) {
 			.append('file', $('#addFileModal table #file_' + idRow)[0].files[0]);
 	// Ajax call for file uploaling
 	var ajaxReq = $.ajax({
-		url : cont + "file/" + "singleUploadRFC-" + $('#rfcId').val(),
+		url : cont + "file/" + "singleUploadIncidence-" + $('#rfcId').val(),
 		timeout : 60000,
 		type : 'POST',
 		data : formData,
@@ -195,7 +195,7 @@ function addReleaseFileRow(rfcFile) {
 									+ '</a>'
 									+ '<a href="'
 									+ getCont()
-									+ 'file/singleDownloadRFC-'
+									+ 'file/singleDownloadIncidence-'
 									+ rfcFile.id
 									+ '" download="" class=""> <i class="material-icons gris" style="font-size: 30px;">cloud_download</i>'
 									+ '</a>' + '</div>' + '</div>' ]).node().id = rfcFile.id;
@@ -229,7 +229,7 @@ function ajaxDeleteReleaseFile(id) {
 	var cont = getCont();
 	// Ajax call for file uploaling
 	var ajaxReq = $.ajax({
-		url : cont + "file/" + "deleteFileUploadRFC-" + id,
+		url : cont + "file/" + "deleteFileUploadIncidence-" + id,
 		timeout : 60000,
 		type : 'DELETE',
 		data : {},

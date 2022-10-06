@@ -36,6 +36,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Ambient;
 import com.soin.sgrm.model.Dependency;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
@@ -1314,6 +1315,149 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
 			}
 			
+		}
+
+		return email;
+	}
+
+	@Override
+	public void sendMailIncidence(Incidence incidenceEmail, EmailTemplate email) throws Exception{
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
+		email = fillEmail(email, incidenceEmail);
+		String body = email.getHtml();
+		body = Constant.getCharacterEmail(body);
+		MimeMultipart mmp = MimeMultipart(body);
+		mimeMessage.setContent(mmp);
+		mimeMessage.setSubject(email.getSubject());
+		mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
+		mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
+		for (String toUser : email.getTo().split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
+		}
+		String ccFinish="";
+		String cc="";
+		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
+			cc=email.getCc();
+			if(incidenceEmail.getSenders()==null) {
+				
+				ccFinish=email.getCc();
+				String[] split3=ccFinish.split(",");
+				boolean verify= ArrayUtils.contains(split3,incidenceEmail.getUser().getEmail());
+				if(!verify) {
+					ccFinish=cc+","+incidenceEmail.getUser().getEmail();
+				}
+			}else {
+				if(incidenceEmail.getSenders().trim().equals("")) {
+					ccFinish=email.getCc();
+					String[] split3=ccFinish.split(",");
+					boolean verify= ArrayUtils.contains(split3,incidenceEmail.getUser().getEmail());
+					if(!verify) {
+						ccFinish=cc+","+incidenceEmail.getUser().getEmail();
+					}
+				}else {
+					
+					String[] split=incidenceEmail.getSenders().split(",");
+					String[] splitCC=cc.split(",");
+					ccFinish=incidenceEmail.getSenders();
+					for(int x=0; splitCC.length>x;x++) {
+						boolean verify= ArrayUtils.contains(split,splitCC[x]);
+						if(!verify) {
+							ccFinish=ccFinish+","+splitCC[x];
+						}
+					}
+					String[] split3=ccFinish.split(",");
+					boolean verify= ArrayUtils.contains(split3,incidenceEmail.getEmail());
+					if(!verify) {
+						ccFinish=ccFinish+","+incidenceEmail.getEmail();
+					}
+				}
+			
+				
+			}
+		}else {
+			
+			if( incidenceEmail.getSenders()==null) {
+					ccFinish=incidenceEmail.getUser().getEmail();
+			}else {
+				if(incidenceEmail.getSenders().trim().equals("")) {
+					ccFinish=incidenceEmail.getUser().getEmail();
+				}else {
+				String[] split=incidenceEmail.getSenders().split(",");
+				ccFinish=incidenceEmail.getSenders();
+					boolean verify= ArrayUtils.contains(split,incidenceEmail.getEmail());
+					if(!verify) {
+						ccFinish=ccFinish+","+incidenceEmail.getEmail();
+					}
+				
+				}
+			}
+		}
+		
+	
+			for (String ccUser : ccFinish.split(",")) {
+				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			
+		}
+		
+
+		mailSender.send(mimeMessage);
+	}
+
+	private EmailTemplate fillEmail(EmailTemplate email, Incidence incidenceEmail) {
+		String temp = "";
+		/* ------ body ------ */
+		if (email.getHtml().contains("{{numTicket}}")) {
+			email.setHtml(email.getHtml().replace("{{numTicket}}",
+					(incidenceEmail.getNumTicket() != null ? incidenceEmail.getNumTicket() : "")));
+		}
+
+		if (email.getHtml().contains("{{createFor}}")) {
+			email.setHtml(email.getHtml().replace("{{createFor}}",
+					(incidenceEmail.getCreateFor() != null ? incidenceEmail.getCreateFor() : "")));
+		}
+
+		if (email.getHtml().contains("{{detail}}")) {
+			String detail = incidenceEmail.getDetail()!= null ? incidenceEmail.getDetail() : "";
+			detail = detail.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{detail}}", detail));
+		}
+
+		if (email.getHtml().contains("{{title}}")) {
+			String title = incidenceEmail.getTitle() != null ? incidenceEmail.getTitle() : "";
+			title = title.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{title}}", title));
+		}
+
+		if (email.getHtml().contains("{{result}}")) {
+			String result = incidenceEmail.getResult() != null ? incidenceEmail.getResult() : "";
+			result = result.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{result}}", result));
+		}
+
+		if (email.getHtml().contains("{{note}}")) {
+			String note = incidenceEmail.getNote() != null ? incidenceEmail.getNote() : "";
+			note = note.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{note}}", note));
+		}
+
+		if (email.getHtml().contains("{{message}}")) {
+			String message = incidenceEmail.getMessage()!= null ? incidenceEmail.getMessage() : "Sin mensaje adicional";
+			message = message.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{message}}", message));
+		}
+
+
+		
+		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{numTicket}}")) {
+			email.setSubject(email.getSubject().replace("{{numTicket}}",
+					(incidenceEmail.getNumTicket() != null ? incidenceEmail.getNumTicket() : "")));
+		}
+	
+		if (email.getSubject().contains("{{typeTicket}}")) {
+			email.setSubject(email.getSubject().replace("{{typeTicket}}",
+					(incidenceEmail.getTypeIncidence().getTypeIncidence().getCode() != null ? incidenceEmail.getTypeIncidence().getTypeIncidence().getCode() : "")));
 		}
 
 		return email;

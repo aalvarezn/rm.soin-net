@@ -24,7 +24,7 @@ public class IncidenceFile implements Serializable {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Long id;
 
 	@Column(name = "NOMBRE")
 	private String name;
@@ -36,11 +36,11 @@ public class IncidenceFile implements Serializable {
 	@Column(name = "FECHA_REVISION")
 	private Timestamp revisionDate;
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

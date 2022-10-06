@@ -413,7 +413,7 @@ tr.selected {
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 
 	<script src="<c:url value='/static/js/incidence/editIncidence.js'/>"></script>
-	<script src="<c:url value='/static/js/rfc/rfcFileUpload.js'/>"></script>
+	<script src="<c:url value='/static/js/incidence/incidenceFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
 	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>

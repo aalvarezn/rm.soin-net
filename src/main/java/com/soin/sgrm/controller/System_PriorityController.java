@@ -180,4 +180,19 @@ public class System_PriorityController extends BaseController {
 
 		return listPriority;
 	}
+	
+	@RequestMapping(value = { "/getPriority/{id}" }, method = RequestMethod.GET)
+	public @ResponseBody List<System_Priority> getPriority(@PathVariable Integer id, Locale locale, Model model) {
+		List<System_Priority> listSystemPriority=null;
+		try {
+			listSystemPriority = systemPriorityService.findBySystem(id);
+			
+		} catch (Exception e) {
+			Sentry.capture(e, "systemPriority");
+
+			e.printStackTrace();
+		}
+
+		return listSystemPriority;
+	}
 }

@@ -7,11 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,14 +30,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.collect.Sets;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Incidence;
+import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.PriorityIncidence;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.ReleaseObject;
+import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Siges;
+import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.response.JsonSheet;
@@ -47,17 +60,20 @@ import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.SystemTypeIncidenceService;
+import com.soin.sgrm.service.System_PriorityService;
 import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
 import com.soin.sgrm.service.TypeIncidenceService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.MyError;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
 @RequestMapping(value = "/incidence")
 public class IncidenceController extends BaseController {
-	
+
 	@Autowired
 	RFCService rfcService;
 
@@ -72,7 +88,6 @@ public class IncidenceController extends BaseController {
 
 	@Autowired
 	SigesService sigeService;
-
 
 	@Autowired
 	TypeChangeService typeChangeService;
@@ -90,13 +105,13 @@ public class IncidenceController extends BaseController {
 	TreeService treeService;
 
 	@Autowired
-	TypeIncidenceService typeIncidenceService;
+	SystemTypeIncidenceService typeIncidenceService;
 
 	@Autowired
 	IncidenceService incidenceService;
 
 	@Autowired
-	PriorityIncidenceService priorityIncidenceService;
+	System_PriorityService priorityIncidenceService;
 
 	@Autowired
 	EmailReadService emailReadService;
@@ -112,13 +127,13 @@ public class IncidenceController extends BaseController {
 		try {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
-			List<System> systems=systemService.findByUserIncidence(userLogin);
-			List<TypeIncidence> typeIncidences = typeIncidenceService.findAll();
+			List<System> systems = systemService.findByUserIncidence(userLogin);
+			// List<TypeIncidence> typeIncidences = typeIncidenceService.findAll();
 			List<StatusIncidence> statuses = statusService.findAll();
-			List<PriorityIncidence> priorities = priorityIncidenceService.findAll();
-			model.addAttribute("typeincidences", typeIncidences);
-			model.addAttribute("priorities", priorities);
+			// List<PriorityIncidence> priorities = priorityIncidenceService.findAll();
+			// model.addAttribute("typeincidences", typeIncidences);
 			model.addAttribute("statuses", statuses);
+			model.addAttribute("systems", systems);
 		} catch (Exception e) {
 			Sentry.capture(e, "incidence");
 			e.printStackTrace();
@@ -136,7 +151,7 @@ public class IncidenceController extends BaseController {
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
 			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
-			String email = getUserLogin().getEmail();
+			String email = getUserLogin().getFullName();
 			String sSearch = request.getParameter("sSearch");
 			Long statusId;
 			Long priorityId;
@@ -159,7 +174,7 @@ public class IncidenceController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			incidences = incidenceService.findAllRequest(email,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
+			incidences = incidenceService.findAllRequest(email, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
 					dateRange, typeId, priorityId);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -186,7 +201,7 @@ public class IncidenceController extends BaseController {
 			}
 
 			if (!incidenceEdit.getStatus().getName().equals("Borrador")) {
-				redirectAttributes.addFlashAttribute("data", "RFC no disponible para editar.");
+				redirectAttributes.addFlashAttribute("data", "Ticket no disponible para editar.");
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
@@ -204,7 +219,7 @@ public class IncidenceController extends BaseController {
 
 			if (countRol == 0) {
 				redirectAttributes.addFlashAttribute("data",
-						"No tiene permisos sobre la incidencia ya que no formas parte de este equipo.");
+						"No tiene permisos sobre el ticket ya que no formas parte de este equipo.");
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
@@ -218,15 +233,16 @@ public class IncidenceController extends BaseController {
 
 			model.addAttribute("systems", systems);
 			model.addAttribute("typeChange", typeChangeService.findAll());
-			model.addAttribute("priorities", priorityIncidenceService.findAll());
-			model.addAttribute("typeincidences", typeIncidenceService.findAll());
+			model.addAttribute("priorities", priorityIncidenceService.findBySystem(incidenceEdit.getSystem().getId()));
+			model.addAttribute("typeincidences", typeIncidenceService.findBySystem(incidenceEdit.getSystem().getId()));
 			model.addAttribute("incidence", incidenceEdit);
 			model.addAttribute("senders", incidenceEdit.getSenders());
 			model.addAttribute("message", incidenceEdit.getMessage());
-			if(incidenceEdit.getTypeIncidence()!=null) {
-			model.addAttribute("ccs", getCC(incidenceEdit.getTypeIncidence().getEmailTemplate().getCc()));
+			if (incidenceEdit.getTypeIncidence() != null) {
+				model.addAttribute("ccs",
+				 getCC(incidenceEdit.getTypeIncidence().getEmailTemplate().getCc()));
 			}
-   			return "/incidence/editIncidence";
+			return "/incidence/editIncidence";
 
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
@@ -236,33 +252,35 @@ public class IncidenceController extends BaseController {
 
 		return "redirect:/";
 	}
-	
+
 	@RequestMapping(path = "", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody Incidence addIncidence) {
 		JsonResponse res = new JsonResponse();
 		try {
-			User user=userService.getUserByUsername(getUserLogin().getUsername());
+			User user = userService.getUserByUsername(getUserLogin().getUsername());
 			StatusIncidence status = statusService.findByKey("code", "draft");
-			if(status!=null) {
+			if (status != null) {
 				addIncidence.setStatus(status);
-				addIncidence.setCreateFor(user.getEmail());
-				
+				addIncidence.setCreateFor(user.getFullName());
+				addIncidence.setSystem(systemService.findById(addIncidence.getSystemId()));
 				addIncidence.setRequestDate(CommonUtils.getSystemTimestamp());
-				res.setStatus("success");
-				addIncidence.setMotive("Inicio de ticket");	
+				addIncidence.setMotive("Inicio de ticket");
 				addIncidence.setOperator(user.getFullName());
 				addIncidence.setTypeIncidence(typeIncidenceService.findById(addIncidence.getTypeIncidenceId()));
-				addIncidence.setNumTicket(incidenceService.generatTicketNumber("REDIMED"));
-				
+				addIncidence.setNumTicket(incidenceService.generatTicketNumber(addIncidence.getSystem().getName()));
+				addIncidence.setPriority(priorityIncidenceService.findById(addIncidence.getPriorityId()));
+				addIncidence.setTypeIncidence(typeIncidenceService.findById(addIncidence.getTypeIncidenceId()));
+				addIncidence.setNumTicket(incidenceService.generatTicketNumber(addIncidence.getSystem().getName()));
 				incidenceService.save(addIncidence);
 				res.setData(addIncidence.getId().toString());
+				res.setStatus("success");
 				res.setMessage("Se creo correctamente el ticket!");
-			}else {
-				
+			} else {
+
 				res.setStatus("exception");
 				res.setMessage("Error al crear ticket comunicarse con los administradores!");
 			}
-	
+
 		} catch (Exception e) {
 			Sentry.capture(e, "incidence");
 			res.setStatus("exception");
@@ -270,6 +288,194 @@ public class IncidenceController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
+	}
+
+	@SuppressWarnings("null")
+	@RequestMapping(value = "/saveIncidence", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse saveTickets(HttpServletRequest request, @RequestBody Incidence addIncidence) {
+
+		JsonResponse res = new JsonResponse();
+		Priority priority = null;
+		Impact impact = null;
+		TypeChange typeChange = null;
+		ArrayList<MyError> errors = new ArrayList<MyError>();
+		List<Release_RFC> listRelease = new ArrayList<Release_RFC>();
+
+		try {
+			errors = validSections(addIncidence, errors);
+			Incidence incidenceMod =incidenceService.getIncidences(addIncidence.getId());
+			incidenceMod.setPriority(priorityIncidenceService.findById(addIncidence.getPriorityId()));
+			incidenceMod.setTypeIncidence(typeIncidenceService.findById(addIncidence.getTypeIncidenceId()));
+			incidenceMod.setNote(addIncidence.getNote());
+			incidenceMod.setDetail(addIncidence.getDetail());
+			incidenceMod.setTitle(addIncidence.getTitle());
+			incidenceMod.setResult(addIncidence.getResult());
+			incidenceMod.setSenders(addIncidence.getSenders());
+			incidenceMod.setMessage(addIncidence.getMessage());
+			/*
+			if (addRFC.getImpactId() != 0) {
+				impact = impactService.findById(addRFC.getImpactId());
+				addRFC.setImpact(impact);
+			}
+
+			if (addRFC.getPriorityId() != 0) {
+				priority = priorityService.findById(addRFC.getPriorityId());
+				addRFC.setPriority(priority);
+			}
+			if (addRFC.getTypeChangeId() != null) {
+				typeChange = typeChangeService.findById(addRFC.getTypeChangeId());
+				addRFC.setTypeChange(typeChange);
+
+			}
+			*/
+			incidenceService.update(incidenceMod);
+			res.setStatus("success");
+			if (errors.size() > 0) {
+				// Se adjunta lista de errores
+				res.setStatus("fail");
+				res.setErrors(errors);
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "rfc");
+			res.setStatus("exception");
+			res.setException("Error al guardar el rfc: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/updateIncidence/{incidenceId}", method = RequestMethod.GET)
+	public String updateRFC(@PathVariable String incidenceId, HttpServletRequest request, Locale locale, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			Incidence incidence = null;
+
+			if (CommonUtils.isNumeric(incidenceId)) {
+				incidence = incidenceService.getIncidences((long) Integer.parseInt(incidenceId));
+			}
+			// Si el release no existe se regresa al inicio.
+			if (incidence == null) {
+				return "redirect:/homeIncidence";
+			}
+			// Verificar si existe un flujo para el sistema
+
+			StatusIncidence status = statusService.findByKey("name", "Solicitado");
+
+//			if (node != null)
+			
+//				release.setNode(node);
+
+			incidence.setStatus(status);
+			incidence.setMotive(status.getReason());
+			incidence.setRequestDate((CommonUtils.getSystemTimestamp()));
+			
+			incidence.setOperator(getUserLogin().getFullName());
+			
+			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
+				if (incidence.getTypeIncidence().getEmailTemplate() != null) {
+					EmailTemplate email = incidence.getTypeIncidence().getEmailTemplate();
+					Incidence incidenceEmail = incidence;
+					incidenceEmail.setEmail(getUserLogin().getEmail());
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailIncidence(incidenceEmail, email);
+						} catch (Exception e) {
+							Sentry.capture(e, "incidence");
+						}
+
+					});
+					newThread.start();
+				}
+			}
+			/*
+			 * // si tiene un nodo y ademas tiene actor se notifica por correo if (node !=
+			 * null && node.getActors().size() > 0) { Integer idTemplate =
+			 * Integer.parseInt(paramService.findByCode(22).getParamValue()); EmailTemplate
+			 * emailActor = emailService.findById(idTemplate); WFRelease releaseEmail = new
+			 * WFRelease(); releaseEmail.convertReleaseToWFRelease(release); Thread
+			 * newThread = new Thread(() -> { try { emailService.sendMailActor(releaseEmail,
+			 * emailActor); } catch (Exception e) { Sentry.capture(e, "release"); }
+			 * 
+			 * });
+			 * 
+			 * newThread.start(); }
+			 */
+
+			incidenceService.update(incidence);
+			return "redirect:/incidence/summaryIncidence-" + incidence.getId();
+		} catch (Exception e) {
+			Sentry.capture(e, "incidence");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+
+		return "redirect:/homeIncidence";
+	}
+	private ArrayList<MyError> validSections(Incidence addIncidence, ArrayList<MyError> errors) {
+		
+		if (addIncidence.getPriorityId() == null) {
+			errors.add(new MyError("pId", "Valor requerido."));
+		} else {
+			if (addIncidence.getPriorityId() == 0)
+				errors.add(new MyError("pId", "Valor requerido."));
+		}
+		
+		if (addIncidence.getTypeIncidenceId() == null) {
+			errors.add(new MyError("tId", "Valor requerido."));
+		} else {
+			if (addIncidence.getTypeIncidenceId() == 0)
+				errors.add(new MyError("tId", "Valor requerido."));
+		}
+
+		if (addIncidence.getTitle().trim().equals(""))
+			errors.add(new MyError("title", "Valor requerido."));
+
+		if (addIncidence.getDetail().trim().equals(""))
+			errors.add(new MyError("detail", "Valor requerido."));
+
+		if (addIncidence.getResult().trim().equals(""))
+			errors.add(new MyError("result", "Valor requerido."));
+
+		if (addIncidence.getNote().trim().equals(""))
+			errors.add(new MyError("note", "Valor requerido."));
+
+		if (addIncidence.getSenders() != null) {
+			if (addIncidence.getSenders().length() > 256) {
+				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+			} else {
+				MyError error = getErrorSenders(addIncidence.getSenders());
+				if (error != null) {
+					errors.add(error);
+				}
+			}
+		}
+		if (addIncidence.getMessage() != null) {
+			if (addIncidence.getMessage().length() > 256) {
+				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+			}
+		}
+
+		return errors;
+	}
+
+	public MyError getErrorSenders(String senders) {
+
+		String[] listSenders = senders.split(",");
+		String to_invalid = "";
+		for (int i = 0; i < listSenders.length; i++) {
+			if (!CommonUtils.isValidEmailAddress(listSenders[i])) {
+				if (to_invalid.equals("")) {
+					to_invalid += listSenders[i];
+				} else {
+					to_invalid += "," + listSenders[i];
+				}
+
+			}
+		}
+		if (!to_invalid.equals("")) {
+			return new MyError("senders", "dirección(es) inválida(s) " + to_invalid);
+		}
+		return null;
 	}
 
 	public List<String> getCC(String ccs) {

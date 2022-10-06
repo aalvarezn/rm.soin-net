@@ -59,6 +59,8 @@ $(function() {
 	
 	initIncidenceTable();
 	initIncidenceFormValidation();
+	dropDownChange();
+	resetDrops();
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -146,7 +148,7 @@ function initIncidenceTable() {
 					}, {
 						"mRender" : function(data, type, row, meta) {
 							if(row.priority)
-								return row.priority.name;
+								return row.priority.priority.name;
 							else
 								return 'Sin prioridad asignada';
 						},
@@ -304,6 +306,8 @@ function createIncidence() {
 				timeout : 60000,
 				data : JSON.stringify({
 					typeIncidenceId : $fmIncidence.find('#tId').val(),
+					priorityId : $fmIncidence.find('#pId').val(),
+					systemId : $fmIncidence.find('#sId').val(),
 					title : $fmIncidence.find('#title').val()
 				}),
 				success : function(response) {
@@ -333,6 +337,12 @@ function initIncidenceFormValidation() {
 			'tId':{
 				required : true
 			},
+			'sId':{
+				required : true
+			},
+			'pId':{
+				required : true
+			},
 			'title':{
 				required :true
 			}
@@ -341,6 +351,12 @@ function initIncidenceFormValidation() {
 		messages : {
 			
 			'tId' : {
+				required : "Ingrese un valor"
+			},
+			'sId' : {
+				required : "Ingrese un valor"
+			},
+			'pId' : {
 				required : "Ingrese un valor"
 			},
 			'title' : {
@@ -400,18 +416,82 @@ function getColorNode(status){
 	break;
 	}
 }
-
+function dropDownChange(){
+	console.log("AWDAW");
+	$('#sId').on('change', function(){
+		var sId =$fmIncidence.find('#sId').val();
+		console.log("awdaw");
+		if(sId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemPriority/getPriority/"+sId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].priority.name + '</option>';
+					}
+					$('#pId').html(s);
+					$('#pId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#pId').selectpicker('refresh');
+				}else{
+					resetDropPriority();
+				}
+				
+				
+			}
+		});
+		
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemTypeIn/getypeIncidence/"+sId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].typeIncidence.code + '</option>';
+					}
+					$('#tId').html(s);
+					$('#tId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#tId').selectpicker('refresh');
+				}else{
+					resetDropType();
+				}
+				
+				
+			}
+		});
+		}else{
+			resetDrop();
+		}
+		
+	});
+}
 function resetDrops(){
 	$fmIncidence.find('#sId').selectpicker('val',  "");
-	resetDrop();
+	resetDropPriority();
 }	
-function resetDrop(){
+function resetDropPriority(){
 	var s = '';
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
-	$('#sigesId').html(s);
-	$('#sigesId').prop('disabled',true);
+	$('#pId').html(s);
+	$('#pId').prop('disabled',true);
 	$('#createRFC').prop('disabled',true);
-	$('#sigesId').selectpicker('refresh');
+	$('#pId').selectpicker('refresh');
+	
+}
+
+function resetDropType(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#tId').html(s);
+	$('#tId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#tId').selectpicker('refresh');
 	
 }
 

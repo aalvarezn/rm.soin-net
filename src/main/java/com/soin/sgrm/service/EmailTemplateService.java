@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.soin.sgrm.dao.BaseDao;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.RequestBase;
@@ -44,5 +45,7 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	
 
 	void sendMailNotify(WFRelease releaseEmail, EmailTemplate email,String user);
+
+	void sendMailIncidence(Incidence incidenceEmail, EmailTemplate email) throws Exception;
 
 }

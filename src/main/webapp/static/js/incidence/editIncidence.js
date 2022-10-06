@@ -11,7 +11,7 @@ var nodes = [];
 var edges = [];
 $(function() {
 
-	activeItemMenu("RFCItem");
+	activeItemMenu("incidenceItem");
 	 $('#systemId').selectpicker('val',$('#systemInfoId').val());
 	initTable();
 	initTableAdd();
@@ -222,31 +222,21 @@ function sendPartialRFC() {
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "rfc/saveRFC",
+		url : getCont() + "incidence/saveIncidence",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
 			id : $rfcEditForm.find('#rfcId').val(),
-			codeProyect : $rfcEditForm.find('#rfcCode').val(),
-			impactId : $rfcEditForm.find('#impactId').children(
-			"option:selected").val(),
-			priorityId : $rfcEditForm.find('#priorityId').children("option:selected")
+			title : $rfcEditForm.find('#title').val(),
+			priorityId : $rfcEditForm.find('#pId').children("option:selected")
 			.val(),
-			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
+			typeIncidenceId : $rfcEditForm.find('#tId').children(
 			"option:selected").val(),
-			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),	
-			schemaDB:valueSchema,
-			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
-			reasonChange : $rfcEditForm.find('#rfcReason').val(),
-			effect : $rfcEditForm.find('#rfcEffect').val(),
-			releasesList: JSON.stringify($dataRelease),
-			detail:$rfcEditForm.find('#detailRFC').val(),
-			evidence:$rfcEditForm.find('#evidenceRFC').val(),
-			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
-			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
+			detail: $rfcEditForm.find('#detail').val(),
+			result : $rfcEditForm.find('#result').val(),
+			note: $rfcEditForm.find('#note').val(),	
 			senders:$rfcEditForm.find('#senders').val(),
 			message:$rfcEditForm.find('#messagePer').val(),
 		}),
@@ -989,30 +979,27 @@ function sendRFC() {
 	var form = "#generateReleaseForm";
 	changeSaveButton(true);
 	changeSaveButton(true);
-	var valueSchema="";
-	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('#bd').val('');
-	}else{
-		valueSchema=$('#bd').val();
-	}
+
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "rfc/saveRFC",
+		url : getCont() + "incidence/saveIncidence",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $incidenceEditForm.find('#incidenceId').val(),
-			numTicket : $incidenceEditForm.find('#numTicket').val(),
-			title : $incidenceEditForm.find('#title').val(),
-			typeId : $incidenceEditForm.find('#typeId').children("option:selected").val(),
-			priorityId :$incidenceEditForm.find('#priorityId').children("option:selected")
+			id : $rfcEditForm.find('#rfcId').val(),
+			title : $rfcEditForm.find('#title').val(),
+			priorityId : $rfcEditForm.find('#pId').children("option:selected")
 			.val(),
-			detail :$incidenceEditForm.find('#detail').val(),
-			result: $incidenceEditForm.find('#result').val(),
-			notes : $incidenceEditForm.find('#notes').val(),
+			typeIncidenceId : $rfcEditForm.find('#tId').children(
+			"option:selected").val(),
+			detail: $rfcEditForm.find('#detail').val(),
+			result : $rfcEditForm.find('#result').val(),
+			note: $rfcEditForm.find('#note').val(),	
+			senders:$rfcEditForm.find('#senders').val(),
+			message:$rfcEditForm.find('#messagePer').val(),
 		}),
 		success : function(response) {
 			responseAjaxSendRFC(response);
@@ -1040,15 +1027,17 @@ function requestIncidence() {
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
-			id : $incidenceEditForm.find('#incidenceId').val(),
-			numTicket : $incidenceEditForm.find('#numTicket').val(),
-			title : $incidenceEditForm.find('#title').val(),
-			typeId : $incidenceEditForm.find('#typeId').children("option:selected").val(),
-			priorityId :$incidenceEditForm.find('#priorityId').children("option:selected")
+			id : $rfcEditForm.find('#rfcId').val(),
+			title : $rfcEditForm.find('#title').val(),
+			priorityId : $rfcEditForm.find('#pId').children("option:selected")
 			.val(),
-			detail :$incidenceEditForm.find('#detail').val(),
-			result: $incidenceEditForm.find('#result').val(),
-			notes : $incidenceEditForm.find('#notes').val(),
+			typeIncidenceId : $rfcEditForm.find('#tId').children(
+			"option:selected").val(),
+			detail: $rfcEditForm.find('#detail').val(),
+			result : $rfcEditForm.find('#result').val(),
+			note: $rfcEditForm.find('#note').val(),	
+			senders:$rfcEditForm.find('#senders').val(),
+			message:$rfcEditForm.find('#messagePer').val(),
 		}),
 		success : function(response) {
 			responseAjaxRequestRFC(response);
@@ -1070,7 +1059,7 @@ function responseAjaxRequestRFC(response) {
 		case 'success':
 			resetErrors();
 			reloadPreview();
-			window.location = getCont() + "rfc/updateRFC/"
+			window.location = getCont() + "incidence/updateIncidence/"
 			+  $rfcEditForm.find('#rfcId').val();
 			break;
 		case 'fail':

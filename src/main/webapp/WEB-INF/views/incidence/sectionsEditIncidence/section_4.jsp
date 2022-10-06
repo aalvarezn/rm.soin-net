@@ -37,7 +37,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${rfc.files}" var="fileRFC">
+					<c:forEach items="${incidence.files}" var="fileRFC">
 						<tr id="${fileRFC.id}">
 							<td>${fileRFC.name}</td>
 							<td><fmt:formatDate value="${fileRFC.revisionDate}"

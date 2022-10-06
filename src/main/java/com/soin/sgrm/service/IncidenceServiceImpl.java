@@ -254,8 +254,8 @@ public class IncidenceServiceImpl implements IncidenceService {
 
 		columns.put("createFor", Restrictions.like("createFor",email,MatchMode.ANYWHERE));
 		if (typeId != null) {
-
-			columns.put("typeIncidence", Restrictions.eq("typeIncidence.id", typeId));
+			alias.put("typeIncidence.typeIncidence", "typeIncidenceSis");
+			columns.put("typeIncidenceSis", Restrictions.eq("typeIncidenceSis.id", typeId));
 		} 
 
 		if (statusId != null) {
@@ -264,10 +264,12 @@ public class IncidenceServiceImpl implements IncidenceService {
 		}
 
 		if (priorityId != null) {
-			columns.put("priority", Restrictions.eq("priority.id", priorityId));
-			
-
+			alias.put("priority.priority", "prioritySis");
+			columns.put("prioritySis", Restrictions.eq("prioritySis.id", priorityId));
+		
 		} 
+		
+		
 
 		List<String> fetchs = new ArrayList<String>();
 		/*fetchs.add("releases");

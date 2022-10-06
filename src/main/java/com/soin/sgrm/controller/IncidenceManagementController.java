@@ -218,7 +218,7 @@ public class IncidenceManagementController extends BaseController {
 			model.addAttribute("senders", incidenceEdit.getSenders());
 			model.addAttribute("message", incidenceEdit.getMessage());
 			if(incidenceEdit.getTypeIncidence()!=null) {
-			model.addAttribute("ccs", getCC(incidenceEdit.getTypeIncidence().getEmailTemplate().getCc()));
+			//model.addAttribute("ccs", getCC(incidenceEdit.getTypeIncidence().getEmailTemplate().getCc()));
 			}
    			return "/incidence/editIncidence";
 

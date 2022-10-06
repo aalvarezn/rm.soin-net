@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.PriorityIncidence;
 import com.soin.sgrm.model.SystemTypeIncidence;
 import com.soin.sgrm.model.System_Priority;
 import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.PriorityIncidenceService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.SystemTypeIncidenceService;
@@ -45,12 +47,16 @@ public class SystemTypeIncidenceController extends BaseController {
 
 	@Autowired
 	TypeIncidenceService typeIncidenceService;
+	
+	@Autowired
+	EmailTemplateService emailTemplateService;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		Integer idUser = getUserLogin().getId();
 		List<com.soin.sgrm.model.System> systems = systemService.findByManagerIncidence(idUser);
-
+		List<EmailTemplate> emailTemplates =emailTemplateService.listAll();
+		model.addAttribute("emailTemplates", emailTemplates);
 		model.addAttribute("systems", systems);
 		return "/systemTypeIncidence/systemTypeIncidence";
 	}
@@ -78,6 +84,8 @@ public class SystemTypeIncidenceController extends BaseController {
 			res.setStatus("success");
 			addSystemType.setSystem(systemService.findSystemById(addSystemType.getSystemId()));
 			addSystemType.setTypeIncidence(typeIncidenceService.findById(addSystemType.getTypeIncidenceId()));
+			EmailTemplate emailTemplate=emailTemplateService.findById(addSystemType.getEmailId());
+			addSystemType.setEmailTemplate(emailTemplate);
 			systemTypeService.save(addSystemType);
 			res.setMessage("Tipo de ticket agregada al sistema!");
 			}else {
@@ -105,10 +113,14 @@ public class SystemTypeIncidenceController extends BaseController {
 			res.setStatus("success");
 			uptSystemTypeIncidence.setSystem(systemService.findSystemById(uptSystemTypeIncidence.getSystemId()));
 			uptSystemTypeIncidence.setTypeIncidence(typeIncidenceService.findById(uptSystemTypeIncidence.getTypeIncidenceId()));
+			EmailTemplate emailTemplate=emailTemplateService.findById(uptSystemTypeIncidence.getEmailId());
+			uptSystemTypeIncidence.setEmailTemplate(emailTemplate);
 			systemTypeService.update(uptSystemTypeIncidence);
 			res.setMessage("Tipo de ticket modificado!");
 			}else if(systemTypeIncidence.getId()==uptSystemTypeIncidence.getId()) {
 				res.setStatus("success");
+				EmailTemplate emailTemplate=emailTemplateService.findById(uptSystemTypeIncidence.getEmailId());
+				uptSystemTypeIncidence.setEmailTemplate(emailTemplate);
 				uptSystemTypeIncidence.setSystem(systemService.findSystemById(uptSystemTypeIncidence.getSystemId()));
 				uptSystemTypeIncidence.setTypeIncidence(typeIncidenceService.findById(uptSystemTypeIncidence.getTypeIncidenceId()));
 				systemTypeService.update(uptSystemTypeIncidence);
@@ -173,5 +185,22 @@ public class SystemTypeIncidenceController extends BaseController {
 		}
 
 		return listTypeIncidence;
+	}
+	
+	@RequestMapping(value = { "/getypeIncidence/{id}" }, method = RequestMethod.GET)
+	public @ResponseBody List<SystemTypeIncidence> getType(@PathVariable Integer id, Locale locale, Model model) {
+	
+		List<SystemTypeIncidence> listSystemType = null;
+
+		try {
+			 listSystemType = systemTypeService.findBySystem(id);
+			
+		} catch (Exception e) {
+			Sentry.capture(e, "systemIncidence");
+
+			e.printStackTrace();
+		}
+
+		return listSystemType;
 	}
 }

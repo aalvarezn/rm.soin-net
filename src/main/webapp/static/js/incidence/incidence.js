@@ -1,7 +1,7 @@
 /** Declaración de variables globales del contexto * */
 var $dtRFCs;
 
-var $fmRFC = $('#formAddRFC');
+var $fmRFC = $('#fmIncidence');
 var $formChangeUser = $('#changeUserForm');
 var $trackingRFCForm = $('#trackingRFCForm');
 
@@ -354,38 +354,7 @@ function initRFCFormValidation() {
 		errorPlacement
 	});
 }
-function dropDownChange(){
 
-	$('#sId').on('change', function(){
-		var sId =$fmRFC.find('#sId').val();
-		if(sId!=""){
-		$.ajax({
-			type: 'GET',
-			url: getCont() + "rfc/changeProject/"+sId,
-			success: function(result) {
-				if(result.length!=0){
-					var s = '';
-					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
-					for(var i = 0; i < result.length; i++) {
-						s += '<option value="' + result[i].codeSiges + '">' + result[i].codeSiges + '</option>';
-					}
-					$('#sigesId').html(s);
-					$('#sigesId').prop('disabled', false);
-					$('#createRFC').prop('disabled', false);
-					$('#sigesId').selectpicker('refresh');
-				}else{
-					resetDrop();
-				}
-				
-				
-			}
-		});
-		}else{
-			resetDrop();
-		}
-		
-	});
-}
 
 function openIncidenceTrackingModal(idIncidence) {
 
@@ -440,10 +409,10 @@ function resetDrops(){
 function resetDrop(){
 	var s = '';
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
-	$('#sigesId').html(s);
-	$('#sigesId').prop('disabled',true);
+	$('#pId').html(s);
+	$('#pId').prop('disabled',true);
 	$('#createRFC').prop('disabled',true);
-	$('#sigesId').selectpicker('refresh');
+	$('#pId').selectpicker('refresh');
 	
 }
 

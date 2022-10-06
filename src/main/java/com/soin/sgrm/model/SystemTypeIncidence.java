@@ -32,11 +32,18 @@ public class SystemTypeIncidence implements Serializable{
 	@JoinColumn(name = "SISTEMA_ID", nullable = true)
 	private System system;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "EMAIL_ID")
+	private EmailTemplate emailTemplate;
+	
 	@Transient
 	Integer systemId;
 
 	@Transient
 	Long typeIncidenceId;
+	
+	@Transient
+	Integer emailId;
 
 	public TypeIncidence getTypeIncidence() {
 		return typeIncidence;
@@ -76,6 +83,22 @@ public class SystemTypeIncidence implements Serializable{
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public EmailTemplate getEmailTemplate() {
+		return emailTemplate;
+	}
+
+	public void setEmailTemplate(EmailTemplate emailTemplate) {
+		this.emailTemplate = emailTemplate;
+	}
+
+	public Integer getEmailId() {
+		return emailId;
+	}
+
+	public void setEmailId(Integer emailId) {
+		this.emailId = emailId;
 	}
 	
 	

@@ -8,7 +8,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h4 class="modal-title col-blue-grey" id="largeModalLabel">Seguimiento
-					RFC</h4>
+					Ticket</h4>
 			</div>
 			<div class="modal-body">
 				<div class="row clearfix">
@@ -18,7 +18,7 @@
 							value="" />
 
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<label id="rfcNumber" class="col-cyan">Número RFC</label>
+							<label id="rfcNumber" class="col-cyan">Número Ticket</label>
 						</div>
 
 						<div

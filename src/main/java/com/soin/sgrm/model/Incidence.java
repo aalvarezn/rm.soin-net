@@ -79,7 +79,7 @@ public class Incidence implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_TIPO", nullable = false)
-	private TypeIncidence typeIncidence;
+	private SystemTypeIncidence typeIncidence;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ESTADO", nullable = false)
@@ -87,7 +87,11 @@ public class Incidence implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_PRIORIDAD", nullable = false)
-	private PriorityIncidence priority;
+	private System_Priority priority;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ID_SISTEMA", nullable = false)
+	private SystemInfo  system;
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -102,6 +106,13 @@ public class Incidence implements Serializable {
 	
 	@Transient
 	private Long typeIncidenceId;
+	@Transient
+	private Integer systemId;
+	@Transient
+	private Long priorityId;
+	
+	@Transient
+	private String email;
 	
 	public Long getId() {
 		return id;
@@ -185,12 +196,29 @@ public class Incidence implements Serializable {
 		this.user = user;
 	}
 
-	public TypeIncidence getTypeIncidence() {
+	
+	public SystemTypeIncidence getTypeIncidence() {
 		return typeIncidence;
 	}
 
-	public void setTypeIncidence(TypeIncidence typeIncidence) {
+	public void setTypeIncidence(SystemTypeIncidence typeIncidence) {
 		this.typeIncidence = typeIncidence;
+	}
+
+	public System_Priority getPriority() {
+		return priority;
+	}
+
+	public void setPriority(System_Priority priority) {
+		this.priority = priority;
+	}
+
+	public SystemInfo getSystem() {
+		return system;
+	}
+
+	public void setSystem(SystemInfo system) {
+		this.system = system;
 	}
 
 	public StatusIncidence getStatus() {
@@ -207,14 +235,6 @@ public class Incidence implements Serializable {
 
 	public void setCreateFor(String createFor) {
 		this.createFor = createFor;
-	}
-
-	public PriorityIncidence getPriority() {
-		return priority;
-	}
-
-	public void setPriority(PriorityIncidence priority) {
-		this.priority = priority;
 	}
 
 	public Set<IncidenceFile> getFiles() {
@@ -256,7 +276,30 @@ public class Incidence implements Serializable {
 	public void setTypeIncidenceId(Long typeIncidenceId) {
 		this.typeIncidenceId = typeIncidenceId;
 	}
-	
+
+	public Integer getSystemId() {
+		return systemId;
+	}
+
+	public void setSystemId(Integer systemId) {
+		this.systemId = systemId;
+	}
+
+	public Long getPriorityId() {
+		return priorityId;
+	}
+
+	public void setPriorityId(Long priorityId) {
+		this.priorityId = priorityId;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 	
 	
 }

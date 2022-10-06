@@ -219,6 +219,7 @@ function showPriorityIncidence(index){
 	 obj = $dtPriorityIncidence.row(index).data();
 	console.log(obj);
 	$fmPriorityIncidence.find('#sId').selectpicker('val',obj.system.id);
+	$fmPriorityIncidence.find('#eId').selectpicker('val',obj.emailTemplate.id);
 	var s = '';
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 	$('#typeIncidenceId').html(s);
@@ -262,7 +263,8 @@ function updatePriorityIncidence() {
 				data : JSON.stringify({
 					id : $fmPriorityIncidence.find('#id').val(),
 					systemId : $fmPriorityIncidence.find('#sId').val(),
-					typeIncidenceId:  $fmPriorityIncidence.find('#typeIncidenceId').val()
+					typeIncidenceId:  $fmPriorityIncidence.find('#typeIncidenceId').val(),
+					emailId:$fmPriorityIncidence.find('#eId').val()
 				}),
 				success : function(response) {
 					unblockUI();
@@ -299,8 +301,8 @@ function savePriorityIncidence() {
 				timeout : 60000,
 				data : JSON.stringify({
 					systemId : $fmPriorityIncidence.find('#sId').val(),
-					typeIncidenceId:  $fmPriorityIncidence.find('#typeIncidenceId').val()
-					
+					typeIncidenceId:  $fmPriorityIncidence.find('#typeIncidenceId').val(),
+					emailId:$fmPriorityIncidence.find('#eId').val()
 				}),
 				success : function(response) {
 					unblockUI();
@@ -352,6 +354,7 @@ function addPriorityIncidence(){
 	$fmPriorityIncidence.validate().resetForm();
 	$fmPriorityIncidence.find('#sId').selectpicker('val',  "");
 	$fmPriorityIncidence.find('#typeIncidenceId').selectpicker('val',  "");
+	$fmPriorityIncidence.find('#eId').selectpicker('val',"");
 	$('#typeIncidenceId').prop('disabled', true);
 	$('#typeIncidenceId').selectpicker('refresh');
 	$fmPriorityIncidence[0].reset();
@@ -373,11 +376,17 @@ function initPriorityIncidenceFormValidation() {
 			},
 			'typeIncidenceId' : {
 				required : true,
-			}
+			},
+			'eId': {
+				required : true,
+			},
 		},
 		messages : {
 
 			'sId' : {
+				required :  "Ingrese un valor",
+			},
+			'eId' : {
 				required :  "Ingrese un valor",
 			},
 			'typeIncidenceId' : {
