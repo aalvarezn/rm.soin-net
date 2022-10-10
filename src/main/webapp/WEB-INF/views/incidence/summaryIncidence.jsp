@@ -80,6 +80,13 @@
 				<div class="button-demo flr">
 					<a href="<c:url value='/homeIncidence'/> " class="btn btn-default">IR
 						A INICIO</a>
+							<input type="hidden" id="dateInitial"
+									value="${incidence.requestDate}">
+										<input type="hidden" id="dateFinal"
+									value="${incidence.exitOptimalDate }">
+										<input type="hidden" id="attetionTime"
+									value="	${incidence.timeMili}">
+								
 				</div>
 			</div>
 			<div class="block-header">
@@ -206,8 +213,8 @@
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
-								<p>
-									Se mostrara el tiempo transcurrido variando el color
+								<p id="timer" style="color:white; background-color:green;">
+									0:00
 								</p>
 							</div>
 						</div>
@@ -304,7 +311,7 @@
 	<%@include file="../plantilla/footer.jsp"%>
 
 	<script
-		src="<c:url value='/static/js/rfc/incidenceSummaryActions.js'/>"></script>
+		src="<c:url value='/static/js/incidence/incidenceSummaryActions.js'/>"></script>
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>

@@ -379,6 +379,8 @@ public class IncidenceController extends BaseController {
 			String[] time=incidence.getPriority().getTime().split(":");
 			int hours=Integer.parseInt(time[0]);
 			int minutes=Integer.parseInt(time[1]);
+			int mili=hours*3600+minutes*60;
+			incidence.setTimeMili(mili);
 			 Calendar calendar = Calendar.getInstance();
 			    calendar.setTime(incidence.getRequestDate());
 			    calendar.add(Calendar.HOUR, hours);

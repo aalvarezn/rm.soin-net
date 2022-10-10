@@ -33,8 +33,46 @@ $(function() {
 	$formChangeStatus.find('#statusId').change(function() {
 		$formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
+	
+	
+	setInterval(waitAndshow, 1000);
+	//createFaction();
 });
 
+function waitAndshow() {
+	var initialDate=Date.parse($('#dateInitial').val())/1000;
+	var finalDate=Date.parse($('#dateFinal').val())/1000
+	var	attentionTime=$('#attetionTime').val();
+	console.log(attentionTime);
+	var totalMinutes=(new Date().getTime()/1000-initialDate)/60;
+	var miliTrans=new Date().getTime()/1000-initialDate;
+	console.log(miliTrans);
+	const hours = Math.floor(totalMinutes / 60);
+	 const minutes = (totalMinutes % 60).toFixed(0);
+	 if(minutes<10){
+		 var timer=hours+":0"+minutes;
+	 }else{
+		 var timer=hours+":"+minutes;
+	 }
+	
+	 document.getElementById('timer').innerHTML = timer;
+	 
+	 if(miliTrans>attentionTime){
+		 var col= document.getElementById('timer').style.backgroundColor="#FF0000";
+	 }
+	 //
+	 
+}
+
+function createFaction() {
+    var timer = 0;
+    
+    while(true){
+    	
+    	 timer++;
+    }
+   
+}
 
 function confirmCancelRFC(index){
 	Swal.fire({

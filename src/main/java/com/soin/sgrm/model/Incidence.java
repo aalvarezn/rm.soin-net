@@ -77,6 +77,8 @@ public class Incidence implements Serializable {
 	@Column(name = "SALIDA_OPTIMA")
 	private Timestamp exitOptimalDate;
 	
+	@Column(name = "TIEMPO_MILI")
+	private Integer timeMili;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_USUARIO", nullable = false)
@@ -199,6 +201,14 @@ public class Incidence implements Serializable {
 
 	public void setExitOptimalDate(Timestamp exitOptimalDate) {
 		this.exitOptimalDate = exitOptimalDate;
+	}
+
+	public Integer getTimeMili() {
+		return timeMili;
+	}
+
+	public void setTimeMili(Integer timeMili) {
+		this.timeMili = timeMili;
 	}
 
 	public User getUser() {
