@@ -1,4 +1,5 @@
 var $formChangeStatus = $('#changeStatusForm');
+var $dtRFCs;
 $(function() {
 	$("#contentSummary textarea").parent().removeClass(
 	'focused');
@@ -160,4 +161,43 @@ function validStatusRelease() {
 		$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
 		return true;
 	}
+}
+
+function initTableObject() {
+	$dtObjects = $('#tableTest').DataTable(
+			{
+
+				lengthMenu : [ [ 10, 25, 50, -1 ],
+					[ '10', '25', '50', 'Mostrar todo' ] ],
+					"iDisplayLength" : 10,
+					"language" : optionLanguaje,
+					"iDisplayStart" : 0,
+					"processing" : true,
+					"serverSide" : true,
+					"sAjaxSource" : getCont() + "release/listObjects",
+					"fnServerParams" : function(aoData) {
+						aoData.push({"name": "releaseId", "value": $('#release_id').val()},
+						);
+					},
+					"aoColumns" : [
+						{
+							"mDataProp" : "objects.name",
+						},
+						{
+							"mRender" : function(data, type, row, meta) {
+								return moment(row.revision_Date).format('DD/MM/YYYY h:mm:ss a');
+							}
+						},
+						{
+							"mDataProp" : "objects.revision_SVN"
+						},
+						{
+							"mDataProp" : "objects.typeObject.name"
+						},
+						{
+							"mDataProp" : "objects.configurationItem.name"
+						}
+						 ],
+					ordering : false,
+			});
 }

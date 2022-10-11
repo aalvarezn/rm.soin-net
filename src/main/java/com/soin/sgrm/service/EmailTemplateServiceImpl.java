@@ -40,6 +40,13 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestRM_P1_R1;
+import com.soin.sgrm.model.RequestRM_P1_R2;
+import com.soin.sgrm.model.RequestRM_P1_R3;
+import com.soin.sgrm.model.RequestRM_P1_R4;
+import com.soin.sgrm.model.RequestRM_P1_R5;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.WFRelease;
@@ -59,7 +66,20 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Autowired
 	private Environment env;
-
+	
+	@Autowired
+	RequestRM_P1_R1Service requestServiceR1;
+	
+	@Autowired
+	RequestRM_P1_R2Service requestServiceR2;
+	@Autowired
+	RequestRM_P1_R3Service requestServiceR3;
+	
+	@Autowired
+	RequestRM_P1_R4Service requestServiceR4;
+	
+	@Autowired
+	RequestRM_P1_R5Service requestServiceR5;
 	@Autowired
 	private JavaMailSender mailSender;
 	
@@ -879,5 +899,423 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	public List<EmailTemplate> findAll() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void sendMailRequestR4(RequestBaseR1 requestEmail, EmailTemplate email) throws Exception {
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
+		email = fillEmail(email, requestEmail);
+		String body = email.getHtml();
+		body = Constant.getCharacterEmail(body);
+		MimeMultipart mmp = MimeMultipart(body);
+		mimeMessage.setContent(mmp);
+		mimeMessage.setSubject(email.getSubject());
+		mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
+		mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
+		for (String toUser : email.getTo().split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
+		}
+		String ccFinish="";
+		String cc="";
+		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
+			cc=email.getCc();
+			if(requestEmail.getSenders()==null) {
+				
+				ccFinish=email.getCc();
+				String[] split3=ccFinish.split(",");
+				boolean verify= ArrayUtils.contains(split3,requestEmail.getUser().getEmail());
+				if(!verify) {
+					ccFinish=cc+","+requestEmail.getUser().getEmail();
+				}
+			}else {
+				if(requestEmail.getSenders().trim().equals("")) {
+					ccFinish=email.getCc();
+					String[] split3=ccFinish.split(",");
+					boolean verify= ArrayUtils.contains(split3,requestEmail.getUser().getEmail());
+					if(!verify) {
+						ccFinish=cc+","+requestEmail.getUser().getEmail();
+					}
+				}else {
+					
+					String[] split=requestEmail.getSenders().split(",");
+					String[] splitCC=cc.split(",");
+					ccFinish=requestEmail.getSenders();
+					for(int x=0; splitCC.length>x;x++) {
+						boolean verify= ArrayUtils.contains(split,splitCC[x]);
+						if(!verify) {
+							ccFinish=ccFinish+","+splitCC[x];
+						}
+					}
+					String[] split3=ccFinish.split(",");
+					boolean verify= ArrayUtils.contains(split3,requestEmail.getUser().getEmail());
+					if(!verify) {
+						ccFinish=ccFinish+","+requestEmail.getUser().getEmail();
+					}
+				}
+			
+				
+			}
+		}else {
+			
+			if( requestEmail.getSenders()==null) {
+					ccFinish=requestEmail.getUser().getEmail();
+			}else {
+				if(requestEmail.getSenders().trim().equals("")) {
+					ccFinish=requestEmail.getUser().getEmail();
+				}else {
+				String[] split=requestEmail.getSenders().split(",");
+				ccFinish=requestEmail.getSenders();
+					boolean verify= ArrayUtils.contains(split,requestEmail.getUser().getEmail());
+					if(!verify) {
+						ccFinish=ccFinish+","+requestEmail.getUser().getEmail();
+					}
+				
+				}
+			}
+		}
+		
+	
+			for (String ccUser : ccFinish.split(",")) {
+				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			
+		}
+		
+
+		mailSender.send(mimeMessage);
+	}
+	
+	public EmailTemplate fillEmail(EmailTemplate email, RequestBaseR1 request) {
+		String temp = "";
+		
+		if(request.getTypePetition().getCode().equals("RM-P1-R4")) {
+		/* ------ body ------ */
+		if (email.getHtml().contains("{{userName}}")) {
+			email.setHtml(email.getHtml().replace("{{userName}}",
+					(request.getUser().getFullName() != null ? request.getUser().getFullName() : "")));
+		}
+
+		if (email.getHtml().contains("{{requestNumber}}")) {
+			email.setHtml(email.getHtml().replace("{{requestNumber}}",
+					(request.getNumRequest() != null ? request.getNumRequest() : "")));
+		}
+
+		if (email.getHtml().contains("{{projectCode}}")) {
+			String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+			projectCode = projectCode.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
+		}
+
+
+		if (email.getHtml().contains("{{requestDate}}")) {
+			String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
+			requestDate = requestDate.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+		}
+		if (email.getHtml().contains("{{message}}")) {
+			email.setHtml(email.getHtml().replace("{{message}}",
+					(request.getMessage() != null ? request.getMessage() : "NA")));
+		}
+
+		if (email.getHtml().contains("{{users}}")) {
+			temp = "<table border=1>";
+			temp+="<tr>"
+					+ "<th>Nombre</th>"
+					+ "<th>Correo</th>"
+					+"<th>Tipo</th>"
+					+"<th>Permisos</th>"
+					+"<th>Ambiente</th>"
+					+"<th>Espec</th>"
+					+ "</tr>";
+			List<RequestRM_P1_R4> users=requestServiceR4.listRequestRm4(request.getId());
+			for (RequestRM_P1_R4 user : users) {
+				temp+="<tr>";
+				
+				temp +="<td>"+ user.getName() + "</td>";
+				temp +="<td>"+ user.getEmail() + "</td>";
+				temp +="<td>"+ user.getType().getCode() + "</td>";
+				temp +="<td>"+ user.getPermissions() + "</td>";
+				temp +="<td>"+ user.getAmbient().getName() + "</td>";
+				temp +="<td>"+ user.getEspec() + "</td>";
+				
+				temp+="</tr>";
+			}
+			
+			
+			temp+="</table>";
+			email.setHtml(email.getHtml().replace("{{users}}", (temp.equals("") ? "Sin usuarios definidos" : temp)));
+		}
+
+
+	
+
+		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{requestNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{requestNumber}}",
+					(request.getNumRequest() != null ? request.getNumRequest() : "")));
+		}
+		if (email.getSubject().contains("{{projectCode}}")) {
+			String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+			projectCode = projectCode.replace("\n", "<br>");
+			email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+		}
+
+		if (email.getSubject().contains("{{systemMain}}")) {
+			temp = "";
+			Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+			temp+=codeSiges.getSystem().getName();
+			
+			email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+		}
+		return email;
+		}else if(request.getTypePetition().getCode().equals("RM-P1-R5")) {
+			RequestRM_P1_R5  requestRM5=requestServiceR5.requestRm5(request.getId());
+			/* ------ body ------ */
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}",
+						(request.getUser().getFullName() != null ? request.getUser().getFullName() : "")));
+			}
+
+			if (email.getHtml().contains("{{requestNumber}}")) {
+				email.setHtml(email.getHtml().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getHtml().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
+			}
+
+
+			if (email.getHtml().contains("{{requestDate}}")) {
+				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
+				requestDate = requestDate.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+			}
+			if (email.getHtml().contains("{{message}}")) {
+				email.setHtml(email.getHtml().replace("{{message}}",
+						(request.getMessage() != null ? request.getMessage() : "NA")));
+			}
+			if (email.getHtml().contains("{{justify}}")) {
+				email.setHtml(email.getHtml().replace("{{justify}}",
+						(requestRM5.getJustify() != null ? requestRM5.getJustify() : "NA")));
+			}
+			if (email.getHtml().contains("{{changeService}}")) {
+				email.setHtml(email.getHtml().replace("{{changeService}}",
+						(requestRM5.getChangeService() != null ? requestRM5.getChangeService() : "NA")));
+			}
+			if (email.getHtml().contains("{{typeChange}}")) {
+				email.setHtml(email.getHtml().replace("{{typeChange}}",
+						(requestRM5.getTypeChange() != null ? requestRM5.getTypeChange() : "NA")));
+			}	
+			if (email.getHtml().contains("{{ambient}}")) {
+				email.setHtml(email.getHtml().replace("{{ambient}}",
+						(requestRM5.getAmbient() != null ? requestRM5.getAmbient() : "NA")));
+			}
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{requestNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+
+		
+
+			if (email.getSubject().contains("{{systemMain}}")) {
+				temp = "";
+				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+				temp+=codeSiges.getSystem().getName();
+				
+				email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+			}
+		}else if(request.getTypePetition().getCode().equals("RM-P1-R2")) {
+			RequestRM_P1_R2  requestRM2=requestServiceR2.requestRm2(request.getId());
+			/* ------ body ------ */
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}",
+						(request.getUser().getFullName() != null ? request.getUser().getFullName() : "")));
+			}
+
+			if (email.getHtml().contains("{{requestNumber}}")) {
+				email.setHtml(email.getHtml().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getHtml().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
+			}
+
+
+			if (email.getHtml().contains("{{requestDate}}")) {
+				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
+				requestDate = requestDate.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+			}
+			if (email.getHtml().contains("{{message}}")) {
+				email.setHtml(email.getHtml().replace("{{message}}",
+						(request.getMessage() != null ? request.getMessage() : "NA")));
+			}
+			if (email.getHtml().contains("{{hierarchy}}")) {
+				email.setHtml(email.getHtml().replace("{{hierarchy}}",
+						(requestRM2.getHierarchy() != null ? requestRM2.getHierarchy() : "NA")));
+			}
+			if (email.getHtml().contains("{{typeService}}")) {
+				email.setHtml(email.getHtml().replace("{{typeService}}",
+						(requestRM2.getTypeService() != null ? requestRM2.getTypeService() : "NA")));
+			}
+			if (email.getHtml().contains("{{requeriments}}")) {
+				email.setHtml(email.getHtml().replace("{{requeriments}}",
+						(requestRM2.getRequeriments() != null ? requestRM2.getRequeriments() : "NA")));
+			}	
+			if (email.getHtml().contains("{{ambient}}")) {
+				email.setHtml(email.getHtml().replace("{{ambient}}",
+						(requestRM2.getAmbient() != null ? requestRM2.getAmbient() : "NA")));
+			}
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{requestNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+
+		
+
+			if (email.getSubject().contains("{{systemMain}}")) {
+				temp = "";
+				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+				temp+=codeSiges.getSystem().getName();
+				
+				email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+			}
+		}else if(request.getTypePetition().getCode().equals("RM-P1-R3")) {
+			RequestRM_P1_R3  requestRM3=requestServiceR3.requestRm3(request.getId());
+			/* ------ body ------ */
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}",
+						(request.getUser().getFullName() != null ? request.getUser().getFullName() : "")));
+			}
+
+			if (email.getHtml().contains("{{requestNumber}}")) {
+				email.setHtml(email.getHtml().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getHtml().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
+			}
+
+
+			if (email.getHtml().contains("{{requestDate}}")) {
+				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
+				requestDate = requestDate.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+			}
+			if (email.getHtml().contains("{{message}}")) {
+				email.setHtml(email.getHtml().replace("{{message}}",
+						(request.getMessage() != null ? request.getMessage() : "NA")));
+			}
+			if (email.getHtml().contains("{{usersRm}}")) {
+				email.setHtml(email.getHtml().replace("{{usersRm}}",
+						(requestRM3.getListNames()!= null ? requestRM3.getListNames() : "NA")));
+			}
+			if (email.getHtml().contains("{{method}}")) {
+				email.setHtml(email.getHtml().replace("{{method}}",
+						(requestRM3.getConnectionMethod() != null ? requestRM3.getConnectionMethod() : "NA")));
+			}
+
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{requestNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+			if (email.getSubject().contains("{{systemMain}}")) {
+				temp = "";
+				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+				temp+=codeSiges.getSystem().getName();
+				
+				email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+			}
+		}else if(request.getTypePetition().getCode().equals("RM-P1-R1")) {
+			RequestRM_P1_R1 requestRM1=requestServiceR1.requestRm1(request.getId());
+			/* ------ body ------ */
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}",
+						(request.getUser().getFullName() != null ? request.getUser().getFullName() : "")));
+			}
+
+			if (email.getHtml().contains("{{requestNumber}}")) {
+				email.setHtml(email.getHtml().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getHtml().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
+			}
+
+
+			if (email.getHtml().contains("{{requestDate}}")) {
+				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString(): "";
+				requestDate = requestDate.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+			}
+			if (email.getHtml().contains("{{message}}")) {
+				email.setHtml(email.getHtml().replace("{{message}}",
+						(request.getMessage() != null ? request.getMessage() : "NA")));
+			}
+			if (email.getHtml().contains("{{requeriments}}")) {
+				email.setHtml(email.getHtml().replace("{{requeriments}}",
+						(requestRM1.getInitialRequeriments()!= null ? requestRM1.getInitialRequeriments() : "NA")));
+			}
+			if (email.getHtml().contains("{{timeAnswer}}")) {
+				email.setHtml(email.getHtml().replace("{{timeAnswer}}",
+						(requestRM1.getTimeAnswer() != null ? requestRM1.getTimeAnswer() : "NA")));
+			}
+			if (email.getHtml().contains("{{observations}}")) {
+				email.setHtml(email.getHtml().replace("{{observations}}",
+						(requestRM1.getObservations() != null ? requestRM1.getObservations() : "NA")));
+			}
+
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{codeOpor}}")) {
+				email.setSubject(email.getSubject().replace("{{codeOpor}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+			
+		}
+
+		return email;
 	}
 }

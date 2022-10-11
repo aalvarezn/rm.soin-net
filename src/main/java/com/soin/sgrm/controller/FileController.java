@@ -47,6 +47,9 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseFile;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestBaseFile;
+import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.service.DocTemplateService;
@@ -55,6 +58,8 @@ import com.soin.sgrm.service.RFCFileService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseFileService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestBaseService;
+import com.soin.sgrm.service.RequestFileService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.SystemService;
@@ -91,9 +96,15 @@ public class FileController extends BaseController {
 	
 	@Autowired
 	RFCService rfcService;
+	
+	@Autowired
+	RequestBaseService requestBaseService;
 
 	@Autowired 
 	RFCFileService rfcFileService;
+	
+	@Autowired 
+	RequestFileService requestFileService;
 	
 	@Autowired
 	SigesService sigesService;
@@ -688,5 +699,143 @@ public class FileController extends BaseController {
 		}
 		return res;
 	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del request.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del request.
+	 * @throws SQLException
+	 **/
+	public String createPathRequest(Long id, String basePath) throws SQLException {
+		RequestBaseR1  requestBase;
+		try {
+			String path="";
+			requestBase = requestBaseService.findByR1(id);
+			if(!requestBase.getTypePetition().getCode().equals("RM-P1-R1")) {
+				RequestBase newRequestBase =requestBaseService.findById(id);
+				Siges siges = newRequestBase.getSiges();
+				SystemInfo system= siges.getSystem();
+				 path = system.getName() + "/" +siges.getCodeSiges()  + "/"+requestBase.getTypePetition().getCode()+"/";
+			}else {
+				SystemInfo system= requestBase.getSystemInfo();
+				path = system.getName() + "/"+requestBase.getTypePetition().getCode()+"/";
+			}
+			
+
+			path += requestBase.getNumRequest() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	
+	/**
+	 * @description: Adjunta el archivo al request.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	@RequestMapping(value = "/singleUploadRequest-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadRequest(@PathVariable Long id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		
+		
+		// valida que se selecciono un archivo
+		if (file.getName().equals("") || file.isEmpty()) {
+			json.setStatus("fail");
+			json.setException("Archivo no seleccionado");
+			return json;
+		}
+		
+		// Direccion del archivo a guardar
+		String basePath = env.getProperty("fileStore.path");
+		String path = createPathRequest(id, basePath);
+		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+		// Referencia del archivo
+		RequestBaseFile requestFile = new RequestBaseFile();
+		requestFile.setName(fileName);
+		requestFile.setPath(basePath + path + fileName);
+		long time = System.currentTimeMillis();
+		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+		requestFile.setRevisionDate(revisionDate);
+		try {
+			// Se carga el archivo y se guarda la referencia
+			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+			requestFileService.saveRequestFile(id, requestFile);
+			requestFile = requestFileService.findByKey("path", requestFile.getPath());
+			json.setStatus("success");
+			json.setObj(requestFile);
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
+			json.setStatus("exception");
+			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			json.setStatus("exception");
+			json.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			if (e instanceof MaxUploadSizeExceededException) {
+				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			}
+		}
+		return json;
+	}
+	
+	/**
+	 * @description: Descarga de un archivo particular del rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: archivo a descargar.
+	 **/
+	@RequestMapping(value = "/singleDownloadRequest-{id}", method = RequestMethod.GET)
+	public void downloadFileRequest(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+		RequestBaseFile requestFile = requestFileService.findById(id);
+		File file = new File(requestFile.getPath());
+
+		// Se modifica la respuesta para descargar el archivo
+		response.setContentType("text/plain");
+		response.setHeader("Content-Disposition", "attachment;filename=" + requestFile.getName());
+		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+		response.setContentLength((int) file.length());
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	/**
+	 * @description: borra un archivo adjuntado de un rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: response de la eliminacion.
+	 **/
+	@RequestMapping(value = "/deleteFileUploadRequest-{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteFileUploadRequest(@PathVariable Long id) {
+		JsonResponse res = new JsonResponse();
+		res.setStatus("success");
+		try {
+			RequestBaseFile requestFile = requestFileService.findById(id);
+			requestFileService.deleteRequest(requestFile);
+			File file = new File(requestFile.getPath());
+			if (file.exists()) {
+				file.delete();
+			}
+			res.setData(requestFile.getId() + "");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
 
 }

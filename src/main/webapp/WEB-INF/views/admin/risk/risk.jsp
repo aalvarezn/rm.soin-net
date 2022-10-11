@@ -98,7 +98,7 @@
 							<thead>
 								<tr>
 									<th>Nombre</th>
-									<th>Descripci�n</th>
+									<th>Descripción</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>

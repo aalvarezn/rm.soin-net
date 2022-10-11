@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -39,6 +40,7 @@ import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.service.ParameterService;
@@ -103,6 +105,8 @@ public class RFCController extends BaseController {
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
 	
+	@Autowired
+	EmailReadService emailReadService;
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -377,6 +381,9 @@ public class RFCController extends BaseController {
 			model.addAttribute("typeChange", typeChangeService.findAll());
 			model.addAttribute("priorities", priorityService.list());
 			model.addAttribute("rfc", rfcEdit);
+			model.addAttribute("senders", rfcEdit.getSenders());
+			model.addAttribute("message", rfcEdit.getMessage());
+			model.addAttribute("ccs", getCC(rfcEdit.getSiges().getEmailTemplate().getCc()));
 
 			return "/rfc/editRFC";
 
@@ -565,7 +572,7 @@ public class RFCController extends BaseController {
 			}
 			// Si el release no existe se regresa al inicio.
 			if (rfc == null) {
-				return "redirect:/";
+				return "redirect:/homeRFC";
 			}
 			// Verificar si existe un flujo para el sistema
 
@@ -667,9 +674,45 @@ public class RFCController extends BaseController {
 
 		if (rfc.getRequestEsp().equals(""))
 			errors.add(new MyError("requestEspRFC", "Valor requerido."));
+		
+		if (rfc.getSenders() != null) {
+			if (rfc.getSenders().length() > 256) {
+				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+			}else {
+				MyError error=getErrorSenders(rfc.getSenders());
+				if(error!=null) {
+					errors.add(error);
+				}
+			}
+		}
+		if (rfc.getMessage() != null) {
+			if (rfc.getMessage().length() > 256) {
+				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+			}
+		}
+		
 		return errors;
 	}
-
+	public MyError getErrorSenders(String senders) {
+		
+		String[] listSenders = senders.split(",");
+		String to_invalid="";
+		for (int i = 0; i < listSenders.length; i++) {
+			if (!CommonUtils.isValidEmailAddress(listSenders[i])) {
+				if(to_invalid.equals("")) {
+					to_invalid +=listSenders[i];
+				}else {
+					to_invalid +=","+listSenders[i];
+				}
+				
+			}
+		}
+		if (!to_invalid.equals("")) {
+			return new MyError("senders", "dirección(es) inválida(s) " + to_invalid);	
+		}
+		return null;
+	}
+	
 	@RequestMapping(value = "/deleteRFC/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteRFC(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
@@ -729,4 +772,29 @@ public class RFCController extends BaseController {
 		return res;
 	}
 	
+
+	public List<String> getCC(String ccs) {
+		
+		List<String> getCC = new ArrayList<String>();
+		if(ccs!=null) {
+			ccs.split(",");
+			for (String cc : ccs.split(",")) {
+				getCC.add(cc);
+				}
+		}
+		return getCC;
+	}
+	
+	@RequestMapping(value = "/readEmail", method = RequestMethod.GET)
+	public String readEmails(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			emailReadService.emailRead();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "se leyo correctamente";
+
+	}
 }

@@ -74,7 +74,7 @@ public class EmailController extends BaseController {
 			String[] ccAddress = email.getCc().split(",");
 			for (int i = 0; i < ccAddress.length; i++) {
 				if (!CommonUtils.isValidEmailAddress(ccAddress[i])) {
-					cc_invalid += ((i + 1) == ccAddress.length) ? (ccAddress[i]) : (ccAddress[i] + ",");
+					cc_invalid += ( cc_invalid.equals("")) ? (ccAddress[i]) : (","+ccAddress[i] );
 				}
 			}
 			if (!cc_invalid.equals("")) {
@@ -86,7 +86,7 @@ public class EmailController extends BaseController {
 			String[] toAddress = email.getTo().split(",");
 			for (int i = 0; i < toAddress.length; i++) {
 				if (!CommonUtils.isValidEmailAddress(toAddress[i])) {
-					to_invalid += ((i + 1) == toAddress.length) ? (toAddress[i]) : (toAddress[i] + ",");
+					to_invalid += (to_invalid.equals("")) ? (toAddress[i]) : (","+toAddress[i] );
 				}
 			}
 			if (!to_invalid.equals("")) {
@@ -184,7 +184,7 @@ public class EmailController extends BaseController {
 			String[] ccAddress = email.getCc().split(",");
 			for (int i = 0; i < ccAddress.length; i++) {
 				if (!CommonUtils.isValidEmailAddress(ccAddress[i])) {
-					cc_invalid += ((i + 1) == ccAddress.length) ? (ccAddress[i]) : (ccAddress[i] + ",");
+					cc_invalid += ( cc_invalid.equals("")) ? (ccAddress[i]) : (","+ccAddress[i] );
 				}
 			}
 			if (!cc_invalid.equals("")) {
@@ -196,7 +196,7 @@ public class EmailController extends BaseController {
 			String[] toAddress = email.getTo().split(",");
 			for (int i = 0; i < toAddress.length; i++) {
 				if (!CommonUtils.isValidEmailAddress(toAddress[i])) {
-					to_invalid += ((i + 1) == toAddress.length) ? (toAddress[i]) : (toAddress[i] + ",");
+					to_invalid += (to_invalid.equals("")) ? (toAddress[i]) : (","+toAddress[i] );
 				}
 			}
 			if (!to_invalid.equals("")) {

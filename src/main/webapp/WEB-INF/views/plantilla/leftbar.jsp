@@ -18,7 +18,7 @@
 		<ul class="list">
 			<c:forEach items="${userInfo.authorities}" var="authority">
 				<c:if test="${authority.name == 'Admin'}">
-					<li><a id="adminItem" href="<c:url value='/admin/'/> "> <span>Administraci髇</span>
+					<li><a id="adminItem" href="<c:url value='/admin/'/> "> <span>Administraci贸n</span>
 					</a></li>
 				</c:if>
 			</c:forEach>
@@ -26,23 +26,28 @@
 			<c:forEach items="${userInfo.authorities}" var="authority">
 				<c:if test="${authority.name == 'Release Manager'}">
 					<li><a id="managemetReleaseItem"
-						href="<c:url value='/management/release/'/> "> <span>Gesti髇
+						href="<c:url value='/management/release/'/> "> <span>Gesti贸n
 								Release</span>
 					</a></li>
 					<li><a id="managerRFCItem"
-					href="<c:url value='/management/rfc/'/> "> <span>Gesti髇
+					href="<c:url value='/management/rfc/'/> "> <span>Gesti贸n
 							RFC</span>
 				</a></li>
 					<li><a id="managemetWorkFlowItem"
-						href="<c:url value='/management/wf/'/> "> <span>Gesti髇
-								Tr醡ites</span>
+						href="<c:url value='/management/wf/'/> "> <span>Gesti贸n
+								Tr谩mites</span>
 					</a></li>
+
 				<li class=""><a id="errorItem" href="javascript:void(0);"
 					class="menu-toggle"> <span>Gestion Salidas</span>
 				</a>
 					<ul class="ml-menu">
 						<li><a href="<c:url value='/management/error/'/>">Releases</a></li>
 					</ul></li>
+					<li><a id="managerRequestItem"
+						href="<c:url value='/management/request/'/> "> <span>Gesti贸n
+								Solicitudes</span>
+					</a></li>
 				</c:if>
 				<c:if
 					test="${authority.name == 'Gestores' or authority.name == 'Desarrolladores'}">
@@ -54,10 +59,18 @@
 				<c:if test="${authority.name == 'QA'}">
 					<c:set var="qaAccess" value="true"></c:set>
 				</c:if>
+					<c:if test="${authority.name == 'Gestor Solicitudes'}">
+					<c:set var="managerRequestAccess" value="true"></c:set>
+				</c:if>
 			</c:forEach>
 			<c:if test="${qaAccess}">
 				<li><a id="releasesQAItem" href="<c:url value='/release/qa'/> ">
-						<span>Gesti髇 QA</span>
+						<span>Gesti贸n QA</span>
+				</a></li>
+			</c:if>
+				<c:if test="${managerAccess}">
+				<li><a id="requestItem" href="<c:url value='/request/'/> ">
+						<span>Mis Solicitudes</span>
 				</a></li>
 			</c:if>
 			<c:if test="${releaseAccess}">
@@ -79,7 +92,7 @@
 					
 				<li><a id="managerWorkFlowItem"
 					href="<c:url value='/manager/wf/'/> "> <span>Mis
-							Tr醡ites</span>
+							Tr谩mites</span>
 				</a></li>
 			</c:if>
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">

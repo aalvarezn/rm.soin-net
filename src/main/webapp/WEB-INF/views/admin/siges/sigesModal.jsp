@@ -39,7 +39,7 @@
 								</select>
 							</div>
 						</div>
-								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<label for="description">Plantilla Correo</label>
 							<div class="form-group m-t-12">
 								<select id="sEmailId" name="sEmailId" required="required"
