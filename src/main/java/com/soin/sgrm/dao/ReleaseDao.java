@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
@@ -69,5 +70,7 @@ public interface ReleaseDao {
 	void updateStatusReleaseRFC(Release_RFC release,String operator);
 
 	Releases_WithoutObj findReleaseWithouObj(Integer id);
+
+	void insertReleaseError(ReleaseError release) throws Exception;
 
 }

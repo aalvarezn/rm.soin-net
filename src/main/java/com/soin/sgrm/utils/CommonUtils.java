@@ -1,6 +1,8 @@
 package com.soin.sgrm.utils;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -107,4 +109,17 @@ public class CommonUtils {
 		return a.equals(b);
 	}
 
+	public static Timestamp convertStringToTimestamp(String str_date, String format) {
+        if (str_date == null || str_date.length() == 0)
+            return null;
+        try {
+            DateFormat formatter = new SimpleDateFormat(format);
+            // you can change format of date
+            Date date = formatter.parse(str_date);
+            java.sql.Timestamp timeStampDate = new Timestamp(date.getTime());
+            return timeStampDate;
+        } catch (ParseException e) {
+            return null;
+        }
+    }
 }

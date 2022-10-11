@@ -1,6 +1,12 @@
 package com.soin.sgrm.controller;
 
+import java.awt.print.Printable;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -47,13 +53,13 @@ public class ReleaseManagementController extends BaseController {
 	private ReleaseService releaseService;
 	@Autowired
 	private SystemService systemService;
-	
+
 	@Autowired
 	private ErrorService errorService;
-	
+
 	@Autowired
 	private ReleaseErrorService releaseErrorService;
-	
+
 	@Autowired
 	private ProjectService projectService;
 
@@ -66,7 +72,7 @@ public class ReleaseManagementController extends BaseController {
 			model.addAttribute("systems", systemService.listSystemUser());
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
-			model.addAttribute("errors",errorService.findAll());
+			model.addAttribute("errors", errorService.findAll());
 		} catch (Exception e) {
 			Sentry.capture(e, "releaseManagement");
 			redirectAttributes.addFlashAttribute("data",
@@ -131,8 +137,7 @@ public class ReleaseManagementController extends BaseController {
 			@RequestParam(value = "idStatus", required = true) Integer idStatus,
 			@RequestParam(value = "dateChange", required = false) String dateChange,
 			@RequestParam(value = "motive", required = true) String motive,
-			@RequestParam(value = "idError", required = false) Long idError
-			) {
+			@RequestParam(value = "idError", required = false) Long idError) {
 		JsonResponse res = new JsonResponse();
 		try {
 			ReleaseEdit release = releaseService.findEditById(idRelease);
@@ -140,37 +145,48 @@ public class ReleaseManagementController extends BaseController {
 			if (status != null && status.getName().equals("Borrador")) {
 				if (release.getStatus().getId() != status.getId())
 					release.setRetries(release.getRetries() + 1);
-			}else if(status != null && status.getName().equals("Error")) {
-				Errors error=errorService.findById(idError);
-				ReleaseError releaseError=new ReleaseError();
+			} else if (status != null && status.getName().equals("Error")) {
+				Errors error = errorService.findById(idError);
+				ReleaseError releaseError = new ReleaseError();
 				releaseError.setSystem(release.getSystem());
 				releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
 				releaseError.setError(error);
-				Releases_WithoutObj releaseWithObj=releaseService.findReleaseWithouObj(release.getId());
+				Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
 				releaseError.setRelease(releaseWithObj);
 				releaseError.setObservations(motive);
-				releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
+				Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+				releaseError.setErrorDate(dateFormat);
 				releaseErrorService.save(releaseError);
-				
+				release.setStatus(status);
+				release.setOperator(getUserLogin().getFullName());
+				release.setMotive(motive);
+				release.setDateChange(dateChange);
 				releaseService.updateStatusRelease(release);
+				release.setTimeNew(null);
 				Status statusChange = statusService.findByName("Borrador");
 				release.setStatus(statusChange);
-				release.setOperator(getUserLogin().getFullName());
 
-				release.setDateChange(dateChange);
-				
-				release.setMotive(motive);
 				if (statusChange != null && statusChange.getName().equals("Borrador")) {
 					if (release.getStatus().getId() != status.getId())
 						release.setRetries(release.getRetries() + 1);
 				}
-				status=statusChange;
-				motive="Paso a borrador por "+error.getName();
+				status = statusChange;
+				motive = "Paso a borrador por " + error.getName();
+
 			}
+
+			Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(dateFormat);
+			calendar.add(Calendar.MINUTE, 1);
+			Timestamp time1Minute = new Timestamp(calendar.getTimeInMillis());
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			java.util.Date fechaNueva = (java.util.Date) format.parse(time1Minute.toString());
+			format = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+			String time1MinuteFormat = format.format(fechaNueva);
 			release.setStatus(status);
 			release.setOperator(getUserLogin().getFullName());
-
-			release.setDateChange(dateChange);
+			release.setDateChange(time1MinuteFormat);
 			release.setMotive(motive);
 			releaseService.updateStatusRelease(release);
 			res.setStatus("success");

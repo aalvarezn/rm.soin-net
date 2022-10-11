@@ -26,6 +26,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFCFile;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseUser;
@@ -155,7 +156,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		json.setData(aaData);
 		return json;
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public JsonSheet listByAllSystemQA(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
@@ -265,7 +266,6 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			String dateChange = (release.getDateChange() != null && !release.getDateChange().equals("")
 					? "to_date('" + release.getDateChange() + "', 'DD-MM-YYYY HH:MI PM')"
 					: "sysdate");
-
 			sql = String.format(
 					"update releases_release set estado_id = %s , reintentos = %s , operador = '%s' , motivo = '%s' , fecha_creacion = "
 							+ dateChange + "  where id = %s",
@@ -287,10 +287,44 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	}
 
 	@Override
+	public void insertReleaseError(ReleaseError release) throws Exception {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		String sql = "";
+		Query query = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+
+			String dateChange = (release.getErrorDate() != null && !release.getErrorDate().equals("")
+					? "to_date('" + release.getErrorDate() + "', 'DD-MM-YYYY HH:MI PM')"
+					: "sysdate");
+			/*
+			 * sql = String.format( "INSERT INTO RELEASE_ERROR (ID, RELEASE_ID, ERROR_ID,
+			 * FECHA_ERROR, OBSERVACIONES, PROYECTO_ID, SISTEMA_ID) VALUES(0, 0, 0, '', '',
+			 * 0, 0); , release.getStatus().getId(), release.getRetries(),
+			 * release.getOperator(), release.getMotive(), release.getId());
+			 */
+			query = sessionObj.createSQLQuery(sql);
+			query.executeUpdate();
+
+			transObj.commit();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
+
+	}
+
+	@Override
 	public Release findReleaseById(Integer id) {
 		Release release = (Release) sessionFactory.getCurrentSession().get(Release.class, id);
 		return release;
 	}
+
 	@Override
 	public Release_RFC findRelease_RFCById(Integer id) {
 		Release_RFC release = (Release_RFC) sessionFactory.getCurrentSession().get(Release_RFC.class, id);
@@ -569,6 +603,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		return crit;
 	}
+
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaBySystemsQA(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
@@ -617,47 +652,42 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	public JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			Integer systemId) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
-		Criteria crit = criteriaBySystems1( sEcho, iDisplayStart, iDisplayLength, sSearch,
-				systemId);
+		Criteria crit = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
-		Criteria critCount = criteriaBySystems1( sEcho, iDisplayStart, iDisplayLength, sSearch,
-				systemId);
+		Criteria critCount = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
-		if(recordsTotal==1) {
+		if (recordsTotal == 1) {
 			crit.uniqueResult();
 		}
 		List<Releases_WithoutObj> aaData = crit.list();
-		
-		for(Releases_WithoutObj release: aaData){
+
+		for (Releases_WithoutObj release : aaData) {
 			String sql = "";
 			Query query = null;
 			sql = String.format(
 					"SELECT COUNT(rr.ID) FROM RELEASES_RELEASE rr WHERE rr.ID IN (SELECT rrd.TO_RELEASE_ID  FROM RELEASES_RELEASE_DEPENDENCIAS rrd WHERE FROM_RELEASE_ID =%s) AND rr.ESTADO_ID IN(SELECT re.ID FROM RELEASES_ESTADO re WHERE re.NOMBRE IN('Borrador', 'Solicitado')) ",
 					release.getId());
 			query = getSession().createSQLQuery(sql);
-			
-			BigDecimal test =(BigDecimal) query.uniqueResult();
-		   
-			  
-			   release.setHaveDependecy(test.intValueExact());
-			
-			
+
+			BigDecimal test = (BigDecimal) query.uniqueResult();
+
+			release.setHaveDependecy(test.intValueExact());
+
 		}
-		
-		
+
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
 		json.setData(aaData);
 		return json;
 	}
-	
+
 	@Override
 	public Integer getDependency(int id) {
 		String sql = "";
@@ -666,23 +696,20 @@ public class ReleaseDaoImpl implements ReleaseDao {
 				"SELECT COUNT(rr.ID) FROM RELEASES_RELEASE rr WHERE rr.ID IN (SELECT rrd.TO_RELEASE_ID  FROM RELEASES_RELEASE_DEPENDENCIAS rrd WHERE FROM_RELEASE_ID =%s) AND rr.ESTADO_ID IN(SELECT re.ID FROM RELEASES_ESTADO re WHERE re.NOMBRE IN('Borrador', 'Solicitado'))",
 				id);
 		query = getSession().createSQLQuery(sql);
-		
-		BigDecimal test =(BigDecimal) query.uniqueResult();
-	   
-		  
-		  return test.intValueExact();
-		
+
+		BigDecimal test = (BigDecimal) query.uniqueResult();
+
+		return test.intValueExact();
+
 	}
+
 	public Criteria criteriaBySystems1(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			Integer systemId)
-			throws SQLException, ParseException {
+			Integer systemId) throws SQLException, ParseException {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name","Certificacion"),
-				Restrictions.eq("statuses.name","Solicitado")))
-		.add(Restrictions.eq("system.id", systemId));
-		
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"),
+				Restrictions.eq("statuses.name", "Solicitado"))).add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla
 		if (sSearch != null && !((sSearch.trim()).equals("")))
@@ -691,7 +718,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			crit.add(Restrictions.eq("system.id", systemId));
 		}
 		crit.addOrder(Order.desc("createDate"));
-		
+
 		return crit;
 	}
 
@@ -700,7 +727,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	}
 
 	@Override
-	public void updateStatusReleaseRFC(Release_RFC release,String operator) {
+	public void updateStatusReleaseRFC(Release_RFC release, String operator) {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		String sql = "";
@@ -710,9 +737,8 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			transObj = sessionObj.beginTransaction();
 			sql = String.format(
 					"update releases_release set estado_id = %s ,estado_anterior = %s, operador = '%s' , motivo = '%s' , fecha_creacion = sysdate where id = %s",
-					release.getStatus().getId(),
-					release.getStatusBefore().getId(),
-					operator, release.getMotive(), release.getId());
+					release.getStatus().getId(), release.getStatusBefore().getId(), operator, release.getMotive(),
+					release.getId());
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();
 
@@ -728,10 +754,9 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 	@Override
 	public Releases_WithoutObj findReleaseWithouObj(Integer id) {
-		Releases_WithoutObj release = (Releases_WithoutObj) sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class)
-				.add(Restrictions.eq("id", id)).uniqueResult();
+		Releases_WithoutObj release = (Releases_WithoutObj) sessionFactory.getCurrentSession()
+				.createCriteria(Releases_WithoutObj.class).add(Restrictions.eq("id", id)).uniqueResult();
 		return release;
 	}
 
-	
 }
