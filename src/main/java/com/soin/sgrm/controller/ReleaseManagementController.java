@@ -172,21 +172,22 @@ public class ReleaseManagementController extends BaseController {
 				}
 				status = statusChange;
 				motive = "Paso a borrador por " + error.getName();
-
+				dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(dateFormat);
+				calendar.add(Calendar.MINUTE, 1);
+				Timestamp time1Minute = new Timestamp(calendar.getTimeInMillis());
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				java.util.Date fechaNueva = (java.util.Date) format.parse(time1Minute.toString());
+				format = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+				String time1MinuteFormat = format.format(fechaNueva);
+				dateChange=time1MinuteFormat;
 			}
 
-			Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(dateFormat);
-			calendar.add(Calendar.MINUTE, 1);
-			Timestamp time1Minute = new Timestamp(calendar.getTimeInMillis());
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-			java.util.Date fechaNueva = (java.util.Date) format.parse(time1Minute.toString());
-			format = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
-			String time1MinuteFormat = format.format(fechaNueva);
+			
 			release.setStatus(status);
 			release.setOperator(getUserLogin().getFullName());
-			release.setDateChange(time1MinuteFormat);
+			release.setDateChange(dateChange);
 			release.setMotive(motive);
 			releaseService.updateStatusRelease(release);
 			res.setStatus("success");
