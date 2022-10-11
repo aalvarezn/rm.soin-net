@@ -18,7 +18,7 @@
 		<ul class="list">
 			<c:forEach items="${userInfo.authorities}" var="authority">
 				<c:if test="${authority.name == 'Admin'}">
-					<li><a id="adminItem" href="<c:url value='/admin/'/> "> <span>Administración</span>
+					<li><a id="adminItem" href="<c:url value='/admin/'/> "> <span>Administraci&oacute;n</span>
 					</a></li>
 				</c:if>
 			</c:forEach>
@@ -26,19 +26,26 @@
 			<c:forEach items="${userInfo.authorities}" var="authority">
 				<c:if test="${authority.name == 'Release Manager'}">
 					<li><a id="managemetReleaseItem"
-						href="<c:url value='/management/release/'/> "> <span>Gestión
+						href="<c:url value='/management/release/'/> "> <span>Gesti&oacute;n
 								Release</span>
 					</a></li>
 					<li><a id="managerRFCItem"
-					href="<c:url value='/management/rfc/'/> "> <span>Gestión
+					href="<c:url value='/management/rfc/'/> "> <span>Gesti&oacute;n
 							RFC</span>
 				</a></li>
 					<li><a id="managemetWorkFlowItem"
-						href="<c:url value='/management/wf/'/> "> <span>Gestión
-								Trámites</span>
+						href="<c:url value='/management/wf/'/> "> <span>Gesti&oacute;n
+								Tr&aacute;mites</span>
 					</a></li>
+
+				<li class=""><a id="errorItem" href="javascript:void(0);"
+					class="menu-toggle"> <span>Gesti&oacute;n Salidas</span>
+				</a>
+					<ul class="ml-menu">
+						<li><a href="<c:url value='/management/error/'/>">Releases</a></li>
+					</ul></li>
 					<li><a id="managerRequestItem"
-						href="<c:url value='/management/request/'/> "> <span>Gestión
+						href="<c:url value='/management/request/'/> "> <span>Gesti&oacute;n
 								Solicitudes</span>
 					</a></li>
 				</c:if>
@@ -58,7 +65,7 @@
 			</c:forEach>
 			<c:if test="${qaAccess}">
 				<li><a id="releasesQAItem" href="<c:url value='/release/qa'/> ">
-						<span>Gestión QA</span>
+						<span>Gesti&oacute;n QA</span>
 				</a></li>
 			</c:if>
 				<c:if test="${managerAccess}">
@@ -85,7 +92,7 @@
 					
 				<li><a id="managerWorkFlowItem"
 					href="<c:url value='/manager/wf/'/> "> <span>Mis
-							Trámites</span>
+							Tr&aacute;mites</span>
 				</a></li>
 			</c:if>
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">

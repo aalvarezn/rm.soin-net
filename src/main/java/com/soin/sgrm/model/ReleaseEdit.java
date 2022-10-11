@@ -278,6 +278,9 @@ public class ReleaseEdit implements Serializable, Cloneable {
 
 	@Transient
 	private String dateChange;
+	
+	@Transient
+	private Timestamp timeNew;
 
 	public int getId() {
 		return id;
@@ -844,4 +847,12 @@ public class ReleaseEdit implements Serializable, Cloneable {
 		this.motive = motive;
 	}
 
+	public Timestamp getTimeNew() {
+		return timeNew;
+	}
+
+	public void setTimeNew(Timestamp timeNew) {
+		this.timeNew = timeNew;
+	}
+	
 }

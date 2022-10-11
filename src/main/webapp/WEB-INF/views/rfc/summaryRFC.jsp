@@ -95,7 +95,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">RFC N°</label>
+					<label for="email_address">RFC NÂ°</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${rfc.numRequest}</p>
@@ -353,12 +353,12 @@
 						<c:choose>
 							<c:when test="${rfc.requiredBD}">
 								<label>No<input type="checkbox" checked="checked"
-									disabled="disabled"><span class="lever"></span>Sí
+									disabled="disabled"><span class="lever"></span>SÃ­
 								</label>
 							</c:when>
 							<c:otherwise>
 								<label>No<input type="checkbox" disabled="disabled"><span
-									class="lever"></span>Sí
+									class="lever"></span>SÃ­
 								</label>
 							</c:otherwise>
 						</c:choose>
@@ -456,5 +456,4 @@
 	</script>
 
 </body>
-
 </html>

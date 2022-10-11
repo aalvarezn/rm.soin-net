@@ -17,6 +17,7 @@ import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.ReleaseCreate;
@@ -47,6 +48,8 @@ public interface ReleaseService {
 	ReleaseEdit findEditById(Integer id) throws SQLException;
 
 	ReleaseUser findReleaseUserById(Integer id) throws SQLException;
+	
+	Releases_WithoutObj findReleaseWithouObj(Integer id) throws SQLException;
 
 	void save(Release release, String tpos) throws Exception;
 
