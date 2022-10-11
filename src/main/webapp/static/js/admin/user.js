@@ -31,6 +31,9 @@ $(function() {
 			});
 	$userForm.find("#ms-userGroups").find(".ms-selectable").before('<label for="name">Roles</label>');
 	$userForm.find("#ms-userGroups").find(".ms-selection").before('<label for="name">Roles Asignados</label>');
+	
+
+	
 });
 
 function changeBtnModal(index){

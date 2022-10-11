@@ -6,7 +6,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.response.JsonSheet;
 
 public interface RFCService extends BaseService<Long, RFC>{
-	public Integer existNumRelease(String number_release) throws SQLException;
+	public Integer existNumRFC(String number_release) throws SQLException;
 	
 	String generateRFCNumber(String codeProject);
 	JsonSheet<RFC> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch, Long statusId,

@@ -325,8 +325,8 @@
 										<thead>
 											<tr>
 												<th>ID</th>
-												<th>Sistema</th>
 												<th>Número</th>
+												<th>Sistema</th>
 												<th>Descripción</th>
 												<th>Observación</th>
 												<th>Release</th>

@@ -100,6 +100,16 @@ public class HomeController extends BaseController {
 
 		return "redirect:/rfc/";
 	}
+	@RequestMapping(value = "/homeRequest", method = RequestMethod.GET)
+	public String indexRequest(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+		if (request.isUserInRole("ROLE_Release Manager")) {
+			return "redirect:/management/request/";
+		}
+
+		return "redirect:/request/";
+	}
+
 
 	@RequestMapping(value = "/successLogin", method = RequestMethod.GET)
 	public String successLogin(HttpServletRequest request, Locale locale, Model model, HttpSession session) {

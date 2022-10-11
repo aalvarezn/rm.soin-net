@@ -1,5 +1,7 @@
 package com.soin.sgrm.controller;
 
+
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -24,6 +26,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
@@ -43,31 +46,31 @@ import com.soin.sgrm.utils.MyLevel;
 
 @Controller
 @RequestMapping("/management/rfc")
-public class RFCManagementController extends BaseController{
+public class RFCManagementController extends BaseController {
 	public static final Logger logger = Logger.getLogger(RFCManagementController.class);
 	@Autowired
 	RFCService rfcService;
-	@Autowired 
+	@Autowired
 	StatusRFCService statusService;
-	
-	@Autowired 
+
+	@Autowired
 	StatusService statusReleaseService;
-	
-	@Autowired 
+
+	@Autowired
 	ReleaseService releaseService;
-	
+
 	@Autowired
 	SystemService systemService;
-	
+
 	@Autowired
 	PriorityService priorityService;
-	
+
 	@Autowired
 	ImpactService impactService;
-	
+
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
-	
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -89,6 +92,7 @@ public class RFCManagementController extends BaseController{
 		return "/rfc/rfcManagement";
 
 	}
+
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
@@ -99,15 +103,15 @@ public class RFCManagementController extends BaseController{
 			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			String sSearch = request.getParameter("sSearch");
-			 Long statusId;
-			 int priorityId=0;
-			 int systemId;
+			Long statusId;
+			int priorityId = 0;
+			int systemId;
 			if (request.getParameter("statusId").equals("")) {
 				statusId = null;
 			} else {
 				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
 			}
-			
+
 			if (request.getParameter("systemId").equals("")) {
 				systemId = 0;
 			} else {
@@ -115,14 +119,37 @@ public class RFCManagementController extends BaseController{
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
+			rfcs = rfcService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange, priorityId,
+					systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return rfcs;
 	}
-	
+
+	@RequestMapping(value = "/cancelRFC", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse cancelRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "idRFC", required = true) Long idRFC) {
+		JsonResponse res = new JsonResponse();
+		try {
+			RFC rfc = rfcService.findById(idRFC);
+			StatusRFC status = statusService.findByKey("name", "Anulado");
+			rfc.setStatus(status);
+			rfc.setOperator(getUserLogin().getFullName());
+			rfc.setMotive(status.getReason());
+			rfcService.update(rfc);
+			res.setStatus("success");
+
+		} catch (Exception e) {
+			Sentry.capture(e, "rfcManagement");
+			res.setStatus("exception");
+			res.setException("Error al cancelar el rfc: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
 	@RequestMapping(value = "/statusRFC", method = RequestMethod.GET)
 	public @ResponseBody JsonResponse draftRFC(HttpServletRequest request, Model model,
 			@RequestParam(value = "idRFC", required = true) Long idRFC,
@@ -133,22 +160,24 @@ public class RFCManagementController extends BaseController{
 		try {
 			RFC rfc = rfcService.findById(idRFC);
 			StatusRFC status = statusService.findById(idStatus);
-			String user=getUserLogin().getFullName();
+			String user = getUserLogin().getFullName();
 			if (status != null && status.getName().equals("Borrador")) {
-				Set<Release_RFC> releases=rfc.getReleases();
-				for(Release_RFC release: releases) {
+				Set<Release_RFC> releases = rfc.getReleases();
+				for (Release_RFC release : releases) {
 					release.setStatus(release.getStatusBefore());
-					release.setMotive("Devuelto al estado "+release.getStatus().getName());
-					releaseService.updateStatusReleaseRFC(release,user);
+					release.setMotive("Devuelto al estado " + release.getStatus().getName());
+					releaseService.updateStatusReleaseRFC(release, user);
 				}
-				
-				/*if (release.getStatus().getId() != status.getId())
-					release.setRetries(release.getRetries() + 1);*/
+
+				/*
+				 * if (release.getStatus().getId() != status.getId())
+				 * release.setRetries(release.getRetries() + 1);
+				 */
 			}
 			rfc.setStatus(status);
 			rfc.setOperator(getUserLogin().getFullName());
-			rfc.setRequestDate((CommonUtils.getSystemTimestamp()));
-			
+			Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+			rfc.setRequestDate(dateFormat);
 			rfc.setMotive(motive);
 			rfcService.update(rfc);
 			res.setStatus("success");
@@ -161,7 +190,7 @@ public class RFCManagementController extends BaseController{
 		}
 		return res;
 	}
-	
+
 	@RequestMapping(value = "/deleteRFC/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteRFC(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
@@ -169,13 +198,13 @@ public class RFCManagementController extends BaseController{
 			res.setStatus("success");
 			RFC rfc = rfcService.findById(id);
 			if (rfc.getStatus().getName().equals("Borrador")) {
-				
-					StatusRFC status = statusService.findByKey("name", "Anulado");
-					rfc.setStatus(status);
-					rfc.setMotive(status.getReason());
-					rfc.setOperator(getUserLogin().getFullName());
-					rfcService.update(rfc);
-				
+
+				StatusRFC status = statusService.findByKey("name", "Anulado");
+				rfc.setStatus(status);
+				rfc.setMotive(status.getReason());
+				rfc.setOperator(getUserLogin().getFullName());
+				rfcService.update(rfc);
+
 			} else {
 				res.setStatus("fail");
 				res.setException("La acción no se pudo completar, el release no esta en estado de Borrador.");
@@ -188,30 +217,10 @@ public class RFCManagementController extends BaseController{
 		}
 		return res;
 	}
-	@RequestMapping(value = "/cancelRFC", method = RequestMethod.GET)
-	public @ResponseBody JsonResponse cancelRelease(HttpServletRequest request, Model model,
-			@RequestParam(value = "idRFC", required = true) Long idRFC) {
-		JsonResponse res = new JsonResponse();
-		try {
-			RFC rfc = rfcService.findById(idRFC);
-			StatusRFC status = statusService.findByKey("name","Anulado");
-			rfc.setStatus(status);
-			rfc.setOperator(getUserLogin().getFullName());
-			rfc.setMotive(status.getReason());
-			rfcService.update(rfc);
-			res.setStatus("success");
 
-		}  catch (Exception e) {
-			Sentry.capture(e, "rfcManagement");
-			res.setStatus("exception");
-			res.setException("Error al cancelar el rfc: " + e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-		}
-		return res;
-	}
 	public void loadCountsRFC(HttpServletRequest request, Integer id) {
-		//PUser userLogin = getUserLogin();
-		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
+		// PUser userLogin = getUserLogin();
+		// List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> rfcC = new HashMap<String, Integer>();
 		rfcC.put("draft", rfcService.countByType(id, "Borrador", 2, null));
 		rfcC.put("requested", rfcService.countByType(id, "Solicitado", 2, null));
@@ -219,7 +228,6 @@ public class RFCManagementController extends BaseController{
 		rfcC.put("all", (rfcC.get("draft") + rfcC.get("requested") + rfcC.get("completed")));
 		request.setAttribute("rfcC", rfcC);
 
-		
 	}
-	
+
 }

@@ -73,14 +73,26 @@ public class HibernateConfiguration {
 				} catch (NamingException e) {
 					Sentry.capture(e, "hibernate");
 				}
+
 			} else {
-				// --- desa ---
-				DataSource dataSource;
-				try {
-					dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_desa");
-					return dataSource;
-				} catch (NamingException e) {
-					Sentry.capture(e, "hibernate");
+				if (path.contains("sgrm_demos")) {
+					DataSource dataSource;
+					try {
+						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_demos");
+						return dataSource;
+					} catch (NamingException e) {
+						Sentry.capture(e, "hibernate");
+					}
+				} else {
+
+					// --- desa ---
+					DataSource dataSource;
+					try {
+						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_desa");
+						return dataSource;
+					} catch (NamingException e) {
+						Sentry.capture(e, "hibernate");
+					}
 				}
 			}
 		}
