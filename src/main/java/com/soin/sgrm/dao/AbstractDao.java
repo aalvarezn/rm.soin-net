@@ -115,7 +115,10 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 		Criteria criteria = createEntityCriteria();
 		if(veri==1) {
 			criteria.addOrder(Order.desc("requestDate"));
-		}else {
+		}if(veri==2) {
+			criteria.addOrder(Order.desc("errorDate"));
+		}
+		else {
 			criteria.addOrder(Order.desc("id"));
 		}
 		

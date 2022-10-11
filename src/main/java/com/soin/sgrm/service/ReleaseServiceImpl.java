@@ -23,6 +23,7 @@ import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.CommonUtils;
@@ -273,7 +274,14 @@ public class ReleaseServiceImpl implements ReleaseService {
 	}
 
 	@Override
+	public Releases_WithoutObj findReleaseWithouObj(Integer id) throws SQLException {
+		
+		return dao.findReleaseWithouObj(id);
+	}
+
+  @Override
 	public ReleaseSummaryMin findByIdMin(Integer id) throws SQLException {
 		return dao.findByIdMin(id);
 	}
+
 }

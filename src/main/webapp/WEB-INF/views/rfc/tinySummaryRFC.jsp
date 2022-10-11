@@ -59,7 +59,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">RFC N°</label>
+					<label for="email_address">RFC NÂ°</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${rfc.numRequest}</p>
@@ -67,7 +67,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaciÃ³n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -133,7 +133,7 @@
 			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -184,7 +184,7 @@
 			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-sm-12">
-					<h5 class="titulares">Información de cambio</h5>
+					<h5 class="titulares">Informaci&oacute;n de cambio</h5>
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Sistemas impactados</label>
@@ -204,7 +204,7 @@
 				</div>
 
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Releases a instalar en producción</label>
+					<label for="">Releases a instalar en producci&oacute;n</label>
 
 					<div id="listSystems">
 						<ul class="nav nav-pills">
@@ -235,8 +235,8 @@
 										id="userTable">
 										<thead>
 											<tr>
-												<th style="width: 50px;">Número Release</th>
-												<th style="width: 200px;">Descripción</th>
+												<th style="width: 50px;">N&uacute;mero Release</th>
+												<th style="width: 200px;">Descripci&oacute;n</th>
 												<th style="width: 100px;">Total Objetos</th>
 											</tr>
 										</thead>
@@ -272,7 +272,7 @@
 											<tr>
 												<th style="width: 50px;">Release al que pertenece</th>
 												<th style="width: 100px;">Nombre objeto</th>
-												<th style="width: 200px;">Descripción</th>
+												<th style="width: 200px;">Descripci&oacute;n</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -317,12 +317,12 @@
 						<c:choose>
 							<c:when test="${rfc.requiredBD}">
 								<label>No<input type="checkbox" checked="checked"
-									disabled="disabled"><span class="lever"></span>Sí
+									disabled="disabled"><span class="lever"></span>SÃ­
 								</label>
 							</c:when>
 							<c:otherwise>
 								<label>No<input type="checkbox" disabled="disabled"><span
-									class="lever"></span>Sí
+									class="lever"></span>SÃ­
 								</label>
 							</c:otherwise>
 						</c:choose>

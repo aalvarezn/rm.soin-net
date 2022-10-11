@@ -57,7 +57,7 @@ $(function() {
 	});
 
 	loadTableRelease();
-
+	dropDownChange();
 });
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
@@ -233,6 +233,20 @@ function responseCancelRelease(response) {
 	}
 }
 
+function dropDownChange(){
+	
+	$('#statusId').on('change', function(){
+		
+		var status =$("#statusId").find("option:selected").text();
+		console.log(status);
+		if(status==="Error"){
+			$('#divError').attr( "hidden",false);
+		}else{
+			$('#divError').attr( "hidden",true);
+		}
+		
+	});
+}
 function changeStatusRelease(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
@@ -242,7 +256,11 @@ function changeStatusRelease(releaseId) {
 	formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	formChangeStatus.find('#idRelease').val(rowData.id);
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
-	formChangeStatus.find("#fieldError").css("visibility", "hidden");
+	formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	formChangeStatus.find('.fieldError').removeClass('activeError');
+	formChangeStatus.find('.form-line').removeClass('error');
+	formChangeStatus.find('.form-line').removeClass('focused');
+	$('#divError').attr( "hidden",true);
 	formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
 	$('#changeStatusModal').modal('show');
 }
@@ -258,6 +276,7 @@ function saveChangeStatusModal(){
 		data : {
 			idRelease : formChangeStatus.find('#idRelease').val(),
 			idStatus: formChangeStatus.find('#statusId').children("option:selected").val(),
+			idError: formChangeStatus.find('#errorId').children("option:selected").val(),
 			dateChange: formChangeStatus.find('#dateChange').val(),
 			motive: formChangeStatus.find('#motive').val()
 		},
@@ -302,6 +321,7 @@ function validStatusRelease() {
 	formChangeStatus.find('.form-line').removeClass('focused');
 	$.each(formChangeStatus.find('input[required]'), function( index, input ) {
 		if($.trim(input.value) == ""){
+			console.log("aca estoy 1");
 			formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
 			formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
 			formChangeStatus.find('#'+input.id+"").parent().attr("class",
@@ -310,15 +330,27 @@ function validStatusRelease() {
 		}
 	});
 	$.each(formChangeStatus.find('select[required]'), function( index, select ) {
+	
 		if($.trim(select.value).length == 0 || select.value == ""){
-			formChangeStatus.find('#'+select.id+"_error").css("visibility","visible");
-			formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
-			valid = false;
+			
+			var statusSelected =$("#statusId").find("option:selected").text();
+			console.log(select.id==="errorId");
+			console.log(statusSelected!=="Error");
+			if(select.id==="errorId"&&statusSelected!=="Error"){
+				valid = true;
+			}else{
+				formChangeStatus.find('#'+select.id+"_error").css("visibility","visible");
+				formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
+				valid = false;
+			}
+		
 		}
 	});
 
 	$.each(formChangeStatus.find('textarea[required]'), function( index, textarea ) {
+		
 		if($.trim(textarea.value).length == 0 || textarea.value == ""){
+			console.log("aca estoy 3");
 			formChangeStatus.find('#'+textarea.id+"_error").css("visibility","visible");
 			formChangeStatus.find('#'+textarea.id+"_error").addClass('activeError');
 			formChangeStatus.find('#'+textarea.id+"").parent().attr("class",
@@ -454,6 +486,9 @@ function getColorNode(status){
 		break;
 	case 'Borrador':
 		return 'rgb(31, 145, 243)';
+		break;
+	case 'Error':
+		return 'rgb(255,0,0)';
 		break;
 	case 'Anulado':
 		return 'rgb(233, 30, 99)';

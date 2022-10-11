@@ -56,6 +56,7 @@
 				class="menu-toggle"> <span>Catalogos</span>
 			</a>
 				<ul class="ml-menu">
+					<li><a href="<c:url value='/admin/error/'/>">Errores</a></li>
 					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
 					<li><a href="<c:url value='/admin/statusRFC/'/>">Estados RFC</a></li> 
 					<li><a href="<c:url value='/admin/statusRequest/'/>">Estados Solicitud</a></li> 

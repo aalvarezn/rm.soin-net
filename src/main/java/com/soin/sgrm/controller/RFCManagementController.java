@@ -1,6 +1,7 @@
 package com.soin.sgrm.controller;
 
-import java.sql.SQLException;
+
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -175,8 +176,8 @@ public class RFCManagementController extends BaseController {
 			}
 			rfc.setStatus(status);
 			rfc.setOperator(getUserLogin().getFullName());
-			rfc.setRequestDate((CommonUtils.getSystemTimestamp()));
-
+			Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+			rfc.setRequestDate(dateFormat);
 			rfc.setMotive(motive);
 			rfcService.update(rfc);
 			res.setStatus("success");
