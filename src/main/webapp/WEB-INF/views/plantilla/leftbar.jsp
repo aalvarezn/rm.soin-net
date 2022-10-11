@@ -39,7 +39,7 @@
 					</a></li>
 
 				<li class=""><a id="errorItem" href="javascript:void(0);"
-					class="menu-toggle"> <span>Gestion Salidas</span>
+					class="menu-toggle"> <span>Gesti&oacute;n Salidas</span>
 				</a>
 					<ul class="ml-menu">
 						<li><a href="<c:url value='/management/error/'/>">Releases</a></li>
