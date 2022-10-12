@@ -40,7 +40,7 @@
 			<div class="row clearfix">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="" style="padding-top: -5pc;">
-						<h2 class="title-Adm m-t-0">Catalogo Errores</h2>
+						<h2 class="title-Adm m-t-0">Cat&aacute;logo Errores</h2>
 					</div>
 					<hr>
 				</div>
@@ -53,7 +53,7 @@
 							<thead>
 								<tr>
 									<th>Nombre</th>
-									<th>Descripción</th>
+									<th>Descripci&oacute;n</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>
