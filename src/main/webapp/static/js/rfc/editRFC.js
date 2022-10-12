@@ -735,6 +735,7 @@ var dataRFC = $dtRFCs.rows('.selected').data();
 			});
 			if(verification){
 				var description=data.description;
+				description=description.replace(/"/g, "'");
 				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+description.replace(/\n|\r/g, "")+'","user":'+JSON.stringify(data.user)+',"haveSQL":'+data.haveSQL+',"haveDependecy":"'+data.haveDependecy+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
 				$dataRelease.unshift(obj);
@@ -772,6 +773,7 @@ var dataRFC = $dtRFCs.rows('.selected').data();
 			if(verification){
 				
 				var description=""+data.description+"";
+				description=description.replace(/"/g, "'");
 				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+description.replace(/\n|\r/g, "")+'","user":'+JSON.stringify(data.user)+',"haveSQL":'+data.haveSQL+',"haveDependecy":"'+data.haveDependecy+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
 				$dataRelease.unshift(obj);
