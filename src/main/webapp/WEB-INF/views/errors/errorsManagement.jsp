@@ -97,7 +97,7 @@
 			<!-- CountSection -->
 			<div class="row clearfix">
 				<div class="block-header">
-						<h1 class="title-Adm m-t-0">Gestión salidas no conformes Releases</h1>
+						<h1 class="title-Adm m-t-0">Gesti&oacute;n salidas no conformes Releases</h1>
 						<hr>
 					</div>
 
