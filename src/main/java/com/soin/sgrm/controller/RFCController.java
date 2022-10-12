@@ -38,6 +38,7 @@ import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
 
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.EmailReadService;
@@ -46,6 +47,7 @@ import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.RFCService;
+import com.soin.sgrm.service.RFCWithoutReleaseService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRFCService;
@@ -71,6 +73,9 @@ public class RFCController extends BaseController {
 
 	@Autowired
 	RFCService rfcService;
+	
+	@Autowired
+	RFCWithoutReleaseService  rfcWRService;
 
 	@Autowired
 	StatusRFCService statusService;
@@ -134,7 +139,7 @@ public class RFCController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<RFC> rfcs = new JsonSheet<>();
+		JsonSheet<RFC_WithoutRelease> rfcs = new JsonSheet<>();
 		try {
 
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
@@ -163,7 +168,7 @@ public class RFCController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
+			rfcs = rfcWRService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

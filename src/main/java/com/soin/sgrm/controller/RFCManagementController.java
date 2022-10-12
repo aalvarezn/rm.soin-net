@@ -26,6 +26,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Status;
@@ -36,6 +37,7 @@ import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.RFCService;
+import com.soin.sgrm.service.RFCWithoutReleaseService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
@@ -50,6 +52,9 @@ public class RFCManagementController extends BaseController {
 	public static final Logger logger = Logger.getLogger(RFCManagementController.class);
 	@Autowired
 	RFCService rfcService;
+	
+	@Autowired
+	RFCWithoutReleaseService  rfcWRService;
 	@Autowired
 	StatusRFCService statusService;
 
@@ -96,7 +101,7 @@ public class RFCManagementController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<RFC> rfcs = new JsonSheet<>();
+		JsonSheet<RFC_WithoutRelease> rfcs = new JsonSheet<>();
 		try {
 
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
@@ -119,7 +124,7 @@ public class RFCManagementController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange, priorityId,
+			rfcs = rfcWRService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange, priorityId,
 					systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
