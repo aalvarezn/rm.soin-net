@@ -353,12 +353,12 @@
 						<c:choose>
 							<c:when test="${rfc.requiredBD}">
 								<label>No<input type="checkbox" checked="checked"
-									disabled="disabled"><span class="lever"></span>Sí
+									disabled="disabled"><span class="lever"></span>S&iacute;
 								</label>
 							</c:when>
 							<c:otherwise>
 								<label>No<input type="checkbox" disabled="disabled"><span
-									class="lever"></span>Sí
+									class="lever"></span>S&iacute;
 								</label>
 							</c:otherwise>
 						</c:choose>
