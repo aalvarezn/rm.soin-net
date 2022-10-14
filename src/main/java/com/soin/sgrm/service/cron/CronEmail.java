@@ -1,5 +1,6 @@
 package com.soin.sgrm.service.cron;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Properties;
 
@@ -17,9 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.soin.sgrm.model.EmailIncidence;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.PriorityIncidence;
 import com.soin.sgrm.model.StatusIncidence;
+import com.soin.sgrm.service.EmailIncidenceService;
 import com.soin.sgrm.service.IncidenceService;
 
 @Component
@@ -28,8 +31,11 @@ public class CronEmail {
 	@Autowired
 	IncidenceService incidenceService;
 	
-	//@Scheduled(cron="0 * * ? * *")
-	public void readMails() throws MessagingException {
+	@Autowired
+	EmailIncidenceService emailIncidenceService;
+	
+	@Scheduled(cron="0 * * ? * *")
+	public void readMails() throws MessagingException, IOException {
 		java.security.Security.setProperty("jdk.tls.disabledAlgorithms", "");
 		Properties prop = new Properties();
 		prop.setProperty("mail.store.protocol", "imaps");
@@ -47,19 +53,23 @@ public class CronEmail {
 	
 		for (int i=0;i<unreadMessages.length;i++)
 		{
-			Incidence incidence=new Incidence();
+			
 			Message newMessage=unreadMessages[i];
 		   System.out.println("From:"+newMessage.getFrom()[0].toString());
 		   System.out.println("Subject:"+newMessage.getSubject());
+		   String chainSubject[]=newMessage.getSubject().split(":");
+		   String numTicket=chainSubject[1].trim();
+		   EmailIncidence emailIncidence=new EmailIncidence();
+		   Incidence incidence=incidenceService.getIncidenceByName( numTicket);
 		   String createFor= newMessage.getFrom()[0].toString().replace("<", "");
 		   createFor=createFor.replace(">", "");
-		
+		   emailIncidence.setIncidence(incidence);
 		   System.out.println("Fecha enviado:"+newMessage.getSentDate());
 		   Timestamp date=new Timestamp(newMessage.getSentDate().getTime());
-		
+		   emailIncidence.setSendDate(date);
 		   System.out.println("Tipo de mensaje:"+newMessage.getContentType());
 		   if(newMessage.isMimeType("TEXT/*")) {
-			   //incidence.setDetail(newMessage.getContent().toString());
+			   emailIncidence.setMessage(newMessage.getContent().toString());
 			   
 		   }else {
 		  
@@ -78,14 +88,14 @@ public class CronEmail {
 			    		 
 			    		  Part otraParte = mp2.getBodyPart(x);
 			    		  if(x==0) {
-			    			  //incidence.setDetail(otraParte.getContent().toString());
+			    			  emailIncidence.setMessage(otraParte.getContent().toString());
 			    		  }
 			    		  
 					      System.out.println("Contenido:"+otraParte.getContent().toString());
 			    	  }
 			      }else if(unaParte.isMimeType("TEXT/*")) {
 			    	  if(j==0) {
-			    	  //incidence.setDetail(unaParte.getContent().toString());
+			    		  emailIncidence.setMessage(unaParte.getContent().toString());
 			    	  }
 			      }else {
 			    	  //SE guardan los documentos.
@@ -101,14 +111,14 @@ public class CronEmail {
 			 // StatusIncidence status= statusIncidenceService.findByKey("code", "draft");
 			  //incidence.setStatus(status);
 			  
-			   incidenceService.save(incidence);
+			   //incidenceService.save(incidence);
 	        } catch (Exception ex) {
 	            System.out.println(ex);
 	        }
 		 
 		   }
 		  newMessage.setFlag(Flags.Flag.SEEN, true);
-
+		  emailIncidenceService.save(emailIncidence);
 		}
 		
 		folder.close(true);

@@ -112,4 +112,21 @@ public class IncidenceDaoImpl extends AbstractDao<Long, Incidence> implements In
 	    		.uniqueResult();
 	    
 	}
+	@Override
+	public Incidence getIncidenceByName(String numTicket) {
+		Criteria crit = getSession().createCriteria(Incidence.class);
+		List<String> fetchs=new ArrayList<String>();
+		fetchs.add("files");
+		fetchs.add("typeIncidence");
+		fetchs.add("priority");
+		fetchs.add("tracking");
+		fetchs.add("user");
+		if (fetchs != null)
+			for (String itemModel : fetchs)
+				crit.setFetchMode(itemModel, FetchMode.SELECT);
+		
+	    return (Incidence)
+	    		crit.add(Restrictions.eq("numTicket", numTicket))
+	    		.uniqueResult();
+	}
 }

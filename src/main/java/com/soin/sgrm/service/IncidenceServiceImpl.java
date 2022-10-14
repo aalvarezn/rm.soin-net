@@ -283,4 +283,8 @@ public class IncidenceServiceImpl implements IncidenceService {
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 
 	}
+	@Override
+	public Incidence getIncidenceByName(String numTicket) {
+		return dao.getIncidenceByName(numTicket);
+	}
 }

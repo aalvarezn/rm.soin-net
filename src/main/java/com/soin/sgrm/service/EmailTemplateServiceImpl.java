@@ -35,6 +35,7 @@ import com.soin.sgrm.dao.EmailTemplateDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Ambient;
 import com.soin.sgrm.model.Dependency;
+import com.soin.sgrm.model.EmailIncidence;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
@@ -53,6 +54,7 @@ import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.model.wf.WFUser;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.EnviromentConfig;
 
@@ -83,6 +85,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	RequestRM_P1_R5Service requestServiceR5;
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	@Autowired
+	private EmailIncidenceService emailIncidenceService;
 	
 	@Autowired
 	SigesService sigeService;
@@ -1326,6 +1331,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 		email = fillEmail(email, incidenceEmail);
 		String body = email.getHtml();
+		EmailIncidence  emailIncidence=new EmailIncidence();
+		emailIncidence.setMessage(body);
+		emailIncidence.setSendDate(CommonUtils.getSystemTimestamp());
+		emailIncidence.setIncidence(incidenceEmail);
+		emailIncidenceService.save(emailIncidence);
 		body = Constant.getCharacterEmail(body);
 		MimeMultipart mmp = MimeMultipart(body);
 		mimeMessage.setContent(mmp);

@@ -20,7 +20,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "ARCHIVOINCIDENCIA")
+@Table(name = "INCIDENCIA_MENSAJE")
 public class EmailIncidence implements Serializable {
 
 	@Id
@@ -29,11 +29,8 @@ public class EmailIncidence implements Serializable {
 	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "NOMBRE")
-	private String name;
-
-	@Column(name = "PATH")
-	private String path;
+	@Column(name = "MENSAJE")
+	private String message;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_INCIDENCIA", nullable = false)
@@ -50,22 +47,16 @@ public class EmailIncidence implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
 
-	public String getName() {
-		return name;
+	public String getMessage() {
+		return message;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
 
 	public Timestamp getSendDate() {
 		return sendDate;
@@ -75,4 +66,13 @@ public class EmailIncidence implements Serializable {
 		this.sendDate = sendDate;
 	}
 
+	public Incidence getIncidence() {
+		return incidence;
+	}
+
+	public void setIncidence(Incidence incidence) {
+		this.incidence = incidence;
+	}
+	
+	
 }

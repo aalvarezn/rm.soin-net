@@ -16,6 +16,8 @@ public interface IncidenceDao extends BaseDao<Long, Incidence> {
 
 	
 
-	Incidence getIncidences(Long id); 
+	Incidence getIncidences(Long id);
+
+	Incidence getIncidenceByName(String numTicket); 
 
 }
