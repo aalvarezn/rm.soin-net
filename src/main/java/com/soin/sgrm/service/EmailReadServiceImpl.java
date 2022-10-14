@@ -2,7 +2,6 @@ package com.soin.sgrm.service;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Properties;
 
 import javax.mail.Flags;
@@ -19,11 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.gdata.data.finance.Commission;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.PriorityIncidence;
 import com.soin.sgrm.model.StatusIncidence;
-import com.soin.sgrm.utils.CommonUtils;
 
 @Service("EmailReadService")
 @Transactional("transactionManager")

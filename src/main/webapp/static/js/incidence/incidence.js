@@ -172,7 +172,8 @@ function initRFCTable() {
 									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
 								
 							}
-							
+							options = options
+							+ '<a onclick="checkMessage('+row.id+')" title="Historial mensajes"><i class="material-icons gris" style="font-size: 25px;">mail</i></a>';
 							if(row.status.name != 'Anulado') {
 								options = options
 								+ '<a onclick="confirmDeleteRFC('+row.id+')" title="Anular"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
