@@ -123,7 +123,7 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 
 			columns.put("status", Restrictions.eq("status.id", statusId));
 		} else {
-			columns.put("status", Restrictions.in("status.name", Constant.FILTREDRFC));
+			columns.put("status", Restrictions.not(Restrictions.in("status.name", Constant.FILTREDRFC)));
 		}
 
 		if (systemId != 0) {

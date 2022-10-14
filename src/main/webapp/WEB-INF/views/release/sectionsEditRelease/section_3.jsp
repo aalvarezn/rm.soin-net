@@ -195,10 +195,10 @@
 	<div class="row clearfix">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="table-responsive"
-				style="margin-top: 20px; margin-bottom: 20px;">
+				style="margin-top: 20px; margin-bottom: 20px; overflow-x: auto;">
 				<div class="help-info">Agregados: <span id="countObject">${release.releaseObjects.size()}</span></div>
 				<table
-					class="table tableIni table-bordered table-striped table-hover dataTable"
+					class="table-responsive tableIni table-bordered table-striped table-hover dataTable"
 					id="configurationItemsTable">
 					<thead>
 						<tr>
@@ -243,10 +243,11 @@
 			<h5 class="titulares">Objetos SQL</h5>
 		</div>
 	</div>
+	
 	<div class="row clearfix">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<div class="col-lg-12 col-md-6 col-sm-12 col-xs-12">
 			<div class="table-responsive"
-				style="margin-top: 20px; margin-bottom: 20px;">
+				style="margin-top: 20px; margin-bottom: 20px; overflow-x: auto; ">
 				<table
 					class="table tableIni table-bordered table-striped table-hover dataTable"
 					id="sqlObjectTable">
