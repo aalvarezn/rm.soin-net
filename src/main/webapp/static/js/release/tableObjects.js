@@ -68,7 +68,7 @@ $(function() {
 								"mRender" : function(data, type, row, meta) {
 									options='<div class="switch">';
 									if(row.objects.execute==1){
-										options=options+'<label>NO<input disabled="disabled" type="checkbox" value="0"><span class="lever"></span>S&Iacute; </label> </div>';
+										options=options+'<label>NO<input disabled="disabled" type="checkbox" checked="checked" value="1"><span class="lever"></span>S&Iacute; </label> </div>';
 									}else{
 										options=options+'<label>NO<input disabled="disabled" type="checkbox" value="0"><span class="lever"></span>S&Iacute; </label> </div>'
 									}
@@ -85,7 +85,7 @@ $(function() {
 								"mRender" : function(data, type, row, meta) {
 									options='<div class="switch">';
 									if(row.objects.executePlan==1){
-										options=options+'<label>NO<input disabled="disabled" type="checkbox" value="0"><span class="lever"></span>S&Iacute; </label> </div>';
+										options=options+'<label>NO<input disabled="disabled" type="checkbox" checked="checked" value="1"><span class="lever"></span>S&Iacute; </label> </div>';
 									}else{
 										options=options+'<label>NO<input disabled="disabled" type="checkbox" value="0"><span class="lever"></span>S&Iacute; </label> </div>'
 									}
