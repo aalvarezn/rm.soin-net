@@ -6,20 +6,15 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Row;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,18 +32,15 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.Sheet;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.GDoc;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
-import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.service.GDocService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RequestService;
@@ -58,6 +50,7 @@ import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
 
+@SuppressWarnings("deprecation")
 @Controller
 @RequestMapping("/admin/request")
 public class RequestController extends BaseController {
@@ -77,7 +70,7 @@ public class RequestController extends BaseController {
 	GDocService gDocService;
 
 	private static final String APPLICATION_NAME = "sgrm";
-	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
 	private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
 
@@ -669,6 +662,7 @@ public class RequestController extends BaseController {
 	/**
 	 * Se crea un objeto de credenciales con la informacion del excel.
 	 */
+	@SuppressWarnings("deprecation")
 	private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT, GDoc config)
 			throws IOException, GeneralSecurityException {
 		String key = config.getCredentials();
