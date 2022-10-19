@@ -63,6 +63,7 @@ import com.soin.sgrm.service.RiskService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
 import com.soin.sgrm.service.EnvironmentService;
+import com.soin.sgrm.service.ErrorService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.service.TypeObjectService;
@@ -126,6 +127,8 @@ public class ReleaseController extends BaseController {
 	private NodeService nodeService;
 	@Autowired 
 	ReleaseObjectService releaseObjectService;
+	@Autowired
+	private ErrorService errorService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -309,6 +312,7 @@ public class ReleaseController extends BaseController {
 			model.addAttribute("systemConfiguration", systemConfiguration);
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
+			model.addAttribute("errors", errorService.findAll());
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
