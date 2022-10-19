@@ -38,6 +38,7 @@ $(function() {
 	$formChangeStatus.find('#statusId').change(function() {
 		$formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
+	dropDownChange();
 });
 
 
@@ -95,12 +96,32 @@ function responseCancelRelease(response) {
 
 function changeStatusRelease(releaseId, releaseNumber) {
 	$formChangeStatus[0].reset();
+	$formChangeStatus.find('#motive').val('');
+	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	$formChangeStatus.find('#idRelease').val(releaseId);
 	$formChangeStatus.find('#releaseNumber').val(releaseNumber);
+	$formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	$formChangeStatus.find('.fieldError').removeClass('activeError');
+	$formChangeStatus.find('.form-line').removeClass('error');
+	$formChangeStatus.find('.form-line').removeClass('focused');
+	$('#divError').attr( "hidden",true);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
-	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
-	$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
 	$('#changeStatusModal').modal('show');
+}
+
+function dropDownChange(){
+	
+	$('#statusId').on('change', function(){
+		
+		var status =$("#statusId").find("option:selected").text();
+		console.log(status);
+		if(status==="Error"){
+			$('#divError').attr( "hidden",false);
+		}else{
+			$('#divError').attr( "hidden",true);
+		}
+		
+	});
 }
 
 function saveChangeStatusModal(){
@@ -114,6 +135,7 @@ function saveChangeStatusModal(){
 		data : {
 			idRelease : $formChangeStatus.find('#idRelease').val(),
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
+			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
 			motive: $formChangeStatus.find('#motive').val()
 		},
@@ -152,15 +174,48 @@ function closeChangeStatusModal(){
 
 function validStatusRelease() {
 	let valid = true;
-	let statusId = $formChangeStatus.find('#statusId').children("option:selected")
-	.val();
-	if ($.trim(statusId) == "" || $.trim(statusId).length == 0) {
-		$formChangeStatus.find("#statusId_error").css("visibility", "visible");
-		return false;
-	} else {
-		$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
-		return true;
-	}
+	$formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	$formChangeStatus.find('.fieldError').removeClass('activeError');
+	$formChangeStatus.find('.form-line').removeClass('error');
+	$formChangeStatus.find('.form-line').removeClass('focused');
+	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
+		if($.trim(input.value) == ""){
+			
+			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+	$.each($formChangeStatus.find('select[required]'), function( index, select ) {
+	
+		if($.trim(select.value).length == 0 || select.value == ""){
+			
+			var statusSelected =$("#statusId").find("option:selected").text();
+			if(select.id==="errorId"&&statusSelected!=="Error"){
+				valid = true;
+			}else{
+				$formChangeStatus.find('#'+select.id+"_error").css("visibility","visible");
+				$formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
+				valid = false;
+			}
+		
+		}
+	});
+
+	$.each($formChangeStatus.find('textarea[required]'), function( index, textarea ) {
+		
+		if($.trim(textarea.value).length == 0 || textarea.value == ""){
+			$formChangeStatus.find('#'+textarea.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+textarea.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+textarea.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+
+	return valid;
 }
 
 function initTableObject() {

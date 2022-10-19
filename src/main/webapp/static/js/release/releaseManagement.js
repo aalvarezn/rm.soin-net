@@ -321,7 +321,7 @@ function validStatusRelease() {
 	formChangeStatus.find('.form-line').removeClass('focused');
 	$.each(formChangeStatus.find('input[required]'), function( index, input ) {
 		if($.trim(input.value) == ""){
-			console.log("aca estoy 1");
+			
 			formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
 			formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
 			formChangeStatus.find('#'+input.id+"").parent().attr("class",
@@ -334,8 +334,6 @@ function validStatusRelease() {
 		if($.trim(select.value).length == 0 || select.value == ""){
 			
 			var statusSelected =$("#statusId").find("option:selected").text();
-			console.log(select.id==="errorId");
-			console.log(statusSelected!=="Error");
 			if(select.id==="errorId"&&statusSelected!=="Error"){
 				valid = true;
 			}else{
@@ -350,7 +348,6 @@ function validStatusRelease() {
 	$.each(formChangeStatus.find('textarea[required]'), function( index, textarea ) {
 		
 		if($.trim(textarea.value).length == 0 || textarea.value == ""){
-			console.log("aca estoy 3");
 			formChangeStatus.find('#'+textarea.id+"_error").css("visibility","visible");
 			formChangeStatus.find('#'+textarea.id+"_error").addClass('activeError');
 			formChangeStatus.find('#'+textarea.id+"").parent().attr("class",
