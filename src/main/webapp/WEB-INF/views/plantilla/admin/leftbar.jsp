@@ -85,6 +85,8 @@
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/admin/system/ticket/'/>">Sistemas
 							Ticket</a></li>
+							<li><a href="<c:url value='/admin/attentionGroup/'/>">Grupos atencion
+							 de Tickets</a></li>
 					<li><a href="<c:url value='/admin/typeIncidence/'/>">Tipo
 							Incidencia</a></li>
 					<li><a href="<c:url value='/admin/priorityIncidence/'/>">Prioridad
