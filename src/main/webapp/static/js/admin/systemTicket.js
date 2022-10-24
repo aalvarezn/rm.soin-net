@@ -81,6 +81,41 @@ $(function() {
 			$systemModal.find("#team option[id='" + values + "']").removeAttr('selected');
 		}
 	});
+	
+	$systemModal.find('#groups').multiSelect({
+		selectableHeader: "<div class='custom-header'>Grupos disponibles</div> <input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+		selectionHeader: "<div class='custom-header'>Grupos asignados</div> <input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+		afterInit: function(ms){
+			var that = this,
+			$selectableSearch = that.$selectableUl.prev(),
+			$selectionSearch = that.$selectionUl.prev(),
+			selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+			selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+			that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+			.on('keydown', function(e){
+				if (e.which === 40){
+					that.$selectableUl.focus();
+					return false;
+				}
+			});
+
+			that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+			.on('keydown', function(e){
+				if (e.which == 40){
+					that.$selectionUl.focus();
+					return false;
+				}
+			});
+		},
+		afterSelect : function(values) {
+			$systemModal.find("#groups option[id='" + values + "']").attr("selected", "selected");
+		},
+		afterDeselect : function(values) {
+			$systemModal.find("#groups option[id='" + values + "']").removeAttr('selected');
+		}
+	});
+
 
 	$systemModal.find('input[type="checkbox"]').change(function() {
 		if (this.checked) {
@@ -246,8 +281,20 @@ function ajaxEditSystem(obj) {
 					}
 				});
 	}
+	
+	var groups= [];
+	for (var i = 0, l = obj.attentionGroup.length; i < l; i++) {
+		$systemModalForm.find('#groups option').each(
+				function(index, element) {
+					if (element.id == obj.attentionGroup[i].id) {
+						console.log(obj.attentionGroup[i].id);
+						groups.push((obj.attentionGroup[i].id).toString());
+					}
+				});
+	}
 	$systemModal.find('#managers').multiSelect('select',managersIncidence);
 	$systemModal.find('#team').multiSelect('select', userIncidence);
+	$systemModal.find('#groups').multiSelect('select', groups);
 	$systemModal.modal('show');
 }
 
@@ -255,6 +302,7 @@ function closeSystemModal() {
 	$systemModalForm[0].reset();
 	$systemModal.find('#managers').multiSelect("deselect_all");
 	$systemModal.find('#team').multiSelect("deselect_all");
+	$systemModal.find('#groups').multiSelect("deselect_all");
 	$systemModal.modal('hide');
 }
 
@@ -262,6 +310,7 @@ function updateSystem() {
 	blockUI();
 	let userTeamId = getSelectIds($systemModalForm, "#team");
 	let managersId = getSelectIds($systemModalForm, "#managers");
+	let groupsId = getSelectIds($systemModalForm, "#groups");
 	$.ajax({
 		type : "POST",
 		url : getCont() + "admin/system/" + "updateSystemIncidence",
@@ -270,6 +319,7 @@ function updateSystem() {
 			id : $systemModalForm.find('#systemId').val(),
 			userIncidenceId: JSON.stringify(userTeamId),
 			managersIncidenceId: JSON.stringify(managersId),
+			attentionGroupId:JSON.stringify(groupsId),
 		},
 		success : function(response) {
 			ajaxUpdateSystem(response)

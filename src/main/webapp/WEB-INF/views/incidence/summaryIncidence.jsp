@@ -213,7 +213,7 @@
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
-								<p id="timer" style="color:white; background-color:green;">
+								<p id="timer" style="color:white; color:#009688;">
 									0:00
 								</p>
 							</div>

@@ -23,11 +23,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.controller.admin.ConfigurationItemController;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.wf.Edge;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.Type;
 import com.soin.sgrm.model.wf.WFSystem;
 import com.soin.sgrm.model.wf.WFUser;
 import com.soin.sgrm.model.wf.WorkFlow;
@@ -36,6 +38,7 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.service.wf.EdgeService;
 import com.soin.sgrm.service.wf.NodeService;
+import com.soin.sgrm.service.wf.TypeService;
 import com.soin.sgrm.service.wf.WFUserService;
 import com.soin.sgrm.service.wf.WorkFlowService;
 import com.soin.sgrm.utils.JsonResponse;
@@ -59,12 +62,15 @@ public class WorkFlowController extends BaseController {
 	EdgeService edgeService;
 	@Autowired
 	SystemService systemService;
+	@Autowired
+	TypeService typeService;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		model.addAttribute("workFlows", workFlowService.list());
 		model.addAttribute("workFlow", new WorkFlow());
 		model.addAttribute("systems", systemService.listAll());
+		model.addAttribute("types", typeService.list());
 		model.addAttribute("system", new SystemInfo());
 		return "/wf/workFlow/workFlow";
 	}
@@ -111,11 +117,20 @@ public class WorkFlowController extends BaseController {
 				res.setStatus("fail");
 				res.addError("systemId", "Seleccione una opción");
 			}
+			
+			if (workFlow.getTypeId() == null) {
+				res.setStatus("fail");
+				res.addError("typeId", "Seleccione una opción");
+			}
+
 
 			if (res.getStatus().equals("success")) {
 				WFSystem system = new WFSystem();
+				Type type=new Type();
+				type.setId(workFlow.getTypeId());
 				system.setId(workFlow.getSystemId());
 				workFlow.setSystem(system);
+				workFlow.setType(type);
 				workFlowService.save(workFlow);
 				res.setObj(workFlow);
 			}
@@ -277,6 +292,27 @@ public class WorkFlowController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			edgeService.delete(id);
+			res.setStatus("success");
+			res.setObj(id);
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al eliminar enlace: " + e.getCause().getCause().getCause().getMessage() + ":"
+					+ e.getMessage());
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar enlace: Existen referencias que debe eliminar antes");
+			}
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/deleteWorkFlow/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteWorkFlowT(@PathVariable Integer id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			workFlowService.delete(id);
+			//edgeService.delete(id);
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {

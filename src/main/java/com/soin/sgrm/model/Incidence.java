@@ -26,6 +26,8 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.soin.sgrm.model.wf.Node;
+
 @Entity
 @Table(name = "INCIDENCIA")
 public class Incidence implements Serializable {
@@ -100,6 +102,10 @@ public class Incidence implements Serializable {
 	@JoinColumn(name = "ID_SISTEMA", nullable = false)
 	private SystemInfo  system;
 	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ID_GRUPO", nullable = false)
+	private AttentionGroup  attentionGroup;
+	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "INCIDENCIA_ARCHIVOINCIDENCIA", joinColumns = { @JoinColumn(name = "ID_INCIDENCIA") }, inverseJoinColumns = {
@@ -110,6 +116,10 @@ public class Incidence implements Serializable {
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "incidence")
 	private Set<IncidenceTracking> tracking = new HashSet<IncidenceTracking>();
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "NODO_ID", nullable = true)
+	private Node node;
 	
 	@Transient
 	private Long typeIncidenceId;
@@ -322,6 +332,22 @@ public class Incidence implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public AttentionGroup getAttentionGroup() {
+		return attentionGroup;
+	}
+
+	public void setAttentionGroup(AttentionGroup attentionGroup) {
+		this.attentionGroup = attentionGroup;
+	}
+
+	public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
 	}
 	
 	

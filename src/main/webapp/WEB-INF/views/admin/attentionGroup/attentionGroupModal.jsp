@@ -6,7 +6,7 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="largeModalLabel">Sistema</h4>
+				<h4 class="modal-title" id="largeModalLabel">Grupo de atencion de tickets</h4>
 			</div>
 			<div class="modal-body">
 				<form id="systemModalForm" action="">
@@ -20,7 +20,7 @@
 								<li role="presentation" class="active"><a href="#tabHome"
 									data-toggle="tab">INFORMACIÓN</a></li>
 								<li role="presentation"><a href="#tabTeam"
-									data-toggle="tab">EQUIPO DE TRABAJO</a></li>
+									data-toggle="tab">GRUPO</a></li>
 							</ul>
 						</div>
 					</div>

@@ -139,10 +139,10 @@ function initRFCTable() {
 								options = options
 								+ '<a onclick="confirmDeleteRFC('+row.id+')" title="Anular"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
 							}
-							
 							options = options
-							+ '<a onclick="checkMessage('+row.id+')" title="Historial mensajes"><i class="material-icons gris" style="font-size: 25px;">mail</i></a>';
-							
+							+ '<a onclick="openChangeUserModal('
+							+ row.id
+							+ ')" title="Asignar"><i class="material-icons gris">person_add</i> </a>';
 							options = options
 							+ '<a onclick="changeStatusRFC('+row.id+')" title="Cambiar Estado"><i class="material-icons gris" style="font-size: 25px;">offline_pin</i></a>';
 							options = options

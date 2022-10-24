@@ -108,6 +108,12 @@ public class System implements Serializable {
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
+	@JoinTable(name = "SISTEMA_GRUPOATENCION", joinColumns = {
+			@JoinColumn(name = "ID_SISTEMA") }, inverseJoinColumns = { @JoinColumn(name = "ID_GRUPO") })
+	private Set<AttentionGroup> attentionGroup = new HashSet<AttentionGroup>();
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "SISTEMA_CORREO", joinColumns = { @JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = {
 			@JoinColumn(name = "CORREO_ID") })
 	private Set<EmailTemplate> emailTemplate = new HashSet<EmailTemplate>();
@@ -123,6 +129,9 @@ public class System implements Serializable {
 	
 	@Transient
 	List<Integer> managersIncidenceId;
+	
+	@Transient
+	List<Long> attentionGroupId;
 
 	@Transient
 	Integer leaderId;
@@ -269,10 +278,35 @@ public class System implements Serializable {
 		this.usersIncidence = usersIncidence;
 	}
 
+	
+	
+
+	public Set<AttentionGroup> getAttentionGroup() {
+		return attentionGroup;
+	}
+
+	public void setAttentionGroup(Set<AttentionGroup> attentionGroup) {
+		this.attentionGroup = attentionGroup;
+	}
+	
+	public List<Long> getAttentionGroupId() {
+		return attentionGroupId;
+	}
+	public void setAttentionGroupId(String attentionId) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			List<Long> jsonList = mapper.readValue(attentionId, new TypeReference<List<Long>>() {
+			});
+			this.attentionGroupId = jsonList;
+		} catch (Exception e) {
+			this.attentionGroupId = null;
+			Sentry.capture(e, "attentionGroup");
+		}
+	}
+	
 	public List<Integer> getManagersId() {
 		return managersId;
 	}
-
 	public void setManagersId(String managersId) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -316,6 +350,8 @@ public class System implements Serializable {
 			Sentry.capture(e, "managersIncidence");
 		}
 	}
+	
+	
 
 	public List<Integer> getUserIncidenceId() {
 		return userTeamId;
@@ -428,6 +464,25 @@ public class System implements Serializable {
 	public boolean existManagerIncidence(Integer id) {
 		for (User user : this.managersIncidence) {
 			if (user.getId() == id) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void checkattentionGroupExists(Set<AttentionGroup> attentionGroupNew) {
+		this.attentionGroup.retainAll(attentionGroupNew);
+		// Agrego los nuevos grupos
+		for (AttentionGroup attention : attentionGroupNew) {
+			if (!existAttentionGroup(attention.getId())) {
+				this.attentionGroup.add(attention);
+			}
+		}
+	}
+
+	public boolean existAttentionGroup(Long id) {
+		for (AttentionGroup attention : this.attentionGroup) {
+			if (attention.getId() == id) {
 				return true;
 			}
 		}

@@ -58,7 +58,7 @@ function waitAndshow() {
 	 document.getElementById('timer').innerHTML = timer;
 	 
 	 if(miliTrans>attentionTime){
-		 var col= document.getElementById('timer').style.backgroundColor="#FF0000";
+		 var col= document.getElementById('timer').style.color="#DD1C5E";
 	 }
 	 //
 	 

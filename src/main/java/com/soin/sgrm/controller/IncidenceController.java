@@ -36,6 +36,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Sets;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Incidence;
@@ -54,6 +55,7 @@ import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.IncidenceService;
@@ -120,6 +122,9 @@ public class IncidenceController extends BaseController {
 
 	@Autowired
 	EmailReadService emailReadService;
+	
+	@Autowired
+	AttentionGroupService attentionGroupService;
 
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
@@ -250,7 +255,7 @@ public class IncidenceController extends BaseController {
 			return "/incidence/editIncidence";
 
 		} catch (Exception e) {
-			Sentry.capture(e, "rfc");
+			Sentry.capture(e, "incidence");
 			redirectAttributes.addFlashAttribute("data", e.toString());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
@@ -366,6 +371,8 @@ public class IncidenceController extends BaseController {
 			// Verificar si existe un flujo para el sistema
 
 			StatusIncidence status = statusService.findByKey("name", "Solicitado");
+			AttentionGroup attentionGroup=attentionGroupService.findByKey("code", "GI");
+			incidence.setAttentionGroup(attentionGroup);
 
 //			if (node != null)
 			

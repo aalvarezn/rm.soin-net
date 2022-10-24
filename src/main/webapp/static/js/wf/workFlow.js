@@ -30,7 +30,8 @@ function saveWorkFlow() {
 			// Informacion tramites
 			id : 0,
 			name : $workFlowModalForm.find('#name').val(),
-			systemId: $workFlowModalForm.find("#systemId").children("option:selected").val()
+			systemId: $workFlowModalForm.find("#systemId").children("option:selected").val(),
+			typeId:$workFlowModalForm.find("#typeId").children("option:selected").val(),
 		},
 		success : function(response) {
 			ajaxSaveWorkFlow(response)
@@ -91,8 +92,8 @@ function deleteWorkFlow(element){
 console.log(getCont() + "wf/" + "workFlow/deleteWorkFlow/" + element);
 	blockUI();
 	$.ajax({
-		workFlow : "DELETE",
-		url : getCont() + "wf/" + "workFlow/deleteWorkFlow/" + element,
+		type : "DELETE",
+		url : getCont() + "wf/workFlow/deleteWorkFlow/" + element,
 		timeout : 60000,
 		data : {},
 		success : function(response) {
@@ -100,6 +101,34 @@ console.log(getCont() + "wf/" + "workFlow/deleteWorkFlow/" + element);
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
+		}
+	});
+}
+function deleteStatusIncidence(index) {
+	var obj = $dtStatusIncidence.row(index).data();
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "DELETE",
+				url : getCont() + "admin/statusIncidence/"+obj.id ,
+				timeout : 60000,
+				data : {},
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtStatusIncidence.ajax.reload();
+					$mdStatusIncidence.modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					
+				}
+			});
 		}
 	});
 }

@@ -103,6 +103,7 @@ public class IncidenceDaoImpl extends AbstractDao<Long, Incidence> implements In
 		fetchs.add("priority");
 		fetchs.add("tracking");
 		fetchs.add("user");
+		fetchs.add("attentionGroup");
 		if (fetchs != null)
 			for (String itemModel : fetchs)
 				crit.setFetchMode(itemModel, FetchMode.SELECT);

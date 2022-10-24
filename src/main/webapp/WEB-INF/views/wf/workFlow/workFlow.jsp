@@ -105,6 +105,7 @@
 								<tr>
 									<th>Nombre</th>
 									<th>Sistema</th>
+									<th>Tipo</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>
@@ -113,6 +114,7 @@
 									<tr id="${workFlow.id}">
 										<td>${workFlow.name}</td>
 										<td>${workFlow.system.code}</td>
+										<td>${workFlow.type.name}</td>
 										<td><div class="iconLineC">
 												<a
 													href="<c:url value='/wf/workFlow/workFlowEdit/${workFlow.id}'/>"><i

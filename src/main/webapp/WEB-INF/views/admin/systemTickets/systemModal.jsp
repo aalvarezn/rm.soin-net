@@ -23,6 +23,8 @@
 									data-toggle="tab">USUARIOS EXTERNOS</a></li>
 								<li role="presentation"><a href="#tabManagements"
 									data-toggle="tab">GESTORES TICKETS</a></li>
+									<li role="presentation"><a href="#tabGroup"
+									data-toggle="tab">GRUPOS QUE LO ATIENDEN</a></li>
 							</ul>
 						</div>
 					</div>
@@ -106,6 +108,17 @@
 									<select id='managers' multiple='multiple'>
 										<c:forEach items="${userIncidence}" var="user">
 											<option id="${user.id}" value='${user.id}'>${user.fullName}</option>
+										</c:forEach>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="tabGroup">
+							<div class="row m-t-20">
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 multSelect">
+									<select id='groups' multiple='multiple'>
+										<c:forEach items="${attentionGroups}" var="attentionGroup">
+											<option id="${attentionGroup.id}" value='${attentionGroup.id}'>${attentionGroup.name}</option>
 										</c:forEach>
 									</select>
 								</div>

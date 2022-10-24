@@ -27,12 +27,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.Authority;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.SystemService;
@@ -58,6 +60,9 @@ public class SystemController extends BaseController {
 	@Autowired
 	EmailTemplateService emailService;
 
+	@Autowired
+	AttentionGroupService attentionGroupService;
+	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		model.addAttribute("systems", systemService.list());
@@ -79,6 +84,7 @@ public class SystemController extends BaseController {
 		List<UserInfo> listUser=userService.list();
 		List<UserInfo> userManagerIncidence=new ArrayList<UserInfo>();
 		List<UserInfo> userIncidence=new ArrayList<UserInfo>();
+		
 		for(UserInfo user: listUser) {
 			Set<Authority> roles=user.getAuthorities();
 			for(Authority rol: roles) {
@@ -92,6 +98,7 @@ public class SystemController extends BaseController {
 		
 		model.addAttribute("userManager",userManagerIncidence );
 		model.addAttribute("userIncidence",userIncidence );
+		model.addAttribute("attentionGroups",attentionGroupService.findAll());
 		model.addAttribute("user", new UserInfo());
 		model.addAttribute("projects", projectService.listAll());
 		model.addAttribute("project", new Project());
@@ -284,6 +291,16 @@ public class SystemController extends BaseController {
 						managersNews.add(temp);
 				}
 				systemOrigin.checkManagersIncidenceExists(managersNews);
+				
+				// se agregan los grupos de atencion
+				AttentionGroup tempGroup = null;
+				Set<AttentionGroup> attentionGroupNew = new HashSet<>();
+				for (Long index : system.getAttentionGroupId()) {
+					tempGroup = attentionGroupService.findById(index);
+					if (tempGroup != null)
+						attentionGroupNew.add(tempGroup);
+				}
+				systemOrigin.checkattentionGroupExists(attentionGroupNew);
 
 				systemService.update(systemOrigin);
 				res.setObj(system);
