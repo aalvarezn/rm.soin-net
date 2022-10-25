@@ -96,3 +96,5 @@
 		</div>
 	</div>
 </c:if>
+
+<%@include file="../../plantilla/mail.jsp"%>
