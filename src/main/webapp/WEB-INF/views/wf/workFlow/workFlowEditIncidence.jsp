@@ -152,8 +152,7 @@
 	<script
 		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
 	<!-- Quicksearch Js -->
-	<script
-		src="<c:url value='/static/plugins/quicksearch/quicksearch.js'/>"></script>
+	<script src="<c:url value='/static/plugins/quicksearch/quicksearch.js'/>"></script>
 	<!-- Custom Js -->
 
 	<script src="<c:url value='/static/js/admin.js?v=${jsVersion}'/>"></script>

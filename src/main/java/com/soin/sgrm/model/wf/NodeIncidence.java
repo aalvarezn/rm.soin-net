@@ -40,7 +40,7 @@ import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "TRAMITES_NODO")
+@Table(name = "TRAMITES_NODO_INC")
 public class NodeIncidence implements Serializable {
 
 	@Id
@@ -61,7 +61,7 @@ public class NodeIncidence implements Serializable {
 
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(mappedBy = "nodeFrom", fetch = FetchType.EAGER, orphanRemoval = true)
-	private List<Edge> edges = new ArrayList<Edge>();
+	private List<EdgeIncidence> edges = new ArrayList<EdgeIncidence>();
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ESTADO_ID", nullable = true)
@@ -87,13 +87,13 @@ public class NodeIncidence implements Serializable {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "TRAMITES_NODO_NOTIFY", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
+	@JoinTable(name = "TRAMITES_NODO_NOT_IN", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
 			@JoinColumn(name = "CUSTOMUSER_ID") })
 	private Set<WFUser> users = new HashSet<WFUser>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "TRAMITES_NODO_ACTOR", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
+	@JoinTable(name = "TRAMITES_NODO_ACT_IN", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
 			@JoinColumn(name = "CUSTOMUSER_ID") })
 	private Set<WFUser> actors = new HashSet<WFUser>();
 
@@ -168,11 +168,11 @@ public class NodeIncidence implements Serializable {
 		this.workFlowId = workFlowId;
 	}
 
-	public List<Edge> getEdges() {
+	public List<EdgeIncidence> getEdges() {
 		return edges;
 	}
 
-	public void setEdges(List<Edge> edges) {
+	public void setEdges(List<EdgeIncidence> edges) {
 		this.edges = edges;
 	}
 

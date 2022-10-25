@@ -79,12 +79,30 @@ public class WorkFlowController extends BaseController {
 	public String workFlowEdit(HttpServletRequest request, @PathVariable Integer id, Locale locale, Model model,
 			HttpSession session) {
 		WorkFlow workFlow = workFlowService.findById(id);
-		model.addAttribute("workFlow", workFlow);
-		model.addAttribute("statuses", statusService.list());
-		model.addAttribute("status", new Status());
-		model.addAttribute("users", wfUserService.list());
-		model.addAttribute("user", new WFUser());
-		return "/wf/workFlow/workFlowEdit";
+		
+		if(workFlow.getType().getId()==1) {
+			model.addAttribute("workFlow", workFlow);
+			model.addAttribute("statuses", statusService.list());
+			model.addAttribute("status", new Status());
+			model.addAttribute("users", wfUserService.list());
+			model.addAttribute("user", new WFUser());
+			return "/wf/workFlow/workFlowEdit";
+		}else if(workFlow.getType().getId()==2) {
+			model.addAttribute("workFlow", workFlow);
+			model.addAttribute("statuses", statusService.list());
+			model.addAttribute("status", new Status());
+			model.addAttribute("users", wfUserService.list());
+			model.addAttribute("user", new WFUser());
+			return "/wf/workFlow/workFlowEditIncidence";
+		}else {
+			model.addAttribute("workFlow", workFlow);
+			model.addAttribute("statuses", statusService.list());
+			model.addAttribute("status", new Status());
+			model.addAttribute("users", wfUserService.list());
+			model.addAttribute("user", new WFUser());
+			return "/wf/workFlow/workFlowEdit";
+		}
+	
 	}
 
 	@RequestMapping(value = "/loadWorkFlow/{id}", method = RequestMethod.GET)
