@@ -64,7 +64,7 @@
 						<div class="form-line">
 							<textarea rows="2" cols="" id="messagePer" name="messagePer"
 								class="form-control" placeholder="Ingrese un mensaje..."
-								style="">${release.postConditions}</textarea>
+								style="">${message}</textarea>
 						</div>
 						<label id="messagePer_error" class="error fieldError" for="name"
 							style="visibility: hidden;">Campo Requerido.</label>
@@ -83,7 +83,7 @@
 				<div class="form-group m-b-0i">
 					<div class="form-line">
 						<textarea rows="2" cols="" id="messagePer" name="messagePer"
-							class="form-control" placeholder="Ingrese un mensaje..." style="">${release.postConditions}</textarea>
+							class="form-control" placeholder="Ingrese un mensaje..." style="">${message}</textarea>
 					</div>
 					<label id="messagePer_error" class="error fieldError" for="name"
 						style="visibility: hidden;">Campo Requerido.</label>
