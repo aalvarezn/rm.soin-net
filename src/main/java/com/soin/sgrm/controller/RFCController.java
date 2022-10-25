@@ -289,6 +289,16 @@ public class RFCController extends BaseController {
 				addRFC.setTypeChange(typeChange);
 
 			}
+			if (addRFC.getSenders().length() < 256) {
+				addRFC.setSenders(addRFC.getSenders());
+			} else {
+				addRFC.setSenders(rfcMod.getSenders());
+			}
+			if (addRFC.getMessage().length() < 256) {
+				addRFC.setMessage(addRFC.getMessage());
+			} else {
+				addRFC.setMessage(rfcMod.getMessage());
+			}
 			if (addRFC.getReleasesList() != null) {
 				JSONArray jsonArray = new JSONArray(addRFC.getReleasesList());
 				String dbScheme=addRFC.getSchemaDB();
