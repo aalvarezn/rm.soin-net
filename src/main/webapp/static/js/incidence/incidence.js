@@ -165,23 +165,46 @@ function initRFCTable() {
 						"mRender" : function(data, type, row, meta) {
 							var options = '<div class="iconLine">';
 							if (row.status.name == 'Solicitado') {
+									if($('#isGI').val()){
+										options = options
+										//aca debe ir un mensaje de asignacion si no se asigando a un usuario
+										+ '<a onclick="editRFC('
+										+ row.id
+										+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
+									}
+
 								
+							}
+							if (row.status.name == 'Enviado a RM') {
+								if($('#isRM').val()){
 									options = options
 									+ '<a onclick="editRFC('
 									+ row.id
 									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
-								
-							}
-							options = options
-							+ '<a onclick="openChangeUserModal('
-							+ row.id
-							+ ')" title="Asignar"><i class="material-icons gris">person_add</i> </a>';
-							if(row.status.name != 'Anulado') {
-								options = options
-								+ '<a onclick="confirmDeleteRFC('+row.id+')" title="Anular"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
-							}
-							options = options
-							+ '<a onclick="changeStatusRFC('+row.id+')" title="Cambiar Estado"><i class="material-icons gris" style="font-size: 25px;">offline_pin</i></a>';
+								}
+
+							
+						}
+							if (row.status.name == 'Enviado a LABS') {
+								if($('#isLABS').val()){
+									options = options
+									+ '<a onclick="editRFC('
+									+ row.id
+									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
+								}
+
+							
+						}
+							if (row.status.name == 'Enviado a INFRA') {
+								if($('#isINFRA').val()){
+									options = options
+									+ '<a onclick="editRFC('
+									+ row.id
+									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
+								}
+
+							
+						}
 							options = options
 							+ '<a onclick="openIncidenceTrackingModal('
 							+ row.id

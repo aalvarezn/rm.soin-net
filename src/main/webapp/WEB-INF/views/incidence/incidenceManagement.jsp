@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <html>
@@ -51,6 +51,20 @@
 </head>
 <body class="theme-grey">
 	<input type="text" id="postMSG" name="postMSG" value="${data}">
+	<c:forEach items="${attentionGroup}" var="attentionGroup">
+		<c:if test="${attentionGroup.code == 'RM'}">
+			<input type="text" id="isRM" name="isRM" value="true">
+		</c:if>
+		<c:if test="${attentionGroup.code == 'GI'}">
+			<input type="text" id="isGI" name="isGI" value="true">
+		</c:if>
+		<c:if test="${attentionGroup.code == 'LABS'}">
+			<input type="text" id="isLABS" name="isLABS" value="true">
+		</c:if>
+		<c:if test="${attentionGroup.code == 'INFRA'}">
+			<input type="text" id="isINFRA" name="isINFRA" value="true">
+		</c:if>
+	</c:forEach>
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
@@ -132,8 +146,9 @@
 										</div>
 										<div class="content">
 											<div class="text">COMPLETADOS</div>
-											<div class="number count-to" data-from="0" data-to="${userC['completed']}"
-												data-speed="1000" data-fresh-interval="20"></div>
+											<div class="number count-to" data-from="0"
+												data-to="${userC['completed']}" data-speed="1000"
+												data-fresh-interval="20"></div>
 										</div>
 									</div>
 								</div>
@@ -161,8 +176,7 @@
 						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
 							<label>Tipo</label>
 							<div class="form-group m-b-0">
-								<select id="typeId"
-									class="form-control show-tick selectpicker"
+								<select id="typeId" class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
 									<c:forEach items="${typeincidences}" var="typeincidence">
@@ -203,33 +217,33 @@
 					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-					<div id="tableSection" class="row clearfix">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="body ">
-								<div class="body table-responsive">
-									<table id="dtRFCs"
-										class="table table-bordered table-striped table-hover dataTable">
-										<thead>
-											<tr>
-												<th></th>
-												<th>Número Ticket</th>
-												<th>Titulo</th>
-												<th>Detalle del problema</th>
-												<th>Asignado A</th>
-												<th>Creado por</th>
-												<th>Modificado</th>
-												<th>Prioridad</th>
-												<th>Estado</th>
-												<th>Acciones</th>
-											</tr>
-										</thead>
+						<div id="tableSection" class="row clearfix">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="body ">
+									<div class="body table-responsive">
+										<table id="dtRFCs"
+											class="table table-bordered table-striped table-hover dataTable">
+											<thead>
+												<tr>
+													<th></th>
+													<th>Número Ticket</th>
+													<th>Titulo</th>
+													<th>Detalle del problema</th>
+													<th>Asignado A</th>
+													<th>Creado por</th>
+													<th>Modificado</th>
+													<th>Prioridad</th>
+													<th>Estado</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
 
-									</table>
+										</table>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					
+
 					</div>
 				</div>
 				<!-- #tableSection# -->

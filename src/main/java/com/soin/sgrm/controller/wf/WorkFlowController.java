@@ -25,14 +25,19 @@ import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.controller.admin.ConfigurationItemController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.wf.Edge;
+import com.soin.sgrm.model.wf.EdgeIncidence;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.Type;
 import com.soin.sgrm.model.wf.WFSystem;
 import com.soin.sgrm.model.wf.WFUser;
 import com.soin.sgrm.model.wf.WorkFlow;
+import com.soin.sgrm.model.wf.WorkFlowIncidence;
+import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.UserInfoService;
@@ -54,6 +59,8 @@ public class WorkFlowController extends BaseController {
 	WorkFlowService workFlowService;
 	@Autowired
 	StatusService statusService;
+	@Autowired
+	StatusIncidenceService statusIncidenceService;
 	@Autowired
 	WFUserService wfUserService;
 	@Autowired
@@ -88,9 +95,10 @@ public class WorkFlowController extends BaseController {
 			model.addAttribute("user", new WFUser());
 			return "/wf/workFlow/workFlowEdit";
 		}else if(workFlow.getType().getId()==2) {
-			model.addAttribute("workFlow", workFlow);
-			model.addAttribute("statuses", statusService.list());
-			model.addAttribute("status", new Status());
+			WorkFlowIncidence workFlowIncidence = workFlowService.findByIdIncidence(id);
+			model.addAttribute("workFlow", workFlowIncidence);
+			model.addAttribute("statuses", statusIncidenceService.findAll());
+			model.addAttribute("status", new StatusIncidence());
 			model.addAttribute("users", wfUserService.list());
 			model.addAttribute("user", new WFUser());
 			return "/wf/workFlow/workFlowEditIncidence";
@@ -110,6 +118,18 @@ public class WorkFlowController extends BaseController {
 			Model model, HttpSession session) {
 		try {
 			WorkFlow workFlow = workFlowService.findById(id);
+			return workFlow;
+		} catch (Exception e) {
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
+		}
+	}
+	
+	@RequestMapping(value = "/loadWorkFlowIncidence/{id}", method = RequestMethod.GET)
+	public @ResponseBody WorkFlowIncidence findWorkFlowIncidence(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
+		try {
+			WorkFlowIncidence workFlow = workFlowService.findByIdIncidence(id);
 			return workFlow;
 		} catch (Exception e) {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -187,6 +207,35 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
+	
+	@RequestMapping(path = "/saveNodeIncidence", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveNodeIncidence(HttpServletRequest request, @Valid @ModelAttribute("NodeIncidence") NodeIncidence node,
+			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}
+			if (res.getStatus().equals("success")) {
+				WorkFlowIncidence workFlow = new WorkFlowIncidence();
+				workFlow.setId(node.getWorkFlowId());
+				node.setSendEmail(false);
+				node.setWorkFlow(workFlow);
+				node = nodeService.saveNodeIncidence(node);
+				res.setObj(node);
+			}
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al crear nodo: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
 
 	@RequestMapping(value = "/updateNode", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateNode(HttpServletRequest request, @Valid @ModelAttribute("Node") Node node,
@@ -237,6 +286,56 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
+	
+	@RequestMapping(value = "/updateNodeIncidence", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse updateNodeIncidence(HttpServletRequest request, @Valid @ModelAttribute("NodeIncidence") NodeIncidence node,
+			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}
+			if (res.getStatus().equals("success")) {
+				WorkFlowIncidence workFlow = new WorkFlowIncidence();
+				workFlow.setId(node.getWorkFlowId());
+				node.setWorkFlow(workFlow);
+				if (node.getStatusId() != null) {
+					StatusIncidence status = new StatusIncidence();
+					status.setId(node.getStatusId());
+					node.setStatus(status);
+				}
+				// se agregan los usuarios actores
+				node.clearActors();
+				WFUser actor = null;
+				for (Integer index : node.getActorsIds()) {
+					actor = wfUserService.findWFUserById(index);
+					if (actor != null)
+						node.addActor(actor);
+				}
+
+				// se agregan los usuarios a notificar
+				node.clearUsers();
+				WFUser temp = null;
+				for (Integer index : node.getUsersIds()) {
+					temp = wfUserService.findWFUserById(index);
+					if (temp != null)
+						node.addUser(temp);
+				}
+
+				node = nodeService.updateNodeIncidence(node);
+				res.setObj(node);
+			}
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al modificar nodo: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 
 	@RequestMapping(value = "/updateNodePosition", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateNodePosition(HttpServletRequest request,
@@ -258,12 +357,52 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
+	
+	@RequestMapping(value = "/updateNodeInPosition", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse updateNodeIncidencePosition(HttpServletRequest request,
+			@Valid @ModelAttribute("NodeIncidence") NodeIncidence node, BindingResult errors, ModelMap model, Locale locale,
+			HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			NodeIncidence oldNode = nodeService.findByIdNoInci(node.getId());
+			oldNode.setX(node.getX());
+			oldNode.setY(node.getY());
+			node = nodeService.updateNodeIncidence(oldNode);
+			res.setObj(node);
+
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al modificar nodo: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 
 	@RequestMapping(value = "/deleteNode/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteWorkFlow(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
 			nodeService.delete(id);
+			res.setStatus("success");
+			res.setObj(id);
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al eliminar nodo: " + e.getCause().getCause().getCause().getMessage() + ":"
+					+ e.getMessage());
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar nodo: Existen referencias que debe eliminar antes");
+			}
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	@RequestMapping(value = "/deleteNodeIncidence/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteWorkFlowIncidence(@PathVariable Integer id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			nodeService.deleteNodeIncidence(id);
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {
@@ -304,6 +443,32 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
+	
+	@RequestMapping(path = "/saveEdgeIncidence", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveEdge(HttpServletRequest request, @Valid @ModelAttribute("EdgeIncidence") EdgeIncidence edge,
+			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}
+			if (res.getStatus().equals("success")) {
+				edge.setNodeFrom(new NodeIncidence(edge.getNodeFromId()));
+				edge.setNodeTo(new NodeIncidence(edge.getNodeToId()));
+				edge = edgeService.saveEdgeIncidence(edge);
+				res.setObj(edge);
+			}
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al crear enlace: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 
 	@RequestMapping(value = "/deleteEdge/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteEdge(@PathVariable Integer id, Model model) {
@@ -325,6 +490,25 @@ public class WorkFlowController extends BaseController {
 		return res;
 	}
 	
+	@RequestMapping(value = "/deleteEdgeIncidence/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteEdgeIncidence(@PathVariable Integer id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			edgeService.deleteEdgeIncidence(id);
+			res.setStatus("success");
+			res.setObj(id);
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al eliminar enlace: " + e.getCause().getCause().getCause().getMessage() + ":"
+					+ e.getMessage());
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar enlace: Existen referencias que debe eliminar antes");
+			}
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 	@RequestMapping(value = "/deleteWorkFlow/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteWorkFlowT(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();

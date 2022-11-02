@@ -102,8 +102,8 @@
 							id="attentionTable">
 							<thead>
 								<tr>
-									<th>Código</th>
 									<th>Nombre</th>
+									<th>Código</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>

@@ -91,6 +91,10 @@
 				<li><a id="incidenceItem" href="<c:url value='/incidence/'/> ">
 						<span>Mis tickets</span>
 				</a></li>
+					<li><a id="incidenceItem" href="<c:url value='/management/wf/incidence'/> ">
+						<span>Tramite tickets</span>
+				</a></li>
+				
 			</c:if>
 			<c:if test="${releaseAccess}">
 				<li><a id="releasesItem" href="<c:url value='/release/'/> ">

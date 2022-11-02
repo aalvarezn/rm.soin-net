@@ -214,7 +214,7 @@ $(function() {
 function loadWorkFlow() {
 	$.ajax({
 		type : "GET",
-		url : getCont() + "wf/workFlow/" + "loadWorkFlow/"
+		url : getCont() + "wf/workFlow/" + "loadWorkFlowIncidence/"
 		+ $("#wfEdit").data("id"),
 		timeout : 60000,
 		data : {},
@@ -307,7 +307,7 @@ function ajaxLoadWorkFlow(response) {
 function saveNode(nodeData, callback) {
 	$.ajax({
 		type : "POST",
-		url : getCont() + "wf/workFlow/" + "saveNode",
+		url : getCont() + "wf/workFlow/" + "saveNodeIncidence",
 		data : {
 			id : 0,
 			label : nodeData.label,
@@ -350,7 +350,7 @@ function ajaxSaveNode(response, nodeData, callback) {
 function deleteNode(element, callback) {
 	$.ajax({
 		type : "DELETE",
-		url : getCont() + "wf/workFlow/" + "deleteNode/" + element,
+		url : getCont() + "wf/workFlow/" + "deleteNodeIncidence/" + element,
 		timeout : 60000,
 		data : {},
 		success : function(response) {
@@ -393,7 +393,7 @@ function updateNodeModal() {
 	let actorsNotyIds = getSelectIds($nodeForm, "#actors");
 	$.ajax({
 		type : "POST",
-		url : getCont() + "wf/workFlow/" + "updateNode",
+		url : getCont() + "wf/workFlow/" + "updateNodeIncidence",
 		data : {
 			id : $nodeForm.find('#id').val(),
 			label : $nodeForm.find('#name').val(),
@@ -433,6 +433,8 @@ function ajaxUpdateNode(response) {
 			users : response.obj.users,
 			actors : response.obj.actors
 		});
+		
+		console.log(response);
 		$network.redraw();
 		$nodeModal.modal('hide');
 		break;
@@ -453,7 +455,7 @@ function updateNodePosition(nodeId, params) {
 	if (typeof node.id !== 'undefined') {
 		$.ajax({
 			type : "POST",
-			url : getCont() + "wf/workFlow/" + "updateNodePosition",
+			url : getCont() + "wf/workFlow/" + "updateNodeInPosition",
 			data : {
 				id : node.id,
 				workFlowId : $("#wfEdit").data("id"),
@@ -476,7 +478,7 @@ function updateNodePosition(nodeId, params) {
 function saveEdge(edgeData, callback) {
 	$.ajax({
 		type : "POST",
-		url : getCont() + "wf/workFlow/" + "saveEdge",
+		url : getCont() + "wf/workFlow/" + "saveEdgeIncidence",
 		data : {
 			id : 0,
 			nodeFromId : edgeData.from,
@@ -513,7 +515,7 @@ function ajaxEdgeNode(response, edgeData, callback) {
 function deleteEdge(element) {
 	$.ajax({
 		type : "DELETE",
-		url : getCont() + "wf/workFlow/" + "deleteEdge/" + element,
+		url : getCont() + "wf/workFlow/" + "deleteEdgeIncidence/" + element,
 		timeout : 60000,
 		data : {},
 		success : function(response) {

@@ -11,6 +11,7 @@ import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRelease;
 
 public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
@@ -47,5 +48,11 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	void sendMailNotify(WFRelease releaseEmail, EmailTemplate email,String user);
 
 	void sendMailIncidence(Incidence incidenceEmail, EmailTemplate email) throws Exception;
+
+	void sendMailIncidence(WFIncidence incidenceEmail, EmailTemplate email, String motive);
+	
+	void sendMailActorIncidence(WFIncidence incidenceEmail, EmailTemplate emailActor);
+
+	void sendMailNotify(WFIncidence incidenceEmail, EmailTemplate emailNotify, String user);
 
 }

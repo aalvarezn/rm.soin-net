@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.PriorityIncidence;
 import com.soin.sgrm.model.StatusIncidence;
@@ -33,6 +34,7 @@ import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.IncidenceService;
@@ -47,12 +49,13 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
 import com.soin.sgrm.service.TypeIncidenceService;
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
 @RequestMapping("/management/incidence")
 public class IncidenceManagementController extends BaseController {
-	
+
 	@Autowired
 	RFCService rfcService;
 
@@ -67,7 +70,6 @@ public class IncidenceManagementController extends BaseController {
 
 	@Autowired
 	SigesService sigeService;
-
 
 	@Autowired
 	TypeChangeService typeChangeService;
@@ -99,8 +101,11 @@ public class IncidenceManagementController extends BaseController {
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
 
+	@Autowired
+	AttentionGroupService attentionGroupService;
+
 	public static final Logger logger = Logger.getLogger(IncidenceManagementController.class);
-	
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -110,7 +115,9 @@ public class IncidenceManagementController extends BaseController {
 			List<TypeIncidence> typeIncidences = typeIncidenceService.findAll();
 			List<StatusIncidence> statuses = statusService.findAll();
 			List<PriorityIncidence> priorities = priorityIncidenceService.findAll();
+			List<AttentionGroup> attentionGroup = attentionGroupService.findGroupByUserId(userLogin);
 			model.addAttribute("typeincidences", typeIncidences);
+			model.addAttribute("attentionGroup", attentionGroup);
 			model.addAttribute("priorities", priorities);
 			model.addAttribute("statuses", statuses);
 		} catch (Exception e) {
@@ -163,53 +170,14 @@ public class IncidenceManagementController extends BaseController {
 	}
 
 	@RequestMapping(value = "/editIncidence-{id}", method = RequestMethod.GET)
-	public String editIncidence(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
+	public String editIncidence(@PathVariable String id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		Incidence incidenceEdit = new Incidence();
 		User user = userService.getUserByUsername(getUserLogin().getUsername());
 		List<System> systems = systemService.listProjects(user.getId());
+		List<AttentionGroup> attentionGroup = attentionGroupService.findGroupByUserId(getUserLogin().getId());
 		try {
-			if (id == null) {
-				return "redirect:/";
-			}
-
-			incidenceEdit = incidenceService.getIncidences(id);
-
-			if (incidenceEdit == null) {
-				return "/plantilla/404";
-			}
-
-			if (!incidenceEdit.getStatus().getName().equals("Borrador")) {
-				redirectAttributes.addFlashAttribute("data", "RFC no disponible para editar.");
-				String referer = request.getHeader("Referer");
-				return "redirect:" + referer;
-			}
-			Collection<? extends GrantedAuthority> roles = getUserLogin().getAuthorities();
-			Integer countRol = 0;
-			for (GrantedAuthority rol : roles) {
-				if (rol.getAuthority().equals("ROLE_Admin")) {
-					countRol++;
-				}
-				if (rol.getAuthority().equals("ROLE_Gestor Incidencias")) {
-					countRol++;
-				}
-
-			}
-
-			if (countRol == 0) {
-				redirectAttributes.addFlashAttribute("data",
-						"No tiene permisos sobre la incidencia ya que no formas parte de este equipo.");
-				String referer = request.getHeader("Referer");
-				return "redirect:" + referer;
-			}
-			/*
-			 * if (!(rfcEdit.getUser().getUsername().toLowerCase().trim())
-			 * .equals((user.getUsername().toLowerCase().trim()))) {
-			 * redirectAttributes.addFlashAttribute("data",
-			 * "No tiene permisos sobre el rfc."); String referer =
-			 * request.getHeader("Referer"); return "redirect:" + referer; }
-			 */
-
+			model.addAttribute("parameter", id);
 			model.addAttribute("systems", systems);
 			model.addAttribute("typeChange", typeChangeService.findAll());
 			model.addAttribute("priorities", priorityIncidenceService.findAll());
@@ -217,18 +185,90 @@ public class IncidenceManagementController extends BaseController {
 			model.addAttribute("incidence", incidenceEdit);
 			model.addAttribute("senders", incidenceEdit.getSenders());
 			model.addAttribute("message", incidenceEdit.getMessage());
-			if(incidenceEdit.getTypeIncidence()!=null) {
-			//model.addAttribute("ccs", getCC(incidenceEdit.getTypeIncidence().getEmailTemplate().getCc()));
+	
+			if (CommonUtils.isNumeric(id)) {
+				incidenceEdit = incidenceService.getIncidences((Long.parseLong(id)));
 			}
-   			return "/incidence/editIncidence";
+
+			if (incidenceEdit == null) {
+				return "redirect:/";
+			}
+			if (incidenceEdit.getStatus().getName().equals("Enviado a RM")) {
+				boolean verify=false;
+				for(AttentionGroup attentionGroupName: attentionGroup) {
+					if(attentionGroupName.getCode().equals("RM")){
+						verify=true;
+					}
+				}
+				if(!verify) {
+					redirectAttributes.addFlashAttribute("data", "Esta incidencia no disponible para editar ya que no eres parte de este grupo.");
+					String referer = request.getHeader("Referer");
+					return "redirect:" + referer;
+				}
+				
+			}
+			
+			if (incidenceEdit.getStatus().getName().equals("Enviado a INFRA")) {
+				boolean verify=false;
+				for(AttentionGroup attentionGroupName: attentionGroup) {
+					if(attentionGroupName.getCode().equals("INFRA")){
+						verify=true;
+					}
+				}
+				if(!verify) {
+					redirectAttributes.addFlashAttribute("data", "Esta incidencia no disponible para editar ya que no eres parte de este grupo.");
+					String referer = request.getHeader("Referer");
+					return "redirect:" + referer;
+				}
+				
+			}
+			
+			if (incidenceEdit.getStatus().getName().equals("Enviado a LABS")) {
+				boolean verify=false;
+				for(AttentionGroup attentionGroupName: attentionGroup) {
+					if(attentionGroupName.getCode().equals("LABS")){
+						verify=true;
+					}
+				}
+				if(!verify) {
+					redirectAttributes.addFlashAttribute("data", "Esta incidencia no disponible para editar ya que no eres parte de este grupo.");
+					String referer = request.getHeader("Referer");
+					return "redirect:" + referer;
+				}
+				
+			}
+			
+			if (incidenceEdit.getStatus().getName().equals("Solicitado")) {
+				boolean verify=false;
+				for(AttentionGroup attentionGroupName: attentionGroup) {
+					if(attentionGroupName.getCode().equals("GI")){
+						verify=true;
+					}
+				}
+				if(!verify) {
+					redirectAttributes.addFlashAttribute("data", "Esta incidencia no disponible para editar ya que no eres parte de este grupo.");
+					String referer = request.getHeader("Referer");
+					return "redirect:" + referer;
+				}
+				
+			}
+
+			
+
+			model.addAttribute("incidence", incidenceEdit);
+			return "/incidence/summaryIncidence";
 
 		} catch (Exception e) {
-			Sentry.capture(e, "rfc");
-			redirectAttributes.addFlashAttribute("data", e.toString());
+			Sentry.capture(e, "incidence");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina resumen incidence." + " ERROR: " + e.getMessage());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return "redirect:/homeIncidence";
 		}
 
-		return "redirect:/";
+		
+
+
 	}
 
 	public List<String> getCC(String ccs) {
@@ -270,6 +310,5 @@ public class IncidenceManagementController extends BaseController {
 		return "se leyo correctamente";
 
 	}
-
 
 }

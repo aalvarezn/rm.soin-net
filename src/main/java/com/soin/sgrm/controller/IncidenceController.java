@@ -54,6 +54,10 @@ import com.soin.sgrm.model.System_Priority;
 import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.wf.WFIncidence;
+import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.EmailReadService;
@@ -72,6 +76,7 @@ import com.soin.sgrm.service.System_PriorityService;
 import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
 import com.soin.sgrm.service.TypeIncidenceService;
+import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
@@ -80,55 +85,42 @@ import com.soin.sgrm.utils.MyLevel;
 @Controller
 @RequestMapping(value = "/incidence")
 public class IncidenceController extends BaseController {
-
 	@Autowired
 	RFCService rfcService;
-
 	@Autowired
 	StatusIncidenceService statusService;
-
 	@Autowired
 	StatusService statusReleaseService;
-
 	@Autowired
 	SystemService systemService;
-
 	@Autowired
 	SigesService sigeService;
-
 	@Autowired
 	TypeChangeService typeChangeService;
-
 	@Autowired
 	ReleaseService releaseService;
-
 	@Autowired
 	ParameterService parameterService;
-
 	@Autowired
 	EmailTemplateService emailService;
-
 	@Autowired
 	TreeService treeService;
-
 	@Autowired
 	SystemTypeIncidenceService typeIncidenceService;
-
 	@Autowired
 	IncidenceService incidenceService;
-
 	@Autowired
 	System_PriorityService priorityIncidenceService;
-
 	@Autowired
 	EmailReadService emailReadService;
-	
 	@Autowired
 	AttentionGroupService attentionGroupService;
-
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
-
+	@Autowired
+	NodeService nodeService;
+	@Autowired
+    ParameterService paramService;
 	public static final Logger logger = Logger.getLogger(IncidenceController.class);
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -373,7 +365,7 @@ public class IncidenceController extends BaseController {
 			StatusIncidence status = statusService.findByKey("name", "Solicitado");
 			AttentionGroup attentionGroup=attentionGroupService.findByKey("code", "GI");
 			incidence.setAttentionGroup(attentionGroup);
-
+			NodeIncidence node = nodeService.existWorkFlowNodeIn(incidence);
 //			if (node != null)
 			
 //				release.setNode(node);
@@ -410,19 +402,46 @@ public class IncidenceController extends BaseController {
 					newThread.start();
 				}
 			}
-			/*
-			 * // si tiene un nodo y ademas tiene actor se notifica por correo if (node !=
-			 * null && node.getActors().size() > 0) { Integer idTemplate =
-			 * Integer.parseInt(paramService.findByCode(22).getParamValue()); EmailTemplate
-			 * emailActor = emailService.findById(idTemplate); WFRelease releaseEmail = new
-			 * WFRelease(); releaseEmail.convertReleaseToWFRelease(release); Thread
-			 * newThread = new Thread(() -> { try { emailService.sendMailActor(releaseEmail,
-			 * emailActor); } catch (Exception e) { Sentry.capture(e, "release"); }
-			 * 
-			 * });
-			 * 
-			 * newThread.start(); }
-			 */
+			
+			if (node != null) {
+			incidence.setNode(node);
+
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getActors().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+				EmailTemplate emailActor = emailService.findById(idTemplate);
+				WFIncidence incidenceEmail = new WFIncidence();
+				incidenceEmail.convertReleaseToWFIncidence(incidence);
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailActorIncidence(incidenceEmail, emailActor);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
+			
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getUsers().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+				
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				WFIncidence incidenceEmail = new WFIncidence();
+				incidenceEmail.convertReleaseToWFIncidence(incidence);
+				String user=getUserLogin().getFullName();
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotify(incidenceEmail, emailNotify,user);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
+			}
 
 			incidenceService.update(incidence);
 			return "redirect:/incidence/summaryIncidence-" + incidence.getId();

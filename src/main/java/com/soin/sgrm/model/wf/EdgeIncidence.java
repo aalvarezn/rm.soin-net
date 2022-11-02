@@ -22,6 +22,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,9 +33,11 @@ import com.soin.sgrm.utils.Constant;
 @Table(name = "TRAMITES_ENLACE_INC")
 public class EdgeIncidence implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAMITES_ENLACE_SQ")
-	@SequenceGenerator(name = "TRAMITES_ENLACE_SQ", sequenceName = "TRAMITES_ENLACE_SQ", allocationSize = 1)
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private int id;
 

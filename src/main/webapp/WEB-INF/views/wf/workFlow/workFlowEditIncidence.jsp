@@ -161,7 +161,7 @@
 	<script
 		src="<c:url value='/static/plugins/multi-select/js/jquery.multi-select.js'/>"></script>
 	<script
-		src="<c:url value='/static/js/wf/workFlowEdit.js?v=${jsVersion}'/>"></script>
+		src="<c:url value='/static/js/wf/workFlowEditIncidence.js?v=${jsVersion}'/>"></script>
 </body>
 
 </html>

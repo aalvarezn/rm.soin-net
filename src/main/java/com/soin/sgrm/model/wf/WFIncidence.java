@@ -1,20 +1,15 @@
-package com.soin.sgrm.model;
+package com.soin.sgrm.model.wf;
 
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -23,48 +18,32 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.Incidence;
+import com.soin.sgrm.model.IncidenceTracking;
+import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.StatusIncidence;
+import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.wf.NodeIncidence;
 
 @Entity
 @Table(name = "INCIDENCIA")
-public class Incidence implements Serializable {
+public class WFIncidence   {
 	
-	private static final long serialVersionUID = 1L;
-
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private Long id;
 
 	@Column(name = "NUM_TICKET")
 	private String numTicket;
 
-	@Column(name = "TITULO")
-	private String title;
-
-	@Column(name = "DETALLE")
-	private String detail;
-	
-	@Column(name = "RESULTADO")
-	private String result;
-	
-	@Column(name = "NOTA_ADICIONAL")
-	private String note;
-	
 	@Column(name = "GENERADO_POR")
 	private String createFor;
 	
-	
 	@Column(name = "OPERADOR")
 	private String operator;
-	
-	@Column(name = "MOTIVO")
-	private String motive;
 	
 	@Column(name = "REMITENTES")
 	private String senders;
@@ -76,42 +55,18 @@ public class Incidence implements Serializable {
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
 	
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
-	@Column(name = "SALIDA_OPTIMA")
-	private Timestamp exitOptimalDate;
-	
-	@Column(name = "TIEMPO_MILI")
-	private Integer timeMili;
-	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_USUARIO", nullable = false)
 	private User user;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_TIPO", nullable = false)
-	private SystemTypeIncidence typeIncidence;
-
-	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ESTADO", nullable = false)
 	private StatusIncidence status;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_PRIORIDAD", nullable = false)
-	private System_Priority priority;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_SISTEMA", nullable = false)
 	private SystemInfo  system;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_GRUPO", nullable = false)
-	private AttentionGroup  attentionGroup;
-	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "INCIDENCIA_ARCHIVOINCIDENCIA", joinColumns = { @JoinColumn(name = "ID_INCIDENCIA") }, inverseJoinColumns = {
-			@JoinColumn(name = "ARCHIVO_ID") })
-	private Set<IncidenceFile> files = new HashSet<>();
 
 	@OrderBy("trackingDate ASC")
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -119,7 +74,7 @@ public class Incidence implements Serializable {
 	private Set<IncidenceTracking> tracking = new HashSet<IncidenceTracking>();
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_NODO", nullable = true)
+	@JoinColumn(name = "NODO_ID", nullable = true)
 	private NodeIncidence node;
 	
 	@Transient
@@ -148,37 +103,6 @@ public class Incidence implements Serializable {
 		this.numTicket = numTicket;
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getDetail() {
-		return detail;
-	}
-
-	public void setDetail(String detail) {
-		this.detail = detail;
-	}
-
-	public String getResult() {
-		return result;
-	}
-
-	public void setResult(String result) {
-		this.result = result;
-	}
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
 
 	public String getOperator() {
 		return operator;
@@ -188,15 +112,6 @@ public class Incidence implements Serializable {
 		this.operator = operator;
 	}
 	
-	
-
-	public String getMotive() {
-		return motive;
-	}
-
-	public void setMotive(String motive) {
-		this.motive = motive;
-	}
 
 	public Timestamp getRequestDate() {
 		return requestDate;
@@ -206,45 +121,12 @@ public class Incidence implements Serializable {
 		this.requestDate = requestDate;
 	}
 	
-	public Timestamp getExitOptimalDate() {
-		return exitOptimalDate;
-	}
-
-	public void setExitOptimalDate(Timestamp exitOptimalDate) {
-		this.exitOptimalDate = exitOptimalDate;
-	}
-
-	public Integer getTimeMili() {
-		return timeMili;
-	}
-
-	public void setTimeMili(Integer timeMili) {
-		this.timeMili = timeMili;
-	}
-
 	public User getUser() {
 		return user;
 	}
 
 	public void setUser(User user) {
 		this.user = user;
-	}
-
-	
-	public SystemTypeIncidence getTypeIncidence() {
-		return typeIncidence;
-	}
-
-	public void setTypeIncidence(SystemTypeIncidence typeIncidence) {
-		this.typeIncidence = typeIncidence;
-	}
-
-	public System_Priority getPriority() {
-		return priority;
-	}
-
-	public void setPriority(System_Priority priority) {
-		this.priority = priority;
 	}
 
 	public SystemInfo getSystem() {
@@ -271,13 +153,6 @@ public class Incidence implements Serializable {
 		this.createFor = createFor;
 	}
 
-	public Set<IncidenceFile> getFiles() {
-		return files;
-	}
-
-	public void setFiles(Set<IncidenceFile> files) {
-		this.files = files;
-	}
 
 	public Set<IncidenceTracking> getTracking() {
 		return tracking;
@@ -335,14 +210,6 @@ public class Incidence implements Serializable {
 		this.email = email;
 	}
 
-	public AttentionGroup getAttentionGroup() {
-		return attentionGroup;
-	}
-
-	public void setAttentionGroup(AttentionGroup attentionGroup) {
-		this.attentionGroup = attentionGroup;
-	}
-
 	public NodeIncidence getNode() {
 		return node;
 	}
@@ -351,5 +218,13 @@ public class Incidence implements Serializable {
 		this.node = node;
 	}
 	
-	
+	public void convertReleaseToWFIncidence(Incidence incidence) {
+		this.node = incidence.getNode();
+		this.requestDate=incidence.getRequestDate();
+		this.numTicket = incidence.getNumTicket();
+		this.system = incidence.getSystem();
+		this.status = incidence.getStatus();
+		this.user = incidence.getUser();
+		this.operator=incidence.getOperator();
+	}
 }

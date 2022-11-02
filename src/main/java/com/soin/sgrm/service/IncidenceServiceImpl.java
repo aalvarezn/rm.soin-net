@@ -151,6 +151,7 @@ public class IncidenceServiceImpl implements IncidenceService {
 		fetchs.add("tracking");
 		fetchs.add("user");
 		fetchs.add("attentionGroup");
+		fetchs.add("node");
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 
 	}
@@ -282,6 +283,7 @@ public class IncidenceServiceImpl implements IncidenceService {
 		fetchs.add("tracking");
 		fetchs.add("user");
 		fetchs.add("attentionGroup");
+		fetchs.add("node");
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 
 	}

@@ -19,34 +19,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.utils.JsonSheet;
 
 @Repository
-public class WFReleaseDaoImpl implements WFReleaseDao {
+public class WFIncidenceDaoImpl implements WFIncidenceDao {
 
 	@Autowired
 	private SessionFactory sessionFactory;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<WFRelease> list() {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFRelease.class);
-		List<WFRelease> userList = crit.list();
+	public List<WFIncidence> list() {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFIncidence.class);
+		List<WFIncidence> userList = crit.list();
 		return userList;
 	}
 
 	@Override
-	public WFRelease findWFReleaseById(Integer id) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFRelease.class);
+	public WFIncidence findWFIncidenceById(Long id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFIncidence.class);
 		crit.add(Restrictions.eq("id", id));
-		return (WFRelease) crit.uniqueResult();
+		return (WFIncidence) crit.uniqueResult();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public JsonSheet<?> listWorkFlowRelease(String name, int sEcho, int iDisplayStart, int iDisplayLength,
-			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
+	public JsonSheet<?> listWorkFlowIncidence(String name, int sEcho, int iDisplayStart, int iDisplayLength,
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Long statusId)
 			throws SQLException, ParseException {
 
 		JsonSheet json = new JsonSheet();
@@ -73,10 +74,10 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaByWorkFlow(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] ids)
+			String[] filtred, String[] dateRange, Integer systemId, Long statusId, Object[] ids)
 			throws SQLException, ParseException {
 
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFRelease.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFIncidence.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "status");
 		crit.createAlias("user", "user");
@@ -111,7 +112,7 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 		if (statusId != 0) {
 			crit.add(Restrictions.eq("status.id", statusId));
 		}
-		crit.add(Restrictions.eq("workFlow.id", 1));
+		crit.add(Restrictions.eq("workFlow.id", 2));
 		crit.add(Restrictions.isNotNull("node"));
 		crit.addOrder(Order.desc("createDate"));
 		
@@ -119,7 +120,7 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 	}
 
 	@Override
-	public void wfStatusRelease(WFRelease release) {
+	public void wfStatusIncidence(WFIncidence incidence) {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		String sql = "";
@@ -128,9 +129,9 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 			sql = String.format(
-					"update releases_release set estado_id = %s , nodo_id = %s , operador = '%s' , motivo = '%s' , fecha_creacion = sysdate  where id = %s",
-					release.getStatus().getId(), release.getNode().getId(), release.getOperator(),
-					release.getNode().getStatus().getMotive(), release.getId());
+					"update incidencia set estado_id = %s , nodo_id = %s , operador = '%s' , motivo = '%s' , fecha_creacion = sysdate  where id = %s",
+					incidence.getStatus().getId(), incidence.getNode().getId(), incidence.getOperator(),
+					incidence.getNode().getStatus().getReason(), incidence.getId());
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();
 
@@ -148,7 +149,7 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength,
-			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Long statusId,
 			Object[] systemsId) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,

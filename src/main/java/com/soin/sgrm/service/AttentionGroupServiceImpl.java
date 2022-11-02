@@ -53,4 +53,9 @@ public class AttentionGroupServiceImpl implements AttentionGroupService{
 		dao.update(model);
 	}
 
+	@Override
+	public  List<AttentionGroup> findGroupByUserId(Integer id) {
+		return dao.findGroupByUserId(id);
+	}
+
 }

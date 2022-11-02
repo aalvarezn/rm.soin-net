@@ -80,7 +80,7 @@
 				<!-- #tableSection#-->
 				<div id="tableSection">
 					<div class="block-header">
-						<h2>Incidencias</h2>
+						<h2>Tickets</h2>
 					</div>
 
 					<!-- Tab PANELS -->

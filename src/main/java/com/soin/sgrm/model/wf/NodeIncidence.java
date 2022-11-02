@@ -26,6 +26,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,8 +45,8 @@ import com.soin.sgrm.utils.Constant;
 public class NodeIncidence implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAMITES_NODO_SQ")
-	@SequenceGenerator(name = "TRAMITES_NODO_SQ", sequenceName = "TRAMITES_NODO_SQ", allocationSize = 1)
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private int id;
 
@@ -57,7 +58,7 @@ public class NodeIncidence implements Serializable {
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "TRAMITE_ID", nullable = false)
-	private WorkFlow workFlow;
+	private WorkFlowIncidence workFlow;
 
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(mappedBy = "nodeFrom", fetch = FetchType.EAGER, orphanRemoval = true)
@@ -80,20 +81,20 @@ public class NodeIncidence implements Serializable {
 	private Integer workFlowId;
 
 	@Transient
-	private Integer statusId;
+	private Long statusId;
 
 	@Column(name = "CORREO")
 	private Boolean sendEmail;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "TRAMITES_NODO_NOT_IN", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
+	@JoinTable(name = "TRAMITES_NODO_NOT_INC", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
 			@JoinColumn(name = "CUSTOMUSER_ID") })
 	private Set<WFUser> users = new HashSet<WFUser>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "TRAMITES_NODO_ACT_IN", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
+	@JoinTable(name = "TRAMITES_NODO_ACT_INC", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
 			@JoinColumn(name = "CUSTOMUSER_ID") })
 	private Set<WFUser> actors = new HashSet<WFUser>();
 
@@ -128,11 +129,11 @@ public class NodeIncidence implements Serializable {
 		this.label = label;
 	}
 
-	public WorkFlow getWorkFlow() {
+	public WorkFlowIncidence getWorkFlow() {
 		return workFlow;
 	}
 
-	public void setWorkFlow(WorkFlow workFlow) {
+	public void setWorkFlow(WorkFlowIncidence workFlow) {
 		this.workFlow = workFlow;
 	}
 
@@ -184,11 +185,11 @@ public class NodeIncidence implements Serializable {
 		this.status = status;
 	}
 
-	public Integer getStatusId() {
+	public Long getStatusId() {
 		return statusId;
 	}
 
-	public void setStatusId(Integer statusId) {
+	public void setStatusId(Long statusId) {
 		this.statusId = statusId;
 	}
 

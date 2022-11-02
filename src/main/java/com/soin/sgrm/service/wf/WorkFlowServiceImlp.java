@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.wf.WorkFlowDao;
 import com.soin.sgrm.model.wf.WorkFlow;
+import com.soin.sgrm.model.wf.WorkFlowIncidence;
 
 @Transactional("transactionManager")
 @Service("WorkFlowService")
@@ -39,6 +40,11 @@ public class WorkFlowServiceImlp implements WorkFlowService {
 	@Override
 	public void delete(Integer id) {
 		dao.delete(id);
+	}
+
+	@Override
+	public WorkFlowIncidence findByIdIncidence(Integer id) {
+		return dao.findByIdIncidence(id);
 	}
 
 }

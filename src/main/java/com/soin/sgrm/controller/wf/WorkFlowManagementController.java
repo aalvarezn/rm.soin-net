@@ -16,14 +16,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.wf.NodeService;
+import com.soin.sgrm.service.wf.WFIncidenceService;
 import com.soin.sgrm.service.wf.WFReleaseService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.JsonSheet;
@@ -40,7 +45,11 @@ public class WorkFlowManagementController extends BaseController {
 	@Autowired
 	private StatusService statusService;
 	@Autowired
+	private StatusIncidenceService statusIncidenceService;
+	@Autowired
 	private WFReleaseService wfReleaseService;
+	@Autowired
+	private WFIncidenceService wfIncidenceService;
 	@Autowired
 	private SystemService systemService;
 	@Autowired
@@ -67,7 +76,6 @@ public class WorkFlowManagementController extends BaseController {
 		return "/wf/workFlow/workFlowManagement";
 
 	}
-
 	@RequestMapping(path = "/workFlowRelease", method = RequestMethod.GET)
 	public @ResponseBody JsonSheet<?> getSystemRelease(HttpServletRequest request, Locale locale, Model model,
 			HttpSession session) {
@@ -129,4 +137,86 @@ public class WorkFlowManagementController extends BaseController {
 		}
 		return res;
 	}
+
+	@RequestMapping(path = "/workFlowIncidence", method = RequestMethod.GET)
+	public @ResponseBody JsonSheet<?> getIncidences(HttpServletRequest request, Locale locale, Model model,
+			HttpSession session) {
+		try {
+			String range = request.getParameter("dateRange");
+			String[] dateRange = (range != null) ? range.split("-") : null;
+			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
+			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
+
+			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
+			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
+					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
+					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			return wfReleaseService.listWorkFlowRelease(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
+					dateRange, systemId, statusId);
+		} catch (Exception e) {
+			Sentry.capture(e, "wfReleaseManagement");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
+		}
+	}
+
+	@RequestMapping(value = "/wfStatusIncidence", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse draftIncidence(HttpServletRequest request, Model model,
+			@RequestParam(value = "idIncidence", required = true) Long idIncidence,
+			@RequestParam(value = "idNode", required = true) Integer idNode,
+			@RequestParam(value = "motive", required = true) String motive) {
+		JsonResponse res = new JsonResponse();
+		try {
+			WFIncidence incidence = wfIncidenceService.findWFIncidenceById(idIncidence);
+			NodeIncidence node = nodeService.findByIdNoInci(idNode);
+			node.getStatus().setReason(motive);
+			incidence.setNode(node);
+			incidence.setStatus(node.getStatus());
+			incidence.setOperator(getUserLogin().getFullName());
+			wfIncidenceService.wfStatusIncidence(incidence);
+
+			// Si esta marcado para enviar correo
+			if (node.getSendEmail()) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
+				EmailTemplate email = emailService.findById(idTemplate);
+				WFIncidence incidenceEmail = incidence;
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailIncidence(incidenceEmail, email, motive);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+				});
+				newThread.start();
+			}
+
+			res.setStatus("success");
+		} catch (Exception e) {
+			Sentry.capture(e, "wfIncidenceManagement");
+			res.setStatus("exception");
+			res.setException("Error al cambiar estado del release: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/incidence", method = RequestMethod.GET)
+	public String indexIncidence(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			model.addAttribute("system", new SystemUser());
+			model.addAttribute("systems", systemService.listSystemUser());
+			model.addAttribute("status", new StatusIncidence());
+			model.addAttribute("statuses", statusIncidenceService.findAll());
+		} catch (Exception e) {
+			Sentry.capture(e, "wfReleaseManagement");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina inicial/systemas." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return "/wf/workFlow/workFlowManagementIncidence";
+
+	}
+
+	
 }
