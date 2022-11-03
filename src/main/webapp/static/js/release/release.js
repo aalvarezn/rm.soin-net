@@ -823,6 +823,8 @@ function getColorNode(status){
 		break;
 	case 'Borrador':
 		return 'rgb(31, 145, 243)';
+	case 'Error':
+		return 'rgb(221, 28, 94)';
 		break;
 	case 'Anulado':
 		return 'rgb(233, 30, 99)';
