@@ -124,6 +124,10 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_Admin")) {
 			return "redirect:/admin/";
 		}
+		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
+			return "redirect:/baseKnowledge/";
+		}
+		
 
 		return "redirect:/";
 	}
