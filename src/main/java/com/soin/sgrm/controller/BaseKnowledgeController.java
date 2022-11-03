@@ -165,7 +165,7 @@ public class BaseKnowledgeController extends BaseController {
 			addBaseKnowledge.setComponent(baseKnowledgeMod.getComponent());
 			addBaseKnowledge.setStatus(baseKnowledgeMod.getStatus());
 			addBaseKnowledge.setMotive(baseKnowledgeMod.getMotive());
-			
+			addBaseKnowledge.setUrl(baseKnowledgeMod.getUrl());
 			addBaseKnowledge.setOperator(baseKnowledgeMod.getUser().getFullName());
 			addBaseKnowledge.setRequestDate(baseKnowledgeMod.getRequestDate());
 			addBaseKnowledge.setFiles(baseKnowledgeMod.getFiles());
@@ -173,6 +173,12 @@ public class BaseKnowledgeController extends BaseController {
 				addBaseKnowledge.setPublicate(true);
 			}else {
 				addBaseKnowledge.setPublicate(false);
+			}
+			
+			if (addBaseKnowledge.getDescription().length() < 256) {
+				addBaseKnowledge.setDescription(addBaseKnowledge.getDescription());
+			} else {
+				addBaseKnowledge.setDescription(baseKnowledgeMod.getDescription());
 			}
 	
 			baseKnowledgeService.update(addBaseKnowledge);
@@ -279,7 +285,7 @@ public class BaseKnowledgeController extends BaseController {
 				return "redirect:/";
 			}
 			model.addAttribute("statuses", statusService.findAll());
-			model.addAttribute("BaseKnowledge",baseKnowledge);
+			model.addAttribute("baseKnowledge",baseKnowledge);
 	
 		} catch (Exception e) {
 			Sentry.capture(e, "baseKnowledge");
@@ -289,7 +295,7 @@ public class BaseKnowledgeController extends BaseController {
 			return "redirect:/";
 		}
 
-		return "/baseKnowledge/summaryBaseKnowledge";
+		return "/incidence/baseKnowledge/summaryBaseKnowledge";
 	}
 	@SuppressWarnings("null")
 	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
@@ -306,7 +312,7 @@ public class BaseKnowledgeController extends BaseController {
 			if (baseKnowledge == null) {
 				return "redirect:/";
 			}
-			model.addAttribute("BaseKnowledge", baseKnowledge);
+			model.addAttribute("baseKnowledge", baseKnowledge);
 
 		} catch (Exception e) {
 			Sentry.capture(e, "baseKnowledge");
@@ -315,7 +321,7 @@ public class BaseKnowledgeController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return "redirect:/";
 		}
-		return "/baseKnowledge/tinySummaryBaseKnowledge";
+		return "/incidence/baseKnowledge/tinySummaryBaseKnowledge";
 	}
 	
 	@RequestMapping(value = "/updateBaseKnowledge/{baseKnowledgeId}", method = RequestMethod.GET)
@@ -386,60 +392,34 @@ public class BaseKnowledgeController extends BaseController {
 		return "redirect:/homeBaseKnowledge";
 	}
 	
-	public ArrayList<MyError> validSections(BaseKnowledge BaseKnowledge, ArrayList<MyError> errors) {
-			/*
-		if (BaseKnowledge.getImpactId()==0)
-			errors.add(new MyError("impactId", "Valor requerido."));
-		if (BaseKnowledge.getTypeChangeId()==null ) {
-			errors.add(new MyError("typeChangeId", "Valor requerido."));
-		}else {
-			if (BaseKnowledge.getTypeChangeId() ==0 )
-				errors.add(new MyError("typeChangeId", "Valor requerido."));
-		}
+	public ArrayList<MyError> validSections(BaseKnowledge baseKnowledge, ArrayList<MyError> errors) {
 			
-		if (BaseKnowledge.getPriorityId() ==0)
-			errors.add(new MyError("priorityId", "Valor requerido."));
-
-		if (BaseKnowledge.getRequestDateBegin().trim().equals(""))
-			errors.add(new MyError("dateBegin", "Valor requerido."));
-
-		if (BaseKnowledge.getRequestDateBegin().trim().equals(""))
-			errors.add(new MyError("dateFinish", "Valor requerido."));
-
-		if (BaseKnowledge.getReasonChange().trim().equals(""))
-			errors.add(new MyError("BaseKnowledgeReason", "Valor requerido."));
-
-		if (BaseKnowledge.getEffect().trim().equals(""))
-			errors.add(new MyError("BaseKnowledgeEffect", "Valor requerido."));
-
-		if (BaseKnowledge.getDetail().trim().equals(""))
-			errors.add(new MyError("detailBaseKnowledge", "Valor requerido."));
-
-		if (BaseKnowledge.getReturnPlan().trim().equals(""))
-			errors.add(new MyError("returnPlanBaseKnowledge", "Valor requerido."));
-
-		if (BaseKnowledge.getEvidence().trim().equals(""))
-			errors.add(new MyError("evidenceBaseKnowledge", "Valor requerido."));
-
-		if (BaseKnowledge.getRequestEsp().equals(""))
-			errors.add(new MyError("requestEspBaseKnowledge", "Valor requerido."));
 		
-		if (BaseKnowledge.getSenders() != null) {
-			if (BaseKnowledge.getSenders().length() > 256) {
-				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+		if (baseKnowledge.getDescription() != null) {
+			if(baseKnowledge.getDescription().trim().equals("")) {
+	
+					errors.add(new MyError("description", "Debe ingresar algun dato"));
+				
 			}else {
-				MyError error=getErrorSenders(BaseKnowledge.getSenders());
-				if(error!=null) {
-					errors.add(error);
-				}
+			if (baseKnowledge.getDescription().length() > 256) {
+				errors.add(new MyError("description", "La cantidad de caracteres no puede ser mayor a 256"));
 			}
-		}
-		if (BaseKnowledge.getMessage() != null) {
-			if (BaseKnowledge.getMessage().length() > 256) {
-				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
 			}
+		}else {
+			errors.add(new MyError("description", "Debe ingresar algun dato"));
 		}
-		*/
+		
+		if (baseKnowledge.getDataRequired()!= null) {
+			if(baseKnowledge.getDataRequired().trim().equals("")) {
+	
+					errors.add(new MyError("data", "Debe ingresar algun dato"));
+				
+			}
+		}else {
+			errors.add(new MyError("data", "Debe ingresar algun dato"));
+		}
+
+
 		return errors;
 	}
 	public MyError getErrorSenders(String senders) {

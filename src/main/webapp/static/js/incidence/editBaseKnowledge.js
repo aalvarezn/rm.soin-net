@@ -213,42 +213,20 @@ function sendPartialRFC() {
 	var form = "#generateReleaseForm";
 	
 	changeSaveButton(true);
-	var valueSchema="";
-	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('#bd').val('');
-	}else{
-		valueSchema=$('#bd').val();
-	}
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "rfc/saveRFC",
+		url : getCont() + "baseKnowledge/saveBaseKnowledge",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
 			id : $rfcEditForm.find('#rfcId').val(),
-			codeProyect : $rfcEditForm.find('#rfcCode').val(),
-			impactId : $rfcEditForm.find('#impactId').children(
-			"option:selected").val(),
-			priorityId : $rfcEditForm.find('#priorityId').children("option:selected")
-			.val(),
-			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
-			"option:selected").val(),
-			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),	
-			schemaDB:valueSchema,
-			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
-			reasonChange : $rfcEditForm.find('#rfcReason').val(),
-			effect : $rfcEditForm.find('#rfcEffect').val(),
-			releasesList: JSON.stringify($dataRelease),
-			detail:$rfcEditForm.find('#detailRFC').val(),
-			evidence:$rfcEditForm.find('#evidenceRFC').val(),
-			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
-			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
-			senders:$rfcEditForm.find('#senders').val(),
-			message:$rfcEditForm.find('#messagePer').val(),
+			publicateValidate: $rfcEditForm.find('#publicate').val(),	
+			description:$rfcEditForm.find('#description').val(),
+			dataRequired:$rfcEditForm.find('#data').val(),
+			note:$rfcEditForm.find('#note').val()
 		}),
 		success : function(response) {
 			// responseAjaxSendPartialRelease(response);
@@ -991,42 +969,20 @@ function sendRFC() {
 	var form = "#generateReleaseForm";
 	changeSaveButton(true);
 	changeSaveButton(true);
-	var valueSchema="";
-	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('#bd').val('');
-	}else{
-		valueSchema=$('#bd').val();
-	}
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "rfc/saveRFC",
+		url : getCont() + "baseKnowledge/saveBaseKnowledge",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
 			id : $rfcEditForm.find('#rfcId').val(),
-			codeProyect : $rfcEditForm.find('#rfcCode').val(),
-			impactId : $rfcEditForm.find('#impactId').children(
-			"option:selected").val(),
-			priorityId : $rfcEditForm.find('#priorityId').children("option:selected")
-			.val(),
-			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
-			"option:selected").val(),
-			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),
-			schemaDB:valueSchema,
-			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
-			reasonChange : $rfcEditForm.find('#rfcReason').val(),
-			effect : $rfcEditForm.find('#rfcEffect').val(),
-			releasesList: JSON.stringify($dataRelease),
-			detail:$rfcEditForm.find('#detailRFC').val(),
-			evidence:$rfcEditForm.find('#evidenceRFC').val(),
-			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
-			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
-			senders:$rfcEditForm.find('#senders').val(),
-			message:$rfcEditForm.find('#messagePer').val(),
+			publicateValidate: $rfcEditForm.find('#publicate').val(),	
+			description:$rfcEditForm.find('#description').val(),
+			dataRequired:$rfcEditForm.find('#data').val(),
+			note:$rfcEditForm.find('#note').val()
 		}),
 		success : function(response) {
 			responseAjaxSendRFC(response);
@@ -1046,41 +1002,21 @@ function requestRFC() {
 	
 	changeSaveButton(true);
 	var valueSchema="";
-	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
-		$('#bd').val('');
-	}else{
-		valueSchema=$('#bd').val();
-	}
+
 	$.ajax({
 		// async : false,
 		type : "PUT",
-		url : getCont() + "rfc/saveRFC",
+		url : getCont() + "baseKnowledge/saveBaseKnowledge",
 		timeout: 60000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
 			// Informacion general
 			id : $rfcEditForm.find('#rfcId').val(),
-			codeProyect : $rfcEditForm.find('#rfcCode').val(),
-			impactId : $rfcEditForm.find('#impactId').children(
-			"option:selected").val(),
-			priorityId : $rfcEditForm.find('#priorityId').children("option:selected")
-			.val(),
-			typeChangeId : $rfcEditForm.find('#typeChangeId').children(
-			"option:selected").val(),
-			requestDateBegin : $rfcEditForm.find('#dateBegin').val(),
-			requiredBD: boolean($rfcEditForm.find('#requiredBD').val()),
-			schemaDB:valueSchema,
-			requestDateFinish : $rfcEditForm.find('#dateFinish').val(),
-			reasonChange : $rfcEditForm.find('#rfcReason').val(),
-			effect : $rfcEditForm.find('#rfcEffect').val(),
-			releasesList: JSON.stringify($dataRelease),
-			detail:$rfcEditForm.find('#detailRFC').val(),
-			evidence:$rfcEditForm.find('#evidenceRFC').val(),
-			returnPlan:$rfcEditForm.find('#returnPlanRFC').val(),
-			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
-			senders:$rfcEditForm.find('#senders').val(),
-			message:$rfcEditForm.find('#messagePer').val(),
+			publicateValidate: $rfcEditForm.find('#publicate').val(),	
+			description:$rfcEditForm.find('#description').val(),
+			dataRequired:$rfcEditForm.find('#data').val(),
+			note:$rfcEditForm.find('#note').val()
 		}),
 		success : function(response) {
 			responseAjaxRequestRFC(response);
@@ -1102,7 +1038,7 @@ function responseAjaxRequestRFC(response) {
 		case 'success':
 			resetErrors();
 			reloadPreview();
-			window.location = getCont() + "rfc/updateRFC/"
+			window.location = getCont() + "baseKnowledge/updateBaseKnowledge/"
 			+  $rfcEditForm.find('#rfcId').val();
 			break;
 		case 'fail':

@@ -84,8 +84,8 @@
 			</div>
 			<div class="block-header">
 				<p class="font-20">
-					<span class="col-blue-grey">RESUMEN RFC</span> <span
-						class="flr font-bold col-cyan ">${rfc.numRequest}</span>
+					<span class="col-blue-grey">RESUMEN ERROR</span> <span
+						class="flr font-bold col-cyan ">${baseKnowledge.numError}</span>
 				</p>
 			</div>
 			<hr>
@@ -95,20 +95,20 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">RFC N°</label>
+					<label for="email_address">Codigo error</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${rfc.numRequest}</p>
+							<p>${baseKnowledge.numError}</p>
 						</div>
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creaci&oacute;n</label>
+					<label for="email_address">Fecha de creacion</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
 								<p>
-									<fmt:formatDate value="${rfc.requestDate }"
+									<fmt:formatDate value="${baseKnowledge.requestDate }"
 										pattern="dd/MM/YYYY HH:mm:ss" />
 								</p>
 							</div>
@@ -116,10 +116,10 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Proyecto</label>
+					<label for="email_address">Componente</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${rfc.systemInfo.name}</p>
+							<p>${baseKnowledge.component.name}</p>
 						</div>
 					</div>
 				</div>
@@ -127,318 +127,108 @@
 					<label for="email_address">Estado</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${rfc.status.name}</p>
+							<p>${baseKnowledge.status.name}</p>
 						</div>
 					</div>
 				</div>
 
 			</div>
 			<div class="row clearfix m-t-10">
-				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-t-10">
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
 					<label for="email_address">Solicitado por</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${rfc.user.fullName}</p>
+							<p>${baseKnowledge.user.fullName}</p>
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 p-t-10">
-					<label for="email_address">Impacto</label>
-					<div class="form-group m-b-0i">
-						<div class="form-line disabled">
-							<p>${rfc.impact.name}</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 p-t-10">
-					<label for="email_address">Tipo de cambio</label>
-					<div class="form-group m-b-0i">
-						<div class="form-line disabled">
-							<p>${rfc.typeChange.name}</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 p-t-10">
-					<label for="email_address">Prioridad</label>
-					<div class="form-group m-b-0i">
-						<div class="form-line disabled">
-							<p>${rfc.priority.name}</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row clearfix m-t-10">
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creaci&oacute;n</label>
-					<div class="form-group m-b-0i">
-						<div class="form-group m-b-0i">
-							<div class="form-line disabled">
-								<p>
-									<fmt:formatDate value="${rfc.requestDate }"
-										pattern="dd/MM/YYYY HH:mm:ss" />
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row clearfix m-t-10">
-				<div class="col-sm-12">
-					<h5 class="titulares">Fecha y hora propuesta para ejecutar el
-						cambio</h5>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha y hora Inicio </label>
-					<div class="form-group m-b-0i">
-						<div class="form-group m-b-0i">
-							<div class="form-line disabled">
-								<p>${rfc.requestDateBegin }</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha y hora Fin </label>
-					<div class="form-group m-b-0i">
-						<div class="form-group m-b-0i">
-							<div class="form-line disabled">
-								<p>${rfc.requestDateFinish }</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 m-t-10">
-					<label for="">Raz&oacute;n del cambio.</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.reasonChange }</textarea>
-				</div>
-
-
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Efecto si no se implementa el cambio.</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.effect }</textarea>
-				</div>
-			</div>
-			<div class="row clearfix m-t-10">
-				<div class="col-sm-12">
-					<h5 class="titulares">Informaci&oacute;n de Cambio</h5>
-				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Sistemas impactados</label>
-
-					<div id="listSystems">
-						<ul class="nav nav-pills">
-
-
-							<c:forEach items="${systemsImplicated}" var="system">
-
-								<li class="nav-item dependency m-r-10">${system}</li>
-
-							</c:forEach>
-
-						</ul>
-					</div>
-				</div>
-
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Releases a instalar en producci&oacute;n</label>
-
-					<div id="listSystems">
-						<ul class="nav nav-pills">
-
-
-							<c:forEach items="${rfc.releases}" var="release">
-
-								<li class="nav-item dependency m-r-10">${release.releaseNumber}</li>
-
-							</c:forEach>
-
-						</ul>
-					</div>
-				</div>
-				<c:if test="${totalObjects>0}">
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-						<div class="row clearfix">
-							<div class="col-sm-12">
-								<h5 class="titulares">Releases y cantidad de objetos a
-									instalar</h5>
-							</div>
-
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<div class="table-responsive m-b-20">
-									<table
-										class="table tableIni table-bordered table-striped table-hover dataTable"
-										id="userTable">
-										<thead>
-											<tr>
-												<th>N&uacute;mero Release</th>
-												<th>Descripci&oacute;n</th>
-												<th>Total de objetos</th>
-											</tr>
-										</thead>
-										<tbody>
-											<c:forEach items="${rfc.releases}" var="release">
-												<tr>
-													<td>${release.releaseNumber}</td>
-													<td>${release.description}</td>
-													<td>${release.objects.size()}</td>
-												</tr>
-											</c:forEach>
-										</tbody>
-									</table>
-									<label for="">Total de objetos a instalar:
-										${totalObjects }</label>
-								</div>
-
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-						<div class="row clearfix">
-							<div class="col-sm-12">
-								<h5 class="titulares">Objetos a instalar</h5>
-							</div>
-
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<div class="table-responsive m-b-20">
-									<table
-										class="table tableIni table-bordered table-striped table-hover dataTable"
-										id="userTable">
-										<thead>
-											<tr>
-												<th style="width: 338px;">Release al que pertenece</th>
-												<th style="width: 338px;">Nombre objeto</th>
-												<th>Descripci&oacute;n</th>
-											</tr>
-										</thead>
-										<tbody>
-											<c:forEach items="${listObjects}" var="object">
-												<tr>
-													<td>${object.numRelease}</td>
-													<td>${object.name}</td>
-													<td>${object.description}</td>
-												</tr>
-											</c:forEach>
-										</tbody>
-									</table>
-								</div>
-
-							</div>
-						</div>
-					</div>
-				</c:if>
-			</div>
-			<div class="row clearfix">
-				<div class="col-sm-12">
-					<h5 class="titulares">Detalles de la implementaci&oacute;n</h5>
-				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Detalles</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.detail }</textarea>
-				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Plan de retorno</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.returnPlan }</textarea>
-				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Evidencias</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.evidence }</textarea>
-				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Requisitos especiales</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.requestEsp }</textarea>
-				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Requiere base de datos</label>
-					<div class="switch">
-						<c:choose>
-							<c:when test="${rfc.requiredBD}">
-								<label>No<input type="checkbox" checked="checked"
-									disabled="disabled"><span class="lever"></span>S&iacute;
-								</label>
-							</c:when>
-							<c:otherwise>
-								<label>No<input type="checkbox" disabled="disabled"><span
-									class="lever"></span>S&iacute;
-								</label>
-							</c:otherwise>
-						</c:choose>
-
-					</div>
-				</div>
-				<c:if test="${rfc.requiredBD}">
-					<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-						<label for="">Esquemas necesarios</label>
-						<div class="form-line disabled">
-							<p>${rfc.schemaDB }</p>
-						</div>
-					</div>
-				</c:if>
-			</div>
-			<div class="row clearfix">
-				<div class="col-sm-12">
-					<h5 class="titulares">Archivos adjuntos</h5>
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-20">
-					<div class="clearfix">
-						<div class="body table-responsive">
-							<table
-								class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
-								<thead>
-									<tr>
-										<th class="col-md-8 col-lg-8 col-xs-8 col-sm-8">Nombre</th>
-										<th class="col-md-4 col-lg-4 col-xs-4 col-sm-4">Fecha de
-											carga</th>
-										<th class="col-md-1 col-lg-1 col-xs-12 col-sm-12">Acciones</th>
-									</tr>
-								</thead>
-								<tbody>
-
-									<c:forEach items="${rfc.files}" var="fileRFC">
-										<tr id="${fileRFC.id}">
-											<td>${fileRFC.name}</td>
-											<td><fmt:formatDate value="${fileRFC.revisionDate}"
-													type="both" /></td>
-											<td><a
-												href="<c:url value='/file/singleDownloadRFC-${fileRFC.id }'/>"
-												download class=""> <i class="material-icons col-cyan"
-													style="font-size: 30px;">cloud_download</i>
-											</a></td>
-										</tr>
-									</c:forEach>
-
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-
-				</div>
-
-				<c:forEach items="${userInfo.authorities}" var="authority">
-					<c:if test="${authority.name == 'Release Manager'}">
-						<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
-							<div class="m-b-20">
-								<c:if test="${rfc.status.name ne 'Anulado'}">
-									<button type="button" class="btn btn-default setIcon"
-										onclick="confirmCancelRFC(${rfc.id})" title="Anular"
-										style="background-color: #00294c !important; color: #fff; border: none !important;">
-										<span>ANULAR</span><span style="margin-left: 10px;"><i
-											class="material-icons m-t--2">highlight_off</i></span>
-									</button>
-								</c:if>
-								<button type="button" class="btn btn-default setIcon"
-									onclick="changeStatusRFC(${rfc.id}, '${rfc.numRequest}' )"
-									title="Borrador"
-									style="background-color: #00294c !important; color: #fff; border: none !important;">
-									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
-										class="material-icons m-t--2">offline_pin</i></span>
-								</button>
-							</div>
-						</div>
-					</c:if>
-				</c:forEach>
 			</div>
 		</div>
+		<div class="row clearfix">
+			<div class="col-sm-12">
+				<h5 class="titulares">Informacion sobre el error</h5>
+			</div>
+			<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<label for="">Descripci&oacute;n del error.</label>
+				<textarea class="areaWidth" rows="" cols="">${baseKnowledge.description }</textarea>
+			</div>
+
+
+			<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<label for="">Datos requeridos para escalar.</label>
+				<textarea class="areaWidth" rows="" cols="">${baseKnowledge.dataRequired }</textarea>
+			</div>
+			<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<label for="">Notas adicionales.</label>
+				<textarea class="areaWidth" rows="" cols="">${baseKnowledge.note }</textarea>
+			</div>
+		</div>
+		<div class="row clearfix">
+			<div class="col-sm-12">
+				<h5 class="titulares">Archivos adjuntos</h5>
+			</div>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-20">
+				<div class="clearfix">
+					<div class="body table-responsive">
+						<table
+							class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
+							<thead>
+								<tr>
+									<th class="col-md-8 col-lg-8 col-xs-12 col-sm-12">Nombre</th>
+									<th class="col-md-4 col-lg-4 col-xs-12 col-sm-12">Fecha de
+										carga</th>
+									<th class="col-md-4 col-lg-4 col-xs-12 col-sm-12">Acciones</th>
+								</tr>
+							</thead>
+							<tbody>
+
+								<c:forEach items="${baseKnowledge.files}"
+									var="baseKnowledgefile">
+									<tr id="${baseKnowledgefile.id}">
+										<td>${baseKnowledgefile.name}</td>
+										<td><fmt:formatDate
+												value="${baseKnowledgefile.revisionDate}" type="both" /></td>
+										<td><a
+											href="<c:url value='/file/singleDownloadBaseKnowledge-${baseKnowledgefile.id }'/>"
+											download class=""> <i class="material-icons col-cyan"
+												style="font-size: 30px;">cloud_download</i>
+										</a></td>
+									</tr>
+								</c:forEach>
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+
+		<c:forEach items="${userInfo.authorities}" var="authority">
+			<c:if test="${authority.name == 'Gestion Incidencia'}">
+				<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
+					<div class="m-b-20">
+						<c:if test="${baseKnowledgefile.status.name ne 'Obsoleto'}">
+							<button type="button" class="btn btn-default setIcon"
+								onclick="confirmCancelRFC(${baseKnowledgefile.id})" title="Anular"
+								style="background-color: #00294c !important; color: #fff; border: none !important;">
+								<span>ANULAR</span><span style="margin-left: 10px;"><i
+									class="material-icons m-t--2">highlight_off</i></span>
+							</button>
+						</c:if>
+						<button type="button" class="btn btn-default setIcon"
+							onclick="changeStatusRFC(${baseKnowledgefile.id}, '${baseKnowledgefile.numError}' )"
+							title="Borrador"
+							style="background-color: #00294c !important; color: #fff; border: none !important;">
+							<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
+								class="material-icons m-t--2">offline_pin</i></span>
+						</button>
+					</div>
+				</div>
+			</c:if>
+		</c:forEach>
+	
 	</section>
 
 	<%@include file="../../plantilla/footer.jsp"%>

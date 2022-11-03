@@ -17,7 +17,7 @@
 		<label>Descripci&oacute;n del error</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" name='rfcReason' id="rfcReason"
+				<textarea rows="2" cols="" name='description' id="description"
 					class="form-control"
 					placeholder="Ingrese una pequeña descripci&oacute;n del error..." style="">${baseKnowledge.description}</textarea>
 			</div>
@@ -30,9 +30,9 @@
 		<label>Datos requeridos para escalar. </label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" name='rfcEffect' id="rfcEffect"
-					name="rfcEffect" class="form-control"
-					placeholder="Ingrese el efecto si no se implementa..." style="">${baseKnowledge.dataRequired}</textarea>
+				<textarea rows="2" cols="" name='data' id="data"
+					name="data" class="form-control"
+					placeholder="Ingrese datos requeridos para escalar..." style="">${baseKnowledge.dataRequired}</textarea>
 			</div>
 			<label id="data_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>
@@ -43,11 +43,11 @@
 		<label>Notas. </label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<textarea rows="2" cols="" name='rfcEffect' id="rfcEffect"
-					name="rfcEffect" class="form-control"
-					placeholder="Ingrese el efecto si no se implementa..." style="">${baseKnowledge.note}</textarea>
+				<textarea rows="2" cols="" name='note' id="note"
+					name="note" class="form-control"
+					placeholder="Ingrese alguna nota adicional..." style="">${baseKnowledge.note}</textarea>
 			</div>
-			<label id="rfcEffect_error" class="error fieldError" for="name"
+			<label id="note_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Campo requerido.</label>
 		</div>
 	</div>
@@ -57,7 +57,7 @@
 				<c:choose>
 					<c:when test="${baseKnowledge.publicate}">
 						<div class="switch" style="margin-top: 20px;">
-							<label>NO<input id="publicate" type="checkbox" value="1"
+							<label>NO<input id="publicate" type="checkbox" value="0"
 								name="publicate" checked="checked"><span class="lever"></span>S&Iacute;
 							</label>
 						</div>
@@ -65,7 +65,7 @@
 					<c:otherwise>
 						<div class="switch" style="margin-top: 20px;">
 							<label>NO<input id="publicate" name="publicate"
-								type="checkbox" value="0"><span class="lever"></span>S&Iacute;
+								type="checkbox" value="1"><span class="lever"></span>S&Iacute;
 							</label>
 						</div>
 					</c:otherwise>

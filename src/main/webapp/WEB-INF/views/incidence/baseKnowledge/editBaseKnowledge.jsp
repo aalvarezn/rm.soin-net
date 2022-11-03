@@ -126,7 +126,7 @@ tr.selected {
 		<!-- #END# addObjectModal -->
 
 		<!-- addObjectModal -->
-		<%@include file="../../rfc/previewRFCModal.jsp"%>
+		<%@include file="../../incidence/baseKnowledge/previewBaseKnowledgeModal.jsp"%>
 		<!-- #END# addObjectModal -->
 
 		<!-- addFileModal -->
@@ -156,12 +156,12 @@ tr.selected {
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-md-2 col-lg-2 col-sm-12 col-xs-12">
-						<h5 class="font-20 greyLigth">Nuevo Error</h5>
+						<h5 class="font-20 greyLigth">Nuevo error</h5>
 					</div>
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>RFC: </span>${baseKnowledge.numError} <input type="hidden"
+								<span>CODIGO ERROR: </span>${baseKnowledge.numError} <input type="hidden"
 									id="rfcId" value="${baseKnowledge.id}"> <input type="hidden"
 									id="rfcNumber" value="${baseKnowledge.numError}">
 									 <input type="hidden"
@@ -369,7 +369,7 @@ tr.selected {
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 
-	<script src="<c:url value='/static/js/incidence/editBaseKnowledge.js.js'/>"></script>
+	<script src="<c:url value='/static/js/incidence/editBaseKnowledge.js'/>"></script>
 	<script src="<c:url value='/static/js/incidence/baseKnowledgeFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->

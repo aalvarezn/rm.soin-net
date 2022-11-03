@@ -8,12 +8,12 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="font-20 ">
-					<span>Resumen: </span> <span class="font-bold col-cyan">${rfc.numRequest}</span>
+					<span>Resumen: </span> <span class="font-bold col-cyan">${baseKnowledge.numError}</span>
 				</h5>
 			</div>
 			<div class="modal-body">
 				<section>
-					<iframe src="<c:url value='/rfc/tinySummary-${rfc.id}'/>"
+					<iframe src="<c:url value='/baseKnowledge/tinySummary-${baseKnowledge.id}'/>"
 						id="tinySummary">
 						<p>Revisar configuracion del navegador</p>
 					</iframe>
