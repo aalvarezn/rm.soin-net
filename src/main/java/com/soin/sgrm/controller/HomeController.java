@@ -109,6 +109,14 @@ public class HomeController extends BaseController {
 
 		return "redirect:/request/";
 	}
+	
+	@RequestMapping(value = "/homeBaseKnowledge", method = RequestMethod.GET)
+	public String indexBaseKnow(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+
+
+		return "redirect:/baseKnowledge/";
+	}
 
 
 	@RequestMapping(value = "/successLogin", method = RequestMethod.GET)
