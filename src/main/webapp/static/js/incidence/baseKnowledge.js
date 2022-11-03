@@ -129,7 +129,17 @@ function initRFCTable() {
 						"mRender" : function(data, type, row, meta) {
 							return row.user.fullName;
 						},
-					}, {
+					},
+					
+					{
+						"mRender" : function(data, type, row, meta) {
+							if(row.publicate)
+								return "Si";
+							else
+								return 'No';
+						},
+					},	
+					{
 						"mRender" : function(data, type, row, meta) {
 							return moment(row.requestDate).format('DD/MM/YYYY h:mm:ss a');
 						},
@@ -140,7 +150,8 @@ function initRFCTable() {
 							else
 								return '';
 						},
-					}, {
+					}, 
+					{
 						"mRender" : function(data, type, row, meta) {
 							var options = '<div class="iconLineC">';
 							if (row.status.name == 'Borrador') {

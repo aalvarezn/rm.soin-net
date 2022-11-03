@@ -13,9 +13,9 @@ $(function() {
 
 	activeItemMenu("incidenceManagementItem",true);
 	 $('#systemId').selectpicker('val',$('#systemInfoId').val());
-	initTable();
-	initTableAdd();
-	initData();
+	//initTable();
+	//initTableAdd();
+	//initData();
 	 $('#releaseTable tbody').on( 'click', 'tr', function () {
 	      if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
@@ -903,48 +903,7 @@ function dropDownChange(){
 	});
 }
 
-function removeSelectedData(){
-	var dataTableRelease = $dtRFCsAdd.rows('.selected').data();
-	if(dataTableRelease.length!=0){
-	if($dataRelease.length!=0){
 
-		for(var x=0;x<dataTableRelease.length;x++){
-			
-			var data= dataTableRelease[x];
-			$dataRelease.forEach(function(element,index){
-				
-				if(element.id==data.id){
-					
-					$dataRelease.splice(index,1); 
-		        	if($dataRelease.length==0){
-		    
-		        		$dataRelease=[];
-		        		 $('#releaseTableAdd').dataTable().fnClearTable();
-		        		 notifyMs('Se removieron correctamente los releases','success');
-		        		 return;
-		        	}
-		        	 $('#releaseTableAdd').dataTable().fnClearTable();
-		    		 $('#releaseTableAdd').dataTable().fnAddData($dataRelease);
-		    		 notifyMs('Se removieron correctamente los releases','success');
-		            return false; 
-					
-				}
-				
-			});
-		
-		}
-		$dtRFCs.$('tr.selected').removeClass('selected');
-	}else{
-		swal("Sin selecci\u00F3n!", "No se ha seleccionado ning\u00FAn release para remover",
-		"warning");
-		return;
-	}
-	}else{
-		swal("Sin selecci\u00F3n!", "No se ha seleccionado ning\u00FAn release",
-		"warning");
-		return;
-	}
-}
 function removeData(data){
 
 	$dataRelease.forEach(function (element,index){
@@ -1065,7 +1024,7 @@ function responseAjaxSendRFC(response) {
 		case 'success':
 			resetErrors();
 			reloadPreview();
-			swal("Correcto!", "RFC guardado correctamente.",
+			swal("Correcto!", "Error guardado correctamente.",
 					"success", 2000)
 					$('#generateReleaseForm #applyFor').show();
 			break;

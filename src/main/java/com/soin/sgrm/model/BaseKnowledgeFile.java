@@ -13,7 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "ARCHIVORFC")
+@Table(name = "ARCHIVOBASECONO")
 public class BaseKnowledgeFile implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

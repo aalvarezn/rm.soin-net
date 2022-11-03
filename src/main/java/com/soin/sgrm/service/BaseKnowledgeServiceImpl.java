@@ -101,6 +101,7 @@ public class BaseKnowledgeServiceImpl implements BaseKnowledgeService {
 		Criterion qSrch = null;
 		if (sSearch != null && sSearch.length() > 0) {
 			qSrch = Restrictions.or(Restrictions.like("numError", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase());
 		}
 		if (sStatus == 0) {
@@ -213,7 +214,8 @@ public class BaseKnowledgeServiceImpl implements BaseKnowledgeService {
 			qSrch = Restrictions.or(
 
 					Restrictions.like("numError", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase()
 
 			);
 		}

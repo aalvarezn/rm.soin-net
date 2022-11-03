@@ -83,8 +83,8 @@ public class BaseKnowledge implements Serializable {
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "RFC_ARCHIVORFC", joinColumns = { @JoinColumn(name = "RFC_ID") }, inverseJoinColumns = {
-			@JoinColumn(name = "ARCHIVORFC_ID") })
+	@JoinTable(name = "BASECONO_ARCHIVOBASE", joinColumns = { @JoinColumn(name = "BASE_ID") }, inverseJoinColumns = {
+			@JoinColumn(name = "ARCHIVOBASECONO_ID") })
 	private Set<BaseKnowledgeFile> files = new HashSet<>();
 
 	@OrderBy("trackingDate ASC")
