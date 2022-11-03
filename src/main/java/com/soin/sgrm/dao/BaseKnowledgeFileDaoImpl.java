@@ -35,7 +35,7 @@ public class BaseKnowledgeFileDaoImpl extends AbstractDao<Long, BaseKnowledgeFil
 				getSession().saveOrUpdate(BaseKnowledgeFile);
 
 				sql = String.format(
-						"INSERT INTO \"RFC_ARCHIVORFC\" ( \"RFC_ID\", \"ARCHIVORFC_ID\") VALUES ( %s, %s ) ",
+						"INSERT INTO \"BASECONO_ARCHIVOBASE\" ( \"BASE_ID\", \"ARCHIVOBASECONO_ID\") VALUES ( %s, %s ) ",
 						id, BaseKnowledgeFile.getId());
 				query = getSession().createSQLQuery(sql);
 				query.executeUpdate();
@@ -52,7 +52,7 @@ public class BaseKnowledgeFileDaoImpl extends AbstractDao<Long, BaseKnowledgeFil
 		String sql = "";
 		Query query = null;
 		try {
-			sql = String.format("DELETE FROM \"RFC_ARCHIVORFC\" WHERE \"ARCHIVORFC_ID\" = %s ", baseKnowledgeFile.getId());
+			sql = String.format("DELETE FROM \"BASECONO_ARCHIVOBASE\" WHERE \"ARCHIVOBASECONO_ID\" = %s ", baseKnowledgeFile.getId());
 			query = getSession().createSQLQuery(sql);
 			query.executeUpdate();
 

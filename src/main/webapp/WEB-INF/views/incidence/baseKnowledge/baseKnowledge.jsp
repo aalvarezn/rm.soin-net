@@ -208,6 +208,7 @@
 													<th>Componente</th>
 													<th>Incidencia</th>
 													<th>Responsable</th>
+													<th>Publicado</th>
 													<th>Modificado</th>
 													<th>Estado</th>
 													<th>Acciones</th>
