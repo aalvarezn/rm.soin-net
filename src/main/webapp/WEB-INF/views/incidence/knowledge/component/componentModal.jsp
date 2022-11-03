@@ -21,7 +21,7 @@
 								<div class="form-line">
 									<input type="text" class="form-control" id="sName"
 										maxlength="100" name="sName" placeholder="Ingrese un nombre"
-										>
+										onkeypress="return verifyLetters(event)" onpaste="return false;" autocomplete="off">
 									<div class="help-info">Máx. 100 caracteres</div>
 								</div>
 							</div>

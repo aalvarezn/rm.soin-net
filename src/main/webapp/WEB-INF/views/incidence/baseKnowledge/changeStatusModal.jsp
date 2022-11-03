@@ -17,7 +17,7 @@
 							value="" />
 
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 m-b-10">
-							<label>Número RFC</label>
+							<label>Codigo Error</label>
 							<div class="form-group">
 								<div class="form-line disabled">
 									<input type="text" readonly="" id="rfcNumRequest"

@@ -4,7 +4,7 @@ var $dtRFCs;
 var $fmRFC = $('#formAddRFC');
 var $formChangeUser = $('#changeUserForm');
 var $trackingRFCForm = $('#trackingRFCForm');
-
+var $formChangeStatus = $('#changeStatusForm');
 $(function() {
 
 	$('input[name="daterange"]').daterangepicker({
@@ -60,6 +60,7 @@ $(function() {
 
 	initRFCTable();
 	initRFCFormValidation();
+	initStatusFormValidation();
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -141,26 +142,26 @@ function initRFCTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							var options = '<div class="iconLine">';
+							var options = '<div class="iconLineC">';
 							if (row.status.name == 'Borrador') {
 								
 									options = options
 									+ '<a onclick="editRFC('
 									+ row.id
 									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>'
-									+ '<a onclick="confirmDeleteRFC('
-									+ row.id
-									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
+				
 								
 							}
-							if($('#isDeveloper').val()){
-								options = options
-								+ '<a onclick="copyRFC('
-								+ row.index
-								+ ')" title="Copiar"><i class="material-icons gris">file_copy</i> </a>';
-							}
 
-							
+						
+						
+							options = options
+							+ '<a onclick="changeStatusRFC('+row.id+')" title="Cambiar Estado"><i class="material-icons gris" style="font-size: 25px;">offline_pin</i></a>';
+	
+							if(row.status.name != 'Obsoleto') {
+								options = options
+								+ '<a onclick="confirmDeleteRFC('+row.id+')" title="Anular"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
+							}
 
 							options = options
 							+ '<a onclick="openRFCTrackingModal('
@@ -170,15 +171,116 @@ function initRFCTable() {
 							options = options
 							+ '<a href="'
 							+ getCont()
-							+ 'rfc/summaryRFC-'
+							+ 'baseKnowledge/summaryBaseKnowledge-'
 							+ row.id
-							+ '" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
+							+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
 							return options;
 						},
 					} ],
 					ordering : false,
 			});
 }
+
+function changeStatusRFC(idRFC) {
+	var dtRFC = $('#dtRFCs').dataTable();
+	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
+	var rowData = $dtRFCs.row(idRow[0]).data();
+	$formChangeStatus[0].reset();
+	$formChangeStatus.validate().resetForm();
+	$formChangeStatus.find('#idRFC').val(idRFC);
+	$formChangeStatus.find('#rfcNumRequest').val(rowData.numError);
+	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
+	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
+	$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
+	$('#changeStatusModal').modal('show');
+}
+
+function saveChangeStatusModal(){
+
+	if (!$formChangeStatus.valid())
+		return false;
+	blockUI();
+	$.ajax({
+		type : "GET",
+		url : getCont() + "baseKnowledge/statusError",
+		timeout : 60000,
+		data : {
+			idError : $formChangeStatus.find('#idRFC').val(),
+			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
+			dateChange: $formChangeStatus.find('#dateChange').val(),
+			motive: $formChangeStatus.find('#motive').val()
+		},
+		success : function(response) {
+			responseStatusRFC(response);
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+}
+
+function responseStatusRFC(response) {
+	switch (response.status) {
+	case 'success':
+		swal("Correcto!", "El error ha sido modificado exitosamente.",
+				"success", 2000);
+		$dtRFCs.ajax.reload();
+		closeChangeStatusModal();
+		break;
+	case 'fail':
+		swal("Error!", response.exception, "error")
+		break;
+	case 'exception':
+		swal("Error!", response.exception, "error")
+		break;
+	}
+}
+
+function closeChangeStatusModal(){
+	$formChangeStatus[0].reset();
+	$formChangeStatus.validate().resetForm();
+	$formChangeStatus.find('#userId').selectpicker('val', '');
+	$('#changeStatusModal').modal('hide');
+}
+
+function initStatusFormValidation() {
+	$formChangeStatus.validate({
+		
+		rules : {
+			'statusId' : {
+				required : true,
+				
+			},
+			'motive' : {
+				required : true,
+				minlength : 1,
+				maxlength : 50,
+			},
+			'dateChange' : {
+				required : true,
+			
+			},
+		},
+		messages : {
+			'statusId' : {
+				required :  "Ingrese un valor",
+			},
+			'motive' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+			'dateChange' : {
+				required : "Ingrese un valor",
+				
+			},
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
+	});
+}
+
 
 function changeSlide() {
 	$fmRFC.validate().resetForm();
@@ -384,7 +486,7 @@ function loadTrackingRFC(rowData){
 
 function getColorNode(status){
 	switch (status) {
-	case 'Produccion':
+	case 'Vigente':
 		return 'rgb(0, 150, 136)';
 		break;
 	case 'Certificacion':
@@ -396,7 +498,7 @@ function getColorNode(status){
 	case 'Borrador':
 		return 'rgb(31, 145, 243)';
 		break;
-	case 'Anulado':
+	case 'Obsoleto':
 		return 'rgb(233, 30, 99)';
 		break;
 	default:

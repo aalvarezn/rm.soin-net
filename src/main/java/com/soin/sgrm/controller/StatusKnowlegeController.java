@@ -60,7 +60,7 @@ public class StatusKnowlegeController extends BaseController {
 
 			statusKnowlegeService.save(addStatusKnowlege);
 
-			res.setMessage("Estado Solicitado agregado!");
+			res.setMessage("Estado agregado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "StatusKnowlege");
 			res.setStatus("error");
@@ -77,11 +77,11 @@ public class StatusKnowlegeController extends BaseController {
 			res.setStatus("success");
 			statusKnowlegeService.update(uptStatusKnowlege);
 
-			res.setMessage("Estado solicitud modificado!");
+			res.setMessage("Estado modificado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "StatusKnowlege");
-			res.setStatus("exception");
-			res.setMessage("Error al modificar Estado  de la Solicitud!");
+			res.setStatus("error");
+			res.setMessage("Error al modificar estado!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -93,10 +93,10 @@ public class StatusKnowlegeController extends BaseController {
 		try {
 			res.setStatus("success");
 			statusKnowlegeService.delete(id);
-			res.setMessage("Estado solicitado eliminado!");
+			res.setMessage("Estado eliminado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "siges");
-			res.setStatus("exception");
+			Sentry.capture(e, "StatusKnowlege");
+			res.setStatus("error");
 			res.setMessage("Error al eliminar el estado de solicitud!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}

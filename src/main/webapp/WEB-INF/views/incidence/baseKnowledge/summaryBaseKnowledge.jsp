@@ -72,13 +72,13 @@
 	<section id="contentSummary" class="content">
 		<div class="container-fluid">
 			<div class="row clearfix">
-				<%@include file="../../rfc/changeStatusModal.jsp"%>
+				<%@include file="../../incidence/baseKnowledge/changeStatusModal.jsp"%>
 			</div>
 			<span class="topArrow"> <i class="material-icons pointer">keyboard_arrow_up</i>
 			</span>
 			<div class="row clearfix">
 				<div class="button-demo flr">
-					<a href="<c:url value='/homeRFC'/> " class="btn btn-default">IR
+					<a href="<c:url value='/homeBaseKnowledge'/> " class="btn btn-default">IR
 						A INICIO</a>
 				</div>
 			</div>
@@ -143,8 +143,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="row clearfix">
+					<div class="row clearfix">
 			<div class="col-sm-12">
 				<h5 class="titulares">Informacion sobre el error</h5>
 			</div>
@@ -204,21 +203,23 @@
 
 
 		</div>
+		</div>
+
 
 		<c:forEach items="${userInfo.authorities}" var="authority">
-			<c:if test="${authority.name == 'Gestion Incidencia'}">
+			<c:if test="${authority.name == 'Gestor Incidencias'}">
 				<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
 					<div class="m-b-20">
-						<c:if test="${baseKnowledgefile.status.name ne 'Obsoleto'}">
+						<c:if test="${baseKnowledge.status.name ne 'Obsoleto'}">
 							<button type="button" class="btn btn-default setIcon"
-								onclick="confirmCancelRFC(${baseKnowledgefile.id})" title="Anular"
+								onclick="confirmCancelRFC(${baseKnowledge.id})" title="Anular"
 								style="background-color: #00294c !important; color: #fff; border: none !important;">
 								<span>ANULAR</span><span style="margin-left: 10px;"><i
 									class="material-icons m-t--2">highlight_off</i></span>
 							</button>
 						</c:if>
 						<button type="button" class="btn btn-default setIcon"
-							onclick="changeStatusRFC(${baseKnowledgefile.id}, '${baseKnowledgefile.numError}' )"
+							onclick="changeStatusRFC(${baseKnowledge.id}, '${baseKnowledge.numError}' )"
 							title="Borrador"
 							style="background-color: #00294c !important; color: #fff; border: none !important;">
 							<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
@@ -233,7 +234,7 @@
 
 	<%@include file="../../plantilla/footer.jsp"%>
 
-	<script src="<c:url value='/static/js/rfc/rfcSummaryActions.js'/>"></script>
+	<script src="<c:url value='/static/js/incidence/baseKnowledgeSummaryActions.js'/>"></script>
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>

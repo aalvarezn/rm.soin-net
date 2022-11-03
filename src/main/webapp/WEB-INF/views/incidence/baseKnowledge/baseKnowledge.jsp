@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <html>
@@ -74,7 +74,11 @@
 
 				<!-- #addRFCSection#  -->
 				<%@include file="../../incidence/baseKnowledge/addBaseKnowledge.jsp"%>
-				<%@include file="../../incidence/baseKnowledge/trackingKnowledgeModal.jsp"%>
+				<div class="row clearfix">
+						<%@include file="../../incidence/baseKnowledge/changeStatusModal.jsp"%>
+				</div>
+				<%@include
+					file="../../incidence/baseKnowledge/trackingKnowledgeModal.jsp"%>
 				<!-- #addRFCSection#-->
 
 				<!-- #tableSection#-->
@@ -83,7 +87,7 @@
 						<h2>Base de conocimientos</h2>
 					</div>
 
-					<!-- 
+		
 					<div class="tab-content">
 						<div role="tabpanel" class="tab-pane  active">
 							<div class="row clearfix">
@@ -119,7 +123,7 @@
 											<i class="material-icons default">priority_high</i>
 										</div>
 										<div class="content">
-											<div class="text">SOLICITADOS</div>
+											<div class="text">OBSOLETO</div>
 											<div class="number count-to" data-from="0"
 												data-to="${userC['requested']}" data-speed="1000"
 												data-fresh-interval="20"></div>
@@ -132,7 +136,7 @@
 											<i class="material-icons default">flag</i>
 										</div>
 										<div class="content">
-											<div class="text">COMPLETADOS</div>
+											<div class="text">VIGENTES</div>
 											<div class="number count-to" data-from="0" data-to="${userC['completed']}"
 												data-speed="1000" data-fresh-interval="20"></div>
 										</div>
@@ -142,7 +146,7 @@
 						</div>
 
 					</div>
-					-->
+		
 
 
 					<!-- tableFilters -->
@@ -191,31 +195,31 @@
 					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-					<div id="tableSection" class="row clearfix">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="body ">
-								<div class="body table-responsive">
-									<table id="dtRFCs"
-										class="table table-bordered table-striped table-hover dataTable">
-										<thead>
-											<tr>
-												<th></th>
-												<th>Codigo Error</th>
-												<th>Componente</th>
-												<th>Incidencia</th>
-												<th>Responsable</th>
-												<th>Modificado</th>
-												<th>Estado</th>
-												<th>Acciones</th>
-											</tr>
-										</thead>
+						<div id="tableSection" class="row clearfix">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="body ">
+									<div class="body table-responsive">
+										<table id="dtRFCs"
+											class="table table-bordered table-striped table-hover dataTable">
+											<thead>
+												<tr>
+													<th></th>
+													<th>Codigo Error</th>
+													<th>Componente</th>
+													<th>Incidencia</th>
+													<th>Responsable</th>
+													<th>Modificado</th>
+													<th>Estado</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
 
-									</table>
+										</table>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					
+
 					</div>
 				</div>
 				<!-- #tableSection# -->

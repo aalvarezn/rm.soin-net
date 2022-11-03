@@ -2,11 +2,14 @@ package com.soin.sgrm.controller;
 
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -18,18 +21,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.BaseKnowledge;
 import com.soin.sgrm.model.Component;
+import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.BaseKnowledgeService;
 import com.soin.sgrm.service.ComponentService;
 import com.soin.sgrm.service.StatusKnowlegeService;
 import com.soin.sgrm.model.StatusKnowlege;
+import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
@@ -64,7 +71,7 @@ public class BaseKnowledgeController extends BaseController {
 			RedirectAttributes redirectAttributes) {
 		try {
 			Integer userLogin = getUserLogin().getId();
-			//loadCountsRelease(request, userLogin);
+			loadCountsRelease(request, userLogin);
 			List<Component> components = componentService.findAll();
 			List<StatusKnowlege> statuses = statusService.findAll();
 			model.addAttribute("statuses", statuses);
@@ -441,6 +448,56 @@ public class BaseKnowledgeController extends BaseController {
 		}
 		return null;
 	}
+	@RequestMapping(value = "/cancelError", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse cancelRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "idError", required = true) Long idError) {
+		JsonResponse res = new JsonResponse();
+		try {
+			BaseKnowledge baseKnowledge = baseKnowledgeService.findById(idError);
+			StatusKnowlege status = statusService.findByKey("name", "Obsoleto");
+			baseKnowledge.setStatus(status);
+			baseKnowledge.setOperator(getUserLogin().getFullName());
+			baseKnowledge.setMotive(status.getReason());
+			baseKnowledgeService.update(baseKnowledge);
+			res.setStatus("success");
+
+		} catch (Exception e) {
+			Sentry.capture(e, "base");
+			res.setStatus("exception");
+			res.setException("Error al cancelar el error: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/statusError", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse changeStatusError(HttpServletRequest request, Model model,
+			@RequestParam(value = "idError", required = true) Long idError,
+			@RequestParam(value = "idStatus", required = true) Long idStatus,
+			@RequestParam(value = "dateChange", required = true) String dateChange,
+			@RequestParam(value = "motive", required = true) String motive) {
+		JsonResponse res = new JsonResponse();
+		try {
+			BaseKnowledge baseKnowledge = baseKnowledgeService.findById(idError);
+			StatusKnowlege status = statusService.findById(idStatus);
+			String user = getUserLogin().getFullName();
+
+			baseKnowledge.setStatus(status);
+			baseKnowledge.setOperator(getUserLogin().getFullName());
+			Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+			baseKnowledge.setRequestDate(dateFormat);
+			baseKnowledge.setMotive(motive);
+			baseKnowledgeService.update(baseKnowledge);
+			res.setStatus("success");
+
+		} catch (Exception e) {
+			Sentry.capture(e, "rfcManagement");
+			res.setStatus("exception");
+			res.setException("Error al cambiar estado del error: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 	
 	@RequestMapping(value = "/deleteBaseKnowledge/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteBaseKnowledge(@PathVariable Long id, Model model) {
@@ -475,13 +532,13 @@ public class BaseKnowledgeController extends BaseController {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> userC = new HashMap<String, Integer>();
-		/*
-		userC.put("draft", BaseKnowledgeService.countByType(id, "Borrador", 1, null));
-		userC.put("requested", BaseKnowledgeService.countByType(id, "Solicitado", 1, null));
-		userC.put("completed", BaseKnowledgeService.countByType(id, "Completado", 1, null));
+		
+		userC.put("draft", baseKnowledgeService.countByType(id, "Borrador", 1, null));
+		userC.put("requested", baseKnowledgeService.countByType(id, "Obsoleto", 1, null));
+		userC.put("completed", baseKnowledgeService.countByType(id, "Vigente", 1, null));
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
 		request.setAttribute("userC", userC);
-		*/
+		
 	}
 	
 

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Component;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.ComponentService;
 import com.soin.sgrm.utils.JsonResponse;
@@ -57,10 +58,17 @@ public class ComponentController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-
-			componentService.save(addComponent);
-
-			res.setMessage("Componente agregado!");
+			addComponent.setName(addComponent.getName().toUpperCase());
+			
+			Component componentVerify= componentService.findByKey("name", addComponent.getName().trim());
+			if(componentVerify==null) {
+				componentService.save(addComponent);
+				res.setMessage("Componente agregado!");
+			}else {
+				res.setStatus("error");
+				res.setMessage("Error al agregar componente nombre ya utilizado!");
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "component");
 			res.setStatus("error");
@@ -74,13 +82,37 @@ public class ComponentController extends BaseController {
 	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody Component uptComponent) {
 		JsonResponse res = new JsonResponse();
 		try {
-			res.setStatus("success");
-			componentService.update(uptComponent);
+			
+			Component component= componentService.findById(uptComponent.getId());
 
-			res.setMessage("Componente modificado!");
+			if(component.getName()!=uptComponent.getName()){
+				
+				Component componentVerify= componentService.findByKey("name", uptComponent.getName().trim());
+				if(componentVerify!=null) {
+					if(componentVerify.getId()==uptComponent.getId()) {
+						componentService.update(uptComponent);
+						res.setMessage("Componente modificado!");
+						res.setStatus("success");
+					}
+					else {
+						res.setStatus("error");
+						res.setMessage("Error al modificar componente este nombre ya pertenece a otro!");
+					}
+				}
+				else {
+					componentService.update(uptComponent);
+					res.setMessage("Componente modificado!");
+					res.setStatus("success");
+				}
+			}else {
+				componentService.update(uptComponent);
+				res.setMessage("Componente modificado!");
+				res.setStatus("success");
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "Component");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al modificar componente!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}

@@ -7,6 +7,12 @@ $(function() {
 	activeItemMenu("incidenceManagementItem", true);
 	initDataTable();
 	initStatusRFCFormValidation();
+	$('#sName').autocomplete('disable');
+	$('#sName').keydown(function( event ) {
+		if ( event.which == 13 || event.which == 32 ) {
+			event.preventDefault();
+		}
+	});
 });
 
 
@@ -172,6 +178,24 @@ function deleteStatusRFC(index) {
 		}
 	});
 }
+function verifyLetters(e){
+	key=e.keyCode || e. which;
+	keyboard=String.fromCharCode(key);
+	characters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYYZ_1234567890";
+	specials="95";
+	
+	special_keyboard=false;
+	
+	for(var i in specials){
+		if(key==specials[i]){
+			special_keyboard=true;
+		}
+	}
+	if(characters.indexOf(keyboard)==-1&&!special_keyboard){
+		return false;
+	}
+}
+
 
 function addStatusRFC(){
 	$fmStatusRFC.validate().resetForm();

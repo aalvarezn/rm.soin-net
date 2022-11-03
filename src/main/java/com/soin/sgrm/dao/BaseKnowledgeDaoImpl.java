@@ -70,17 +70,7 @@ public class BaseKnowledgeDaoImpl extends AbstractDao<Long,BaseKnowledge> implem
 		switch (query) {
 		case 1:
 			// query #1 Obtiene mis BaseKnowledge
-			List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
-			.createAlias("managers","managers")
-			.add(Restrictions.eq("managers.id", id)).list();
-			List<Integer> listaId=new ArrayList<Integer>();
-			for(SystemInfo system: systems) {
-				listaId.add(system.getId());
-			}
-			crit.createAlias("systemInfo", "systemInfo");
-			crit.add(Restrictions.in("systemInfo.id", listaId));
 
-			
 			crit.add(Restrictions.eq("status.name", type));
 			break;
 		case 2:
