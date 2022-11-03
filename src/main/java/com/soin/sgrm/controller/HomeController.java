@@ -87,7 +87,9 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_QA")) {
 			return "redirect:/release/qa";
 		}
-
+		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
+			return "redirect:/baseKnowledge/";
+		}
 		return "redirect:/release/";
 	}
 	
