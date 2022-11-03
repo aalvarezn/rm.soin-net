@@ -64,10 +64,10 @@
 					<c:set var="managerRequestAccess" value="true"></c:set>
 				</c:if>
 				<c:if test="${authority.name == 'Incidencias'}">
-					<c:set var="managerIncidenceAccess" value="true"></c:set>
+					<c:set var="incidenceAccess" value="true"></c:set>
 				</c:if>
 				<c:if test="${authority.name == 'Gestor Incidencias'}">
-					<c:set var="incidenceAccess" value="true"></c:set>
+					<c:set var="managerIncidenceAccess" value="true"></c:set>
 				</c:if>
 			</c:forEach>
 			<c:if test="${managerIncidenceAccess}">
