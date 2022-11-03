@@ -110,7 +110,7 @@
 		</div>
 		<div class="row clearfix">
 			<div class="col-sm-12">
-				<h5 class="titulares">Informacion sobre el error</h5>
+				<h5 class="titulares">Informaci&oacute;n sobre el error</h5>
 			</div>
 			<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 				<label for="">Descripci&oacute;n del error.</label>

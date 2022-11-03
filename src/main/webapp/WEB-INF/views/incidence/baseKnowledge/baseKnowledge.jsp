@@ -204,7 +204,7 @@
 											<thead>
 												<tr>
 													<th></th>
-													<th>Codigo Error</th>
+													<th>C&oacute;digo Error</th>
 													<th>Componente</th>
 													<th>Incidencia</th>
 													<th>Responsable</th>
