@@ -131,6 +131,13 @@ public class Release implements Serializable, Cloneable {
 	@Lob
 	@Column(name = "PLAN_DE_ROLLBACK")
 	private String rollback_plan;
+	
+	@Column(name = "REMITENTES")
+	private String senders;
+
+	@Column(name = "MENSAJE_DESARROLLADOR")
+	private String message;
+
 
 	// Instrucciones de Instalación de Base de Datos
 	@Column(name = "INSTRUCCIONES_DE_INSTALACI93F7")
@@ -329,6 +336,22 @@ public class Release implements Serializable, Cloneable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getSenders() {
+		return senders;
+	}
+
+	public void setSenders(String senders) {
+		this.senders = senders;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	public String getObservations() {
@@ -937,7 +960,24 @@ public class Release implements Serializable, Cloneable {
 				priority.setId(Integer.parseInt(rc.getPriorityId()));
 				this.priority = priority;
 			}
-
+			if(rc.getSenders()!=null) {
+			if(!rc.getSenders().equals("")){
+				if (rc.getSenders().length() < 256) {
+					rc.setSenders(rc.getSenders());
+				} 
+				
+				this.senders=rc.getSenders();
+			}
+			}
+			if(rc.getMessage()!=null) {
+				if(!rc.getMessage().equals("")){
+					if (rc.getMessage().length() < 256) {
+						this.message=rc.getMessage();
+					} 
+					
+				}
+			}
+		
 			this.description = rc.getDescription();
 
 			// Tipos de reporte

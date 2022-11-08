@@ -21,6 +21,8 @@ public class ReleaseCreate {
 	private String riskId;
 	private String priorityId;
 	private String description;
+	private String senders;
+	private String message;
 
 	// Tipos de reportes
 	private Boolean reportHaveArt;
@@ -103,6 +105,22 @@ public class ReleaseCreate {
 
 	public String getPriorityId() {
 		return priorityId;
+	}
+
+	public String getSenders() {
+		return senders;
+	}
+
+	public void setSenders(String senders) {
+		this.senders = senders;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	public void setPriorityId(String priorityId) {
@@ -455,6 +473,46 @@ public class ReleaseCreate {
 	}
 
 	// Se valida Impacto, Riesgo, Prioridad y Descripcion
+	public ArrayList<MyError> validEmailInformation(ReleaseCreate rc, ArrayList<MyError> errors) {
+		if (rc.getSenders() != null) {
+			if (rc.getSenders().length() > 256) {
+				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
+			} else {
+				MyError error = getErrorSenders(rc.getSenders());
+				if (error != null) {
+					errors.add(error);
+				}
+			}
+		}
+		if (rc.getMessage() != null) {
+			if (rc.getMessage().length() > 256) {
+				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+			}
+		}
+		return errors;
+	}
+
+	public MyError getErrorSenders(String senders) {
+
+		String[] listSenders = senders.split(",");
+		String to_invalid = "";
+		for (int i = 0; i < listSenders.length; i++) {
+			if (!CommonUtils.isValidEmailAddress(listSenders[i])) {
+				if (to_invalid.equals("")) {
+					to_invalid += listSenders[i];
+				} else {
+					to_invalid += "," + listSenders[i];
+				}
+
+			}
+		}
+		if (!to_invalid.equals("")) {
+			return new MyError("senders", "dirección(es) inválida(s) " + to_invalid);
+		}
+		return null;
+	}
+
+	// Se valida Impacto, Riesgo, Prioridad y Descripcion
 	public ArrayList<MyError> validGeneralInformation(ReleaseCreate rc, ArrayList<MyError> errors) {
 
 		if (rc.getImpactId().equals(""))
@@ -476,7 +534,7 @@ public class ReleaseCreate {
 	public ArrayList<MyError> validObservations(ReleaseCreate rc, ArrayList<MyError> errors) {
 		if (rc.getObservations().equals(""))
 			errors.add(new MyError("observations", "Valor requerido."));
-		
+
 		return errors;
 	}
 

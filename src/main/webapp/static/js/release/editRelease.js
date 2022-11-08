@@ -107,6 +107,13 @@ $releaseEditForm.find('#dependencyTechnical').keydown(function( event ) {
 });
 
 $(function() {
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
+
+	$('.tagInit').tagsInput({
+		width:'400px'
+	});
 	$('.nav-tabs > li a[title]').tooltip();
 	// Wizard
 	$('.stepper a[data-toggle="tab"]').on('show.bs.tab', function(e) {
@@ -499,7 +506,10 @@ function requestRelease() {
 			ambient : JSON.stringify(ambients),
 			preConditions : $(form + ' #preConditions').val(),
 			postConditions : $(form + ' #postConditions').val(),
-
+			// Datos Email
+			senders:$releaseEditForm.find('#senders').val(),
+			message:$releaseEditForm.find('#messagePer').val(),
+			
 			// Componentes de AIA
 			modifiedComponent : JSON.stringify(modifiedComponents),
 
@@ -631,6 +641,10 @@ function sendRelease() {
 			preConditions : $(form + ' #preConditions').val(),
 			postConditions : $(form + ' #postConditions').val(),
 
+			// Datos Email
+			senders:$releaseEditForm.find('#senders').val(),
+			message:$releaseEditForm.find('#messagePer').val(),
+			
 			// Componentes de AIA
 			modifiedComponent : JSON.stringify(modifiedComponents),
 
@@ -721,10 +735,12 @@ function resetErrors() {
 function showReleaseErrors(errors) {
 	resetErrors();// Eliminamos las etiquetas de errores previas
 	var error = errors;
+	console.log(errors);
 	for (var i = 0; i < error.length; i++) {
 		// Se modifica el texto de la advertencia y se agrega la de activeError
 		$releaseEditForm.find(" #" + error[i].key + "_error").text(
 				error[i].message);
+		console.log(" #" + error[i].key + "_error");
 		$releaseEditForm.find(" #" + error[i].key + "_error").css("visibility",
 		"visible");
 		$releaseEditForm.find(" #" + error[i].key + "_error").attr("class",
@@ -837,6 +853,7 @@ function sendPartialRelease() {
 	var modifiedComponents = listLi('listComponents');
 	var actions = listRowsId('environmentActionTable');
 	var objectItemConfiguration = listItemObjects();
+	console.log($releaseEditForm.find('#senders').val());
 	changeSaveButton(true);
 	var cont = getCont();
 	$
@@ -897,7 +914,9 @@ function sendPartialRelease() {
 			prodInstallationInstructions : $releaseEditForm.find('#prodInstallationInstructions').val(),
 			prodVerificationInstructions : $releaseEditForm.find('#prodVerificationInstructions').val(),
 			prodRollbackPlan : $releaseEditForm.find('#prodRollbackPlan').val(),
-
+			// Datos Email
+			senders:$releaseEditForm.find('#senders').val(),
+			message:$releaseEditForm.find('#messagePer').val(),
 			// Pruebas minimas
 			minimalEvidence : $releaseEditForm.find('#minimalEvidence').val(),
 

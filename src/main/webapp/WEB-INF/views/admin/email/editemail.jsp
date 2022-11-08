@@ -210,6 +210,8 @@
 							onclick="copyToClipboard($(this))" data-type="{{objects}}">Objetos</button>
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{version}}">Versión</button>
+							<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{message}}">Mensaje adicional</button>
 					</div>
 				</div>
 				<div id="RFCAttributtes" class="row clearfix" hidden>
