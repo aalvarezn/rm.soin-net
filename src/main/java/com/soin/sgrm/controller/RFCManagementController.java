@@ -32,6 +32,7 @@ import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.ImpactService;
@@ -42,6 +43,7 @@ import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.TypeChangeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -68,7 +70,7 @@ public class RFCManagementController extends BaseController {
 	SystemService systemService;
 
 	@Autowired
-	PriorityService priorityService;
+	TypeChangeService typeChangeService;
 
 	@Autowired
 	ImpactService impactService;
@@ -83,10 +85,10 @@ public class RFCManagementController extends BaseController {
 			User userLogin = userService.getUserByUsername(getUserLogin().getUsername());
 			loadCountsRFC(request, userLogin.getId());
 			List<System> systems = systemService.list();
-			List<Priority> priorities = priorityService.list();
+			List<TypeChange> typeChanges = typeChangeService.findAll();
 			List<StatusRFC> statuses = statusService.findAll();
 			List<Impact> impacts = impactService.list();
-			model.addAttribute("priorities", priorities);
+			model.addAttribute("typeChanges", typeChanges);
 			model.addAttribute("impacts", impacts);
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("systems", systems);
@@ -109,14 +111,18 @@ public class RFCManagementController extends BaseController {
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			String sSearch = request.getParameter("sSearch");
 			Long statusId;
-			int priorityId = 0;
+			Long typeChangeId;
 			int systemId;
 			if (request.getParameter("statusId").equals("")) {
 				statusId = null;
 			} else {
 				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
 			}
-
+			if (request.getParameter("typeChangeId").equals("")) {
+				typeChangeId = null;
+			} else {
+				typeChangeId = (long) Integer.parseInt(request.getParameter("typeChangeId"));
+			}
 			if (request.getParameter("systemId").equals("")) {
 				systemId = 0;
 			} else {
@@ -124,7 +130,7 @@ public class RFCManagementController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcWRService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange, priorityId,
+			rfcs = rfcWRService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange, typeChangeId,
 					systemId);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -75,7 +75,7 @@ $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 	$dtRFCs.ajax.reload();
 });
 
-$('#tableFilters #priorityId').change(function() {
+$('#tableFilters #typeChangeId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
@@ -105,7 +105,7 @@ function initRFCTable() {
 					"sAjaxSource" : getCont() + "rfc/list",
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
-								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
+								{"name": "typeChangeId", "value": $('#tableFilters #typeChangeId').children("option:selected").val()},
 								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
 								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
 						);
@@ -128,6 +128,14 @@ function initRFCTable() {
 								return row.reasonChange;
 							else
 								return 'Sin razon de cambio seleccionada';
+						},
+					},
+					 {
+						"mRender" : function(data, type, row, meta) {
+							if(row.typeChange)
+								return row.typeChange.name;
+							else
+								return 'Sin tipo seleccionado';
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
