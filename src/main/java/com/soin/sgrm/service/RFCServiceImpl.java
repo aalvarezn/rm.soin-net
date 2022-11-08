@@ -85,6 +85,7 @@ public class RFCServiceImpl implements RFCService {
 
 		alias.put("status", "status");
 		alias.put("user", "user");
+		alias.put("typeChange", "typeChange");
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {
 			if (range.length > 1) {
@@ -105,7 +106,9 @@ public class RFCServiceImpl implements RFCService {
 		if (sSearch != null && sSearch.length() > 0) {
 			qSrch = Restrictions.or(Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("reasonChange", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase());
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("typeChange.name", sSearch, MatchMode.ANYWHERE).ignoreCase()
+					);
 		}
 		if (sStatus == 0) {
 			sStatus = null;
@@ -197,7 +200,7 @@ public class RFCServiceImpl implements RFCService {
 		List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
 				.createAlias("managers", "managers").add(Restrictions.eq("managers.id", id)).list();
 		alias.put("status", "status");
-
+		alias.put("typeChange", "typeChange");
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {
 			if (range.length > 1) {
@@ -221,7 +224,8 @@ public class RFCServiceImpl implements RFCService {
 
 					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("reasonChange", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("typeChange.name", sSearch, MatchMode.ANYWHERE).ignoreCase()
 
 			);
 		}
