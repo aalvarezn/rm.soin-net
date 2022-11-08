@@ -66,23 +66,23 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Autowired
 	private Environment env;
-	
+
 	@Autowired
 	RequestRM_P1_R1Service requestServiceR1;
-	
+
 	@Autowired
 	RequestRM_P1_R2Service requestServiceR2;
 	@Autowired
 	RequestRM_P1_R3Service requestServiceR3;
-	
+
 	@Autowired
 	RequestRM_P1_R4Service requestServiceR4;
-	
+
 	@Autowired
 	RequestRM_P1_R5Service requestServiceR5;
 	@Autowired
 	private JavaMailSender mailSender;
-	
+
 	@Autowired
 	SigesService sigeService;
 
@@ -180,13 +180,82 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		for (String toUser : email.getTo().split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
 		}
-		mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(release.getUser().getEmail()));
+		String ccFinish = "";
+		String cc = "";
 		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
-			for (String ccUser : email.getCc().split(",")) {
-				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			cc = email.getCc();
+			if (release.getSenders() == null) {
+
+				ccFinish = email.getCc();
+				String[] split3 = ccFinish.split(",");
+				boolean verify = ArrayUtils.contains(split3, release.getUser().getEmail());
+				if (!verify) {
+					ccFinish = cc + "," + release.getUser().getEmail();
+				}
+			} else {
+				if (release.getSenders().trim().equals("")) {
+					ccFinish = email.getCc();
+					String[] split3 = ccFinish.split(",");
+					boolean verify = ArrayUtils.contains(split3, release.getUser().getEmail());
+					if (!verify) {
+						ccFinish = cc + "," + release.getUser().getEmail();
+					}
+				} else {
+
+					String[] split = release.getSenders().split(",");
+					String[] splitCC = cc.split(",");
+					ccFinish = release.getSenders();
+					for (int x = 0; splitCC.length > x; x++) {
+						boolean verify = ArrayUtils.contains(split, splitCC[x]);
+						if (!verify) {
+							ccFinish = ccFinish + "," + splitCC[x];
+						}
+					}
+					String[] split3 = ccFinish.split(",");
+					boolean verify = ArrayUtils.contains(split3, release.getUser().getEmail());
+					if (!verify) {
+						ccFinish = ccFinish + "," + release.getUser().getEmail();
+					}
+				}
+
+			}
+		} else {
+
+			if (release.getSenders() == null) {
+				ccFinish = release.getUser().getEmail();
+			} else {
+				if (release.getSenders().trim().equals("")) {
+					ccFinish = release.getUser().getEmail();
+				} else {
+					String[] split = release.getSenders().split(",");
+					ccFinish = release.getSenders();
+					boolean verify = ArrayUtils.contains(split, release.getUser().getEmail());
+					if (!verify) {
+						ccFinish = ccFinish + "," + release.getUser().getEmail();
+					}
+
+				}
 			}
 		}
-		mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(release.getUser().getEmail()));
+
+		String[] split = ccFinish.split(",");
+		String[] splitTo = email.getTo().split(",");
+		String ccUserFinal = "";
+		for (String ccFinal : split) {
+
+			boolean verify = ArrayUtils.contains(splitTo, ccFinal);
+			if (!verify) {
+				if (ccUserFinal.equals("")) {
+					ccUserFinal = ccFinal;
+				} else {
+					ccUserFinal = ccUserFinal + "," + ccFinal;
+				}
+			}
+		
+		}
+		for (String ccUser : ccUserFinal.split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+		}
 
 		mailSender.send(mimeMessage);
 	}
@@ -261,6 +330,14 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			String minimalEvidence = release.getMinimal_evidence() != null ? release.getMinimal_evidence() : "";
 			minimalEvidence = minimalEvidence.replace("\n", "<br>");
 			email.setHtml(email.getHtml().replace("{{minimalEvidence}}", minimalEvidence));
+		}
+		if (email.getHtml().contains("{{priority}}")) {
+			email.setHtml(email.getHtml().replace("{{priority}}",
+					(release.getPriority().getName() != null ? release.getPriority().getName() : "")));
+		}
+		if (email.getHtml().contains("{{message}}")) {
+			email.setHtml(email.getHtml().replace("{{message}}",
+					(release.getMessage() != null ? release.getMessage() : "NA")));
 		}
 
 		if (email.getHtml().contains("{{technicalSolution}}")) {
@@ -515,9 +592,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		}
 
 	}
-	
+
 	@Override
-	public void sendMailNotify(WFRelease releaseEmail, EmailTemplate email,String user) {
+	public void sendMailNotify(WFRelease releaseEmail, EmailTemplate email, String user) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -546,10 +623,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				email.setHtml(email.getHtml().replace("{{userName}}",
 						(releaseEmail.getUser().getFullName() != null ? releaseEmail.getUser().getFullName() : "")));
 			}
-			
+
 			if (email.getHtml().contains("{{operator}}")) {
-				email.setHtml(email.getHtml().replace("{{operator}}",
-						(user != null ? user : "")));
+				email.setHtml(email.getHtml().replace("{{operator}}", (user != null ? user : "")));
 			}
 
 			if (email.getHtml().contains("{{updateAt}}")) {
@@ -566,9 +642,10 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					temp += "<li><b> " + obj.getFullName() + "</b></li>";
 				}
 				temp += "</ul>";
-				email.setHtml(email.getHtml().replace("{{actors}}", (temp.equals("") ? "Sin actores definidos" : temp)));
+				email.setHtml(
+						email.getHtml().replace("{{actors}}", (temp.equals("") ? "Sin actores definidos" : temp)));
 			}
-			
+
 			String body = email.getHtml();
 			body = Constant.getCharacterEmail(body);
 			MimeMultipart mmp = MimeMultipart(body);
@@ -591,7 +668,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	}
 
 	@Override
-	public void sendMailRFC(RFC rfc, EmailTemplate email) throws Exception{
+	public void sendMailRFC(RFC rfc, EmailTemplate email) throws Exception {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 		email = fillEmail(email, rfc);
@@ -605,74 +682,87 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		for (String toUser : email.getTo().split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
 		}
-		String ccFinish="";
-		String cc="";
+		String ccFinish = "";
+		String cc = "";
 		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
-			cc=email.getCc();
-			if(rfc.getSenders()==null) {
-				
-				ccFinish=email.getCc();
-				String[] split3=ccFinish.split(",");
-				boolean verify= ArrayUtils.contains(split3,rfc.getUser().getEmail());
-				if(!verify) {
-					ccFinish=cc+","+rfc.getUser().getEmail();
+			cc = email.getCc();
+			if (rfc.getSenders() == null) {
+
+				ccFinish = email.getCc();
+				String[] split3 = ccFinish.split(",");
+				boolean verify = ArrayUtils.contains(split3, rfc.getUser().getEmail());
+				if (!verify) {
+					ccFinish = cc + "," + rfc.getUser().getEmail();
 				}
-			}else {
-				if(rfc.getSenders().trim().equals("")) {
-					ccFinish=email.getCc();
-					String[] split3=ccFinish.split(",");
-					boolean verify= ArrayUtils.contains(split3,rfc.getUser().getEmail());
-					if(!verify) {
-						ccFinish=cc+","+rfc.getUser().getEmail();
+			} else {
+				if (rfc.getSenders().trim().equals("")) {
+					ccFinish = email.getCc();
+					String[] split3 = ccFinish.split(",");
+					boolean verify = ArrayUtils.contains(split3, rfc.getUser().getEmail());
+					if (!verify) {
+						ccFinish = cc + "," + rfc.getUser().getEmail();
 					}
-				}else {
-					
-					String[] split=rfc.getSenders().split(",");
-					String[] splitCC=cc.split(",");
-					ccFinish=rfc.getSenders();
-					for(int x=0; splitCC.length>x;x++) {
-						boolean verify= ArrayUtils.contains(split,splitCC[x]);
-						if(!verify) {
-							ccFinish=ccFinish+","+splitCC[x];
+				} else {
+
+					String[] split = rfc.getSenders().split(",");
+					String[] splitCC = cc.split(",");
+					ccFinish = rfc.getSenders();
+					for (int x = 0; splitCC.length > x; x++) {
+						boolean verify = ArrayUtils.contains(split, splitCC[x]);
+						if (!verify) {
+							ccFinish = ccFinish + "," + splitCC[x];
 						}
 					}
-					String[] split3=ccFinish.split(",");
-					boolean verify= ArrayUtils.contains(split3,rfc.getUser().getEmail());
-					if(!verify) {
-						ccFinish=ccFinish+","+rfc.getUser().getEmail();
+					String[] split3 = ccFinish.split(",");
+					boolean verify = ArrayUtils.contains(split3, rfc.getUser().getEmail());
+					if (!verify) {
+						ccFinish = ccFinish + "," + rfc.getUser().getEmail();
 					}
 				}
-			
-				
+
 			}
-		}else {
-			
-			if( rfc.getSenders()==null) {
-					ccFinish=rfc.getUser().getEmail();
-			}else {
-				if(rfc.getSenders().trim().equals("")) {
-					ccFinish=rfc.getUser().getEmail();
-				}else {
-				String[] split=rfc.getSenders().split(",");
-				ccFinish=rfc.getSenders();
-					boolean verify= ArrayUtils.contains(split,rfc.getUser().getEmail());
-					if(!verify) {
-						ccFinish=ccFinish+","+rfc.getUser().getEmail();
+		} else {
+
+			if (rfc.getSenders() == null) {
+				ccFinish = rfc.getUser().getEmail();
+			} else {
+				if (rfc.getSenders().trim().equals("")) {
+					ccFinish = rfc.getUser().getEmail();
+				} else {
+					String[] split = rfc.getSenders().split(",");
+					ccFinish = rfc.getSenders();
+					boolean verify = ArrayUtils.contains(split, rfc.getUser().getEmail());
+					if (!verify) {
+						ccFinish = ccFinish + "," + rfc.getUser().getEmail();
 					}
-				
+
 				}
 			}
 		}
+
+		String[] split = ccFinish.split(",");
+		String[] splitTo = email.getTo().split(",");
+		String ccUserFinal = "";
+		for (String ccFinal : split) {
+
+			boolean verify = ArrayUtils.contains(splitTo, ccFinal);
+			if (!verify) {
+				if (ccUserFinal.equals("")) {
+					ccUserFinal = ccFinal;
+				} else {
+					ccUserFinal = ccUserFinal + "," + ccFinal;
+				}
+			}
 		
-	
-			for (String ccUser : ccFinish.split(",")) {
-				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
-			
 		}
-		
+		for (String ccUser : ccUserFinal.split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+		}
+
 
 		mailSender.send(mimeMessage);
 	}
+
 	public EmailTemplate fillEmail(EmailTemplate email, RFC rfc) {
 		String temp = "";
 		/* ------ body ------ */
@@ -682,12 +772,12 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		}
 
 		if (email.getHtml().contains("{{rfcNumber}}")) {
-			email.setHtml(email.getHtml().replace("{{rfcNumber}}",
-					(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
+			email.setHtml(
+					email.getHtml().replace("{{rfcNumber}}", (rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
 		}
 
 		if (email.getHtml().contains("{{detail}}")) {
-			String detail = rfc.getDetail()!= null ? rfc.getDetail() : "";
+			String detail = rfc.getDetail() != null ? rfc.getDetail() : "";
 			detail = detail.replace("\n", "<br>");
 			email.setHtml(email.getHtml().replace("{{detail}}", detail));
 		}
@@ -718,20 +808,16 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 		if (email.getHtml().contains("{{releases}}")) {
 			temp = "<table border=1>";
-			temp+="<tr>"
-					+ "<th>Numero release</th>"
-					+ "<th>Detalle</th>"
-					+ "</tr>";
+			temp += "<tr>" + "<th>Numero release</th>" + "<th>Detalle</th>" + "</tr>";
 			for (Release_RFC release : rfc.getReleases()) {
-				temp+="<tr>";
-				
-				temp +="<td>"+ release.getReleaseNumber() + "</td>";
-				temp +="<td>"+ release.getDescription() + "</td>";
-				temp+="</tr>";
+				temp += "<tr>";
+
+				temp += "<td>" + release.getReleaseNumber() + "</td>";
+				temp += "<td>" + release.getDescription() + "</td>";
+				temp += "</tr>";
 			}
-			
-			
-			temp+="</table>";
+
+			temp += "</table>";
 			email.setHtml(email.getHtml().replace("{{releases}}", (temp.equals("") ? "Sin releases definidos" : temp)));
 		}
 
@@ -766,21 +852,20 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					}
 				}
 			}
-			for (String  systems : systemsInvolved) {
+			for (String systems : systemsInvolved) {
 				temp += systems + "<br>";
 			}
-			
-			email.setHtml(email.getHtml().replace("{{systemsInvolved}}", (temp.equals("") ? "Sin sistemas definidos" : temp)));
-		}
 
-		
+			email.setHtml(email.getHtml().replace("{{systemsInvolved}}",
+					(temp.equals("") ? "Sin sistemas definidos" : temp)));
+		}
 
 		/* ------ Subject ------ */
 		if (email.getSubject().contains("{{rfcNumber}}")) {
 			email.setSubject(email.getSubject().replace("{{rfcNumber}}",
 					(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
 		}
-	
+
 		if (email.getSubject().contains("{{priority}}")) {
 			email.setSubject(email.getSubject().replace("{{priority}}",
 					(rfc.getPriority().getName() != null ? rfc.getPriority().getName() : "")));
@@ -795,22 +880,19 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			email.setSubject(email.getSubject().replace("{{typeChange}}",
 					(rfc.getTypeChange().getName() != null ? rfc.getTypeChange().getName() : "")));
 		}
-		
+
 		if (email.getHtml().contains("{{message}}")) {
-			email.setHtml(email.getHtml().replace("{{message}}",
-					(rfc.getMessage() != null ? rfc.getMessage() : "NA")));
+			email.setHtml(email.getHtml().replace("{{message}}", (rfc.getMessage() != null ? rfc.getMessage() : "NA")));
 		}
 
 		if (email.getSubject().contains("{{systemMain}}")) {
 			temp = "";
 			Siges codeSiges = sigeService.findByKey("codeSiges", rfc.getCodeProyect());
 
-			temp+=codeSiges.getSystem().getName();
-			
+			temp += codeSiges.getSystem().getName();
+
 			email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 		}
-		
-		
 
 		return email;
 	}
@@ -829,49 +911,49 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	@Override
 	public void save(EmailTemplate model) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void merge(EmailTemplate model) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void saveOrUpdate(EmailTemplate model) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void update(EmailTemplate model) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void flush() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteByKey(String key, String value) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void delete(EmailTemplate model) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -890,7 +972,8 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Override
 	public JsonSheet<EmailTemplate> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias,Integer veri) {
+			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias,
+			Integer veri) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -916,161 +999,91 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		for (String toUser : email.getTo().split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
 		}
-		String ccFinish="";
-		String cc="";
+		String ccFinish = "";
+		String cc = "";
 		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
-			cc=email.getCc();
-			if(requestEmail.getSenders()==null) {
-				
-				ccFinish=email.getCc();
-				String[] split3=ccFinish.split(",");
-				boolean verify= ArrayUtils.contains(split3,requestEmail.getUser().getEmail());
-				if(!verify) {
-					ccFinish=cc+","+requestEmail.getUser().getEmail();
+			cc = email.getCc();
+			if (requestEmail.getSenders() == null) {
+
+				ccFinish = email.getCc();
+				String[] split3 = ccFinish.split(",");
+				boolean verify = ArrayUtils.contains(split3, requestEmail.getUser().getEmail());
+				if (!verify) {
+					ccFinish = cc + "," + requestEmail.getUser().getEmail();
 				}
-			}else {
-				if(requestEmail.getSenders().trim().equals("")) {
-					ccFinish=email.getCc();
-					String[] split3=ccFinish.split(",");
-					boolean verify= ArrayUtils.contains(split3,requestEmail.getUser().getEmail());
-					if(!verify) {
-						ccFinish=cc+","+requestEmail.getUser().getEmail();
+			} else {
+				if (requestEmail.getSenders().trim().equals("")) {
+					ccFinish = email.getCc();
+					String[] split3 = ccFinish.split(",");
+					boolean verify = ArrayUtils.contains(split3, requestEmail.getUser().getEmail());
+					if (!verify) {
+						ccFinish = cc + "," + requestEmail.getUser().getEmail();
 					}
-				}else {
-					
-					String[] split=requestEmail.getSenders().split(",");
-					String[] splitCC=cc.split(",");
-					ccFinish=requestEmail.getSenders();
-					for(int x=0; splitCC.length>x;x++) {
-						boolean verify= ArrayUtils.contains(split,splitCC[x]);
-						if(!verify) {
-							ccFinish=ccFinish+","+splitCC[x];
+				} else {
+
+					String[] split = requestEmail.getSenders().split(",");
+					String[] splitCC = cc.split(",");
+					ccFinish = requestEmail.getSenders();
+					for (int x = 0; splitCC.length > x; x++) {
+						boolean verify = ArrayUtils.contains(split, splitCC[x]);
+						if (!verify) {
+							ccFinish = ccFinish + "," + splitCC[x];
 						}
 					}
-					String[] split3=ccFinish.split(",");
-					boolean verify= ArrayUtils.contains(split3,requestEmail.getUser().getEmail());
-					if(!verify) {
-						ccFinish=ccFinish+","+requestEmail.getUser().getEmail();
+					String[] split3 = ccFinish.split(",");
+					boolean verify = ArrayUtils.contains(split3, requestEmail.getUser().getEmail());
+					if (!verify) {
+						ccFinish = ccFinish + "," + requestEmail.getUser().getEmail();
 					}
 				}
-			
-				
+
 			}
-		}else {
-			
-			if( requestEmail.getSenders()==null) {
-					ccFinish=requestEmail.getUser().getEmail();
-			}else {
-				if(requestEmail.getSenders().trim().equals("")) {
-					ccFinish=requestEmail.getUser().getEmail();
-				}else {
-				String[] split=requestEmail.getSenders().split(",");
-				ccFinish=requestEmail.getSenders();
-					boolean verify= ArrayUtils.contains(split,requestEmail.getUser().getEmail());
-					if(!verify) {
-						ccFinish=ccFinish+","+requestEmail.getUser().getEmail();
+		} else {
+
+			if (requestEmail.getSenders() == null) {
+				ccFinish = requestEmail.getUser().getEmail();
+			} else {
+				if (requestEmail.getSenders().trim().equals("")) {
+					ccFinish = requestEmail.getUser().getEmail();
+				} else {
+					String[] split = requestEmail.getSenders().split(",");
+					ccFinish = requestEmail.getSenders();
+					boolean verify = ArrayUtils.contains(split, requestEmail.getUser().getEmail());
+					if (!verify) {
+						ccFinish = ccFinish + "," + requestEmail.getUser().getEmail();
 					}
-				
+
 				}
 			}
 		}
+
+		String[] split = ccFinish.split(",");
+		String[] splitTo = email.getTo().split(",");
+		String ccUserFinal = "";
+		for (String ccFinal : split) {
+
+			boolean verify = ArrayUtils.contains(splitTo, ccFinal);
+			if (!verify) {
+				if (ccUserFinal.equals("")) {
+					ccUserFinal = ccFinal;
+				} else {
+					ccUserFinal = ccUserFinal + "," + ccFinal;
+				}
+			}
 		
-	
-			for (String ccUser : ccFinish.split(",")) {
-				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
-			
 		}
-		
+		for (String ccUser : ccUserFinal.split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+		}
+
 
 		mailSender.send(mimeMessage);
 	}
-	
+
 	public EmailTemplate fillEmail(EmailTemplate email, RequestBaseR1 request) {
 		String temp = "";
-		
-		if(request.getTypePetition().getCode().equals("RM-P1-R4")) {
-		/* ------ body ------ */
-		if (email.getHtml().contains("{{userName}}")) {
-			email.setHtml(email.getHtml().replace("{{userName}}",
-					(request.getUser().getFullName() != null ? request.getUser().getFullName() : "")));
-		}
 
-		if (email.getHtml().contains("{{requestNumber}}")) {
-			email.setHtml(email.getHtml().replace("{{requestNumber}}",
-					(request.getNumRequest() != null ? request.getNumRequest() : "")));
-		}
-
-		if (email.getHtml().contains("{{projectCode}}")) {
-			String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
-			projectCode = projectCode.replace("\n", "<br>");
-			email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
-		}
-
-
-		if (email.getHtml().contains("{{requestDate}}")) {
-			String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
-			requestDate = requestDate.replace("\n", "<br>");
-			email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
-		}
-		if (email.getHtml().contains("{{message}}")) {
-			email.setHtml(email.getHtml().replace("{{message}}",
-					(request.getMessage() != null ? request.getMessage() : "NA")));
-		}
-
-		if (email.getHtml().contains("{{users}}")) {
-			temp = "<table border=1>";
-			temp+="<tr>"
-					+ "<th>Nombre</th>"
-					+ "<th>Correo</th>"
-					+"<th>Tipo</th>"
-					+"<th>Permisos</th>"
-					+"<th>Ambiente</th>"
-					+"<th>Espec</th>"
-					+ "</tr>";
-			List<RequestRM_P1_R4> users=requestServiceR4.listRequestRm4(request.getId());
-			for (RequestRM_P1_R4 user : users) {
-				temp+="<tr>";
-				
-				temp +="<td>"+ user.getName() + "</td>";
-				temp +="<td>"+ user.getEmail() + "</td>";
-				temp +="<td>"+ user.getType().getCode() + "</td>";
-				temp +="<td>"+ user.getPermissions() + "</td>";
-				temp +="<td>"+ user.getAmbient().getName() + "</td>";
-				temp +="<td>"+ user.getEspec() + "</td>";
-				
-				temp+="</tr>";
-			}
-			
-			
-			temp+="</table>";
-			email.setHtml(email.getHtml().replace("{{users}}", (temp.equals("") ? "Sin usuarios definidos" : temp)));
-		}
-
-
-	
-
-		/* ------ Subject ------ */
-		if (email.getSubject().contains("{{requestNumber}}")) {
-			email.setSubject(email.getSubject().replace("{{requestNumber}}",
-					(request.getNumRequest() != null ? request.getNumRequest() : "")));
-		}
-		if (email.getSubject().contains("{{projectCode}}")) {
-			String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
-			projectCode = projectCode.replace("\n", "<br>");
-			email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
-		}
-
-		if (email.getSubject().contains("{{systemMain}}")) {
-			temp = "";
-			Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
-
-			temp+=codeSiges.getSystem().getName();
-			
-			email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
-		}
-		return email;
-		}else if(request.getTypePetition().getCode().equals("RM-P1-R5")) {
-			RequestRM_P1_R5  requestRM5=requestServiceR5.requestRm5(request.getId());
+		if (request.getTypePetition().getCode().equals("RM-P1-R4")) {
 			/* ------ body ------ */
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
@@ -1083,16 +1096,90 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getHtml().contains("{{projectCode}}")) {
-				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
 				projectCode = projectCode.replace("\n", "<br>");
 				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
 			}
 
+			if (email.getHtml().contains("{{requestDate}}")) {
+				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
+				requestDate = requestDate.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{requestDate}}",
+						new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+			}
+			if (email.getHtml().contains("{{message}}")) {
+				email.setHtml(email.getHtml().replace("{{message}}",
+						(request.getMessage() != null ? request.getMessage() : "NA")));
+			}
+
+			if (email.getHtml().contains("{{users}}")) {
+				temp = "<table border=1>";
+				temp += "<tr>" + "<th>Nombre</th>" + "<th>Correo</th>" + "<th>Tipo</th>" + "<th>Permisos</th>"
+						+ "<th>Ambiente</th>" + "<th>Espec</th>" + "</tr>";
+				List<RequestRM_P1_R4> users = requestServiceR4.listRequestRm4(request.getId());
+				for (RequestRM_P1_R4 user : users) {
+					temp += "<tr>";
+
+					temp += "<td>" + user.getName() + "</td>";
+					temp += "<td>" + user.getEmail() + "</td>";
+					temp += "<td>" + user.getType().getCode() + "</td>";
+					temp += "<td>" + user.getPermissions() + "</td>";
+					temp += "<td>" + user.getAmbient().getName() + "</td>";
+					temp += "<td>" + user.getEspec() + "</td>";
+
+					temp += "</tr>";
+				}
+
+				temp += "</table>";
+				email.setHtml(
+						email.getHtml().replace("{{users}}", (temp.equals("") ? "Sin usuarios definidos" : temp)));
+			}
+
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{requestNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+
+			if (email.getSubject().contains("{{systemMain}}")) {
+				temp = "";
+				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+				temp += codeSiges.getSystem().getName();
+
+				email.setSubject(
+						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+			}
+			return email;
+		} else if (request.getTypePetition().getCode().equals("RM-P1-R5")) {
+			RequestRM_P1_R5 requestRM5 = requestServiceR5.requestRm5(request.getId());
+			/* ------ body ------ */
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}",
+						(request.getUser().getFullName() != null ? request.getUser().getFullName() : "")));
+			}
+
+			if (email.getHtml().contains("{{requestNumber}}")) {
+				email.setHtml(email.getHtml().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getHtml().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
+			}
 
 			if (email.getHtml().contains("{{requestDate}}")) {
 				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
 				requestDate = requestDate.replace("\n", "<br>");
-				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+				email.setHtml(email.getHtml().replace("{{requestDate}}",
+						new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
 			}
 			if (email.getHtml().contains("{{message}}")) {
 				email.setHtml(email.getHtml().replace("{{message}}",
@@ -1109,7 +1196,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{typeChange}}")) {
 				email.setHtml(email.getHtml().replace("{{typeChange}}",
 						(requestRM5.getTypeChange() != null ? requestRM5.getTypeChange() : "NA")));
-			}	
+			}
 			if (email.getHtml().contains("{{ambient}}")) {
 				email.setHtml(email.getHtml().replace("{{ambient}}",
 						(requestRM5.getAmbient() != null ? requestRM5.getAmbient() : "NA")));
@@ -1121,23 +1208,22 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getSubject().contains("{{projectCode}}")) {
-				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
 				projectCode = projectCode.replace("\n", "<br>");
 				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
 			}
-
-		
 
 			if (email.getSubject().contains("{{systemMain}}")) {
 				temp = "";
 				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
 
-				temp+=codeSiges.getSystem().getName();
-				
-				email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+				temp += codeSiges.getSystem().getName();
+
+				email.setSubject(
+						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 			}
-		}else if(request.getTypePetition().getCode().equals("RM-P1-R2")) {
-			RequestRM_P1_R2  requestRM2=requestServiceR2.requestRm2(request.getId());
+		} else if (request.getTypePetition().getCode().equals("RM-P1-R2")) {
+			RequestRM_P1_R2 requestRM2 = requestServiceR2.requestRm2(request.getId());
 			/* ------ body ------ */
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
@@ -1150,16 +1236,16 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getHtml().contains("{{projectCode}}")) {
-				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
 				projectCode = projectCode.replace("\n", "<br>");
 				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
 			}
 
-
 			if (email.getHtml().contains("{{requestDate}}")) {
 				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
 				requestDate = requestDate.replace("\n", "<br>");
-				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+				email.setHtml(email.getHtml().replace("{{requestDate}}",
+						new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
 			}
 			if (email.getHtml().contains("{{message}}")) {
 				email.setHtml(email.getHtml().replace("{{message}}",
@@ -1176,7 +1262,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{requeriments}}")) {
 				email.setHtml(email.getHtml().replace("{{requeriments}}",
 						(requestRM2.getRequeriments() != null ? requestRM2.getRequeriments() : "NA")));
-			}	
+			}
 			if (email.getHtml().contains("{{ambient}}")) {
 				email.setHtml(email.getHtml().replace("{{ambient}}",
 						(requestRM2.getAmbient() != null ? requestRM2.getAmbient() : "NA")));
@@ -1188,23 +1274,22 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getSubject().contains("{{projectCode}}")) {
-				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
 				projectCode = projectCode.replace("\n", "<br>");
 				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
 			}
-
-		
 
 			if (email.getSubject().contains("{{systemMain}}")) {
 				temp = "";
 				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
 
-				temp+=codeSiges.getSystem().getName();
-				
-				email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+				temp += codeSiges.getSystem().getName();
+
+				email.setSubject(
+						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 			}
-		}else if(request.getTypePetition().getCode().equals("RM-P1-R3")) {
-			RequestRM_P1_R3  requestRM3=requestServiceR3.requestRm3(request.getId());
+		} else if (request.getTypePetition().getCode().equals("RM-P1-R3")) {
+			RequestRM_P1_R3 requestRM3 = requestServiceR3.requestRm3(request.getId());
 			/* ------ body ------ */
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
@@ -1217,16 +1302,16 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getHtml().contains("{{projectCode}}")) {
-				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
 				projectCode = projectCode.replace("\n", "<br>");
 				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
 			}
 
-
 			if (email.getHtml().contains("{{requestDate}}")) {
 				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
 				requestDate = requestDate.replace("\n", "<br>");
-				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+				email.setHtml(email.getHtml().replace("{{requestDate}}",
+						new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
 			}
 			if (email.getHtml().contains("{{message}}")) {
 				email.setHtml(email.getHtml().replace("{{message}}",
@@ -1234,7 +1319,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 			if (email.getHtml().contains("{{usersRm}}")) {
 				email.setHtml(email.getHtml().replace("{{usersRm}}",
-						(requestRM3.getListNames()!= null ? requestRM3.getListNames() : "NA")));
+						(requestRM3.getListNames() != null ? requestRM3.getListNames() : "NA")));
 			}
 			if (email.getHtml().contains("{{method}}")) {
 				email.setHtml(email.getHtml().replace("{{method}}",
@@ -1248,7 +1333,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getSubject().contains("{{projectCode}}")) {
-				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
 				projectCode = projectCode.replace("\n", "<br>");
 				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
 			}
@@ -1256,12 +1341,13 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				temp = "";
 				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
 
-				temp+=codeSiges.getSystem().getName();
-				
-				email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+				temp += codeSiges.getSystem().getName();
+
+				email.setSubject(
+						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 			}
-		}else if(request.getTypePetition().getCode().equals("RM-P1-R1")) {
-			RequestRM_P1_R1 requestRM1=requestServiceR1.requestRm1(request.getId());
+		} else if (request.getTypePetition().getCode().equals("RM-P1-R1")) {
+			RequestRM_P1_R1 requestRM1 = requestServiceR1.requestRm1(request.getId());
 			/* ------ body ------ */
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
@@ -1274,16 +1360,16 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getHtml().contains("{{projectCode}}")) {
-				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
 				projectCode = projectCode.replace("\n", "<br>");
 				email.setHtml(email.getHtml().replace("{{projectCode}}", projectCode));
 			}
 
-
 			if (email.getHtml().contains("{{requestDate}}")) {
-				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString(): "";
+				String requestDate = request.getRequestDate() != null ? request.getRequestDate().toString() : "";
 				requestDate = requestDate.replace("\n", "<br>");
-				email.setHtml(email.getHtml().replace("{{requestDate}}", new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
+				email.setHtml(email.getHtml().replace("{{requestDate}}",
+						new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(request.getRequestDate().getTime())));
 			}
 			if (email.getHtml().contains("{{message}}")) {
 				email.setHtml(email.getHtml().replace("{{message}}",
@@ -1291,7 +1377,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 			if (email.getHtml().contains("{{requeriments}}")) {
 				email.setHtml(email.getHtml().replace("{{requeriments}}",
-						(requestRM1.getInitialRequeriments()!= null ? requestRM1.getInitialRequeriments() : "NA")));
+						(requestRM1.getInitialRequeriments() != null ? requestRM1.getInitialRequeriments() : "NA")));
 			}
 			if (email.getHtml().contains("{{timeAnswer}}")) {
 				email.setHtml(email.getHtml().replace("{{timeAnswer}}",
@@ -1309,11 +1395,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getSubject().contains("{{projectCode}}")) {
-				String projectCode = request.getSystemInfo().getName()!= null ? request.getSystemInfo().getName() : "";
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
 				projectCode = projectCode.replace("\n", "<br>");
 				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
 			}
-			
+
 		}
 
 		return email;

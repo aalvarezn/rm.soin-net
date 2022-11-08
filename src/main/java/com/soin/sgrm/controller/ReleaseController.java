@@ -447,6 +447,9 @@ public class ReleaseController extends BaseController {
 			model.addAttribute("doc", new DocTemplate());
 			model.addAttribute("docs", docs);
 			model.addAttribute("release", release);
+			model.addAttribute("senders", release.getSenders());
+			model.addAttribute("message", release.getMessage());
+			model.addAttribute("ccs", getCC(release.getSystem().getEmailTemplate().iterator().next().getCc()));
 
 			return "/release/editRelease";
 
@@ -726,7 +729,23 @@ public class ReleaseController extends BaseController {
 			release.checkModifiedComponents(modifiedComponents);
 			release.checkAmbientsExists(ambients);
 			release.checkDependenciesExists(dependencies);
+			if(rc.getSenders()!=null) {
+			if (rc.getSenders().length() < 256) {
+				rc.setSenders(rc.getSenders());
+			} else {
+				rc.setSenders(release.getSenders());
+			}
+			}
+			
+			if(rc.getMessage()!=null) {
+			if (rc.getMessage().length() < 256) {
+				rc.setMessage(rc.getMessage());
+			} else {
+				rc.setMessage(release.getMessage());
+			}
+			}
 			releaseService.saveRelease(release, rc);
+			
 			res.setStatus("success");
 			if (errors.size() > 0) {
 				// Se adjunta lista de errores
@@ -836,6 +855,8 @@ public class ReleaseController extends BaseController {
 	public ArrayList<MyError> validSections(Release release, ArrayList<MyError> errors, ReleaseCreate rc) {
 		// Se verifican las secciones que se deben validar por release.
 		try {
+			
+			errors =rc.validEmailInformation(rc,errors);
 			SystemConfiguration systemConfiguration = systemConfigurationService
 					.findBySystemId(release.getSystem().getId());
 
@@ -953,5 +974,16 @@ public class ReleaseController extends BaseController {
 		}
 
 		return releaseObjects;
+	}
+	public List<String> getCC(String ccs) {
+		
+		List<String> getCC = new ArrayList<String>();
+		if(ccs!=null) {
+			ccs.split(",");
+			for (String cc : ccs.split(",")) {
+				getCC.add(cc);
+				}
+		}
+		return getCC;
 	}
 }
