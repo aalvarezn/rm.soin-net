@@ -121,10 +121,10 @@ public class RFCController extends BaseController {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
 			List<System> systems = systemService.listProjects(getUserLogin().getId());
-			List<Priority> priorities = priorityService.list();
+			List<TypeChange> typeChanges = typeChangeService.findAll();
 			List<StatusRFC> statuses = statusService.findAll();
 			List<Impact> impacts = impactService.list();
-			model.addAttribute("priorities", priorities);
+			model.addAttribute("typeChanges", typeChanges);
 			model.addAttribute("impacts", impacts);
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("systems", systems);
@@ -148,17 +148,17 @@ public class RFCController extends BaseController {
 			Integer name = getUserLogin().getId();
 			String sSearch = request.getParameter("sSearch");
 			 Long statusId;
-			 int priorityId;
+			 Long typeChangeId;
 			 int systemId;
 			if (request.getParameter("statusId").equals("")) {
 				statusId = null;
 			} else {
 				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
 			}
-			if (request.getParameter("priorityId").equals("")) {
-				priorityId = 0;
+			if (request.getParameter("typeChangeId").equals("")) {
+				typeChangeId = null;
 			} else {
-				priorityId =  Integer.parseInt(request.getParameter("priorityId"));
+				typeChangeId = (long) Integer.parseInt(request.getParameter("typeChangeId"));
 			}
 			
 			if (request.getParameter("systemId").equals("")) {
@@ -168,7 +168,7 @@ public class RFCController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcWRService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
+			rfcs = rfcWRService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,typeChangeId, systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
