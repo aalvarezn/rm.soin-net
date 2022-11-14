@@ -398,8 +398,11 @@ public class RFCController extends BaseController {
 			model.addAttribute("rfc", rfcEdit);
 			model.addAttribute("senders", rfcEdit.getSenders());
 			model.addAttribute("message", rfcEdit.getMessage());
+			if(rfcEdit.getSiges().getEmailTemplate()!=null) {
 			model.addAttribute("ccs", getCC(rfcEdit.getSiges().getEmailTemplate().getCc()));
-
+			}else {
+				model.addAttribute("ccs", "");
+			}
 			return "/rfc/editRFC";
 
 		} catch (Exception e) {
