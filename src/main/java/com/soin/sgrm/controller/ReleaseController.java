@@ -449,8 +449,12 @@ public class ReleaseController extends BaseController {
 			model.addAttribute("release", release);
 			model.addAttribute("senders", release.getSenders());
 			model.addAttribute("message", release.getMessage());
+			
+			if(release.getSystem().getEmailTemplate()!=null) {
 			model.addAttribute("ccs", getCC(release.getSystem().getEmailTemplate().iterator().next().getCc()));
-
+			}else {
+				model.addAttribute("ccs", "");
+			}
 			return "/release/editRelease";
 
 		} catch (Exception e) {
