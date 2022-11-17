@@ -223,7 +223,7 @@ function sendPartialRFC() {
 		// async : false,
 		type : "PUT",
 		url : getCont() + "rfc/saveRFC",
-		timeout: 60000,
+		timeout: 600000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
@@ -460,7 +460,7 @@ function searchTree(releaseNumber) {
 	$.ajax({
 		type : "GET",
 		url : getCont() + "rfc/tree/"+ releaseNumber + "/2",
-		timeout : 60000,
+		timeout : 600000,
 		data : {},
 		success : function(response) {
 			ajaxSearchTree(response);
@@ -1001,7 +1001,7 @@ function sendRFC() {
 		// async : false,
 		type : "PUT",
 		url : getCont() + "rfc/saveRFC",
-		timeout: 60000,
+		timeout: 600000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
@@ -1055,7 +1055,7 @@ function requestRFC() {
 		// async : false,
 		type : "PUT",
 		url : getCont() + "rfc/saveRFC",
-		timeout: 60000,
+		timeout: 600000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
