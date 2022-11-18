@@ -81,6 +81,9 @@ $('#tableFilters #systemId').change(function() {
 $('#tableFilters #statusId').change(function() {
 	$dtRFCs.ajax.reload();
 });
+$('#tableFilters #typeChangeId').change(function() {
+	$dtRFCs.ajax.reload();
+});
 
 function initRFCTable() {
 	$dtRFCs = $('#dtRFCs').DataTable(
@@ -101,7 +104,8 @@ function initRFCTable() {
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
-								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
+								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
+								{"name": "typeChangeId", "value": $('#tableFilters #typeChangeId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
@@ -116,6 +120,14 @@ function initRFCTable() {
 						
 						"mDataProp" : "systemInfo.name"
 					},
+					{
+						"mRender" : function(data, type, row, meta) {
+							if(row.typeChange)
+								return row.typeChange.name;
+							else
+								return 'Sin tipo seleccionado';
+						},
+					}, 
 					{
 						"mRender" : function(data, type, row, meta) {
 							return row.user.fullName;

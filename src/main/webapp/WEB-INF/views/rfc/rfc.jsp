@@ -173,14 +173,14 @@
 							</div>
 						</div>
 						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Prioridad</label>
+							<label>Tipo</label>
 							<div class="form-group m-b-0">
-								<select id="priorityId"
+								<select id="typeChangeId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
-									<c:forEach items="${priorities}" var="priority">
-										<option value="${priority.id }">${priority.name }</option>
+									<c:forEach items="${typeChanges}" var="typeChanges">
+										<option value="${typeChanges.id }">${typeChanges.name }</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -216,6 +216,7 @@
 												<th>Número RFC</th>
 												<th>Sistema</th>
 												<th>Raz&oacute;n de cambio</th>
+												<th>Tipo</th>
 												<th>Solicitante</th>
 												<th>Modificado</th>
 												<th>Estado</th>

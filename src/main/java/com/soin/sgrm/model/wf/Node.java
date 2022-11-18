@@ -29,6 +29,7 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soin.sgrm.exception.Sentry;
@@ -59,6 +60,7 @@ public class Node implements Serializable {
 	private WorkFlow workFlow;
 
 	@Fetch(value = FetchMode.SUBSELECT)
+	//@JsonManagedReference
 	@OneToMany(mappedBy = "nodeFrom", fetch = FetchType.EAGER, orphanRemoval = true)
 	private List<Edge> edges = new ArrayList<Edge>();
 

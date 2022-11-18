@@ -104,7 +104,7 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	TypePetitionR4Service typePetitionR4Service;
-	
+
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
 
@@ -309,7 +309,11 @@ public class RequestBaseController extends BaseController {
 			model.addAttribute("request", requestEdit);
 			model.addAttribute("senders", requestEdit.getSenders());
 			model.addAttribute("message", requestEdit.getMessage());
-			model.addAttribute("ccs", getCC(requestEdit.getTypePetition().getEmailTemplate().getCc()));
+			if (requestEdit.getTypePetition().getEmailTemplate() != null) {
+				model.addAttribute("ccs", getCC(requestEdit.getTypePetition().getEmailTemplate().getCc()));
+			} else {
+				model.addAttribute("ccs", "");
+			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
 				List<User> usersRM = userService.getUsersRM();
 				RequestRM_P1_R3 requestR3 = requestServiceRm3.requestRm3(requestEdit.getId());
@@ -319,7 +323,7 @@ public class RequestBaseController extends BaseController {
 				return "/request/editRequestR3";
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
-				model.addAttribute("typesPetition",  typePetitionR4Service.listTypePetition());
+				model.addAttribute("typesPetition", typePetitionR4Service.listTypePetition());
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				model.addAttribute("SGRMList", ambientService.list("", "SGRM"));
 				return "/request/editRequestR4";
@@ -888,9 +892,9 @@ public class RequestBaseController extends BaseController {
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
 				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-			}else {
-				MyError error=getErrorSenders(request.getSenders());
-				if(error!=null) {
+			} else {
+				MyError error = getErrorSenders(request.getSenders());
+				if (error != null) {
 					errors.add(error);
 				}
 			}
@@ -914,13 +918,13 @@ public class RequestBaseController extends BaseController {
 			if (request.getSenders() != null) {
 				if (request.getSenders().length() > 256) {
 					errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-				}else {
-					MyError error=getErrorSenders(request.getSenders());
-					if(error!=null) {
+				} else {
+					MyError error = getErrorSenders(request.getSenders());
+					if (error != null) {
 						errors.add(error);
 					}
 				}
-				
+
 			}
 			if (request.getMessage() != null) {
 				if (request.getMessage().length() > 256) {
@@ -945,9 +949,9 @@ public class RequestBaseController extends BaseController {
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
 				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-			}else {
-				MyError error=getErrorSenders(request.getSenders());
-				if(error!=null) {
+			} else {
+				MyError error = getErrorSenders(request.getSenders());
+				if (error != null) {
 					errors.add(error);
 				}
 			}
@@ -977,13 +981,13 @@ public class RequestBaseController extends BaseController {
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
 				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-			}else {
-				MyError error=getErrorSenders(request.getSenders());
-				if(error!=null) {
+			} else {
+				MyError error = getErrorSenders(request.getSenders());
+				if (error != null) {
 					errors.add(error);
 				}
 			}
-			
+
 		}
 		if (request.getMessage() != null) {
 			if (request.getMessage().length() > 256) {
@@ -1017,9 +1021,9 @@ public class RequestBaseController extends BaseController {
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
 				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-			}else {
-				MyError error=getErrorSenders(request.getSenders());
-				if(error!=null) {
+			} else {
+				MyError error = getErrorSenders(request.getSenders());
+				if (error != null) {
 					errors.add(error);
 				}
 			}
@@ -1042,25 +1046,27 @@ public class RequestBaseController extends BaseController {
 		request.setAttribute("userC", userC);
 
 	}
+
 	public MyError getErrorSenders(String senders) {
-	
+
 		String[] listSenders = senders.split(",");
-		String to_invalid="";
+		String to_invalid = "";
 		for (int i = 0; i < listSenders.length; i++) {
 			if (!CommonUtils.isValidEmailAddress(listSenders[i])) {
-				if(to_invalid.equals("")) {
-					to_invalid +=listSenders[i];
-				}else {
-					to_invalid +=","+listSenders[i];
+				if (to_invalid.equals("")) {
+					to_invalid += listSenders[i];
+				} else {
+					to_invalid += "," + listSenders[i];
 				}
-				
+
 			}
 		}
 		if (!to_invalid.equals("")) {
-			return new MyError("senders", "dirección(es) inválida(s) " + to_invalid);	
+			return new MyError("senders", "dirección(es) inválida(s) " + to_invalid);
 		}
 		return null;
 	}
+
 	public List<String> getCC(String ccs) {
 
 		List<String> getCC = new ArrayList<String>();
