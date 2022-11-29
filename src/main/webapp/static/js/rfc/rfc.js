@@ -88,6 +88,7 @@ $('#tableFilters #statusId').change(function() {
 });
 
 function initRFCTable() {
+	console.log("pruebaPr");
 	$dtRFCs = $('#dtRFCs').DataTable(
 			{
 				
