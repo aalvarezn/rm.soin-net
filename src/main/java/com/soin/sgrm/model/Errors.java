@@ -18,7 +18,7 @@ import com.soin.sgrm.utils.Constant;
 
 
 @Entity
-@Table(name = "ERRORES")
+@Table(name = "ERRORES_RELEASE")
 public class Errors implements Serializable {
 
 	private static final long serialVersionUID = 1L;
