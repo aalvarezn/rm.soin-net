@@ -50,12 +50,12 @@ $(document).ready(function() {
 		maxDate : new Date()
 	});
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
-	initImpactFormValidation
+	//initImpactFormValidation
 	activeItemMenu("managerRequestItem");
 	// dropDownChange();
 	// $("#addRFCSection").hide();
 	// $fmRFC.find("#sId").selectpicker('val',"");
-
+	dropDownChange();
 	initRFCTable();
 	// initRFCFormValidation();
 });
@@ -209,6 +209,9 @@ function getColorNode(status){
 		break;
 	case 'Anulado':
 		return 'rgb(233, 30, 99)';
+	case 'Error':
+		return 'rgb(255,0,0)';
+		break;
 		break;
 	default:
 		return 'rgb(0, 181, 212)';
@@ -272,18 +275,37 @@ function changeStatusRequest(idRequest) {
 	var idRow = dtRequests.fnFindCellRowIndexes(idRequest, 0); // idRow
 	var rowData = $dtRequests.row(idRow[0]).data();
 	$formChangeStatus[0].reset();
-	$formChangeStatus.validate().resetForm();
+	
 	$formChangeStatus.find('#idRequest').val(idRequest);
 	$formChangeStatus.find('#requestNumRequest').val(rowData.numRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
+	$formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	$formChangeStatus.find('.fieldError').removeClass('activeError');
+	$formChangeStatus.find('.form-line').removeClass('error');
+	$formChangeStatus.find('.form-line').removeClass('focused');
+	$('#divError').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
 }
 
+function dropDownChange(){
+	
+	$('#statusId').on('change', function(){
+		
+		var status =$("#statusId").find("option:selected").text();
+		console.log(status);
+		if(status==="Error"){
+			$('#divError').attr( "hidden",false);
+		}else{
+			$('#divError').attr( "hidden",true);
+		}
+		
+	});
+}
 function saveChangeStatusModal(){
 
-	if (!$formChangeStatus.valid())
+	if (!validStatusRequest())
 		return false;
 	blockUI();
 	$.ajax({
@@ -293,6 +315,7 @@ function saveChangeStatusModal(){
 		data : {
 			idRequest : $formChangeStatus.find('#idRequest').val(),
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
+			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
 			motive: $formChangeStatus.find('#motive').val()
 		},
@@ -332,52 +355,45 @@ function closeChangeStatusModal(){
 
 function validStatusRequest() {
 	let valid = true;
-	let statusId = $formChangeStatus.find('#statusId').children("option:selected")
-	.val();
-	if ($.trim(statusId) == "" || $.trim(statusId).length == 0) {
-		$formChangeStatus.find("#statusId_error").css("visibility", "visible");
-		return false;
-	} else {
-		$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
-		return true;
-	}
-}
-
-
-function initImpactFormValidation() {
-	$formChangeStatus.validate({
-		
-		rules : {
-			'statusId' : {
-				required : true,
-				
-			},
-			'motive' : {
-				required : true,
-				minlength : 1,
-				maxlength : 50,
-			},
-			'dateChange' : {
-				required : true,
-			
-			},
-		},
-		messages : {
-			'statusId' : {
-				required :  "Ingrese un valor",
-			},
-			'motive' : {
-				required : "Ingrese un valor",
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
-			'dateChange' : {
-				required : "Ingrese un valor",
-				
-			},
-		},
-		highlight,
-		unhighlight,
-		errorPlacement
+	$formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	$formChangeStatus.find('.fieldError').removeClass('activeError');
+	$formChangeStatus.find('.form-line').removeClass('error');
+	$formChangeStatus.find('.form-line').removeClass('focused');
+	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
+		if($.trim(input.value) == ""){
+			console.log(input.id);
+			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
 	});
+	$.each($formChangeStatus.find('select[required]'), function( index, select ) {
+		if($.trim(select.value).length === 0 || select.value === ""){
+			
+			var statusSelected =$("#statusId").find("option:selected").text();
+			if(select.id==="errorId"&&statusSelected!=="Error"){
+				valid = true;
+			}else{
+				$formChangeStatus.find('#'+select.id+"_error").css("visibility","visible");
+				$formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
+				valid = false;
+			}
+		
+		}
+	});
+
+	$.each($formChangeStatus.find('textarea[required]'), function( index, textarea ) {
+		if($.trim(textarea.value).length == 0 || textarea.value == ""){
+			$formChangeStatus.find('#'+textarea.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+textarea.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+textarea.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+
+	return valid;
 }
+

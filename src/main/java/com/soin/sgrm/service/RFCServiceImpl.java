@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.RFCDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.CommonUtils;
@@ -263,6 +264,11 @@ public class RFCServiceImpl implements RFCService {
 		fetchs.add("tracking");
 		fetchs.add("user");
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
+	}
+	@Override
+	public RFC_WithoutRelease findRfcWithRelease(Long id) {
+		
+		return dao.findRfcWithRelease(id);
 	}
 
 }

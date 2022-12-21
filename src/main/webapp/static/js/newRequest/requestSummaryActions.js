@@ -1,6 +1,6 @@
 var $formChangeStatus = $('#changeStatusForm');
 $(function() {
-	initImpactFormValidation();
+	
 	$('.tableIni').DataTable({
 		"language": optionLanguaje,
 		"searching" : true,
@@ -19,7 +19,7 @@ $(function() {
 		$("#countObject").text($('#configurationItemsTable').DataTable().rows().count());
 	});
 	
-	
+	dropDownChange();
 	$('textarea').each(
 			function() {
 				this.setAttribute('style', 'height:'
@@ -71,7 +71,20 @@ function cancelRequest(index) {
 	});
 }
 
-
+function dropDownChange(){
+	
+	$('#statusId').on('change', function(){
+		
+		var status =$("#statusId").find("option:selected").text();
+		console.log(status);
+		if(status==="Error"){
+			$('#divError').attr( "hidden",false);
+		}else{
+			$('#divError').attr( "hidden",true);
+		}
+		
+	});
+}
 
 function responseCancelRequest(response) {
 	switch (response.status) {
@@ -91,18 +104,24 @@ function responseCancelRequest(response) {
 
 function changeStatusRequest(requestId, requestNumRequest) {
 	$formChangeStatus[0].reset();
-	$formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#idRequest').val(requestId);
 	$formChangeStatus.find('#requestNumRequest').val(requestNumRequest);
-	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
+	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
+	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'));
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
+	$formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	$formChangeStatus.find('.fieldError').removeClass('activeError');
+	$formChangeStatus.find('.form-line').removeClass('error');
+	$formChangeStatus.find('.form-line').removeClass('focused');
+	$('#divError').attr( "hidden",true);
+	
 	$('#changeStatusModal').modal('show');
 }
 
 function saveChangeStatusModal(){
 
-	if (!$formChangeStatus.valid())
+	if (!validStatusRequest())
 		return false;
 	blockUI();
 	$.ajax({
@@ -113,6 +132,7 @@ function saveChangeStatusModal(){
 			idRequest : $formChangeStatus.find('#idRequest').val(),
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
+			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
 			motive: $formChangeStatus.find('#motive').val()
 		},
 		success : function(response) {
@@ -143,7 +163,6 @@ function responseStatusRequest(response) {
 
 function closeChangeStatusModal(){
 	$formChangeStatus[0].reset();
-	$formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#userId').selectpicker('val', '');
 	$('#changeStatusModal').modal('hide');
 }
@@ -151,52 +170,44 @@ function closeChangeStatusModal(){
 
 function validStatusRequest() {
 	let valid = true;
-	let statusId = $formChangeStatus.find('#statusId').children("option:selected")
-	.val();
-	if ($.trim(statusId) == "" || $.trim(statusId).length == 0) {
-		$formChangeStatus.find("#statusId_error").css("visibility", "visible");
-		return false;
-	} else {
-		$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
-		return true;
-	}
-}
-
-
-function initImpactFormValidation() {
-	$formChangeStatus.validate({
-		
-		rules : {
-			'statusId' : {
-				required : true,
-				
-			},
-			'motive' : {
-				required : true,
-				minlength : 1,
-				maxlength : 50,
-			},
-			'dateChange' : {
-				required : true,
-			
-			},
-		},
-		messages : {
-			'statusId' : {
-				required :  "Ingrese un valor",
-			},
-			'motive' : {
-				required : "Ingrese un valor",
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
-			'dateChange' : {
-				required : "Ingrese un valor",
-				
-			},
-		},
-		highlight,
-		unhighlight,
-		errorPlacement
+	$formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	$formChangeStatus.find('.fieldError').removeClass('activeError');
+	$formChangeStatus.find('.form-line').removeClass('error');
+	$formChangeStatus.find('.form-line').removeClass('focused');
+	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
+		if($.trim(input.value) == ""){
+			console.log(input.id);
+			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
 	});
+	$.each($formChangeStatus.find('select[required]'), function( index, select ) {
+		if($.trim(select.value).length === 0 || select.value === ""){
+			
+			var statusSelected =$("#statusId").find("option:selected").text();
+			if(select.id==="errorId"&&statusSelected!=="Error"){
+				valid = true;
+			}else{
+				$formChangeStatus.find('#'+select.id+"_error").css("visibility","visible");
+				$formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
+				valid = false;
+			}
+		
+		}
+	});
+
+	$.each($formChangeStatus.find('textarea[required]'), function( index, textarea ) {
+		if($.trim(textarea.value).length == 0 || textarea.value == ""){
+			$formChangeStatus.find('#'+textarea.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+textarea.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+textarea.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+
+	return valid;
 }
