@@ -3,16 +3,16 @@ package com.soin.sgrm.model;
 import java.io.Serializable;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 
-@Entity
+
 @Table(name = "ERRORES_RFC")
 public class Errors_RFC implements Serializable {
+
 
 	private static final long serialVersionUID = 1L;
 
