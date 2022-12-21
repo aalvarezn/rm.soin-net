@@ -17,9 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.Errors;
+import com.soin.sgrm.model.Errors_RFC;
+import com.soin.sgrm.model.Errors_Release;
+import com.soin.sgrm.model.Errors_Requests;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.ErrorService;
+import com.soin.sgrm.service.ErrorRFCService;
+import com.soin.sgrm.service.ErrorReleaseService;
+import com.soin.sgrm.service.ErrorRequestService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
@@ -29,22 +33,28 @@ public class ErrorsController extends BaseController {
 	public static final Logger logger = Logger.getLogger(ErrorsController.class);
 
 	@Autowired
-	ErrorService errorService;
+	ErrorReleaseService errorReleaseService;
+	
+	@Autowired
+	ErrorRFCService errorRFCService;
+	
+	@Autowired 
+	ErrorRequestService errorRequestService;
 	
 	
 	
-	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
-	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+	@RequestMapping(value = { "", "/release" }, method = RequestMethod.GET)
+	public String indexRelease(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
-		return "/admin/errors/errors";
+		return "/admin/errors/errorsRelease";
 	}
 
 	@SuppressWarnings("rawtypes")
-	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
-	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<Errors> statusRFCs = new JsonSheet<>();
+	@RequestMapping(value = { "/release/list" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet listRelease(HttpServletRequest request, Locale locale, Model model) {
+		JsonSheet<Errors_Release> statusRFCs = new JsonSheet<>();
 		try {
-			statusRFCs.setData(errorService.findAll());
+			statusRFCs.setData(errorReleaseService.findAll());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -52,13 +62,13 @@ public class ErrorsController extends BaseController {
 		return statusRFCs;
 	}
 
-	@RequestMapping(path = "", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody Errors addError) {
+	@RequestMapping(path = "/release", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveRelease(HttpServletRequest request, @RequestBody Errors_Release addError) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
 
-			errorService.save(addError);
+			errorReleaseService.save(addError);
 
 			res.setMessage("Error agregado!");
 		} catch (Exception e) {
@@ -70,12 +80,12 @@ public class ErrorsController extends BaseController {
 		return res;
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody Errors uptError) {
+	@RequestMapping(value = "/release", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse updateRelease(HttpServletRequest request, @RequestBody Errors_Release uptError) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			errorService.update(uptError);
+			errorReleaseService.update(uptError);
 
 			res.setMessage("Error modificado!");
 		} catch (Exception e) {
@@ -87,12 +97,152 @@ public class ErrorsController extends BaseController {
 		return res;
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public @ResponseBody JsonResponse delete(@PathVariable Long id, Model model) {
+	@RequestMapping(value = "/release/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteRelease(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			errorService.delete(id);
+			errorReleaseService.delete(id);
+			res.setMessage("Error eliminado!");
+		} catch (Exception e) {
+			Sentry.capture(e, "errors");
+			res.setStatus("exception");
+			res.setMessage("Error al eliminar el Error!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = { "", "/rfc" }, method = RequestMethod.GET)
+	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+		return "/admin/errors/errorsRFC";
+	}
+
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = { "/rfc/list" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet listRFC(HttpServletRequest request, Locale locale, Model model) {
+		JsonSheet<Errors_RFC> statusRFCs = new JsonSheet<>();
+		try {
+			statusRFCs.setData(errorRFCService.findAll());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return statusRFCs;
+	}
+
+	@RequestMapping(path = "/rfc", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveRFC(HttpServletRequest request, @RequestBody Errors_RFC addError) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+
+			errorRFCService.save(addError);
+
+			res.setMessage("Error agregado!");
+		} catch (Exception e) {
+			Sentry.capture(e, "Errors");
+			res.setStatus("exception");
+			res.setMessage("Error al agregar Error!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/rfc", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse updateRFC(HttpServletRequest request, @RequestBody Errors_RFC uptError) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			errorRFCService.update(uptError);
+
+			res.setMessage("Error modificado!");
+		} catch (Exception e) {
+			Sentry.capture(e, "Errors");
+			res.setStatus("exception");
+			res.setMessage("Error al modificar Error!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/rfc/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteRFC(@PathVariable Long id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			errorRFCService.delete(id);
+			res.setMessage("Error eliminado!");
+		} catch (Exception e) {
+			Sentry.capture(e, "errors");
+			res.setStatus("exception");
+			res.setMessage("Error al eliminar el Error!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = { "", "/request" }, method = RequestMethod.GET)
+	public String indexRequest(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+		return "/admin/errors/errorsRequest";
+	}
+
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = { "/request/list" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet listRequest(HttpServletRequest request, Locale locale, Model model) {
+		JsonSheet<Errors_Requests> statusRFCs = new JsonSheet<>();
+		try {
+			statusRFCs.setData(errorRequestService.findAll());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return statusRFCs;
+	}
+
+	@RequestMapping(path = "/request", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveRequest(HttpServletRequest request, @RequestBody Errors_Requests addError) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+
+			errorRequestService.save(addError);
+
+			res.setMessage("Error agregado!");
+		} catch (Exception e) {
+			Sentry.capture(e, "Errors");
+			res.setStatus("exception");
+			res.setMessage("Error al agregar Error!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/request", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse updateRequest(HttpServletRequest request, @RequestBody Errors_Requests uptError) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			errorRequestService.update(uptError);
+
+			res.setMessage("Error modificado!");
+		} catch (Exception e) {
+			Sentry.capture(e, "Errors");
+			res.setStatus("exception");
+			res.setMessage("Error al modificar Error!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/request/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteRequest(@PathVariable Long id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			errorRequestService.delete(id);
 			res.setMessage("Error eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "errors");

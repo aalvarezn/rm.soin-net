@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.SystemInfo;
 
 @Repository
@@ -117,6 +118,14 @@ public class RFCDaoImpl extends AbstractDao<Long,RFC> implements RFCDao {
 		crit.setProjection(Projections.rowCount());
 		Long count = (Long) crit.uniqueResult();
 		return count.intValue();
+	}
+
+	@Override
+	public RFC_WithoutRelease findRfcWithRelease(Long id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(RFC_WithoutRelease.class);
+		crit.add(Restrictions.eq("id", id));
+		RFC_WithoutRelease rfc = (RFC_WithoutRelease) crit.uniqueResult();
+		return rfc;
 	}
 	
 	

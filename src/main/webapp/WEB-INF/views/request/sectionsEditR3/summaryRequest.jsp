@@ -103,7 +103,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -146,7 +146,7 @@
 					</div>
 				</div>
 				<div class="col-lg-8 col-md-8 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Método de conexi&oacute;n</label>
+					<label for="email_address">M&eacute;todo de conexi&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -230,13 +230,7 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$("#contentSummary textarea").parent().removeClass('focused');
-			$("#contentSummary textarea").attr("disabled", true);
-			autosize($('textarea'));
-		});
-	</script>
+
 
 </body>
 

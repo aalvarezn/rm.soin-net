@@ -43,7 +43,7 @@ public class ReleaseError implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ERROR_ID", nullable = true)
-	private Errors error;
+	private Errors_Release error;
 	
 	@Column(name = "OBSERVACIONES")
 	private String observations;
@@ -64,11 +64,11 @@ public class ReleaseError implements Serializable {
 		this.release = release;
 	}
 
-	public Errors getError() {
+	public Errors_Release getError() {
 		return error;
 	}
 
-	public void setError(Errors error) {
+	public void setError(Errors_Release error) {
 		this.error = error;
 	}
 

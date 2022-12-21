@@ -50,9 +50,9 @@ $(document).ready(function() {
 		maxDate : new Date()
 	});
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
-	initImpactFormValidation
+	// initImpactFormValidation
 	activeItemMenu("managerRFCItem");
-	// dropDownChange();
+	dropDownChange();
 	// $("#addRFCSection").hide();
 	// $fmRFC.find("#sId").selectpicker('val',"");
 
@@ -81,9 +81,6 @@ $('#tableFilters #systemId').change(function() {
 $('#tableFilters #statusId').change(function() {
 	$dtRFCs.ajax.reload();
 });
-$('#tableFilters #typeChangeId').change(function() {
-	$dtRFCs.ajax.reload();
-});
 
 function initRFCTable() {
 	$dtRFCs = $('#dtRFCs').DataTable(
@@ -104,8 +101,7 @@ function initRFCTable() {
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
-								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
-								{"name": "typeChangeId", "value": $('#tableFilters #typeChangeId').children("option:selected").val()}
+								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
@@ -120,14 +116,6 @@ function initRFCTable() {
 						
 						"mDataProp" : "systemInfo.name"
 					},
-					{
-						"mRender" : function(data, type, row, meta) {
-							if(row.typeChange)
-								return row.typeChange.name;
-							else
-								return 'Sin tipo seleccionado';
-						},
-					}, 
 					{
 						"mRender" : function(data, type, row, meta) {
 							return row.user.fullName;
@@ -213,6 +201,8 @@ function getColorNode(status){
 		break;
 	case 'Anulado':
 		return 'rgb(233, 30, 99)';
+	case 'Error':
+		return 'rgb(255,0,0)';
 		break;
 	default:
 		return 'rgb(0, 181, 212)';
@@ -276,18 +266,22 @@ function changeStatusRFC(idRFC) {
 	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
 	var rowData = $dtRFCs.row(idRow[0]).data();
 	$formChangeStatus[0].reset();
-	$formChangeStatus.validate().resetForm();
+	// $formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#idRFC').val(idRFC);
 	$formChangeStatus.find('#rfcNumRequest').val(rowData.numRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
-	$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
+	$formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	$formChangeStatus.find('.fieldError').removeClass('activeError');
+	$formChangeStatus.find('.form-line').removeClass('error');
+	$formChangeStatus.find('.form-line').removeClass('focused');
+	$('#divError').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
 }
 
 function saveChangeStatusModal(){
-
-	if (!$formChangeStatus.valid())
+	console.log(validStatusRFC());
+	if (!validStatusRFC())
 		return false;
 	blockUI();
 	$.ajax({
@@ -298,6 +292,7 @@ function saveChangeStatusModal(){
 			idRFC : $formChangeStatus.find('#idRFC').val(),
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
+			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
 			motive: $formChangeStatus.find('#motive').val()
 		},
 		success : function(response) {
@@ -328,23 +323,70 @@ function responseStatusRFC(response) {
 
 function closeChangeStatusModal(){
 	$formChangeStatus[0].reset();
-	$formChangeStatus.validate().resetForm();
+// $formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#userId').selectpicker('val', '');
 	$('#changeStatusModal').modal('hide');
 }
 
 
+
+function dropDownChange(){
+	
+	$('#statusId').on('change', function(){
+		
+		var status =$("#statusId").find("option:selected").text();
+		console.log(status);
+		if(status==="Error"){
+			$('#divError').attr( "hidden",false);
+		}else{
+			$('#divError').attr( "hidden",true);
+		}
+		
+	});
+}
+
 function validStatusRFC() {
 	let valid = true;
-	let statusId = $formChangeStatus.find('#statusId').children("option:selected")
-	.val();
-	if ($.trim(statusId) == "" || $.trim(statusId).length == 0) {
-		$formChangeStatus.find("#statusId_error").css("visibility", "visible");
-		return false;
-	} else {
-		$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
-		return true;
-	}
+	$formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	$formChangeStatus.find('.fieldError').removeClass('activeError');
+	$formChangeStatus.find('.form-line').removeClass('error');
+	$formChangeStatus.find('.form-line').removeClass('focused');
+	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
+		if($.trim(input.value) == ""){
+			console.log(input.id);
+			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+	$.each($formChangeStatus.find('select[required]'), function( index, select ) {
+		if($.trim(select.value).length === 0 || select.value === ""){
+			
+			var statusSelected =$("#statusId").find("option:selected").text();
+			if(select.id==="errorId"&&statusSelected!=="Error"){
+				valid = true;
+			}else{
+				$formChangeStatus.find('#'+select.id+"_error").css("visibility","visible");
+				$formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
+				valid = false;
+			}
+		
+		}
+	});
+
+	$.each($formChangeStatus.find('textarea[required]'), function( index, textarea ) {
+		if($.trim(textarea.value).length == 0 || textarea.value == ""){
+			$formChangeStatus.find('#'+textarea.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+textarea.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+textarea.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+
+	return valid;
 }
 
 

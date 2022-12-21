@@ -164,44 +164,33 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-					<label>Sistemas</label>
-					<div class="form-group m-b-0">
-						<select id="systemId" class="form-control show-tick selectpicker"
-							data-live-search="true">
-							<option value="0">-- Todos --</option>
-							<c:forEach items="${systems}" var="system">
-								<option value="${system.id }">${system.name }</option>
-							</c:forEach>
-						</select>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-					<label>Tipo</label>
-					<div class="form-group m-b-0">
-						<select id="typeChangeId"
-							class="form-control show-tick selectpicker"
-							data-live-search="true">
-							<option value="0">-- Todos --</option>
-							<c:forEach items="${typeChanges}" var="typeChanges">
-								<option value="${typeChanges.id }">${typeChanges.name }</option>
-							</c:forEach>
-						</select>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-					<label>Estado</label>
-					<div class="form-group m-b-0">
-						<select id="statusId" class="form-control show-tick selectpicker"
-							data-live-search="true">
-							<option value="0">-- Todos --</option>
-							<c:forEach items="${statuses}" var="status">
-								<c:if test="${status.name ne 'Anulado'}">
-									<option value="${status.id }">${status.name }</option>
-								</c:if>
-							</c:forEach>
-						</select>
-					</div>
-				</div>
+							<label>Sistemas</label>
+							<div class="form-group m-b-0">
+								<select id="systemId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="0">-- Todos --</option>
+									<c:forEach items="${systems}" var="system">
+										<option value="${system.id }">${system.name }</option>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+													<label>Estado</label>
+							<div class="form-group m-b-0">
+								<select id="statusId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="0">-- Todos --</option>
+									<c:forEach items="${statuses}" var="status">
+										<c:if test="${status.name ne 'Anulado'}">
+											<option value="${status.id }">${status.name }</option>
+										</c:if>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
 			</div>
 			<!-- #tableFilters# -->
 			<div class="row clearfix">
@@ -214,9 +203,8 @@
 								<thead>
 									<tr>
 										<th>ID</th>
-										<th>Número RFC</th>
+										<th>N&uacute;mero RFC</th>
 										<th>Sistema</th>
-										<th>Tipo</th>
 										<th>Solicitante</th>
 										<th>Modificado</th>
 										<th>Estado</th>
@@ -232,8 +220,7 @@
 	</section>
 
 	<%@include file="../plantilla/footer.jsp"%>
-	<script
-		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
+
 	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
 	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
 	<script
