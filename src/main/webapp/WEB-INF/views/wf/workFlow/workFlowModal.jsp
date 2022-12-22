@@ -7,7 +7,7 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="largeModalLabel">Trámites</h4>
+				<h4 class="modal-title" id="largeModalLabel">Tr&aacute;mites</h4>
 			</div>
 			<div class="modal-body">
 				<div class="row clearfix">
@@ -17,7 +17,7 @@
 							value="" />
 
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-10">
-							<label>Número Release</label>
+							<label>N&uacute;mero Release</label>
 							<div class="form-group">
 								<div class="form-line disabled">
 									<input type="text" readonly="" id="releaseNumber"
@@ -31,8 +31,23 @@
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<div class="form-group">
 								<select id="nodeId" class="form-control show-tick selectpicker"
-									data-live-search="true">
-								</select> <label id="nodeId_error" class="error" for="name"
+									data-live-search="true" required="required">
+								</select> 
+								<label id="nodeId_error" class="error fieldError" for="name"
+									style="visibility: hidden">Campo Requerido.</label>
+							</div>
+						</div>
+						<div id="divError" hidden
+							class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="form-group">
+								<label for="email_address">Tipo de error</label> <select
+									id="errorId" class="form-control show-tick selectpicker"
+									data-live-search="true" required="required">
+									<option value="">-- Seleccione una opci&oacute;n --</option>
+									<c:forEach items="${errors}" var="error">
+										<option data-motive="${status.motive }" value="${error.id }">${error.name }</option>
+									</c:forEach>
+								</select> <label id="errorId_error" class="error fieldError" for="name"
 									style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>

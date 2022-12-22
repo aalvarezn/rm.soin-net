@@ -19,7 +19,7 @@
 							<!-- Nav tabs -->
 							<ul class="nav nav-tabs tab-nav-right" role="tablist">
 								<li role="presentation" class="active"><a href="#tabHome"
-									data-toggle="tab">ACCIÓN</a></li>
+									data-toggle="tab">ACCI&Oacute;N</a></li>
 								<li role="presentation"><a href="#tabActors"
 									data-toggle="tab">ACTORES</a></li>
 								<li role="presentation"><a href="#tabSecurity"
@@ -76,7 +76,9 @@
 										</label>
 									</div>
 								</div>
+							
 							</div>
+							
 						</div>
 						<div role="tabpanel" class="tab-pane" id="tabActors">
 							<div class="row m-t-20">

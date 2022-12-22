@@ -92,7 +92,9 @@
 			<div class="row clearfix">
 				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 					<h5 class="rel_num">
-						<span class="material-icons" style="vertical-align: bottom;color: #00294c;"> settings </span> ${workFlow.name}
+						<span class="material-icons"
+							style="vertical-align: bottom; color: #00294c;"> settings
+						</span> ${workFlow.name}
 					</h5>
 				</div>
 			</div>
@@ -149,7 +151,9 @@
 	<!-- Bootstrap Material Datetime Picker Plugin Js -->
 	<script
 		src="<c:url value='/static/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js'/>"></script>
-
+	<!-- Quicksearch Js -->
+	<script
+		src="<c:url value='/static/plugins/quicksearch/quicksearch.js'/>"></script>
 	<!-- Custom Js -->
 
 	<script src="<c:url value='/static/js/admin.js?v=${jsVersion}'/>"></script>

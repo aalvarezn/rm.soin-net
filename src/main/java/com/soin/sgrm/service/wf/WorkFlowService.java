@@ -3,6 +3,7 @@ package com.soin.sgrm.service.wf;
 import java.util.List;
 
 import com.soin.sgrm.model.wf.WorkFlow;
+//import com.soin.sgrm.model.wf.WorkFlowIncidence;
 
 public interface WorkFlowService {
 
@@ -15,5 +16,9 @@ public interface WorkFlowService {
 	void update(WorkFlow workFlow);
 
 	void delete(Integer id);
+
+	//WorkFlowIncidence findByIdIncidence(Integer id);
+
+	boolean verifyCreation(Integer systemId, Integer typeId);
 
 }

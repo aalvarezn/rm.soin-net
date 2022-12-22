@@ -228,7 +228,8 @@ function changeStatusRelease(releaseId) {
 		if(value.nodeTo.status && value.nodeTo.status !== null){
 			allowActor = rowData.node.actors.find(element => element.id == userId);
 			if( typeof allowActor !== 'undefined'){
-				formChangeStatus.find('#nodeId').append('<option data-motive="'+value.nodeTo.status.motive+'"  value="'+value.nodeTo.id+'">'+value.nodeTo.label+'</option>' );
+				var motive=(value.nodeTo.status.motive===null)?"":value.nodeTo.status.motive;
+				formChangeStatus.find('#nodeId').append('<option data-motive="'+motive+'"  value="'+value.nodeTo.id+'">'+value.nodeTo.label+'</option>' );
 
 			}
 		}

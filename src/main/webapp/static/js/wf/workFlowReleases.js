@@ -54,7 +54,10 @@ $(function() {
 	formChangeStatus.find('#nodeId').change(function() {
 		formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
-});
+	dropDownChange();
+}
+
+);
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -221,7 +224,9 @@ function changeStatusRelease(releaseId) {
 	
 	$.each(rowData.node.edges, function(i, value) {
 		if(value.nodeTo.status && value.nodeTo.status !== null){
-			formChangeStatus.find('#nodeId').append('<option data-motive="'+value.nodeTo.status.motive+'"  value="'+value.nodeTo.id+'">'+value.nodeTo.label+'</option>' );
+			var motive=(value.nodeTo.status.motive===null)?"":value.nodeTo.status.motive;
+			
+			formChangeStatus.find('#nodeId').append('<option data-motive="'+motive+'"  value="'+value.nodeTo.id+'">'+value.nodeTo.label+'</option>' );
 		}
 
 	});
@@ -230,7 +235,25 @@ function changeStatusRelease(releaseId) {
 	formChangeStatus.find('#idRelease').val(rowData.id);
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
 	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
+	formChangeStatus.find("#errorId_error").css("visibility", "hidden");
+	$('#divError').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
+}
+
+
+function dropDownChange(){
+	
+	$('#nodeId').on('change', function(){
+		
+		var status =$("#nodeId").find("option:selected").text();
+		console.log(status);
+		if(status==="Error"){
+			$('#divError').attr( "hidden",false);
+		}else{
+			$('#divError').attr( "hidden",true);
+		}
+		
+	});
 }
 
 function saveChangeStatusModal(){
@@ -244,6 +267,7 @@ function saveChangeStatusModal(){
 		data : {
 			idRelease : formChangeStatus.find('#idRelease').val(),
 			idNode: formChangeStatus.find('#nodeId').children("option:selected").val(),
+			idError: formChangeStatus.find('#errorId').children("option:selected").val(),
 			motive: formChangeStatus.find('#motive').val()
 		},
 		success : function(response) {
@@ -278,7 +302,7 @@ function closeChangeStatusModal(){
 	$('#changeStatusModal').modal('hide');
 }
 
-
+/*
 function validStatusRelease() {
 	let valid = true;
 	let statusId = formChangeStatus.find('#nodeId').children("option:selected")
@@ -290,8 +314,53 @@ function validStatusRelease() {
 		formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
 		return true;
 	}
-}
+}*/
 
+function validStatusRelease() {
+	let valid = true;
+	formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	formChangeStatus.find('.fieldError').removeClass('activeError');
+	formChangeStatus.find('.form-line').removeClass('error');
+	formChangeStatus.find('.form-line').removeClass('focused');
+	$.each(formChangeStatus.find('input[required]'), function( index, input ) {
+		if($.trim(input.value) == ""){
+			
+			formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+	$.each(formChangeStatus.find('select[required]'), function( index, select ) {
+	
+		if($.trim(select.value).length == 0 || select.value == ""){
+			
+			var statusSelected =$("#nodeId").find("option:selected").text();
+			if(select.id==="errorId"&&statusSelected!=="Error"){
+				valid = true;
+			}else{
+				formChangeStatus.find('#'+select.id+"_error").css("visibility","visible");
+				formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
+				valid = false;
+			}
+		
+		}
+	});
+
+	$.each(formChangeStatus.find('textarea[required]'), function( index, textarea ) {
+		
+		if($.trim(textarea.value).length == 0 || textarea.value == ""){
+			formChangeStatus.find('#'+textarea.id+"_error").css("visibility","visible");
+			formChangeStatus.find('#'+textarea.id+"_error").addClass('activeError');
+			formChangeStatus.find('#'+textarea.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+
+	return valid;
+}
 
 function openReleaseTrackingModal(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
