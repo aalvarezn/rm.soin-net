@@ -2,7 +2,13 @@ var $network;
 var container = document.getElementById('wfEdit');
 var nodes = new vis.DataSet([]);
 var edges = new vis.DataSet([]);
-
+var scales=0.8;
+var x;
+var y;
+var position={
+		x:x,
+		y:y
+}
 //provide the data in the vis format
 var data = {
 		nodes : nodes,
@@ -110,6 +116,11 @@ var options = {
 					save = false;
 					alert('El enlace ya existe');
 				}
+				
+				if (existEdgeInvert(edgeData)) {
+					save = false;
+					alert('Ya hay un enlace directo para este nodo');
+				}
 				if (save) {
 					saveEdge(edgeData, callback);
 				}
@@ -134,8 +145,31 @@ $(function() {
 	.find('#users')
 	.multiSelect(
 			{
-				selectableHeader : "<div class='custom-header'>Usuarios</div>",
-				selectionHeader : "<div class='custom-header'>Notificar</div>",
+				selectableHeader: "<div class='custom-header'>Usuarios</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+				selectionHeader: "<div class='custom-header'>Notificar</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+				afterInit: function(ms){
+					var that = this,
+					$selectableSearch = that.$selectableUl.prev(),
+					$selectionSearch = that.$selectionUl.prev(),
+					selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+					selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+					that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+					.on('keydown', function(e){
+						if (e.which === 40){
+							that.$selectableUl.focus();
+							return false;
+						}
+					});
+
+					that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+					.on('keydown', function(e){
+						if (e.which == 40){
+							that.$selectionUl.focus();
+							return false;
+						}
+					});
+				},
 				afterSelect : function(values) {
 					$nodeModal.find(
 							"#users option[id='" + values + "']").attr(
@@ -150,8 +184,31 @@ $(function() {
 
 	$nodeModal.find('#actors').multiSelect(
 			{
-				selectableHeader : "<div class='custom-header'>Usuarios</div>",
-				selectionHeader : "<div class='custom-header'>Actors</div>",
+				selectableHeader: "<div class='custom-header'>Usuarios</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+				selectionHeader: "<div class='custom-header'>Actores</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+				afterInit: function(ms){
+					var that = this,
+					$selectableSearch = that.$selectableUl.prev(),
+					$selectionSearch = that.$selectionUl.prev(),
+					selectableSearchString = '#'+that.$container.attr('id')+' .ms-elem-selectable:not(.ms-selected)',
+					selectionSearchString = '#'+that.$container.attr('id')+' .ms-elem-selection.ms-selected';
+
+					that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
+					.on('keydown', function(e){
+						if (e.which === 40){
+							that.$selectableUl.focus();
+							return false;
+						}
+					});
+
+					that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
+					.on('keydown', function(e){
+						if (e.which == 40){
+							that.$selectionUl.focus();
+							return false;
+						}
+					});
+				},
 				afterSelect : function(values) {
 					$nodeModal.find("#actors option[id='" + values + "']")
 					.attr("selected", "selected");
@@ -238,9 +295,17 @@ function ajaxLoadWorkFlow(response) {
 
 			$network = new vis.Network(container, data, options);
 			$network.enableEditMode();
-			$network.moveTo({
-				scale : 0.8
-			});
+			if(x===undefined){
+				$network.moveTo({
+					scale : scales,
+				});
+			}else{
+				$network.moveTo({
+					scale : scales,
+					position:position
+				});
+			}
+		
 
 			$network.on("doubleClick", function(properties) {
 				openUpdateNodeModal(properties);
@@ -376,17 +441,42 @@ function updateNodeModal() {
 function ajaxUpdateNode(response) {
 	switch (response.status) {
 	case 'success':
-		nodes.update({
-			id : response.obj.id,
-			label : response.obj.label,
-			group : response.obj.group,
-			x : response.obj.x,
-			y : response.obj.y,
-			status : response.obj.status,
-			sendEmail : response.obj.sendEmail,
-			users : response.obj.users,
-			actors : response.obj.actors
-		});
+		//console.log(response.obj);
+		//console.log(nodes);
+		//console.log( $network.getScale());
+		//console.log( $network.getViewPosition());
+		try {
+			nodes.update({
+				id : response.obj.id,
+				label : response.obj.label,
+				group : response.obj.group,
+				x : response.obj.x,
+				y : response.obj.y,
+				status : response.obj.status,
+				sendEmail : response.obj.sendEmail,
+				users : response.obj.users,
+				actors : response.obj.actors
+			});
+		}catch(err){
+			//console.log(err);
+			 nodes = new vis.DataSet([]);
+			 edges = new vis.DataSet([]);
+			 x=$network.getViewPosition().x;
+			 y=$network.getViewPosition().y;
+			 scales=$network.getScale();
+			  position = {
+						x : x,
+						y : y
+				};
+			  data = {
+						nodes : nodes,
+						edges : edges
+				};
+			  $network.getScale();
+			  $network.getViewPosition();
+			loadWorkFlow();
+		}
+		
 		$network.redraw();
 		$nodeModal.modal('hide');
 		break;
@@ -543,6 +633,14 @@ function existEdge(edgeData) {
 	return  found.length > 0;
 }
 
+function existEdgeInvert(edgeData) {
+	var found = edges.get({
+		filter: function (item) {
+			return (item != null && item.to == edgeData.from && item.from == edgeData.to);
+		}
+	});
+	return  found.length > 0;
+}
 function closeNodeModal() {
 	$nodeModal.modal('hide');
 }
