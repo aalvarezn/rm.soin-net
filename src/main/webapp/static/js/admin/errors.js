@@ -7,7 +7,7 @@ $(function() {
 	activeItemMenu("releaseItem", true);
 	initDataTable();
 	initStatusRFCFormValidation();
-	console.log("prueba");
+	console.log("prueba 2");
 });
 
 
