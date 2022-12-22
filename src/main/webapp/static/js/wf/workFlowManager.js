@@ -2,6 +2,7 @@ var releaseTable = $('#dtReleases').DataTable();
 var formChangeUser = $('#changeUserForm');
 var formChangeStatus = $('#changeStatusForm');
 var trackingReleaseForm = $('#trackingReleaseForm');
+var rowData;
 $(function() {
 	loadTableRelease();
 	activeItemMenu("managerWorkFlowItem");
@@ -54,6 +55,7 @@ $(function() {
 	formChangeStatus.find('#nodeId').change(function() {
 		formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
+	dropDownChange();
 });
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
@@ -212,11 +214,39 @@ function responseCancelRelease(response) {
 		break;
 	}
 }
+function dropDownChange(){
+	
+	$('#nodeId').on('change', function(){
+		
+		var status =$("#nodeId").find("option:selected").text();
+		console.log(status);
+		console.log(rowData);
+	    console.log(rowData.node.edges);
+	    var edges=rowData.node.edges;
+	   var veriStatus=false;
+		$.each(edges, function(i, value) {
+			console.log(value.nodeTo.status.name);
+			if(value.nodeTo.status.name==="Error"){
+				veriStatus=true;
+			}
+
+		});
+
+		if(veriStatus){
+			$('#divError').attr( "hidden",false);
+		}else{
+			$('#divError').attr( "hidden",true);
+		}
+		
+	});
+}
+
 
 function changeStatusRelease(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
-	var rowData = releaseTable.row(idRow).data();
+	rowData = releaseTable.row(idRow).data();
+	console.log(rowData.node);
 	formChangeStatus[0].reset();
 	formChangeStatus.find("#nodeId").find('option').remove();
 	
@@ -225,6 +255,7 @@ function changeStatusRelease(releaseId) {
 	let userId = $('#userInfo_Id').val();
 	let allowActor = null;
 	$.each(rowData.node.edges, function(i, value) {
+		console.log(value);
 		if(value.nodeTo.status && value.nodeTo.status !== null){
 			allowActor = rowData.node.actors.find(element => element.id == userId);
 			if( typeof allowActor !== 'undefined'){
@@ -239,6 +270,14 @@ function changeStatusRelease(releaseId) {
 	formChangeStatus.find('#idRelease').val(rowData.id);
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
 	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
+	//formChangeStatus.find('#motive').val('');
+	formChangeStatus.find('.selectpicker').selectpicker('refresh');
+	formChangeStatus.find('#idRelease').val(rowData.id);
+	formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	formChangeStatus.find('.fieldError').removeClass('activeError');
+	formChangeStatus.find('.form-line').removeClass('error');
+	formChangeStatus.find('.form-line').removeClass('focused');
+	$('#divError').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
 }
 
@@ -253,6 +292,8 @@ function saveChangeStatusModal(){
 		data : {
 			idRelease : formChangeStatus.find('#idRelease').val(),
 			idNode: formChangeStatus.find('#nodeId').children("option:selected").val(),
+			idError: formChangeStatus.find('#errorId').children("option:selected").val(),
+			dateChange: formChangeStatus.find('#dateChange').val(),
 			motive: formChangeStatus.find('#motive').val()
 		},
 		success : function(response) {
@@ -290,22 +331,55 @@ function closeChangeStatusModal(){
 
 function validStatusRelease() {
 	let valid = true;
-	let statusId = formChangeStatus.find('#nodeId').children("option:selected")
-	.val();
-	if ($.trim(statusId) == "" || $.trim(statusId).length == 0) {
-		formChangeStatus.find("#nodeId_error").css("visibility", "visible");
-		return false;
-	} else {
-		formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
-		return true;
-	}
+	formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	formChangeStatus.find('.fieldError').removeClass('activeError');
+	formChangeStatus.find('.form-line').removeClass('error');
+	formChangeStatus.find('.form-line').removeClass('focused');
+	$.each(formChangeStatus.find('input[required]'), function( index, input ) {
+		if($.trim(input.value) == ""){
+			
+			formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+	$.each(formChangeStatus.find('select[required]'), function( index, select ) {
+	
+		if($.trim(select.value).length == 0 || select.value == ""){
+			
+			var statusSelected =$("#nodeId").find("option:selected").text();
+			if(select.id==="errorId"&&statusSelected!=="Error"){
+				valid = true;
+			}else{
+				formChangeStatus.find('#'+select.id+"_error").css("visibility","visible");
+				formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
+				valid = false;
+			}
+		
+		}
+	});
+
+	$.each(formChangeStatus.find('textarea[required]'), function( index, textarea ) {
+		
+		if($.trim(textarea.value).length == 0 || textarea.value == ""){
+			formChangeStatus.find('#'+textarea.id+"_error").css("visibility","visible");
+			formChangeStatus.find('#'+textarea.id+"_error").addClass('activeError');
+			formChangeStatus.find('#'+textarea.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+		}
+	});
+
+	return valid;
 }
 
 
 function openReleaseTrackingModal(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
-	var rowData = releaseTable.row(idRow).data();
+	rowData = releaseTable.row(idRow).data();
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
 	loadTrackingRelease(rowData);
@@ -340,6 +414,9 @@ function getColorNode(status){
 		break;
 	case 'Borrador':
 		return 'rgb(31, 145, 243)';
+		break;
+	case 'Error':
+		return 'rgb(255,0,0)';
 		break;
 	case 'Anulado':
 		return 'rgb(233, 30, 99)';
