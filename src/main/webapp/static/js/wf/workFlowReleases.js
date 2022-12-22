@@ -2,6 +2,7 @@ var releaseTable = $('#dtReleases').DataTable();
 var formChangeUser = $('#changeUserForm');
 var formChangeStatus = $('#changeStatusForm');
 var trackingReleaseForm = $('#trackingReleaseForm');
+var rowData;
 $(function() {
 	loadTableRelease();
 	activeItemMenu("managemetWorkFlowItem");
@@ -216,7 +217,8 @@ function responseCancelRelease(response) {
 function changeStatusRelease(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
-	var rowData = releaseTable.row(idRow).data();
+    rowData = releaseTable.row(idRow).data();
+
 	formChangeStatus[0].reset();
 	formChangeStatus.find("#nodeId").find('option').remove();
 
@@ -235,9 +237,16 @@ function changeStatusRelease(releaseId) {
 	formChangeStatus.find('#idRelease').val(rowData.id);
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
 	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
-	formChangeStatus.find("#errorId_error").css("visibility", "hidden");
+	//formChangeStatus.find('#motive').val('');
+	formChangeStatus.find('.selectpicker').selectpicker('refresh');
+	formChangeStatus.find('#idRelease').val(rowData.id);
+	formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	formChangeStatus.find('.fieldError').removeClass('activeError');
+	formChangeStatus.find('.form-line').removeClass('error');
+	formChangeStatus.find('.form-line').removeClass('focused');
 	$('#divError').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
+	
 }
 
 
@@ -247,7 +256,19 @@ function dropDownChange(){
 		
 		var status =$("#nodeId").find("option:selected").text();
 		console.log(status);
-		if(status==="Error"){
+		console.log(rowData);
+	    console.log(rowData.node.edges);
+	    var edges=rowData.node.edges;
+	   var veriStatus=false;
+		$.each(edges, function(i, value) {
+			console.log(value.nodeTo.status.name);
+			if(value.nodeTo.status.name==="Error"){
+				veriStatus=true;
+			}
+
+		});
+
+		if(veriStatus){
 			$('#divError').attr( "hidden",false);
 		}else{
 			$('#divError').attr( "hidden",true);
@@ -365,7 +386,7 @@ function validStatusRelease() {
 function openReleaseTrackingModal(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
-	var rowData = releaseTable.row(idRow).data();
+    rowData = releaseTable.row(idRow).data();
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
 	loadTrackingRelease(rowData);
@@ -400,6 +421,9 @@ function getColorNode(status){
 		break;
 	case 'Borrador':
 		return 'rgb(31, 145, 243)';
+		break;
+	case 'Error':
+		return 'rgb(255,0,0)';
 		break;
 	case 'Anulado':
 		return 'rgb(233, 30, 99)';
