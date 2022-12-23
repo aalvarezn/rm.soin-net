@@ -41,4 +41,9 @@ public class WorkFlowServiceImlp implements WorkFlowService {
 		dao.delete(id);
 	}
 
+	@Override
+	public boolean verifyCreation(Integer systemId, Integer typeId) {
+		return dao.verifyCreation(systemId,typeId);
+	}
+
 }

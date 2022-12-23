@@ -86,67 +86,9 @@
 			<div class="row clearfix">
 				<%@include file="../../release/trackingReleaseModal.jsp"%>
 			</div>
-			
-			<!-- CountSection -->
-			<div class="row clearfix">
-
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<div class="info-box bg-light-green hover-expand-effect">
-						<div class="icon">
-							<i class="material-icons default">dashboard</i>
-						</div>
-						<div class="content">
-							<div class="text">TODOS</div>
-							<div class="number count-to" data-from="0"
-								data-to="${wfCount['all']}" data-speed="1000"
-								data-fresh-interval="20"></div>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<div class="info-box bg-cyan hover-expand-effect">
-						<div class="icon">
-							<i class="material-icons default">engineering</i>
-						</div>
-						<div class="content">
-							<div class="text">INICIADOS</div>
-							<div class="number count-to" data-from="0"
-								data-to="${wfCount['start']}" data-speed="1000"
-								data-fresh-interval="20"></div>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<div class="info-box bg-orange hover-expand-effect">
-						<div class="icon">
-							<i class="material-icons default">change_circle</i>
-						</div>
-						<div class="content">
-							<div class="text">EN PROCESO</div>
-							<div class="number count-to" data-from="0"
-								data-to="${wfCount['action']}" data-speed="1000"
-								data-fresh-interval="20"></div>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-					<div class="info-box bg-pink hover-expand-effect">
-						<div class="icon">
-							<i class="material-icons default">flag</i>
-						</div>
-						<div class="content">
-							<div class="text">FINALIZADOS</div>
-							<div class="number count-to" data-from="0"
-								data-to="${wfCount['finish']}" data-speed="15"
-								data-fresh-interval="20"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- #CountSection -->
 
 			<div class="block-header">
-				<h2>MIS TRÁMITES</h2>
+				<h2>TR&Aacute;MITES</h2>
 			</div>
 
 			<!-- tableFilters -->
@@ -198,7 +140,7 @@
 									<tr>
 										<th>ID</th>
 										<th>Node</th>
-										<th>Número release</th>
+										<th>N&uacute;mero release</th>
 										<th>Solicitante</th>
 										<th>Modificado</th>
 										<th>Estado</th>
@@ -222,7 +164,7 @@
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 	<script
-		src="<c:url value='/static/js/wf/workFlowManager.js?v=${jsVersion}'/>"></script>
+		src="<c:url value='/static/js/wf/workFlowReleases.js?v=${jsVersion}'/>"></script>
 </body>
 
 </html>

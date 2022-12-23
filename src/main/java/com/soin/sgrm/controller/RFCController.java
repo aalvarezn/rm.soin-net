@@ -1,6 +1,7 @@
 package com.soin.sgrm.controller;
 
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Sets;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Status;
@@ -43,6 +45,7 @@ import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ErrorRFCService;
 import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
@@ -108,6 +111,9 @@ public class RFCController extends BaseController {
 	TreeService treeService;
 	
 	@Autowired
+	ErrorRFCService errorService;
+	
+	@Autowired
 	com.soin.sgrm.service.UserService userService;
 	
 	@Autowired
@@ -121,10 +127,10 @@ public class RFCController extends BaseController {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
 			List<System> systems = systemService.listProjects(getUserLogin().getId());
-			List<TypeChange> typeChanges = typeChangeService.findAll();
+			List<Priority> priorities = priorityService.list();
 			List<StatusRFC> statuses = statusService.findAll();
 			List<Impact> impacts = impactService.list();
-			model.addAttribute("typeChanges", typeChanges);
+			model.addAttribute("priorities", priorities);
 			model.addAttribute("impacts", impacts);
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("systems", systems);
@@ -148,17 +154,17 @@ public class RFCController extends BaseController {
 			Integer name = getUserLogin().getId();
 			String sSearch = request.getParameter("sSearch");
 			 Long statusId;
-			 Long typeChangeId;
+			 int priorityId;
 			 int systemId;
 			if (request.getParameter("statusId").equals("")) {
 				statusId = null;
 			} else {
 				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
 			}
-			if (request.getParameter("typeChangeId").equals("")) {
-				typeChangeId = null;
+			if (request.getParameter("priorityId").equals("")) {
+				priorityId = 0;
 			} else {
-				typeChangeId = (long) Integer.parseInt(request.getParameter("typeChangeId"));
+				priorityId =  Integer.parseInt(request.getParameter("priorityId"));
 			}
 			
 			if (request.getParameter("systemId").equals("")) {
@@ -168,7 +174,7 @@ public class RFCController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcWRService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,typeChangeId, systemId);
+			rfcs = rfcWRService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -398,11 +404,8 @@ public class RFCController extends BaseController {
 			model.addAttribute("rfc", rfcEdit);
 			model.addAttribute("senders", rfcEdit.getSenders());
 			model.addAttribute("message", rfcEdit.getMessage());
-			if(rfcEdit.getSiges().getEmailTemplate()!=null) {
 			model.addAttribute("ccs", getCC(rfcEdit.getSiges().getEmailTemplate().getCc()));
-			}else {
-				model.addAttribute("ccs", "");
-			}
+
 			return "/rfc/editRFC";
 
 		} catch (Exception e) {
@@ -488,6 +491,8 @@ public class RFCController extends BaseController {
 				}
 
 			}
+			List<Errors_RFC> errors = errorService.findAll();
+			model.addAttribute("errors", errors);
 			model.addAttribute("statuses", statusService.findAll());
 			model.addAttribute("systems", systems);
 			model.addAttribute("impacts", impactService.list());
@@ -805,7 +810,7 @@ public class RFCController extends BaseController {
 	
 	@RequestMapping(value = "/readEmail", method = RequestMethod.GET)
 	public String readEmails(HttpServletRequest request, Locale locale, Model model, HttpSession session,
-			RedirectAttributes redirectAttributes) {
+			RedirectAttributes redirectAttributes) throws IOException {
 		try {
 			emailReadService.emailRead();
 		} catch (MessagingException e) {

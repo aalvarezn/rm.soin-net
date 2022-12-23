@@ -18,4 +18,6 @@ public interface NodeDao {
 	void delete(Integer id) throws Exception;
 	
 	Node existWorkFlow(Release release);
+
+	boolean verifyStartNode(Node node);
 }

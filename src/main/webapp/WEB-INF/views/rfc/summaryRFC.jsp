@@ -95,7 +95,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">RFC N&deg;</label>
+					<label for="email_address">RFC N°</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${rfc.numRequest}</p>
@@ -209,13 +209,13 @@
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 m-t-10">
 					<label for="">Raz&oacute;n del cambio.</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.reasonChange }</textarea>
+					<textarea disabled class="areaWidth" rows="" cols="">${rfc.reasonChange }</textarea>
 				</div>
 
 
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Efecto si no se implementa el cambio.</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.effect }</textarea>
+					<textarea disabled class="areaWidth disabled" rows="" cols="">${rfc.effect }</textarea>
 				</div>
 			</div>
 			<div class="row clearfix m-t-10">
@@ -226,7 +226,7 @@
 					<label for="">Sistemas impactados</label>
 
 					<div id="listSystems">
-						<ul class="nav nav-pills">
+						<ul class="nav nav-pills disabled">
 
 
 							<c:forEach items="${systemsImplicated}" var="system">
@@ -243,7 +243,7 @@
 					<label for="">Releases a instalar en producci&oacute;n</label>
 
 					<div id="listSystems">
-						<ul class="nav nav-pills">
+						<ul class="nav nav-pills disabled">
 
 
 							<c:forEach items="${rfc.releases}" var="release">
@@ -331,23 +331,23 @@
 				<div class="col-sm-12">
 					<h5 class="titulares">Detalles de la implementaci&oacute;n</h5>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Detalles</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.detail }</textarea>
+					<textarea disabled class="areaWidth" rows="" cols="">${rfc.detail }</textarea>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Plan de retorno</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.returnPlan }</textarea>
+					<textarea disabled class="areaWidth" rows="" cols="">${rfc.returnPlan }</textarea>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Evidencias</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.evidence }</textarea>
+					<textarea disabled class="areaWidth" disabled rows="" cols="">${rfc.evidence }</textarea>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Requisitos especiales</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.requestEsp }</textarea>
+					<textarea disabled class="areaWidth" rows="" cols="">${rfc.requestEsp }</textarea>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Requiere base de datos</label>
 					<div class="switch">
 						<c:choose>
@@ -447,13 +447,7 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$("#contentSummary textarea").parent().removeClass('focused');
-			$("#contentSummary textarea").attr("disabled", true);
-			autosize($('textarea'));
-		});
-	</script>
+
 
 </body>
 </html>

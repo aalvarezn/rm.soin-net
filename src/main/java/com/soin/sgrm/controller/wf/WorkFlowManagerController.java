@@ -18,16 +18,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_Release;
+import com.soin.sgrm.model.ReleaseError;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ErrorReleaseService;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.ReleaseErrorService;
+import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.service.wf.WFReleaseService;
+import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.MyLevel;
@@ -53,7 +61,14 @@ public class WorkFlowManagerController extends BaseController {
 	private ParameterService paramService;
 	@Autowired
 	private EmailTemplateService emailService;
-
+	@Autowired
+	private ErrorReleaseService errorService;
+	@Autowired
+	private ReleaseService releaseService;
+	@Autowired
+	private ProjectService projectService;
+	@Autowired
+	private ReleaseErrorService releaseErrorService;
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -64,6 +79,7 @@ public class WorkFlowManagerController extends BaseController {
 			model.addAttribute("systems", systemService.listSystemUserByIds(systemIds));
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
+			model.addAttribute("errors", errorService.findAll());
 			loadCountsRelease(request, systemIds);
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
@@ -96,6 +112,92 @@ public class WorkFlowManagerController extends BaseController {
 			return null;
 		}
 	}
+	
+	@RequestMapping(value = "/wfStatus", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse draftRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "idRelease", required = true) Integer idRelease,
+			@RequestParam(value = "idNode", required = true) Integer idNode,
+			@RequestParam(value = "motive", required = true) String motive,
+			@RequestParam(value = "idError", required = false) Long idError
+			) {
+		JsonResponse res = new JsonResponse();
+		try {
+			WFRelease release = wfReleaseService.findWFReleaseById(idRelease);
+			Node node = nodeService.findById(idNode);
+			String newMotive=motive;
+			node.getStatus().setMotive(newMotive);
+			release.setNode(node);
+			release.setStatus(node.getStatus());
+			release.setOperator(getUserLogin().getFullName());
+			if(node.getStatus().getName().equals("Error")) {
+			Errors_Release error = errorService.findById(idError);
+			ReleaseError releaseError = new ReleaseError();
+			releaseError.setSystem(release.getSystem());
+			releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
+			releaseError.setError(error);
+			Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
+			releaseError.setRelease(releaseWithObj);
+			releaseError.setObservations(newMotive);
+			releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
+			releaseErrorService.save(releaseError);
+			wfReleaseService.wfStatusReleaseWithOutMin(release);
+			Status statusChange = statusService.findByName("Borrador");
+			release.setStatus(statusChange);
+			
+			if (statusChange != null && statusChange.getName().equals("Borrador")) {
+				if (release.getStatus().getId() != node.getStatus().getId())
+					release.setRetries(release.getRetries() + 1);
+			}
+			
+			newMotive = "Paso a borrador por " + error.getName();
+			node.getStatus().setMotive(newMotive);
+			release.setNode(node);
+			}
+			wfReleaseService.wfStatusRelease(release);
+
+
+			// Si esta marcado para enviar correo
+			if (node.getSendEmail()) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
+				EmailTemplate email = emailService.findById(idTemplate);
+				WFRelease releaseEmail = release;
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMail(releaseEmail, email, motive);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+				});
+				newThread.start();
+			}
+
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getActors().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+				EmailTemplate emailActor = emailService.findById(idTemplate);
+				WFRelease releaseEmail = release;
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailActor(releaseEmail, emailActor);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
+
+
+			res.setStatus("success");
+		} catch (Exception e) {
+			Sentry.capture(e, "wfReleaseManagement");
+			res.setStatus("exception");
+			res.setException("Error al cambiar estado del release: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+/*
 
 	@RequestMapping(value = "/wfStatus", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse draftRelease(HttpServletRequest request, Model model,
@@ -151,7 +253,7 @@ public class WorkFlowManagerController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
-	}
+	}*/
 
 	public void loadCountsRelease(HttpServletRequest request, Object[] systemIds) {
 		Map<String, Integer> wfCount = new HashMap<String, Integer>();

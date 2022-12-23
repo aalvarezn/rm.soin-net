@@ -56,4 +56,10 @@ public class WFReleaseServiceImpl implements WFReleaseService {
 		return dao.countByType(group, ids);
 	}
 
+	@Override
+	public void wfStatusReleaseWithOutMin(WFRelease release) {
+		dao.wfStatusReleaseWithOutMin(release);
+		
+	}
+
 }

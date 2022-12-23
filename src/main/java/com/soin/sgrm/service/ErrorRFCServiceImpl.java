@@ -6,46 +6,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.dao.ErrorDao;
-import com.soin.sgrm.model.Errors;
+import com.soin.sgrm.dao.ErrorRFCDao;
+import com.soin.sgrm.model.Errors_RFC;
 
 @Transactional("transactionManager")
-@Service("ErrorService")
-public class ErrorServiceImpl  implements ErrorService{
+@Service("ErrorRFCService")
+public class ErrorRFCServiceImpl  implements ErrorRFCService{
 	@Autowired
-	ErrorDao dao;
+	ErrorRFCDao dao;
 	
 	@Override
-	public Errors findById(Long id) {
+	public Errors_RFC findById(Long id) {
 		
 		return dao.getById(id);
 	}
 
 	@Override
-	public Errors findByKey(String name, String value) {
+	public Errors_RFC findByKey(String name, String value) {
 	
 		return dao.getByKey(name, value);
 	}
 
 	@Override
-	public List<Errors> findAll() {
+	public List<Errors_RFC> findAll() {
 		
 		return dao.findAll();
 	}
 
 	@Override
-	public void save(Errors model) {
+	public void save(Errors_RFC model) {
 		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		Errors model=findById(id);
+		Errors_RFC model=findById(id);
 		dao.delete(model);
 	}
 
 	@Override
-	public void update(Errors model) {
+	public void update(Errors_RFC model) {
 		dao.update(model);
 	}
 
