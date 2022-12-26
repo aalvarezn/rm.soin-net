@@ -5,21 +5,14 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
-
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import com.soin.sgrm.utils.Constant;
 
 
 @Entity
-@Table(name = "ERRORES")
-public class Errors implements Serializable {
+@Table(name = "ERRORES_RFC")
+public class Errors_RFC implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

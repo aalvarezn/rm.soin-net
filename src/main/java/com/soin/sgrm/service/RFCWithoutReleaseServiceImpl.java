@@ -73,7 +73,7 @@ public class RFCWithoutReleaseServiceImpl implements RFCWithoutReleaseService {
 	@SuppressWarnings("deprecation")
 	@Override
 	public JsonSheet<RFC_WithoutRelease> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
-			Long sStatus, String dateRange, Long sTypeChange, int systemId) {
+			Long sStatus, String dateRange, int sPriority, int systemId) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
@@ -100,23 +100,19 @@ public class RFCWithoutReleaseServiceImpl implements RFCWithoutReleaseService {
 		if (sSearch != null && sSearch.length() > 0) {
 			qSrch = Restrictions.or(Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("reasonChange", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
-					);
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase());
 		}
 		if (sStatus == 0) {
 			sStatus = null;
-		}
-		if (sTypeChange == 0) {
-			sTypeChange = null;
 		}
 		if (sStatus != null) {
 
 			columns.put("status", Restrictions.eq("status.id", sStatus));
 		}
 
-		if (sTypeChange != null) {
-			alias.put("typeChange", "typeChange");
-			columns.put("typeChange", Restrictions.eq("typeChange.id", sTypeChange));
+		if (sPriority != 0) {
+			alias.put("priority", "priority");
+			columns.put("priority", Restrictions.eq("priority.id", sPriority));
 		}
 		if (systemId != 0) {
 			alias.put("siges", "siges");
@@ -125,6 +121,7 @@ public class RFCWithoutReleaseServiceImpl implements RFCWithoutReleaseService {
 		}
 
 		List<String> fetchs = new ArrayList<String>();
+
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
 	}
 
@@ -132,7 +129,7 @@ public class RFCWithoutReleaseServiceImpl implements RFCWithoutReleaseService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public JsonSheet<RFC_WithoutRelease> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			String sSearch, Long sStatus, String dateRange, Long sTypeChange, int systemId) {
+			String sSearch, Long sStatus, String dateRange, int sPriority, int systemId) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
@@ -140,6 +137,7 @@ public class RFCWithoutReleaseServiceImpl implements RFCWithoutReleaseService {
 		List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
 				.createAlias("managers", "managers").add(Restrictions.eq("managers.id", id)).list();
 		alias.put("status", "status");
+
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {
 			if (range.length > 1) {
@@ -171,10 +169,6 @@ public class RFCWithoutReleaseServiceImpl implements RFCWithoutReleaseService {
 			sStatus = null;
 		}
 
-		if (sTypeChange == 0) {
-			sTypeChange = null;
-		}
-		
 		if (sStatus != null) {
 
 			columns.put("status", Restrictions.eq("status.id", sStatus));
@@ -182,9 +176,9 @@ public class RFCWithoutReleaseServiceImpl implements RFCWithoutReleaseService {
 			columns.put("status", Restrictions.not(Restrictions.in("status.name", Constant.FILTREDRFC)));
 		}
 
-		if (sTypeChange != null) {
-			alias.put("typeChange", "typeChange");
-			columns.put("typeChange", Restrictions.eq("typeChange.id", sTypeChange));
+		if (sPriority != 0) {
+			alias.put("priority", "priority");
+			columns.put("priority", Restrictions.eq("priority.id", sPriority));
 		}
 		if (systemId != 0) {
 			alias.put("siges", "siges");

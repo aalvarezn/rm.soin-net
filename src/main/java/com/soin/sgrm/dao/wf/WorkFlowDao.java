@@ -16,4 +16,6 @@ public interface WorkFlowDao {
 
 	void delete(Integer id);
 
+	boolean verifyCreation(Integer systemId, Integer typeId);
+
 }

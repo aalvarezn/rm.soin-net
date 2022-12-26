@@ -97,7 +97,7 @@
 			<!-- CountSection -->
 			<div class="row clearfix">
 				<div class="block-header">
-						<h1 class="title-Adm m-t-0">Gesti&oacute;n salidas no conformes Releases</h1>
+						<h1 class="title-Adm m-t-0">Gesti&oacute;n salidas no conformes RFC</h1>
 						<hr>
 					</div>
 
@@ -129,14 +129,14 @@
 						</div>
 					</div>
 					<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-						<label>Proyecto</label>
+						<label>Siges</label>
 						<div class="form-group m-b-0">
-							<select id="projectId"
+							<select id="sigesId"
 								class="form-control show-tick selectpicker"
 								data-live-search="true">
 								<option value="0">-- Todos --</option>
-								<c:forEach items="${projects}" var="project">
-									<option value="${project.id }">${project.code}</option>
+								<c:forEach items="${siges}" var="sige">
+									<option value="${sige.id }">${sige.codeSiges}</option>
 								</c:forEach>
 							</select>
 						</div>
@@ -166,9 +166,9 @@
 									<thead>
 										<tr>
 											<th>ID</th>
-											<th>Número Release</th>
+											<th>N&uacute;mero Release</th>
 											<th>Sistema</th>
-											<th>Proyecto</th>
+											<th>Siges</th>
 											<th>Tipo Error</th>
 											<th>Observaciones</th>
 											<th>Fecha error</th>
@@ -194,7 +194,7 @@
 	<script
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 	<script
-		src="<c:url value='/static/js/errors/errorManagement.js?v=${jsVersion}'/>"></script>
+		src="<c:url value='/static/js/errors/errorRFCManagement.js?v=${jsVersion}'/>"></script>
 </body>
 
 </html>

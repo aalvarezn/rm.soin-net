@@ -40,7 +40,7 @@
 			<div class="row clearfix">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="" style="padding-top: -5pc;">
-						<h2 class="title-Adm m-t-0">Cat&aacute;logo Errores</h2>
+						<h2 class="title-Adm m-t-0">Cat&aacute;logo Errores Release</h2>
 					</div>
 					<hr>
 				</div>
@@ -75,7 +75,7 @@
 	<%@include file="../../plantilla/scriptSection.jsp"%>
 	<!-- #END# Script Section -->
 	<script
-		src="<c:url value='/static/js/admin/errors.js'/>"></script>
+		src="<c:url value='/static/js/admin/errorsRelease.js'/>"></script>
 	
 
 </body>

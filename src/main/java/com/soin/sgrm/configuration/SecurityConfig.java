@@ -27,11 +27,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers("/static/**").permitAll().antMatchers("/admin/**", "/info/")
 				.hasRole("Admin").antMatchers("/management/**", "/info/").hasRole("Release Manager")
-				.antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel").permitAll().anyRequest()
+				
+				.antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel" ,"/ws/**").permitAll().anyRequest()
 				.authenticated().and().formLogin().loginPage("/login").failureUrl("/login?error=true")
 				.defaultSuccessUrl("/successLogin").permitAll().and().logout()// default logout handling
 				.logoutSuccessUrl("/login")// our new logout success url, we are not replacing other defaults.
 				.permitAll().and().headers().frameOptions().sameOrigin();
+		
+		http.csrf().ignoringAntMatchers("/ws/**");
 	}
 
 	@Autowired

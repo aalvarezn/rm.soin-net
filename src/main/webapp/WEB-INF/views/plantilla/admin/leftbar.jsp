@@ -56,7 +56,9 @@
 				class="menu-toggle"> <span>Cat&aacute;logos</span>
 			</a>
 				<ul class="ml-menu">
-					<li><a href="<c:url value='/admin/error/'/>">Errores</a></li>
+					<li><a href="<c:url value='/admin/error/release'/>">Errores Release</a></li>
+					<li><a href="<c:url value='/admin/error/rfc'/>">Errores RFC</a></li>
+					<li><a href="<c:url value='/admin/error/request'/>">Errores Solicitudes</a></li>
 					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
 					<li><a href="<c:url value='/admin/statusRFC/'/>">Estados RFC</a></li> 
 					<li><a href="<c:url value='/admin/statusRequest/'/>">Estados Solicitud</a></li> 

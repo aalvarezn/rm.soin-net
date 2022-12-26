@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.soin.sgrm.model.Errors;
+import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemUser;
-import com.soin.sgrm.service.ErrorService;
+import com.soin.sgrm.service.ErrorReleaseService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
@@ -55,7 +55,7 @@ public class ReleaseManagementController extends BaseController {
 	private SystemService systemService;
 
 	@Autowired
-	private ErrorService errorService;
+	private ErrorReleaseService errorService;
 
 	@Autowired
 	private ReleaseErrorService releaseErrorService;
@@ -146,7 +146,7 @@ public class ReleaseManagementController extends BaseController {
 				if (release.getStatus().getId() != status.getId())
 					release.setRetries(release.getRetries() + 1);
 			} else if (status != null && status.getName().equals("Error")) {
-				Errors error = errorService.findById(idError);
+				Errors_Release error = errorService.findById(idError);
 				ReleaseError releaseError = new ReleaseError();
 				releaseError.setSystem(release.getSystem());
 				releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
