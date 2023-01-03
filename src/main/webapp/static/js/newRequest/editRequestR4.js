@@ -661,7 +661,8 @@ function initRequestFormValidation() {
 
 function reloadPreview() {
 	var src = $("#tinySummary").attr("src")
-	$("#tinySummary").attr("src", src)
+	$("#tinySummary").attr("src", src);
+	console.log("");
 }
 
 
