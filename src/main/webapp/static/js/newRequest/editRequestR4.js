@@ -602,11 +602,11 @@ function initRequestFormValidation() {
 		rules : {
 			'user':{
 				required : true,
-				maxlength : 20,
+				maxlength : 255,
 			},
 			'email':{
 				required :true,
-				maxlength : 20,
+				maxlength : 255,
 		        email: true
 			},
 			'ambientId':{
