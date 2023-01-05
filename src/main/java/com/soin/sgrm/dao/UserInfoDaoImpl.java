@@ -103,4 +103,23 @@ public class UserInfoDaoImpl implements UserInfoDao {
 		return user;
 	}
 
+	@Override
+	public UserInfo getUserByGitUsername(String username) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(UserInfo.class);
+		crit.add(Restrictions.eq("gitusername", username));
+		crit.add(Restrictions.eq("active", true));
+		UserInfo user = (UserInfo) crit.uniqueResult();
+		return user;
+	}
+
+	@Override
+	public boolean uniqueGitUsername(UserInfo userInfo) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(UserInfo.class);
+		crit.add(Restrictions.eq("gitusername", userInfo.getGitusername()));
+		crit.add(Restrictions.ne("id", userInfo.getId()));
+		crit.setProjection(Projections.rowCount());
+		Long count = (Long) crit.uniqueResult();
+		return (count.intValue() == 0) ? true : false;
+	}
+
 }

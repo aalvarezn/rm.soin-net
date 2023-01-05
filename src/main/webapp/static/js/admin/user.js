@@ -68,6 +68,7 @@ function saveUser(){
 			shortName: $userForm.find('#shortName').val(),
 			fullName: $userForm.find('#fullName').val(),
 			emailAddress: $userForm.find('#emailAddress').val(),
+			gitusername:$userForm.find('#gitusername').val(),
 			rolesId: JSON.stringify(groupIds)
 		},
 		success : function(response) {
@@ -129,6 +130,7 @@ function ajaxEditUser(obj) {
 	$userForm.find('#shortName').val(obj.shortName);
 	$userForm.find('#emailAddress').val(obj.emailAddress);
 	$userForm.find('#shortName').val(obj.shortName);
+	$userForm.find('#gitusername').val(obj.gitusername);
 
 	for (var i = 0, l = obj.authorities.length; i < l; i++) {
 		$userForm.find('#userGroups option').each(
@@ -174,6 +176,7 @@ function updateUser() {
 			shortName: $userForm.find('#shortName').val(),
 			fullName: $userForm.find('#fullName').val(),
 			emailAddress: $userForm.find('#emailAddress').val(),
+			gitusername:$userForm.find('#gitusername').val(),
 			rolesId: JSON.stringify(groupIds)
 		},
 		success : function(response) {
