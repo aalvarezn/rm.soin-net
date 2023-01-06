@@ -17,6 +17,8 @@ public interface RequestService {
 	List<Request> list();
 
 	List<Request> listByType(TypeRequest type);
+	
+	Request listByTypeAndCodeSoin(TypeRequest type,String code_soin);
 
 	Request findById(Integer id);
 

@@ -68,4 +68,9 @@ public class RequestServiceImpl implements RequestService {
 		dao.softDelete(request);
 	}
 
+	@Override
+	public Request listByTypeAndCodeSoin(TypeRequest type, String code_soin) {
+		return dao.listByTypeAndCodeSoin(type,code_soin);
+	}
+
 }
