@@ -292,12 +292,13 @@ public class FileController extends BaseController {
 			if (release.getRequestList().size() != 0) {
 				Request request = release.getRequestList().iterator().next();
 				if (request.getCode_ice() != null) {
-					path += request.getCode_soin() + "_" + request.getCode_ice() + "/";
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
 				} else {
-					path += request.getCode_soin() + "/";
+					path += request.getCode_soin().replace(" ","") + "/";
 				}
 			}
 			path += release.getReleaseNumber() + "/";
+			path=path.trim();
 			new File(basePath + path).mkdirs();
 			return path;
 		} catch (SQLException e) {

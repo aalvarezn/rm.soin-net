@@ -171,8 +171,14 @@ public class WebServiceController extends BaseController {
 		releaseWs.setPrioridad(Integer.parseInt((jsonObject.get("prioridad").toString().replace("\"", ""))));
 		UserInfo userInfo = loginService.getUserByUsername(releaseWs.getUserId());
 		User user=new User();
-	
+		if(userInfo==null) {
+			userInfo = loginService.getUserByGitUsername(releaseWs.getUserId());
+		}
+		if(userInfo==null) {
+			userInfo = loginService.getUserByUsername("admin");
+		}
 		user.setId(userInfo.getId());
+	
 		try {
 			res.setStatus("success");
 			

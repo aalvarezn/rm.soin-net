@@ -602,11 +602,11 @@ function initRequestFormValidation() {
 		rules : {
 			'user':{
 				required : true,
-				maxlength : 20,
+				maxlength : 255,
 			},
 			'email':{
 				required :true,
-				maxlength : 20,
+				maxlength : 255,
 		        email: true
 			},
 			'ambientId':{
@@ -661,7 +661,8 @@ function initRequestFormValidation() {
 
 function reloadPreview() {
 	var src = $("#tinySummary").attr("src")
-	$("#tinySummary").attr("src", src)
+	$("#tinySummary").attr("src", src);
+	console.log("");
 }
 
 

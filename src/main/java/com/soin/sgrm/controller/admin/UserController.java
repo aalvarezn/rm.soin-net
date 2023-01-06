@@ -92,6 +92,7 @@ public class UserController extends BaseController {
 			userInfo.setShortName(user.getShortName());
 			userInfo.setFullName(user.getFullName());
 			userInfo.setEmailAddress(user.getEmailAddress());
+			userInfo.setGitusername(user.getGitusername());
 			Authority temp = null;
 			Set<Authority> authsNews = new HashSet<>();
 			for (Integer index : user.getRolesId()) {
@@ -102,6 +103,11 @@ public class UserController extends BaseController {
 			}
 			userInfo.checkAuthoritiesExists(authsNews);
 
+			if (!userService.uniqueGitUsername(userInfo)) {
+				res.setStatus("exception");
+				res.setException("El nombre de usuario de git ya se encuentra en uso ");
+			}
+			
 			if (!userService.uniqueUsername(userInfo)) {
 				res.setStatus("exception");
 				res.setException("El nombre de usuario ya se encuentra en uso ");
@@ -152,6 +158,11 @@ public class UserController extends BaseController {
 			userInfo.setDateJoined(CommonUtils.getSystemTimestamp());
 
 			if (!userService.uniqueUsername(userInfo)) {
+				res.setStatus("exception");
+				res.setException("El nombre de usuario ya se encuentra en uso ");
+			}
+			
+			if (!userService.uniqueGitUsername(userInfo)) {
 				res.setStatus("exception");
 				res.setException("El nombre de usuario ya se encuentra en uso ");
 			}
