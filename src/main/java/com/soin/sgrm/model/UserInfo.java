@@ -51,7 +51,6 @@ public class UserInfo implements Serializable {
 	private String username;
 	
 	@Column(unique = true, name = "GITUSERNAME")
-	@NotEmpty(message = Constant.EMPTY)
 	@Size(max = 50, message = "Máximo 50 caracteres.")
 	private String gitusername;
 
