@@ -120,4 +120,12 @@ public class RequestDaoImpl implements RequestDao {
 		sessionFactory.getCurrentSession().update(request);
 	}
 
+	@Override
+	public Request listByTypeAndCodeSoin(TypeRequest type, String code_soin) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Request.class);
+		crit.createCriteria("typeRequest").add(Restrictions.eq("id", type.getId()));
+		crit.add(Restrictions.eq("code_soin", code_soin));
+		return (Request) crit.uniqueResult();
+	}
+
 }

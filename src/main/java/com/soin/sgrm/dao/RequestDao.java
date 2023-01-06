@@ -28,4 +28,6 @@ public interface RequestDao {
 	
 	void softDelete(Request request);
 
+	Request listByTypeAndCodeSoin(TypeRequest type, String code_soin);
+
 }

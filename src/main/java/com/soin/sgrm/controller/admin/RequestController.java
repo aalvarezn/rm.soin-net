@@ -398,12 +398,14 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (Request req : requests) {
-								if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())) {
-									request = req;
-									existRequest = true;
-								}
+							Request req = requestService.listByTypeAndCodeSoin(type,
+									((String) row.get(tpoIndex)).trim());
+
+							if (req != null) {
+								request = req;
+								existRequest = true;
 							}
+
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new Request() : request;
@@ -581,7 +583,7 @@ public class RequestController extends BaseController {
 		try {
 			// Se define los indices de las columnas
 			Integer statusIndex = null, descriptionIndex = null, soinManagementIndex = null, iceManagementIndex = null,
-					btIndex = null,codeIce=null, count = 0;
+					btIndex = null, codeIce = null, count = 0;
 			Project proyect = null;
 			Request request = null;
 			Boolean existRequest = false;
@@ -621,10 +623,10 @@ public class RequestController extends BaseController {
 								request = (!existRequest) ? new Request() : request;
 								request.setCode_soin((String) row.get(btIndex));
 								request.setStatus((String) row.get(statusIndex));
-								request.setDescription((String)row.get(codeIce)+" " +row.get(descriptionIndex));
+								request.setDescription((String) row.get(codeIce) + " " + row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
-								request.setCode_ice((String)row.get(codeIce));
+								request.setCode_ice((String) row.get(codeIce));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								request.setActive(true);
