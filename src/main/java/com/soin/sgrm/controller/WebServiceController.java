@@ -163,7 +163,7 @@ public class WebServiceController extends BaseController {
 		releaseWs.setUserId(jsonObject.get("userId").toString().replace("\"", ""));
 		releaseWs.setObjects(jsonObject.get("objects").toString().replace("\"", "").replace(" ","\n"));
 		releaseWs.setAuto(jsonObject.get("auto").toString().replace("\"", ""));
-		releaseWs.setSolTecnic(jsonObject.get("solTecnic").toString().replace("\\r\\n","\n").replace("\"", ""));
+		releaseWs.setSolTecnic(jsonObject.get("solTecnic").toString().replace("\\r\\n","\n").replace("\"", "").replace("--From", "\n"));
 		releaseWs.setSoluFunc(jsonObject.get("soluFunc").toString().replace("\\r\\n","\n").replace("\"", ""));
 		releaseWs.setConsecNoInstala(jsonObject.get("consecNoInstala").toString().replace("\\r\\n","\n").replace("\"", ""));
 		releaseWs.setRiesgo(Integer.parseInt((jsonObject.get("riesgo").toString().replace("\"", ""))));
@@ -188,7 +188,8 @@ public class WebServiceController extends BaseController {
 				number_release = releaseService.generateTPO_BT_ReleaseNumber(releaseWs.getSystem(),  releaseWs.getRequirementName().toUpperCase());
 			}
 			Status status = statusService.findByName("Borrador");
-			module = moduleService.findBySystemId(releaseWs.getSystem());
+			String systemModule=releaseWs.getSystem();
+			module = moduleService.findBySystemId(systemModule.trim());
 			if (module == null) {
 				res.setStatus("fail");
 				res.setException("El módulo del sistema no se encuentra configurado");
