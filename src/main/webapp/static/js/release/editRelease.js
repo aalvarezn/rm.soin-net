@@ -218,7 +218,7 @@ function loadAutoCompleteModifiedComponent(search) {
 	.ajax({
 		type : "GET",
 		url : getCont() + "release/" + "modifiedComponentAutoComplete",
-		timeout: 60000,
+		timeout: 6000000,
 		data : {},
 		success : function(response) {
 			autocompleteModifiedComponent(response);
@@ -267,7 +267,7 @@ function loadAutoCompleteRelease(search, isFunctional) {
 	.ajax({
 		type : "GET",
 		url : getCont() + "release/" + "releaseAutoComplete-" + search,
-		timeout: 60000,
+		timeout: 6000000,
 		data : {
 			release_id : $('#generateReleaseForm #release_id').val()
 		},
@@ -328,7 +328,7 @@ function loadAutoCompleteAmbient(search) {
 		type : "GET",
 		url : cont + "ambient/" + "ambientAutoComplete-" + search + "-"
 		+ $('#generateReleaseForm #systemId').val(),
-		timeout: 60000,
+		timeout: 6000000,
 		data : {},
 		success : function(response) {
 			autocompleteAmbient(response);
@@ -603,7 +603,7 @@ function sendRelease() {
 		// async : false,
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 60000,
+		timeout: 6000000,
 		data : {
 			// Informacion general
 			release_id : $(form + ' #release_id').val(),
@@ -806,7 +806,7 @@ function synchronizeObjects() {
 		type : "POST",
 		url : cont + "release/" + "synchronize/"
 		+ $('#generateReleaseForm #release_id').val(),
-		timeout: 60000,
+		timeout: 600000,
 		data : {},
 		success : function(response) {
 			responseAjaxSynchronize(response);
@@ -861,7 +861,7 @@ function sendPartialRelease() {
 		// async : false,
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 60000,
+		timeout: 6000000,
 		data : {
 			// Informacion general
 			release_id : $releaseEditForm.find('#release_id').val(),
