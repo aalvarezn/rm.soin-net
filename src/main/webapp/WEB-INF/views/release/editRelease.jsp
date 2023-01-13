@@ -69,6 +69,10 @@
 .alert {
 	width: 20%;
 }
+
+.pagination{
+	display:flex;
+}
 </style>
 
 </head>

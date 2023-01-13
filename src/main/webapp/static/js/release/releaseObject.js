@@ -48,6 +48,7 @@ function responseAjaxSendReleaseObject(response) {
 	switch (response.status) {
 	case 'success':
 		addRowObjectTable(response.data);
+		
 		modifyDependency(response.obj);
 		closeObjectItemModal();
 		swal("Correcto!", "Objeto guardado correctamente.",
@@ -112,35 +113,13 @@ function addObjectItem() {
 	}
 }
 function addRowObjectTable(objId) {
+	console.log("objID"+objId);
 	var table = $('#configurationItemsTable').DataTable();
 	var typeObject = $objectItemForm.find("#typeObject").children(
 			"option:selected");
 	var itemConfiguration = $objectItemForm.find("#itemConfiguration")
 			.children("option:selected");
 
-	table.row
-			.add(
-					[
-							$objectItemForm.find("#name").val(),
-							$objectItemForm.find("#description").val(),
-							$objectItemForm.find("#revision").val(),
-							formatDateCustom($objectItemForm.find(
-									"#revisionDate").val(), '/'),
-							'<input id="'
-									+ typeObject.val()
-									+ '" type="text" name="typeObject" value="'
-									+ typeObject.text()
-									+ '" readonly="" style="border-color: transparent;background-color: transparent;">',
-							'<input id="'
-									+ itemConfiguration.val()
-									+ '" type="text" name="itemConfiguration" value="'
-									+ itemConfiguration.text()
-									+ '" readonly="" style="border-color: transparent;background-color: transparent;">',
-							'<div style="text-align: center"> <i onclick="deleteconfigurationItemsRow('
-									+ objId
-									+ ')" class="material-icons gris" style="font-size: 30px;">delete</i></div>' ])
-			.node().id = objId;
-	table.draw();
 
 	if (itemConfiguration.text() == 'Base Datos') {
 		triggerDataBaseFile(objId, $objectItemForm.find("#name").val());
@@ -206,6 +185,7 @@ function deleteconfigurationItemsRow(id) {
 		data : {},
 		success : function(response) {
 			responseAjaxDeleteConfigurationItem(response, id);
+			$dtObjects.ajax.reload();
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
