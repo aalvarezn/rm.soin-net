@@ -709,8 +709,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"),
-				Restrictions.eq("statuses.name", "Solicitado"))).add(Restrictions.eq("system.id", systemId));
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"))).add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla
 		if (sSearch != null && !((sSearch.trim()).equals("")))

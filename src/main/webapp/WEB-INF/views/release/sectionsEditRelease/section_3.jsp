@@ -196,28 +196,32 @@
 	<div class="row clearfix">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 
-				<div class="help-info">
-					Agregados: <span id="countObject">${release.releaseObjects.size()}</span>
-				</div>
+			<div class="help-info">
+				Agregados: <span id="countObject"></span>
+			</div>
 
-				<table id="tableTest4"
-					class="table table-bordered table-striped table-hover dataTable no-footer">
-					<thead>
-						<tr>
-							<th>Nombre</th>
-							<th>Fecha Revisión</th>
-							<th>Número Revisión</th>
-							<th>Tipo</th>
-							<th>Item Configuración</th>
-							<th class="actCol"
-								style="text-align: center; padding-left: 0px; padding-right: 0px;">Acciones</th>
-						</tr>
-					</thead>
-					<tbody>
-					</tbody>
-				</table>
-	
+			<table id="tableTest4"
+				class="table table-bordered table-striped table-hover dataTable no-footer">
+				<thead>
+					<tr>
+						<th>Nombre</th>
+						<th>Fecha Revisión</th>
+						<th>Número Revisión</th>
+						<th>Tipo</th>
+						<th>Item Configuración</th>
+						<th class="actCol"
+							style="text-align: center; padding-left: 0px; padding-right: 0px;">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+			<div style="margin-top: -15px;" class="form-group m-t-10 m-b-0i">
+				<label id="configurationItemsTable_error" class="error fieldError"
+					for="name" style="visibility: hidden;">Campo Requerido.</label>
+			</div>
 		</div>
+
 	</div>
 
 	<div class="row clearfix">

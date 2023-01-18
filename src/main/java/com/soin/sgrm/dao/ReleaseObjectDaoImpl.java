@@ -273,4 +273,17 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 		return crit;
 	}
 
+	@Override
+	public Integer listCountByReleases(Integer releaseId) throws ParseException, SQLException {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		crit.createAlias("objects", "objects")
+		.add(Restrictions.eq("releaseId", releaseId));
+
+		crit.setProjection(Projections.rowCount());
+		Long count = (Long) crit.uniqueResult();
+		int recordsTotal = count.intValue();
+	
+		return recordsTotal;
+	}
+
 }

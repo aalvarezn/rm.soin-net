@@ -67,4 +67,9 @@ public class ReleaseObjectServiceImpl implements ReleaseObjectService {
 		return dao.listObjectsByReleases(sEcho,iDisplayStart,iDisplayLength,sSearch,releaseId,sql);
 	}
 
+	@Override
+	public Integer listCountByReleases(Integer releaseId) throws ParseException, SQLException {
+		return dao.listCountByReleases(releaseId);
+	}
+
 }
