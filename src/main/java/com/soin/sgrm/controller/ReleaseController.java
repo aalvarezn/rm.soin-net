@@ -38,6 +38,7 @@ import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.User;
@@ -905,7 +906,7 @@ public class ReleaseController extends BaseController {
 				errors = rc.validMinimalEvidence(rc, errors);
 
 			if (systemConfiguration.getConfigurationItems()) {
-				if (rc.getObjectItemConfiguration().size() == 0) {
+				if (release.getObjects().size() == 0) {
 					errors.add(new MyError("configurationItemsTable", "Ingrese un objeto."));
 				}
 				errors = rc.validSqlObject(rc, errors);
@@ -984,6 +985,23 @@ public class ReleaseController extends BaseController {
 
 		return releaseObjects;
 	}
+	
+	@RequestMapping(value = { "/countObjects/{releaseId}" }, method = RequestMethod.GET)
+	public @ResponseBody Integer changeProject(@PathVariable Integer releaseId, Locale locale, Model model) {
+		Integer releaseObjects = 0;
+		try {
+			releaseObjects = releaseObjectService.listCountByReleases( releaseId);
+		} catch (Exception e) {
+			Sentry.capture(e, "countObjects");
+
+			e.printStackTrace();
+		}
+
+		return releaseObjects;
+	}
+
+
+	
 	public List<String> getCC(String ccs) {
 		
 		List<String> getCC = new ArrayList<String>();

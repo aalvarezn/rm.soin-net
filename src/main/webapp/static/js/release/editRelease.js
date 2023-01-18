@@ -108,6 +108,7 @@ $releaseEditForm.find('#dependencyTechnical').keydown(function( event ) {
 });
 
 $(function() {
+	countObjects();
 	 $('.tagInitMail').tagsInput({
 		 placeholder: 'Ingrese los correos'
 	 });
@@ -813,13 +814,28 @@ function synchronizeObjects() {
 		success : function(response) {
 			responseAjaxSynchronize(response);
 			$dtObjects.ajax.reload();
+			countObjects();
 		},
 		error: function(x, t, m) {
 			notifyAjaxError(x, t, m);
 		}
 	});
 }
+function countObjects(){
 
+	var sId =$('#generateReleaseForm #release_id').val();
+	console.log(sId);
+	$.ajax({
+		type: 'GET',
+		url: getCont() + "release/countObjects/"+sId,
+		success: function(result) {
+			$('#countObject').text(result);
+			console.log(result);
+			}
+			
+			
+		});
+	}
 function responseAjaxSynchronize(response) {
 
 	switch (response.status) {

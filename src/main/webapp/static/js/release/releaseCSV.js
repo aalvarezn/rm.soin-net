@@ -66,6 +66,7 @@ function uploadCSV() {
 		},
 		success : function(response) {
 			responseAjaxSendReleaseCSV(response);
+			
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
@@ -82,7 +83,8 @@ function responseAjaxSendReleaseCSV(response) {
 			modifyDependency(value.to_release);
 		});
 		swal("Correcto!", "CSV cargado correctamente.", "success", 2000)
-
+		$dtObjects.ajax.reload();
+		countObjects();
 		break;
 	case 'fail':
 		swalReport("Error!", response.exception, "error")

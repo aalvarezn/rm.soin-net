@@ -5,7 +5,7 @@ var trackingReleaseForm = $('#trackingReleaseForm');
 var rowData;
 $(function() {
 	loadTableRelease();
-	activeItemMenu("managemetWorkFlowItem",true);
+	activeItemMenu("managerWorkFlowItem",true);
 	$('input[name="daterange"]').daterangepicker({
 		"autoUpdateInput": false,
 		"opens": 'left',
@@ -44,21 +44,19 @@ $(function() {
 					"firstDay": 1
 		}
 	});
-	
+
 	// Datetimepicker plugin
 	$('.datetimepicker').datetimepicker({
 		locale: 'es',
 		format: 'DD/MM/YYYY hh:mm a',
 		maxDate : new Date()
 	});
-	
+
 	formChangeStatus.find('#nodeId').change(function() {
 		formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
 	dropDownChange();
-}
-
-);
+});
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -108,7 +106,7 @@ function loadTableRelease() {
 						"iDisplayStart" : 0,
 						"processing" : true,
 						"serverSide" : true,
-						"sAjaxSource" : getCont() + "management/wf/workFlowRelease",
+						"sAjaxSource" : getCont() + "manager/wf/workFlowRelease",
 						"fnServerParams": function ( aoData ) {
 							aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 									{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
@@ -138,9 +136,12 @@ function loadTableRelease() {
 							},
 							{
 								mRender : function(data, type, row) {
+									let userId = $('#userInfo_Id').val();
 									var options = '<div class="iconLine"> ';
-									options = options
-									+ '<a onclick="changeStatusRelease('+row.id+')" title="Trámite"><i class="material-icons gris" style="font-size: 25px;">fact_check</i></a>';
+									if(row.node.actors.find(element => element.id == userId)){
+										options = options
+										+ '<a onclick="changeStatusRelease('+row.id+')" title="Tr\u00E1mite"><i class="material-icons gris" style="font-size: 25px;">fact_check</i></a>';
+									}
 									options = options
 									options = options
 									+ '<a onclick="openReleaseTrackingModal('
@@ -184,7 +185,7 @@ function cancelRelease(index) {
 	blockUI();
 	$.ajax({
 		type : "GET",
-		url : getCont() + "management/release/" + "cancelRelease",
+		url : getCont() + "manager/release/" + "cancelRelease",
 		timeout : 60000,
 		data : {
 			idRelease : index
@@ -213,43 +214,6 @@ function responseCancelRelease(response) {
 		break;
 	}
 }
-
-function changeStatusRelease(releaseId) {
-	var dtReleases = $('#dtReleases').dataTable(); // tabla
-	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
-    rowData = releaseTable.row(idRow).data();
-
-	formChangeStatus[0].reset();
-	formChangeStatus.find("#nodeId").find('option').remove();
-
-	formChangeStatus.find('#nodeId').append('<option value="">-- Seleccione una opci\u00F3n --</option>' );
-	
-	$.each(rowData.node.edges, function(i, value) {
-		if(value.nodeTo.status && value.nodeTo.status !== null){
-			var motive=(value.nodeTo.status.motive===null)?"":value.nodeTo.status.motive;
-			
-			formChangeStatus.find('#nodeId').append('<option data-motive="'+motive+'"  value="'+value.nodeTo.id+'">'+value.nodeTo.label+'</option>' );
-		}
-
-	});
-
-	formChangeStatus.find('.selectpicker').selectpicker('refresh');
-	formChangeStatus.find('#idRelease').val(rowData.id);
-	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
-	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
-	//formChangeStatus.find('#motive').val('');
-	formChangeStatus.find('.selectpicker').selectpicker('refresh');
-	formChangeStatus.find('#idRelease').val(rowData.id);
-	formChangeStatus.find(".fieldError").css("visibility", "hidden");
-	formChangeStatus.find('.fieldError').removeClass('activeError');
-	formChangeStatus.find('.form-line').removeClass('error');
-	formChangeStatus.find('.form-line').removeClass('focused');
-	$('#divError').attr( "hidden",true);
-	$('#changeStatusModal').modal('show');
-	
-}
-
-
 function dropDownChange(){
 	
 	$('#nodeId').on('change', function(){
@@ -277,18 +241,59 @@ function dropDownChange(){
 	});
 }
 
+
+function changeStatusRelease(releaseId) {
+	var dtReleases = $('#dtReleases').dataTable(); // tabla
+	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
+	rowData = releaseTable.row(idRow).data();
+	console.log(rowData.node);
+	formChangeStatus[0].reset();
+	formChangeStatus.find("#nodeId").find('option').remove();
+	
+	formChangeStatus.find('#nodeId').append('<option value="">-- Seleccione una opci\u00F3n --</option>' );
+
+	let userId = $('#userInfo_Id').val();
+	let allowActor = null;
+	$.each(rowData.node.edges, function(i, value) {
+		console.log(value);
+		if(value.nodeTo.status && value.nodeTo.status !== null){
+			allowActor = rowData.node.actors.find(element => element.id == userId);
+			if( typeof allowActor !== 'undefined'){
+				var motive=(value.nodeTo.status.motive===null)?"":value.nodeTo.status.motive;
+				formChangeStatus.find('#nodeId').append('<option data-motive="'+motive+'"  value="'+value.nodeTo.id+'">'+value.nodeTo.label+'</option>' );
+
+			}
+		}
+	});
+
+	formChangeStatus.find('.selectpicker').selectpicker('refresh');
+	formChangeStatus.find('#idRelease').val(rowData.id);
+	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
+	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
+	//formChangeStatus.find('#motive').val('');
+	formChangeStatus.find('.selectpicker').selectpicker('refresh');
+	formChangeStatus.find('#idRelease').val(rowData.id);
+	formChangeStatus.find(".fieldError").css("visibility", "hidden");
+	formChangeStatus.find('.fieldError').removeClass('activeError');
+	formChangeStatus.find('.form-line').removeClass('error');
+	formChangeStatus.find('.form-line').removeClass('focused');
+	$('#divError').attr( "hidden",true);
+	$('#changeStatusModal').modal('show');
+}
+
 function saveChangeStatusModal(){
 	if (!validStatusRelease())
 		return false;
 	blockUI();
 	$.ajax({
 		type : "POST",
-		url : getCont() + "management/wf/" + "wfStatus",
+		url : getCont() + "manager/wf/" + "wfStatus",
 		timeout : 60000,
 		data : {
 			idRelease : formChangeStatus.find('#idRelease').val(),
 			idNode: formChangeStatus.find('#nodeId').children("option:selected").val(),
 			idError: formChangeStatus.find('#errorId').children("option:selected").val(),
+			dateChange: formChangeStatus.find('#dateChange').val(),
 			motive: formChangeStatus.find('#motive').val()
 		},
 		success : function(response) {
@@ -323,19 +328,6 @@ function closeChangeStatusModal(){
 	$('#changeStatusModal').modal('hide');
 }
 
-/*
-function validStatusRelease() {
-	let valid = true;
-	let statusId = formChangeStatus.find('#nodeId').children("option:selected")
-	.val();
-	if ($.trim(statusId) == "" || $.trim(statusId).length == 0) {
-		formChangeStatus.find("#nodeId_error").css("visibility", "visible");
-		return false;
-	} else {
-		formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
-		return true;
-	}
-}*/
 
 function validStatusRelease() {
 	let valid = true;
@@ -383,10 +375,11 @@ function validStatusRelease() {
 	return valid;
 }
 
+
 function openReleaseTrackingModal(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
-    rowData = releaseTable.row(idRow).data();
+	rowData = releaseTable.row(idRow).data();
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
 	loadTrackingRelease(rowData);

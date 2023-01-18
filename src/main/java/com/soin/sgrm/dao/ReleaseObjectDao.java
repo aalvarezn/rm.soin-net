@@ -31,4 +31,6 @@ public interface ReleaseObjectDao {
 	
 	JsonSheet<?> listObjectsByReleases(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			Integer releaseId,Integer sql) throws SQLException, ParseException;
+
+	Integer listCountByReleases(Integer releaseId) throws ParseException, SQLException;
 }

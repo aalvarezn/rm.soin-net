@@ -58,11 +58,15 @@ import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeRFC;
+import com.soin.sgrm.model.wf.WFRFC;
+import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
-
+import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
@@ -118,6 +122,11 @@ public class RFCController extends BaseController {
 	
 	@Autowired
 	EmailReadService emailReadService;
+	
+	@Autowired
+	private NodeService nodeService;
+	@Autowired
+	private ParameterService paramService;
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -598,7 +607,7 @@ public class RFCController extends BaseController {
 				return "redirect:/homeRFC";
 			}
 			// Verificar si existe un flujo para el sistema
-
+			NodeRFC node = nodeService.existWorkFlowNodeRFC(rfc);
 			StatusRFC status = statusService.findByKey("name", "Solicitado");
 
 //			if (node != null)
@@ -626,19 +635,45 @@ public class RFCController extends BaseController {
 					newThread.start();
 				}
 			}
-			/*
-			 * // si tiene un nodo y ademas tiene actor se notifica por correo if (node !=
-			 * null && node.getActors().size() > 0) { Integer idTemplate =
-			 * Integer.parseInt(paramService.findByCode(22).getParamValue()); EmailTemplate
-			 * emailActor = emailService.findById(idTemplate); WFRelease releaseEmail = new
-			 * WFRelease(); releaseEmail.convertReleaseToWFRelease(release); Thread
-			 * newThread = new Thread(() -> { try { emailService.sendMailActor(releaseEmail,
-			 * emailActor); } catch (Exception e) { Sentry.capture(e, "release"); }
-			 * 
-			 * });
-			 * 
-			 * newThread.start(); }
-			 */
+			if (node != null) {
+			rfc.setNode(node);
+
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getActors().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(27).getParamValue());
+				EmailTemplate emailActor = emailService.findById(idTemplate);
+				WFRFC rfcEmail = new WFRFC();
+				rfcEmail.convertRFCToWFRFC(rfc);
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailActorRFC(rfcEmail, emailActor);
+					} catch (Exception e) {
+						Sentry.capture(e, "rfc");
+					}
+
+				});
+				newThread.start();
+			}
+			
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getUsers().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(29).getParamValue());
+				
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				WFRFC rfcEmail = new WFRFC();
+				rfcEmail.convertRFCToWFRFC(rfc);
+				String user=getUserLogin().getFullName();
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotifyRFC(rfcEmail, emailNotify,user);
+					} catch (Exception e) {
+						Sentry.capture(e, "rfc");
+					}
+
+				});
+				newThread.start();
+			}
+			}
 
 			rfcService.update(rfc);
 			Set<Release_RFC> releases=  rfc.getReleases();

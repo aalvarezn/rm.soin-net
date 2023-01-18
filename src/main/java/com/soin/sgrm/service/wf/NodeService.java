@@ -2,10 +2,12 @@ package com.soin.sgrm.service.wf;
 
 import java.util.List;
 
+import com.soin.sgrm.model.RFC;
 //import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.wf.Node;
 //import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.wf.NodeRFC;
 
 public interface NodeService {
 
@@ -23,6 +25,20 @@ public interface NodeService {
 	
 	boolean verifyStartNode(Node node);
 
+	NodeRFC saveNodeRFC(NodeRFC node);
+	
+	NodeRFC updateNodeRFC(NodeRFC node);
+	
+	List<NodeRFC> listNodeRFC();
+	
+	NodeRFC findByIdNoRFC(Integer id);
+	
+	void deleteNodeRFC(Integer id) throws Exception;
+	
+	NodeRFC existWorkFlowNodeRFC(RFC rfc);
+	
+	boolean verifyStartNodeRFC(NodeRFC node);
+	
 	//List<NodeIncidence> listNodeIncidence();
 	
 	//NodeIncidence findByIdNoInci(Integer id);

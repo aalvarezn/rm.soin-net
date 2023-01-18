@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.model.wf.WorkFlow;
 //import com.soin.sgrm.model.wf.WorkFlowIncidence;
+import com.soin.sgrm.model.wf.WorkFlowRFC;
 
 @Repository
 public class WorkFlowDaoImlp implements WorkFlowDao {
@@ -71,6 +72,13 @@ public class WorkFlowDaoImlp implements WorkFlowDao {
 		}else {
 			return true;
 		}
+	}
+
+	@Override
+	public WorkFlowRFC findByIdRFC(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WorkFlowRFC.class);
+		crit.add(Restrictions.eq("id", id));
+		return (WorkFlowRFC) crit.uniqueResult();
 	}
 
 }

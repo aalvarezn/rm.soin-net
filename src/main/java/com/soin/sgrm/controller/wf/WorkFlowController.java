@@ -20,16 +20,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.StatusRFC;
 //import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.wf.Edge;
+import com.soin.sgrm.model.wf.EdgeRFC;
 //import com.soin.sgrm.model.wf.EdgeIncidence;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeRFC;
 //import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.Type;
 import com.soin.sgrm.model.wf.WFSystem;
 import com.soin.sgrm.model.wf.WFUser;
 import com.soin.sgrm.model.wf.WorkFlow;
+import com.soin.sgrm.model.wf.WorkFlowRFC;
+import com.soin.sgrm.service.StatusRFCService;
 //import com.soin.sgrm.model.wf.WorkFlowIncidence;
 //import com.soin.sgrm.service.AttentionGroupService;
 //import com.soin.sgrm.service.StatusIncidenceService;
@@ -53,6 +58,8 @@ public class WorkFlowController extends BaseController {
 	WorkFlowService workFlowService;
 	@Autowired
 	StatusService statusService;
+	@Autowired
+	StatusRFCService statusRFCService;
 	@Autowired
 	WFUserService wfUserService;
 	@Autowired
@@ -87,16 +94,16 @@ public class WorkFlowController extends BaseController {
 			model.addAttribute("users", wfUserService.list());
 			model.addAttribute("user", new WFUser());
 			return "/wf/workFlow/workFlowEdit";
-		}/*else if(workFlow.getType().getId()==2) {
-			WorkFlowIncidence workFlowIncidence = workFlowService.findByIdIncidence(id);
-			model.addAttribute("workFlow", workFlowIncidence);
-			model.addAttribute("statuses", statusIncidenceService.findAll());
-			model.addAttribute("status", new StatusIncidence());
+		}else if(workFlow.getType().getId()==3) {
+			WorkFlowRFC workFlowRFC = workFlowService.findByIdRFC(id);
+			model.addAttribute("workFlow", workFlowRFC);
+			model.addAttribute("statuses", statusRFCService.findAll());
+			model.addAttribute("status", new StatusRFC());
 			model.addAttribute("users", wfUserService.list());
 			model.addAttribute("user", new WFUser());
-			return "/wf/workFlow/workFlowEditIncidence";
+			return "/wf/workFlow/workFlowEditRFC";
 			
-		*/else {
+		}else {
 			model.addAttribute("workFlow", workFlow);
 			model.addAttribute("statuses", statusService.list());
 			model.addAttribute("status", new Status());
@@ -119,6 +126,19 @@ public class WorkFlowController extends BaseController {
 			return null;
 		}
 	}
+	
+	@RequestMapping(value = "/loadWorkFlowRFC/{id}", method = RequestMethod.GET)
+	public @ResponseBody WorkFlowRFC findWorkFlowIncidence(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
+		try {
+			WorkFlowRFC workFlow = workFlowService.findByIdRFC(id);
+			return workFlow;
+		} catch (Exception e) {
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
+		}
+	}
+	
 	/*
 	@RequestMapping(value = "/loadWorkFlowIncidence/{id}", method = RequestMethod.GET)
 	public @ResponseBody WorkFlowIncidence findWorkFlowIncidence(@PathVariable Integer id, HttpServletRequest request, Locale locale,
@@ -209,6 +229,35 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
+	@RequestMapping(path = "/saveNodeRFC", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveNodeRFC(HttpServletRequest request, @Valid @ModelAttribute("NodeRFC") NodeRFC node,
+			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}
+			if (res.getStatus().equals("success")) {
+				WorkFlowRFC workFlow = new WorkFlowRFC();
+				workFlow.setId(node.getWorkFlowId());
+				node.setSendEmail(false);
+				node.setWorkFlow(workFlow);
+				node = nodeService.saveNodeRFC(node);
+				res.setObj(node);
+			}
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al crear nodo: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	
 	/*
 	@RequestMapping(path = "/saveNodeIncidence", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveNodeIncidence(HttpServletRequest request, @Valid @ModelAttribute("NodeIncidence") NodeIncidence node,
@@ -288,6 +337,65 @@ public class WorkFlowController extends BaseController {
 				}
 
 				node = nodeService.update(node);
+				res.setObj(node);
+			}
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al modificar nodo: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/updateNodeRFC", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse updateNodeRFC(HttpServletRequest request, @Valid @ModelAttribute("NodeRFC") NodeRFC node,
+			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}else {
+				if(node.getGroup().equals("start"))
+				if(nodeService.verifyStartNodeRFC(node)) {
+					
+					res.setStatus("exception");
+					res.setException("Error al crear el nodo ya hay un nodo inicio para este tramite.");
+				}
+			}
+			if (res.getStatus().equals("success")) {
+				WorkFlowRFC workFlow = new WorkFlowRFC();
+				workFlow.setId(node.getWorkFlowId());
+				node.setWorkFlow(workFlow);
+				if (node.getStatusId() != null) {
+					StatusRFC status = new StatusRFC();
+					status.setId(node.getStatusId());
+					node.setStatus(status);
+				}
+				
+				
+				// se agregan los usuarios actores
+				node.clearActors();
+				WFUser actor = null;
+				for (Integer index : node.getActorsIds()) {
+					actor = wfUserService.findWFUserById(index);
+					if (actor != null)
+						node.addActor(actor);
+				}
+
+				// se agregan los usuarios a notificar
+				node.clearUsers();
+				WFUser temp = null;
+				for (Integer index : node.getUsersIds()) {
+					temp = wfUserService.findWFUserById(index);
+					if (temp != null)
+						node.addUser(temp);
+				}
+
+				node = nodeService.updateNodeRFC(node);
 				res.setObj(node);
 			}
 		} catch (Exception e) {
@@ -390,6 +498,26 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
+	@RequestMapping(value = "/updateNodeRFCPosition", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse updateNodeRFCPosition(HttpServletRequest request,
+			@Valid @ModelAttribute("NodeRFC") NodeRFC node, BindingResult errors, ModelMap model, Locale locale,
+			HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			NodeRFC oldNode = nodeService.findByIdNoRFC(node.getId());
+			oldNode.setX(node.getX());
+			oldNode.setY(node.getY());
+			node = nodeService.updateNodeRFC(oldNode);
+			res.setObj(node);
+
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al modificar nodo: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 	/*
 	@RequestMapping(value = "/updateNodeInPosition", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateNodeIncidencePosition(HttpServletRequest request,
@@ -417,6 +545,25 @@ public class WorkFlowController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			nodeService.delete(id);
+			res.setStatus("success");
+			res.setObj(id);
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al eliminar nodo: " + e.getCause().getCause().getCause().getMessage() + ":"
+					+ e.getMessage());
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar nodo: Existen referencias que debe eliminar antes");
+			}
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	@RequestMapping(value = "/deleteNodeRFC/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteWorkFlowIncidence(@PathVariable Integer id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			nodeService.deleteNodeRFC(id);
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {
@@ -477,6 +624,32 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
+	
+	@RequestMapping(path = "/saveEdgeRFC", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveEdgeRFC(HttpServletRequest request, @Valid @ModelAttribute("EdgeRFC") EdgeRFC edge,
+			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			if (errors.hasErrors()) {
+				for (FieldError error : errors.getFieldErrors()) {
+					res.addError(error.getField(), error.getDefaultMessage());
+				}
+				res.setStatus("fail");
+			}
+			if (res.getStatus().equals("success")) {
+				edge.setNodeFrom(new NodeRFC(edge.getNodeFromId()));
+				edge.setNodeTo(new NodeRFC(edge.getNodeToId()));
+				edge = edgeService.saveEdgeRFC(edge);
+				res.setObj(edge);
+			}
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al crear enlace: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 	/*
 	@RequestMapping(path = "/saveEdgeIncidence", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveEdge(HttpServletRequest request, @Valid @ModelAttribute("EdgeIncidence") EdgeIncidence edge,
@@ -509,6 +682,25 @@ public class WorkFlowController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			edgeService.delete(id);
+			res.setStatus("success");
+			res.setObj(id);
+		} catch (Exception e) {
+			res.setStatus("exception");
+			res.setException("Error al eliminar enlace: " + e.getCause().getCause().getCause().getMessage() + ":"
+					+ e.getMessage());
+
+			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
+				res.setException("Error al eliminar enlace: Existen referencias que debe eliminar antes");
+			}
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	@RequestMapping(value = "/deleteEdgeRFC/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteEdgeRFC(@PathVariable Integer id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			edgeService.deleteEdgeRFC(id);
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {
