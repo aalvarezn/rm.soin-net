@@ -38,6 +38,7 @@ import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_Objects;
 import com.soin.sgrm.model.Siges;
@@ -368,9 +369,9 @@ public class ReleaseController extends BaseController {
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
 		try {
 			model.addAttribute("parameter", status);
-			ReleaseSummary release = null;
+			ReleaseTinySummary release = null;
 			if (CommonUtils.isNumeric(status)) {
-				release = releaseService.findById(Integer.parseInt(status));
+				release = releaseService.findByIdTiny(Integer.parseInt(status));
 			}
 
 			if (release == null) {

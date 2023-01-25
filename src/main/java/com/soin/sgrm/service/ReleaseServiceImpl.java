@@ -22,6 +22,7 @@ import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -287,8 +288,13 @@ public class ReleaseServiceImpl implements ReleaseService {
 
 @Override
 public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
-	// TODO Auto-generated method stub
+	
 	return dao.findEditByIdWithOutObjects(idRelease);
+}
+
+@Override
+public ReleaseTinySummary findByIdTiny(int id) {
+	return dao.findByIdTiny(id);
 }
 
 }

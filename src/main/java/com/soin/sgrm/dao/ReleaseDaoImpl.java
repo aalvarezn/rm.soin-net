@@ -31,6 +31,7 @@ import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -769,7 +770,17 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 @Override
 public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
-	ReleaseEditWithOutObjects release = (ReleaseEditWithOutObjects) sessionFactory.getCurrentSession().get(ReleaseEditWithOutObjects.class, idRelease);
+	
+	ReleaseEditWithOutObjects release = (ReleaseEditWithOutObjects) sessionFactory.getCurrentSession()
+			.createCriteria(ReleaseEditWithOutObjects.class).add(Restrictions.eq("id", idRelease)).uniqueResult();
+	return release;
+
+}
+
+@Override
+public ReleaseTinySummary findByIdTiny(int id) {
+	ReleaseTinySummary release = (ReleaseTinySummary) sessionFactory.getCurrentSession()
+			.createCriteria(ReleaseTinySummary.class).add(Restrictions.eq("id", id)).uniqueResult();
 	return release;
 }
 
