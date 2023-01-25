@@ -224,6 +224,7 @@ public class WebServiceController extends BaseController {
 			release.setReportMobileTelephony(false);
 			release.setReportTemporaryTables(false);
 			release.setDescription(releaseWs.getDesc());
+			release.setObservations(releaseWs.getObservations());
 			release.setBilledCalls(false);
 			release.setNotBilledCalls(false);
 			
