@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -18,26 +20,39 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.Errors_Release;
+import com.soin.sgrm.model.RFCError;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.ReleaseError;
+import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.StatusRFC;
 //import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeRFC;
+import com.soin.sgrm.model.wf.WFRFC;
 //import com.soin.sgrm.model.wf.NodeIncidence;
 //import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ErrorRFCService;
 import com.soin.sgrm.service.ErrorReleaseService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.RFCErrorService;
+import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.SigesService;
+import com.soin.sgrm.service.StatusRFCService;
 //import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.wf.NodeService;
+import com.soin.sgrm.service.wf.WFRFCService;
 //import com.soin.sgrm.service.wf.WFIncidenceService;
 import com.soin.sgrm.service.wf.WFReleaseService;
 import com.soin.sgrm.utils.CommonUtils;
@@ -57,7 +72,13 @@ public class WorkFlowManagementController extends BaseController {
 	private StatusService statusService;
 	
 	@Autowired
+	private StatusRFCService statusRFCService;
+	
+	@Autowired
 	private WFReleaseService wfReleaseService;
+	
+	@Autowired
+	private WFRFCService wfrfcService;
 
 	/*@Autowired
 	private WFIncidenceService wfIncidenceService;
@@ -77,14 +98,22 @@ public class WorkFlowManagementController extends BaseController {
 	@Autowired
 	private ErrorReleaseService errorService;
 	@Autowired
+	private RFCErrorService rfcErrorService;
+	@Autowired
+	private ErrorRFCService errorRFCService;
+	@Autowired
 	private ReleaseService releaseService;
+	@Autowired
+	private RFCService rfcService;
+	@Autowired
+	private SigesService sigesService;
 	@Autowired
 	private ProjectService projectService;
 	
 	
 	
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+	@RequestMapping(value = "/release/", method = RequestMethod.GET)
+	public String indexRelease(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
 			model.addAttribute("system", new SystemUser());
@@ -98,7 +127,26 @@ public class WorkFlowManagementController extends BaseController {
 					"Error en la carga de la pagina inicial/systemas." + " ERROR: " + e.getMessage());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
-		return "/wf/workFlow/workFlowManagement";
+		return "/wf/workFlow/workFlowManagementRelease";
+
+	}
+	
+	@RequestMapping(value = "/rfc/", method = RequestMethod.GET)
+	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			model.addAttribute("system", new SystemUser());
+			model.addAttribute("systems", systemService.listSystemUser());
+			model.addAttribute("status", new Status());
+			model.addAttribute("statuses", statusRFCService.findAll());
+			model.addAttribute("errors", errorService.findAll());
+		} catch (Exception e) {
+			Sentry.capture(e, "wfReleaseManagement");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina inicial/systemas." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return "/wf/workFlow/workFlowManagementRFC";
 
 	}
 	@RequestMapping(path = "/workFlowRelease", method = RequestMethod.GET)
@@ -118,6 +166,28 @@ public class WorkFlowManagementController extends BaseController {
 					dateRange, systemId, statusId);
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
+		}
+	}
+	
+	@RequestMapping(path = "/workFlowRFC", method = RequestMethod.GET)
+	public @ResponseBody JsonSheet<?> getSystemRFC(HttpServletRequest request, Locale locale, Model model,
+			HttpSession session) {
+		try {
+			String range = request.getParameter("dateRange");
+			String[] dateRange = (range != null) ? range.split("-") : null;
+			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
+			Long statusId = (long) Integer.parseInt(request.getParameter("statusId"));
+
+			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
+			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
+					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
+					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			return wfrfcService.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
+					dateRange, systemId, statusId, systemService.myTeams(name));
+		} catch (Exception e) {
+			Sentry.capture(e, "wfRFCManager");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
@@ -179,6 +249,119 @@ public class WorkFlowManagementController extends BaseController {
 				});
 				newThread.start();
 			}
+
+			res.setStatus("success");
+		} catch (Exception e) {
+			Sentry.capture(e, "wfReleaseManagement");
+			res.setStatus("exception");
+			res.setException("Error al cambiar estado del release: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	@RequestMapping(value = "/wfStatusRFC", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse draftRFC(HttpServletRequest request, Model model,
+			@RequestParam(value = "idRFC", required = true) Long idRFC,
+			@RequestParam(value = "idNode", required = true) Integer idNode,
+			@RequestParam(value = "motive", required = true) String motive,
+			@RequestParam(value = "idError", required = false) Long idError
+			) {
+		JsonResponse res = new JsonResponse();
+		String newMotive=motive;
+		try {
+			WFRFC rfc = wfrfcService.findWFRFCById(idRFC);
+			NodeRFC node = nodeService.findByIdNoRFC(idNode);
+			
+			node.getStatus().setReason(newMotive);
+
+			rfc.setNode(node);
+			rfc.setStatus(node.getStatus());
+			
+			String user = getUserLogin().getFullName();
+			rfc.setOperator(user);
+			if (node.getStatus() != null && node.getStatus().getName().equals("Borrador")) {
+				Set<Release_RFC> releases = rfc.getReleases();
+				for (Release_RFC release : releases) {
+					release.setStatus(release.getStatusBefore());
+					release.setMotive("Devuelto al estado " + release.getStatus().getName());
+					releaseService.updateStatusReleaseRFC(release, user);
+				} 
+
+				/*
+				 * if (release.getStatus().getId() != status.getId())
+				 * release.setRetries(release.getRetries() + 1);
+				 */
+			}else if (node.getStatus() != null && node.getStatus().getName().equals("Error")) {
+				Errors_RFC error = errorRFCService.findById(idError);
+				RFCError rfcError = new RFCError();
+				rfcError.setSystem(rfc.getSystemInfo());
+				rfcError.setSiges(sigesService.findByKey("codeSiges", rfc.getCodeProyect()));
+				rfcError.setError(error);
+				RFC_WithoutRelease rfcWithRelease = rfcService.findRfcWithRelease(rfc.getId());
+				rfcError.setRfc(rfcWithRelease);
+				rfcError.setObservations(newMotive);
+				Timestamp dateFormat = CommonUtils.getSystemTimestamp();
+				rfcError.setErrorDate(dateFormat);
+				node.getStatus().setReason(newMotive);
+				rfc.setNode(node);
+				rfc.setStatus(node.getStatus());
+				rfc.setOperator(getUserLogin().getFullName());
+				rfcErrorService.save(rfcError);
+				rfc.setOperator(getUserLogin().getFullName());
+				rfc.setMotive(motive);
+				rfc.setRequestDate(dateFormat);
+
+				wfrfcService.wfStatusRFCWithOutMin(rfc);
+				StatusRFC statusChange = statusRFCService.findByKey("name","Borrador");
+				rfc.setStatus(statusChange);
+
+				if (statusChange != null && statusChange.getName().equals("Borrador")) {
+					Set<Release_RFC> releases = rfc.getReleases();
+					for (Release_RFC release : releases) {
+						release.setStatus(release.getStatusBefore());
+						release.setMotive("Devuelto al estado " + release.getStatus().getName());
+						releaseService.updateStatusReleaseRFC(release, user);
+					} 
+				}
+				newMotive = "Paso a borrador por " + error.getName();
+				
+				node.getStatus().setReason(newMotive);
+				rfc.setNode(node);
+			}
+			wfrfcService.wfStatusRFC(rfc);
+
+
+			// Si esta marcado para enviar correo
+			if (node.getSendEmail()) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(29).getParamValue());
+				EmailTemplate email = emailService.findById(idTemplate);
+				WFRFC rfcEmail = rfc;
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailRFC(rfcEmail, email, motive);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+				});
+				newThread.start();
+			}
+
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getActors().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(27).getParamValue());
+				EmailTemplate emailActor = emailService.findById(idTemplate);
+				WFRFC rfcEmail = rfc;
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailActorRFC(rfcEmail, emailActor);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
+
 
 			res.setStatus("success");
 		} catch (Exception e) {

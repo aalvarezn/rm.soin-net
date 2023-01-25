@@ -46,10 +46,13 @@
 							<li><a href="<c:url value='/management/error/rfc'/>">RFC</a></li>
 							<li><a href="<c:url value='/management/error/request'/>">Solicitudes</a></li>
 						</ul></li>
-					<li><a id="managemetWorkFlowItem"
-						href="<c:url value='/management/wf/'/> "> <span>Gesti&oacute;n
-								Tr&aacute;mites</span>
-					</a></li>
+					<li class=""><a id="managemetWorkFlowItem" href="javascript:void(0);"
+						class="menu-toggle"> <span>Gesti&oacute;n Tr&aacute;mites</span>
+					</a>
+						<ul class="ml-menu">
+							<li><a href="<c:url value='/management/wf/release/'/>">Releases</a></li>
+							<li><a href="<c:url value='/management/wf/rfc/'/>">RFC</a></li>
+						</ul></li>
 				</c:if>
 				<c:if
 					test="${authority.name == 'Gestores' or authority.name == 'Desarrolladores'}">
@@ -107,23 +110,29 @@
 					</ul></li>
 			</c:if>
 			<c:if test="${managerAccess}">
-				<li><li><a id="RFCItem" href="<c:url value='/rfc/'/> "> <span>
+				<li>
+				<li><a id="RFCItem" href="<c:url value='/rfc/'/> "> <span>
 							RFC</span>
 				</a></li>
-
-				<li><a id="managerWorkFlowItem"
-					href="<c:url value='/manager/wf/'/> "> <span>Mis
+				<!---- 	#Seccion de tramites ---->
+				<li class=""><a id="managerWorkFlowItem"
+					href="javascript:void(0);" class="menu-toggle"> <span>Mis
 							Tr&aacute;mites</span>
-				</a></li>
+				</a>
+					<ul class="ml-menu">
+						<li><a href="<c:url value='/manager/wf/release/'/>">Releases</a></li>
+						<li><a href="<c:url value='/manager/wf/rfc/'/>">RFC</a></li>
+					</ul></li>
+
 			</c:if>
 			<c:if test="${managerAccess}">
-						<li><a id="requestItem" href="<c:url value='/request/'/> ">
+				<li><a id="requestItem" href="<c:url value='/request/'/> ">
 						<span>Mis Solicitudes</span>
 				</a></li>
 			</c:if>
 
-			
-				<li><a id="profileItem" href="<c:url value='/profile/'/> ">
+
+			<li><a id="profileItem" href="<c:url value='/profile/'/> ">
 					<span>Perfil de usuario</span>
 			</a></li>
 

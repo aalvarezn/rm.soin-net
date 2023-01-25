@@ -10,6 +10,7 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_Objects;
 import com.soin.sgrm.utils.JsonSheet;
 
 public interface ReleaseObjectService {
@@ -30,4 +31,8 @@ public interface ReleaseObjectService {
 	
 	JsonSheet<?> listObjectsByReleases(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			Integer releaseId,Integer sql) throws SQLException, ParseException;
+
+	Integer listCountByReleases(Integer releaseId) throws ParseException, SQLException;
+
+	List<Release_Objects> listObjectsSql(Integer idRelease);
 }

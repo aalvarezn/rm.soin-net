@@ -88,7 +88,7 @@
 			</div>
 
 			<div class="block-header">
-				<h2>TR&Aacute;MITES</h2>
+				<h2>TR&Aacute;MITES RELEASES</h2>
 			</div>
 
 			<!-- tableFilters -->

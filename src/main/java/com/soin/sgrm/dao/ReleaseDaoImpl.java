@@ -26,10 +26,12 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFCFile;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -709,8 +711,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"),
-				Restrictions.eq("statuses.name", "Solicitado"))).add(Restrictions.eq("system.id", systemId));
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"))).add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla
 		if (sSearch != null && !((sSearch.trim()).equals("")))
@@ -766,5 +767,21 @@ public class ReleaseDaoImpl implements ReleaseDao {
 				.createCriteria(ReleaseSummaryMin.class).add(Restrictions.eq("id", id)).uniqueResult();
 		return release;
 	}
+
+@Override
+public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
+	
+	ReleaseEditWithOutObjects release = (ReleaseEditWithOutObjects) sessionFactory.getCurrentSession()
+			.createCriteria(ReleaseEditWithOutObjects.class).add(Restrictions.eq("id", idRelease)).uniqueResult();
+	return release;
+
+}
+
+@Override
+public ReleaseTinySummary findByIdTiny(int id) {
+	ReleaseTinySummary release = (ReleaseTinySummary) sessionFactory.getCurrentSession()
+			.createCriteria(ReleaseTinySummary.class).add(Restrictions.eq("id", id)).uniqueResult();
+	return release;
+}
 
 }
