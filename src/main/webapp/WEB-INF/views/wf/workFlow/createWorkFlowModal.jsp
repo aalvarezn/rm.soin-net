@@ -42,6 +42,21 @@
 									Requerido.</label>
 							</div>
 						</div>
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+							<label>Tipo</label>
+							<div class="form-group">
+								<select id="typeId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="">-- Seleccione una opci&oacute;n --</option>
+									<c:forEach items="${types}" var="type">
+										<option id="${type.id }" value="${type.id }">${type.name }</option>
+									</c:forEach>
+								</select> <label id="systemId_error" class="error fieldError"
+									for="system" style="visibility: hidden">Campo
+									Requerido.</label>
+							</div>
+						</div>
 					</form>
 				</div>
 			</div>

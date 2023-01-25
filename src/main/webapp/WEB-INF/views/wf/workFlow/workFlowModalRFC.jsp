@@ -13,14 +13,14 @@
 				<div class="row clearfix">
 					<form id="changeStatusForm" action="">
 						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="idRelease"
+							value="${_csrf.token}" /> <input type="hidden" id="idRFC"
 							value="" />
 
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-b-10">
-							<label>N&uacute;mero Release</label>
+							<label>N&uacute;mero RFC</label>
 							<div class="form-group">
 								<div class="form-line disabled">
-									<input type="text" readonly="" id="releaseNumber"
+									<input type="text" readonly="" id="numRequest"
 										class="form-control">
 								</div>
 							</div>

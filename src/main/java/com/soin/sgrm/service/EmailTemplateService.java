@@ -10,6 +10,7 @@ import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.WFRFC;
 import com.soin.sgrm.model.wf.WFRelease;
 
 public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
@@ -44,5 +45,11 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	
 
 	void sendMailNotify(WFRelease releaseEmail, EmailTemplate email,String user);
+
+	void sendMailActorRFC(WFRFC rfcEmail, EmailTemplate emailActor);
+
+	void sendMailNotifyRFC(WFRFC rfcEmail, EmailTemplate emailNotify, String user);
+
+	void sendMailRFC(WFRFC rfcEmail, EmailTemplate email, String motive);
 
 }

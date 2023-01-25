@@ -6,6 +6,7 @@ var dependenciesTechnicalList = [];
 var ambientsList = [];
 var modifiedComponentsList = [];
 var actionsList = [];
+var $dtObjects;
 
 
 let countAmbients, ambientInterval, $auxAmb;
@@ -107,6 +108,7 @@ $releaseEditForm.find('#dependencyTechnical').keydown(function( event ) {
 });
 
 $(function() {
+	countObjects();
 	 $('.tagInitMail').tagsInput({
 		 placeholder: 'Ingrese los correos'
 	 });
@@ -192,6 +194,7 @@ $(function() {
 	ambientsList = listLi('listAmbients');
 	modifiedComponentsList = listLi('listComponents');
 	actionsList = listRowsId('environmentActionTable');
+	initTableObjectRelease();
 });
 
 function formHasChanges(){
@@ -218,7 +221,7 @@ function loadAutoCompleteModifiedComponent(search) {
 	.ajax({
 		type : "GET",
 		url : getCont() + "release/" + "modifiedComponentAutoComplete",
-		timeout: 60000,
+		timeout: 6000000,
 		data : {},
 		success : function(response) {
 			autocompleteModifiedComponent(response);
@@ -267,7 +270,7 @@ function loadAutoCompleteRelease(search, isFunctional) {
 	.ajax({
 		type : "GET",
 		url : getCont() + "release/" + "releaseAutoComplete-" + search,
-		timeout: 60000,
+		timeout: 6000000,
 		data : {
 			release_id : $('#generateReleaseForm #release_id').val()
 		},
@@ -328,7 +331,7 @@ function loadAutoCompleteAmbient(search) {
 		type : "GET",
 		url : cont + "ambient/" + "ambientAutoComplete-" + search + "-"
 		+ $('#generateReleaseForm #systemId').val(),
-		timeout: 60000,
+		timeout: 6000000,
 		data : {},
 		success : function(response) {
 			autocompleteAmbient(response);
@@ -603,7 +606,7 @@ function sendRelease() {
 		// async : false,
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 60000,
+		timeout: 6000000,
 		data : {
 			// Informacion general
 			release_id : $(form + ' #release_id').val(),
@@ -806,17 +809,33 @@ function synchronizeObjects() {
 		type : "POST",
 		url : cont + "release/" + "synchronize/"
 		+ $('#generateReleaseForm #release_id').val(),
-		timeout: 60000,
+		timeout: 60000000,
 		data : {},
 		success : function(response) {
 			responseAjaxSynchronize(response);
+			$dtObjects.ajax.reload();
+			countObjects();
 		},
 		error: function(x, t, m) {
 			notifyAjaxError(x, t, m);
 		}
 	});
 }
+function countObjects(){
 
+	var sId =$('#generateReleaseForm #release_id').val();
+	console.log(sId);
+	$.ajax({
+		type: 'GET',
+		url: getCont() + "release/countObjects/"+sId,
+		success: function(result) {
+			$('#countObject').text(result);
+			console.log(result);
+			}
+			
+			
+		});
+	}
 function responseAjaxSynchronize(response) {
 
 	switch (response.status) {
@@ -824,10 +843,12 @@ function responseAjaxSynchronize(response) {
 		if(response.obj == null)
 			swal("Correcto!", response.data,"success", 2000);
 		else {
-			addRowObject(response.obj.objects);
+			//ddRowObject(response.obj.objects);
+			/*
 			$.each(response.obj.dependencies, function(key, value) {
 				modifyDependency(value.to_release);
 			});
+			*/
 			swal("Correcto!", "Sincronizacion finalizada correctamente.",
 					"success", 2000)
 		}
@@ -861,7 +882,7 @@ function sendPartialRelease() {
 		// async : false,
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 60000,
+		timeout: 6000000,
 		data : {
 			// Informacion general
 			release_id : $releaseEditForm.find('#release_id').val(),
@@ -973,4 +994,57 @@ function changeSaveButton(save){
 		$releaseEditForm.find('#btnSave').find('#btnText').text('GUARDAR');
 		$releaseEditForm.find('#btnSave').find('#btnIcon').text('check_box');
 	}
+}
+
+function initTableObjectRelease() {
+	console.log($('#release_id').val());
+	$dtObjects = $('#tableTest4').DataTable(
+			{
+
+				lengthMenu : [ [ 10, 25, 50, -1 ],
+					[ '10', '25', '50', 'Mostrar todo' ] ],
+					"iDisplayLength" : 10,
+					"language" : optionLanguaje,
+					"iDisplayStart" : 0,
+					"processing" : true,
+					"serverSide" : true,
+					"sAjaxSource" : getCont() + "release/listObjects",
+					"fnServerParams" : function(aoData) {
+						aoData.push({"name": "releaseId", "value": $('#release_id').val()},
+						);
+					},
+					"aoColumns" : [
+						{
+							"mDataProp" : "objects.name",
+						},
+						{
+							"mRender" : function(data, type, row, meta) {
+								return moment(row.revision_Date).format('DD/MM/YYYY h:mm:ss a');
+							}
+						},
+						{
+							"mDataProp" : "objects.revision_SVN"
+						},
+						{
+							"mDataProp" : "objects.typeObject.name"
+						},
+						{
+							"mDataProp" : "objects.configurationItem.name"
+						},
+						{
+							render : function(data, type, row, meta) {
+								console.log(row);
+								var options = '<div class="iconLineC">';
+								options += '<a onclick="deleteconfigurationItemsRow('
+									+ row.objects.id
+									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
+
+								options += ' </div>';
+
+								return options;
+							}
+						} 
+						 ],
+					ordering : false,
+			});
 }

@@ -26,6 +26,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFCFile;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
@@ -709,8 +710,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"),
-				Restrictions.eq("statuses.name", "Solicitado"))).add(Restrictions.eq("system.id", systemId));
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"))).add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla
 		if (sSearch != null && !((sSearch.trim()).equals("")))
@@ -766,5 +766,11 @@ public class ReleaseDaoImpl implements ReleaseDao {
 				.createCriteria(ReleaseSummaryMin.class).add(Restrictions.eq("id", id)).uniqueResult();
 		return release;
 	}
+
+@Override
+public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
+	ReleaseEditWithOutObjects release = (ReleaseEditWithOutObjects) sessionFactory.getCurrentSession().get(ReleaseEditWithOutObjects.class, idRelease);
+	return release;
+}
 
 }

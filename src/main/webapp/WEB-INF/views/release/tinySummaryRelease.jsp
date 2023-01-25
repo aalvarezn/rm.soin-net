@@ -56,6 +56,9 @@
 			<div class="row clearfix">
 				<div class="col-sm-12">
 					<h5 class="titulares">Informaci&oacute;n General</h5>
+					<input type="hidden" id="release_id" value="${release.id}">
+					<input type="hidden" id="releaseNumber"
+						value="${release.releaseNumber}">
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
@@ -537,7 +540,7 @@
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-10">
 						<div class="table-responsive">
 							<table
-								class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
+								class="table tableInit tableIni table-bordered table-striped table-hover dataTable no-footer">
 								<thead>
 									<tr>
 										<th>Observación</th>
@@ -621,7 +624,7 @@
 						<div class="clearfix">
 							<div class="table-responsive">
 								<table
-									class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
+									class="table tableInit tableIni table-bordered table-striped table-hover dataTable no-footer">
 									<thead>
 										<tr>
 											<th>Comando</th>
@@ -651,7 +654,7 @@
 						<div class="clearfix">
 							<div class="table-responsive">
 								<table
-									class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
+									class="table tableInit tableIni table-bordered table-striped table-hover dataTable no-footer">
 									<thead>
 										<tr>
 											<th>Nombre</th>
@@ -681,7 +684,7 @@
 						<div class="clearfix">
 							<div class="table-responsive">
 								<table
-									class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
+									class="table tableInit tableIni table-bordered table-striped table-hover dataTable no-footer">
 									<thead>
 										<tr>
 											<th>Descripci&oacute;n</th>
@@ -710,29 +713,22 @@
 					<div class="col-sm-12">
 						<h5 class="titulares">Items de Configuraci&oacute;n y Objetos</h5>
 					</div>
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-10 ">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-10">
 						<div class="clearfix">
 							<div class="table-responsive">
-								<table
-									class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
+
+								<table id="tableTest6"
+									class="table table-bordered table-striped table-hover dataTable no-footer">
 									<thead>
 										<tr>
 											<th>Nombre</th>
-											<th>Descripción</th>
 											<th>Fecha Revisión</th>
+											<th>Número Revisión</th>
 											<th>Tipo</th>
+											<th>Item Configuración</th>
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach items="${release.objects}" var="object">
-											<tr>
-												<td>${object.name}</td>
-												<td>${object.description}</td>
-												<td><fmt:formatDate value="${object.revision_Date}"
-														pattern="dd/MM/YYYY" /></td>
-												<td>${object.typeObject.name}</td>
-											</tr>
-										</c:forEach>
 									</tbody>
 								</table>
 							</div>
@@ -744,8 +740,9 @@
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-10">
 						<div class="clearfix">
 							<div class="table-responsive">
-								<table
-									class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
+
+								<table id="tableTest7"
+									class="table table-bordered table-striped table-hover dataTable no-footer">
 									<thead>
 										<tr>
 											<th>Nombre del Objeto</th>
@@ -755,50 +752,6 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach items="${release.objects}" var="releaseObject">
-											<c:if test="${releaseObject.isSql == 1}">
-												<tr id="${releaseObject.id}">
-													<td>${releaseObject.name}</td>
-													<td><c:choose>
-															<c:when test="${releaseObject.execute == 1}">
-																<div class="switch">
-																	<label>NO<input disabled="disabled"
-																		type="checkbox" checked="checked" value="1"><span
-																		class="lever"></span>S&Iacute;
-																	</label>
-																</div>
-															</c:when>
-															<c:otherwise>
-																<div class="switch">
-																	<label>NO<input disabled="disabled"
-																		type="checkbox" value="0"><span class="lever"></span>S&Iacute;
-																	</label>
-																</div>
-															</c:otherwise>
-														</c:choose></td>
-													<td><c:set var="dbScheme"
-															value="${fn:replace(releaseObject.dbScheme, ',', ', ')}" />
-														${dbScheme}</td>
-													<td><c:choose>
-															<c:when test="${releaseObject.executePlan == 1}">
-																<div class="switch">
-																	<label>NO<input disabled="disabled"
-																		type="checkbox" checked="checked" value="1"><span
-																		class="lever"></span>S&Iacute;
-																	</label>
-																</div>
-															</c:when>
-															<c:otherwise>
-																<div class="switch">
-																	<label>NO<input disabled="disabled"
-																		type="checkbox" value="0"><span class="lever"></span>S&Iacute;
-																	</label>
-																</div>
-															</c:otherwise>
-														</c:choose></td>
-												</tr>
-											</c:if>
-										</c:forEach>
 									</tbody>
 								</table>
 							</div>
@@ -864,7 +817,7 @@
 					<div class="clearfix">
 						<div class="body table-responsive">
 							<table
-								class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
+								class="table tableInit tableIni table-bordered table-striped table-hover dataTable no-footer">
 								<thead>
 									<tr>
 										<th class="col-md-8 col-lg-8 col-xs-12 col-sm-12">Nombre</th>
@@ -898,53 +851,8 @@
 			</div>
 		</div>
 	</section>
-	<!-- Jquery Core Js -->
-	<script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
-	<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-	<!-- Bootstrap Core Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap/js/bootstrap.js'/>"></script>
-
-	<!-- Select Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-select/js/bootstrap-select.js'/>"></script>
-
-	<!-- Slimscroll Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-slimscroll/jquery.slimscroll.js'/>"></script>
-
-	<!-- Jquery CountTo Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-countto/jquery.countTo.js'/>"></script>
-
-	<!-- Autosize Plugin Js -->
-	<script src="<c:url value='/static/plugins/autosize/autosize.js'/>"></script>
-
-	<!-- Jquery DataTable Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/jquery.dataTables.js'/>"></script>
-	<script
-		src="<c:url value='/static/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js'/>"></script>
-
-	<!-- Bootstrap Notify Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/bootstrap-notify/bootstrap-notify.js'/>"></script>
-
-	<!-- SweetAlert Plugin Js -->
-	<script
-		src="<c:url value='/static/plugins/sweetalert/sweetalert.min.js'/>"></script>
-
-	<!-- TagInput Js -->
-	<script
-		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
-
-	<!-- Custom Js -->
-	<script src="<c:url value='/static/js/admin.js'/>"></script>
-	<%-- 	<script src="<c:url value='/static/js/release/release.js'/>"></script> --%>
-	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
-	<script
-		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
+	<%@include file="../plantilla/footer.jsp"%>
 
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -953,8 +861,7 @@
 			$("#tinyContentSummary input").attr("disabled", true);
 			$("#tinyContentSummary textarea").attr("disabled", true);
 			autosize($('textarea'));
-
-			$('table').DataTable({
+			$(".tableInit").DataTable({
 				"language" : {
 					"emptyTable" : "No existen registros",
 					"zeroRecords" : "No existen registros"
@@ -965,6 +872,7 @@
 		});
 	</script>
 
+	<script src="<c:url value='/static/js/release/releaseTinySummary.js'/>"></script>
 </body>
 
 </html>

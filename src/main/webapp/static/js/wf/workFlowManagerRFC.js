@@ -1,11 +1,11 @@
 var releaseTable = $('#dtReleases').DataTable();
 var formChangeUser = $('#changeUserForm');
 var formChangeStatus = $('#changeStatusForm');
-var trackingReleaseForm = $('#trackingReleaseForm');
+var trackingRFCForm = $('#trackingRFCForm');
 var rowData;
 $(function() {
 	loadTableRelease();
-	activeItemMenu("managerWorkFlowItem");
+	activeItemMenu("managerWorkFlowItem",true);
 	$('input[name="daterange"]').daterangepicker({
 		"autoUpdateInput": false,
 		"opens": 'left',
@@ -106,7 +106,7 @@ function loadTableRelease() {
 						"iDisplayStart" : 0,
 						"processing" : true,
 						"serverSide" : true,
-						"sAjaxSource" : getCont() + "manager/wf/workFlowRelease",
+						"sAjaxSource" : getCont() + "manager/wf/workFlowRFC",
 						"fnServerParams": function ( aoData ) {
 							aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 									{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
@@ -120,7 +120,7 @@ function loadTableRelease() {
 								"mDataProp" : "node"
 							},
 							{
-								"mDataProp" : "releaseNumber",
+								"mDataProp" : "numRequest",
 							},
 							{
 								"mDataProp" : "user.fullName",
@@ -144,13 +144,13 @@ function loadTableRelease() {
 									}
 									options = options
 									options = options
-									+ '<a onclick="openReleaseTrackingModal('
+									+ '<a onclick="openRFCTrackingModal('
 									+ row.id
 									+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
 									options = options
 									+ '<a href="'
 									+ getCont()
-									+ 'release/summary-'
+									+ 'rfc/summaryRFC-'
 									+ row.id
 									+ '" title="Resumen"><i class="material-icons gris" style="font-size: 25px;">info</i></a>'
 									+ ' </div>';
@@ -165,7 +165,7 @@ function loadTableRelease() {
 
 function confirmCancelRelease(index){
 	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea cancelar el release?',
+		title: '\u00BFEst\u00e1s seguro que desea cancelar el RFC?',
 		text: "Esta acci\u00F3n no se puede reversar.",
 		icon: 'question',
 		showCancelButton: true,
@@ -185,10 +185,10 @@ function cancelRelease(index) {
 	blockUI();
 	$.ajax({
 		type : "GET",
-		url : getCont() + "manager/release/" + "cancelRelease",
+		url : getCont() + "manager/rfc/" + "cancelRFC",
 		timeout : 60000,
 		data : {
-			idRelease : index
+			idRFC : index
 		},
 		success : function(response) {
 			responseCancelRelease(response);
@@ -202,7 +202,7 @@ function cancelRelease(index) {
 function responseCancelRelease(response) {
 	switch (response.status) {
 	case 'success':
-		swal("Correcto!", "El release ha sido anulado exitosamente.",
+		swal("Correcto!", "El RFC ha sido anulado exitosamente.",
 				"success", 2000)
 				releaseTable.ajax.reload();
 		break;
@@ -259,7 +259,7 @@ function changeStatusRelease(releaseId) {
 		if(value.nodeTo.status && value.nodeTo.status !== null){
 			allowActor = rowData.node.actors.find(element => element.id == userId);
 			if( typeof allowActor !== 'undefined'){
-				var motive=(value.nodeTo.status.motive===null)?"":value.nodeTo.status.motive;
+				var motive=(value.nodeTo.status.reason===null)?"":value.nodeTo.status.reason;
 				formChangeStatus.find('#nodeId').append('<option data-motive="'+motive+'"  value="'+value.nodeTo.id+'">'+value.nodeTo.label+'</option>' );
 
 			}
@@ -267,12 +267,12 @@ function changeStatusRelease(releaseId) {
 	});
 
 	formChangeStatus.find('.selectpicker').selectpicker('refresh');
-	formChangeStatus.find('#idRelease').val(rowData.id);
-	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
+	formChangeStatus.find('#idRFC').val(rowData.id);
+	formChangeStatus.find('#numRequest').val(rowData.numRequest);
 	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
 	//formChangeStatus.find('#motive').val('');
 	formChangeStatus.find('.selectpicker').selectpicker('refresh');
-	formChangeStatus.find('#idRelease').val(rowData.id);
+	formChangeStatus.find('#idRFC').val(rowData.id);
 	formChangeStatus.find(".fieldError").css("visibility", "hidden");
 	formChangeStatus.find('.fieldError').removeClass('activeError');
 	formChangeStatus.find('.form-line').removeClass('error');
@@ -287,10 +287,10 @@ function saveChangeStatusModal(){
 	blockUI();
 	$.ajax({
 		type : "POST",
-		url : getCont() + "manager/wf/" + "wfStatus",
+		url : getCont() + "manager/wf/" + "wfStatusRFC",
 		timeout : 60000,
 		data : {
-			idRelease : formChangeStatus.find('#idRelease').val(),
+			idRFC : formChangeStatus.find('#idRFC').val(),
 			idNode: formChangeStatus.find('#nodeId').children("option:selected").val(),
 			idError: formChangeStatus.find('#errorId').children("option:selected").val(),
 			dateChange: formChangeStatus.find('#dateChange').val(),
@@ -308,7 +308,7 @@ function saveChangeStatusModal(){
 function responseStatusRelease(response) {
 	switch (response.status) {
 	case 'success':
-		swal("Correcto!", "El release ha sido modificado exitosamente.",
+		swal("Correcto!", "El RFC ha sido modificado exitosamente.",
 				"success", 2000);
 		closeChangeStatusModal();
 		releaseTable.ajax.reload();
@@ -376,29 +376,30 @@ function validStatusRelease() {
 }
 
 
-function openReleaseTrackingModal(releaseId) {
+function openRFCTrackingModal(rfcId) {
+	console.log(rfcId)
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
-	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
+	var idRow = dtReleases.fnFindCellRowIndexes(rfcId, 0); // idRow
 	rowData = releaseTable.row(idRow).data();
-	trackingReleaseForm.find('#idRelease').val(rowData.id);
-	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
-	loadTrackingRelease(rowData);
-	$('#trackingReleaseModal').modal('show');
+	trackingRFCForm.find('#idRFC').val(rowData.id);
+	trackingRFCForm.find('#rfcNumber').text(rowData.numRequest);
+	loadTrackingRFC(rowData);
+	$('#trackingRFCModal').modal('show');
 }
 
-function loadTrackingRelease(rowData){
-	trackingReleaseForm.find('tbody tr').remove();
+function loadTrackingRFC(rowData){
+	trackingRFCForm.find('tbody tr').remove();
 	if(rowData.tracking.length == 0){
-		trackingReleaseForm.find('tbody').append('<tr><td colspan="4" style="text-align: center;">No hay movimientos</td></tr>');
+		trackingRFCForm.find('tbody').append('<tr><td colspan="4" style="text-align: center;">No hay movimientos</td></tr>');
 	}
 	$.each(rowData.tracking, function(i, value) {
-		trackingReleaseForm.find('tbody').append('<tr style="padding: 10px 0px 0px 0px;" > <td><span style="background-color: '+getColorNode(value.status)+';" class="round-step"></span></td>	<td>'+value.status+'</td>	<td>'+moment(value.trackingDate).format('DD/MM/YYYY h:mm:ss a')+'</td>	<td>'+value.operator+'</td> <td>'+(value.motive && value.motive != null && value.motive != 'null' ? value.motive:'' )+'</td>	</tr>');
+		trackingRFCForm.find('tbody').append('<tr style="padding: 10px 0px 0px 0px;" > <td><span style="background-color: '+getColorNode(value.status)+';" class="round-step"></span></td>	<td>'+value.status+'</td>	<td>'+moment(value.trackingDate).format('DD/MM/YYYY h:mm:ss a')+'</td>	<td>'+value.operator+'</td> <td>'+(value.motive && value.motive != null && value.motive != 'null' ? value.motive:'' )+'</td>	</tr>');
 	});
 }
 
-function closeTrackingReleaseModal(){
-	trackingReleaseForm[0].reset();
-	$('#trackingReleaseModal').modal('hide');
+function closeTrackingRFCModal(){
+	trackingRFCForm[0].reset();
+	$('#trackingRFCModal').modal('hide');
 }
 
 function getColorNode(status){

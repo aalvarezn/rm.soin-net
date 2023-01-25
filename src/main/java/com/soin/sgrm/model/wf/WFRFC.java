@@ -1,4 +1,4 @@
-package com.soin.sgrm.model;
+package com.soin.sgrm.model.wf;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -25,12 +25,21 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.soin.sgrm.model.wf.Node;
-import com.soin.sgrm.model.wf.NodeRFC;
+
+import com.soin.sgrm.model.Impact;
+import com.soin.sgrm.model.Priority;
+import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCTracking;
+import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Siges;
+import com.soin.sgrm.model.StatusRFC;
+import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.TypeChange;
+import com.soin.sgrm.model.User;
 
 @Entity
 @Table(name = "RFC")
-public class RFC implements Serializable {
+public class WFRFC implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -110,7 +119,6 @@ public class RFC implements Serializable {
 	@JoinColumn(name = "ID_SISTEMA", nullable = false)
 	private SystemInfo systemInfo;
 
-
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
@@ -120,29 +128,23 @@ public class RFC implements Serializable {
 
 	@Column(name = "FECHA_EJECUCION_FINAL")
 	private String requestDateFinish;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "NODO_ID", nullable = true)
-	private NodeRFC node;
-	
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "RFC_RELEASE", joinColumns = { @JoinColumn(name = "ID_RFC") }, inverseJoinColumns = {
-			@JoinColumn(name = "ID_RELEASE") })
-	private Set<Release_RFC> releases = new HashSet<>();
-
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "RFC_ARCHIVORFC", joinColumns = { @JoinColumn(name = "RFC_ID") }, inverseJoinColumns = {
-			@JoinColumn(name = "ARCHIVORFC_ID") })
-	private Set<RFCFile> files = new HashSet<>();
 
 	@OrderBy("trackingDate ASC")
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "rfc")
 	private Set<RFCTracking> tracking = new HashSet<RFCTracking>();
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "NODO_ID", nullable = true)
+	private NodeRFC node;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@Fetch(value = FetchMode.SUBSELECT)
+	@JoinTable(name = "RFC_RELEASE", joinColumns = { @JoinColumn(name = "ID_RFC") }, inverseJoinColumns = {
+			@JoinColumn(name = "ID_RELEASE") })
+	private Set<Release_RFC> releases = new HashSet<>();
+	
 	// Agregar Motivo
 	// Agregar Usuario que lo cambio
 	@Transient
@@ -291,13 +293,7 @@ public class RFC implements Serializable {
 		this.requestDate = requestDate;
 	}
 
-	public Set<Release_RFC> getReleases() {
-		return releases;
-	}
-
-	public void setReleases(Set<Release_RFC> releases) {
-		this.releases = releases;
-	}
+	
 
 	public String[] getStrReleases() {
 		return strReleases;
@@ -355,12 +351,12 @@ public class RFC implements Serializable {
 		this.requestDateFinish = requestDateFinish;
 	}
 
-	public Set<RFCFile> getFiles() {
-		return files;
+	public NodeRFC getNode() {
+		return node;
 	}
 
-	public void setFiles(Set<RFCFile> files) {
-		this.files = files;
+	public void setNode(NodeRFC node) {
+		this.node = node;
 	}
 
 	public String getMotive() {
@@ -435,12 +431,21 @@ public class RFC implements Serializable {
 		this.systemId = systemId;
 	}
 
-	public NodeRFC getNode() {
-		return node;
+	public void convertRFCToWFRFC(RFC rfc) {
+		this.node = rfc.getNode();
+		this.requestDate=rfc.getRequestDate();
+		this.numRequest = rfc.getNumRequest();
+		this.systemInfo = rfc.getSystemInfo();
+		this.status = rfc.getStatus();
+		this.user = rfc.getUser();
 	}
 
-	public void setNode(NodeRFC node) {
-		this.node = node;
+	public Set<Release_RFC> getReleases() {
+		return releases;
+	}
+
+	public void setReleases(Set<Release_RFC> releases) {
+		this.releases = releases;
 	}
 	
 	

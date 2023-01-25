@@ -1,29 +1,20 @@
 package com.soin.sgrm.dao;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.DateType;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
-import org.hibernate.type.TimestampType;
-import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -280,6 +271,30 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 
 
 		return crit;
+	}
+
+	@Override
+	public Integer listCountByReleases(Integer releaseId) throws ParseException, SQLException {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		crit.createAlias("objects", "objects")
+		.add(Restrictions.eq("releaseId", releaseId));
+
+		crit.setProjection(Projections.rowCount());
+		Long count = (Long) crit.uniqueResult();
+		int recordsTotal = count.intValue();
+	
+		return recordsTotal;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Release_Objects> listObjectsSql(Integer idRelease) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		crit.createAlias("objects", "objects")
+		.add(Restrictions.eq("releaseId", idRelease));
+			crit.add(Restrictions.eq("objects.isSql", 1));
+		
+		return crit.list();
 	}
 
 }

@@ -13,7 +13,7 @@ public interface BaseService<PK, T> {
 	void save(T model);
 
 	void delete(Long id);
-
+	
 	void update(T model);
 
 	
