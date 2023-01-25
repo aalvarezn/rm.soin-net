@@ -204,7 +204,83 @@ public class DocxVariables {
 				(release.getCertRollbackPlan() != null ? release.getCertRollbackPlan() : Constant.EMPTYVARDOC)));
 	}
 
-	
+	/**
+	 * @description: Completa tabla de objetos.
+	 * @author: Esteban Bogantes H.
+	 * @return: Variables de tabla de objetos.
+	 **/
+	public void releaseObjects(ReleaseSummary release, boolean bd) {
+		// Se agrega la lista de objetos y SQL
+		TableVariable tableObject = new TableVariable();
+		TableVariable tableSql = new TableVariable();
+		List<Variable> objectName = new ArrayList<Variable>();
+		List<Variable> objectType = new ArrayList<Variable>();
+		List<Variable> objectVersion = new ArrayList<Variable>();
+		List<Variable> objectDescription = new ArrayList<Variable>();
+		List<Variable> sqlName = new ArrayList<Variable>();
+		List<Variable> sqlExecute = new ArrayList<Variable>();
+		List<Variable> sqlScheme = new ArrayList<Variable>();
+		List<Variable> sqlExecutePlan = new ArrayList<Variable>();
+		SimpleDateFormat sp = new SimpleDateFormat("dd-MM-yyyy");
+		for (ReleaseObject object : release.getObjects()) {
+			if (!bd) {
+				objectName.add(new TextVariable("{{r object.nombre}}", object.getName()));
+				objectType.add(new TextVariable("{{r object.tipo}}", object.getTypeObject().getName()));
+				objectVersion.add(new TextVariable("{{r object.versiones}}",
+						object.getRevision_SVN() + " / " + sp.format(object.getRevision_Date())));
+				objectDescription.add(new TextVariable("{{r object.descripcion}}", object.getDescription()));
+
+				if (release.getHas_changes_in_bd()) {
+					if (object.getConfigurationItem().getName().equalsIgnoreCase("Base Datos")) {
+						sqlName.add(new TextVariable("{{r sql.nombre}}", object.getName()));
+						sqlExecute
+								.add(new TextVariable("{{r sql.ejecutar}}", (object.getExecute() == 1) ? "Si" : "No"));
+						sqlScheme.add(new TextVariable("{{r sql.esquema}}",
+								(object.getDbScheme() != null ? object.getDbScheme() : "")));
+						sqlExecutePlan
+								.add(new TextVariable("{{r sql.plan}}", (object.getExecutePlan() == 1) ? "Si" : "No"));
+					}
+				}
+			} else {
+				if (object.getConfigurationItem().getName().equalsIgnoreCase("Base Datos")) {
+					objectName.add(new TextVariable("{{r object.nombre}}", object.getName()));
+					objectType.add(new TextVariable("{{r object.tipo}}", object.getTypeObject().getName()));
+					objectVersion.add(new TextVariable("{{r object.versiones}}",
+							object.getRevision_SVN() + " / " + sp.format(object.getRevision_Date())));
+					objectDescription.add(new TextVariable("{{r object.descripcion}}", object.getDescription()));
+					sqlName.add(new TextVariable("{{r sql.nombre}}", object.getName()));
+					sqlExecute.add(new TextVariable("{{r sql.ejecutar}}", (object.getExecute() == 1) ? "Si" : "No"));
+					sqlScheme.add(new TextVariable("{{r sql.esquema}}",
+							(object.getDbScheme() != null ? object.getDbScheme() : "")));
+					sqlExecutePlan
+							.add(new TextVariable("{{r sql.plan}}", (object.getExecutePlan() == 1) ? "Si" : "No"));
+				}
+			}
+		}
+		tableObject.addVariable(objectName);
+		tableObject.addVariable(objectType);
+		tableObject.addVariable(objectVersion);
+		tableObject.addVariable(objectDescription);
+		tableSql.addVariable(sqlName);
+		tableSql.addVariable(sqlExecute);
+		tableSql.addVariable(sqlScheme);
+		tableSql.addVariable(sqlExecutePlan);
+		variables.addTableVariable(tableObject);
+		variables.addTableVariable(tableSql);
+
+		if (tableObject.getNumberOfRows() == 0) {
+			variables.addTextVariable(new TextVariable("{{r object.nombre}}", ""));
+			variables.addTextVariable(new TextVariable("{{r object.tipo}}", ""));
+			variables.addTextVariable(new TextVariable("{{r object.versiones}}", ""));
+			variables.addTextVariable(new TextVariable("{{r object.descripcion}}", ""));
+		}
+		if (tableSql.getNumberOfRows() == 0) {
+			variables.addTextVariable(new TextVariable("{{r sql.nombre}}", ""));
+			variables.addTextVariable(new TextVariable("{{r sql.ejecutar}}", ""));
+			variables.addTextVariable(new TextVariable("{{r sql.esquema}}", ""));
+			variables.addTextVariable(new TextVariable("{{r sql.plan}}", ""));
+		}
+	}
 
 	/**
 	 * @description: Completa tabla de acciones.

@@ -16,6 +16,7 @@ import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -87,5 +88,7 @@ public interface ReleaseService {
 	ReleaseSummaryMin findByIdMin(Integer id) throws SQLException;
 
 	ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease);
+
+	ReleaseTinySummary findByIdTiny(int parseInt);
 
 }
