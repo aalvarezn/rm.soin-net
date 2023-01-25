@@ -15,6 +15,7 @@ import com.soin.sgrm.dao.ReleaseDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.Risk;
@@ -283,5 +284,11 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public ReleaseSummaryMin findByIdMin(Integer id) throws SQLException {
 		return dao.findByIdMin(id);
 	}
+
+@Override
+public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
+	// TODO Auto-generated method stub
+	return dao.findEditByIdWithOutObjects(idRelease);
+}
 
 }

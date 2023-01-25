@@ -157,6 +157,7 @@ public class WebServiceController extends BaseController {
 		System.out.print(jsonObject);
 		ReleaseWS releaseWs=new ReleaseWS();
 		releaseWs.setDesc(jsonObject.get("desc").toString().replace("\\r\\n","\n").replace("\"", ""));
+		releaseWs.setObservations(jsonObject.get("observacion").toString().replace("\\r\\n","\n").replace("\"", ""));
 		releaseWs.setSystem(jsonObject.get("system").toString().replace("\"", ""));
 		releaseWs.setRequirementName(jsonObject.get("requirementName").toString().replace("\"", ""));
 		releaseWs.setRequirement(jsonObject.get("requirement").toString().replace("\"", ""));

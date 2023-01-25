@@ -33,11 +33,13 @@ import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.Module;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_Objects;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
@@ -397,7 +399,7 @@ public class ReleaseController extends BaseController {
 	@RequestMapping(value = "/editRelease-{id}", method = RequestMethod.GET)
 	public String editRelease(@PathVariable String id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) {
-		ReleaseEdit release = new ReleaseEdit();
+		ReleaseEditWithOutObjects release = new ReleaseEditWithOutObjects();
 		SystemConfiguration systemConfiguration = new SystemConfiguration();
 		UserLogin user = getUserLogin();
 		try {
@@ -406,7 +408,7 @@ public class ReleaseController extends BaseController {
 			}
 
 			Integer idRelease = Integer.parseInt(id);
-			release = releaseService.findEditById(idRelease);
+			release = releaseService.findEditByIdWithOutObjects(idRelease);
 
 			if (release == null) {
 				return "/plantilla/404";
@@ -431,7 +433,9 @@ public class ReleaseController extends BaseController {
 			if (release.getSystem().getImportObjects()) {
 				model.addAttribute("typeDetailList", typeDetail.list());
 			}
-
+			
+			List<Release_Objects> listObjects=	releaseObjectService.listObjectsSql(idRelease); 
+			
 			model.addAttribute("systems", systemService.listSystemByUser(getUserLogin().getUsername()));
 			model.addAttribute("impacts", impactService.list());
 			model.addAttribute("risks", riskService.list());
@@ -448,7 +452,7 @@ public class ReleaseController extends BaseController {
 			model.addAttribute("release", release);
 			model.addAttribute("senders", release.getSenders());
 			model.addAttribute("message", release.getMessage());
-			
+			model.addAttribute("releaseObject",listObjects);
 			if(release.getSystem().getEmailTemplate()!=null) {
 				if(release.getSystem().getEmailTemplate().size()>1) {
 					model.addAttribute("ccs", getCC(release.getSystem().getEmailTemplate().iterator().next().getCc()));

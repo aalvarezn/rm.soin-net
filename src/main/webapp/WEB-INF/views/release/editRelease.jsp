@@ -167,7 +167,7 @@
 					</div>
 				</div>
 				<hr>
-				<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="row clearfix">
 						<section>
 							<div class="wizard">
@@ -530,7 +530,6 @@
 	<script src="<c:url value='/static/js/release/releaseCSV.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/release/releaseCronTab_Button.js'/>"></script>
-
 	<!-- Linearicons -->
 	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>
 

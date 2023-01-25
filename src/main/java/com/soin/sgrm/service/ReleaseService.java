@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.Risk;
@@ -84,5 +85,7 @@ public interface ReleaseService {
 	Integer getDependency(int id);
 	
 	ReleaseSummaryMin findByIdMin(Integer id) throws SQLException;
+
+	ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease);
 
 }

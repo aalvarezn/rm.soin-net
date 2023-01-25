@@ -107,6 +107,7 @@ function addObjectItem() {
 				responseAjaxSendReleaseObject(response);
 				
 				$dtObjects.ajax.reload();
+				reloadPreview();
 				countObjects();
 			},
 			error : function(x, t, m) {
@@ -189,6 +190,7 @@ function deleteconfigurationItemsRow(id) {
 		success : function(response) {
 			responseAjaxDeleteConfigurationItem(response, id);
 			$dtObjects.ajax.reload();
+			reloadPreview();
 			countObjects();
 		},
 		error : function(x, t, m) {

@@ -247,15 +247,15 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach items="${release.releaseObjects}" var="releaseObject">
-							<c:if test="${releaseObject.isSql == 1}">
-								<tr id="${releaseObject.id}">
-									<td>${releaseObject.name}</td>
+						<c:forEach items="${releaseObject}" var="releaseObjects">
+							<c:if test="${releaseObjects.objects.isSql == 1}">
+								<tr id="${releaseObjects.objects.id}">
+									<td>${releaseObjects.objects.name}</td>
 									<td><c:choose>
-											<c:when test="${releaseObject.execute == 1}">
+											<c:when test="${releaseObjects.objects.execute == 1}">
 												<div class="switch">
 													<label>NO<input
-														id="obj_sql_exec_${releaseObject.id}" type="checkbox"
+														id="obj_sql_exec_${releaseObjects.objects.id}" type="checkbox"
 														checked="checked" value="1"><span class="lever"></span>S&Iacute;
 													</label>
 												</div>
@@ -263,24 +263,24 @@
 											<c:otherwise>
 												<div class="switch">
 													<label>NO<input
-														id="obj_sql_exec_${releaseObject.id}" type="checkbox"
+														id="obj_sql_exec_${releaseObjects.objects.id}" type="checkbox"
 														value="0"><span class="lever"></span>S&Iacute;
 													</label>
 												</div>
 											</c:otherwise>
 										</c:choose></td>
-									<td><input id="form-tags-${releaseObject.id}"
+									<td><input id="form-tags-${releaseObjects.objects.id}"
 										maxlength="150" class="tagInit" name="tags-1" type="text"
-										value="${releaseObject.dbScheme}">
+										value="${releaseObjects.objects.dbScheme}">
 										<div class="form-group m-b-0i">
-											<label id="form-tags-${releaseObject.id}_error"
+											<label id="form-tags-${releaseObjects.objects.id}_error"
 												class="error fieldError" for="name"
 												style="visibility: hidden;">Campo Requerido.</label>
 										</div></td>
 									<td><c:choose>
-											<c:when test="${releaseObject.executePlan == 1}">
+											<c:when test="${releaseObjects.objects.executePlan == 1}">
 												<div class="switch">
-													<label>NO<input id="obj_sql_rp_${releaseObject.id}"
+													<label>NO<input id="obj_sql_rp_${releaseObjects.objects.id}"
 														type="checkbox" checked="checked" value="1"><span
 														class="lever"></span>S&Iacute;
 													</label>
@@ -288,7 +288,7 @@
 											</c:when>
 											<c:otherwise>
 												<div class="switch">
-													<label>NO<input id="obj_sql_rp_${releaseObject.id}"
+													<label>NO<input id="obj_sql_rp_${releaseObjects.objects.id}"
 														type="checkbox" value="0"><span class="lever"></span>S&Iacute;
 													</label>
 												</div>

@@ -286,4 +286,15 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 		return recordsTotal;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Release_Objects> listObjectsSql(Integer idRelease) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		crit.createAlias("objects", "objects")
+		.add(Restrictions.eq("releaseId", idRelease));
+			crit.add(Restrictions.eq("objects.isSql", 1));
+		
+		return crit.list();
+	}
+
 }

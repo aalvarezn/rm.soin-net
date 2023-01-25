@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
@@ -75,6 +76,8 @@ public interface ReleaseDao {
 	void insertReleaseError(ReleaseError release) throws Exception;
 
 	ReleaseSummaryMin findByIdMin(Integer id);
+
+	ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease);
 	
 
 }

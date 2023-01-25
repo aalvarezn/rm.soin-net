@@ -84,6 +84,7 @@ function responseAjaxSendReleaseCSV(response) {
 		});
 		swal("Correcto!", "CSV cargado correctamente.", "success", 2000)
 		$dtObjects.ajax.reload();
+		reloadPreview();
 		countObjects();
 		break;
 	case 'fail':

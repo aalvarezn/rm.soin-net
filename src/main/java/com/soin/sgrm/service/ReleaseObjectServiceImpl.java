@@ -16,6 +16,7 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_Objects;
 import com.soin.sgrm.utils.JsonSheet;
 
 @Transactional("transactionManager")
@@ -70,6 +71,11 @@ public class ReleaseObjectServiceImpl implements ReleaseObjectService {
 	@Override
 	public Integer listCountByReleases(Integer releaseId) throws ParseException, SQLException {
 		return dao.listCountByReleases(releaseId);
+	}
+
+	@Override
+	public List<Release_Objects> listObjectsSql(Integer idRelease) {
+		return dao.listObjectsSql(idRelease);
 	}
 
 }
