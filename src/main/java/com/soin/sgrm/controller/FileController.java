@@ -138,8 +138,8 @@ public class FileController extends BaseController {
 	@RequestMapping(value = "/impactObject-{id}", method = RequestMethod.GET)
 	public void impactObject(HttpServletResponse response, @PathVariable Integer id) throws IOException, SQLException {
 		String basePath = env.getProperty("fileStore.path");
-		ReleaseEdit release = releaseService.findEditById(id); // se obtiene el release
-		String path = basePath + createPath(release.getId(), basePath) + "documentos/";
+		ReleaseSummary release = releaseService.findById(id); // se obtiene el release
+		String path = basePath + createPath(release, basePath) + "documentos/";
 		new File(path).mkdirs();
 		File temp = new File(path + release.getReleaseNumber() + ".csv");
 		List<String> list = releaseFileService.ImpactObjects(id); // lista de objetos
@@ -189,7 +189,8 @@ public class FileController extends BaseController {
 
 		// Direccion del archivo a guardar
 		String basePath = env.getProperty("fileStore.path");
-		String path = createPath(id, basePath);
+		ReleaseSummary release=releaseService.findById(id);
+		String path = createPath(release, basePath);
 		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
 
 		// Referencia del archivo
@@ -283,10 +284,8 @@ public class FileController extends BaseController {
 	 * @return: Base path del release.
 	 * @throws SQLException
 	 **/
-	public String createPath(Integer id, String basePath) throws SQLException {
-		ReleaseEdit release;
-		try {
-			release = releaseService.findEditById(id);
+	public String createPath(ReleaseSummary release, String basePath) throws SQLException {
+
 			Project project = projectService.findById(release.getSystem().getProyectId());
 			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
 			if (release.getRequestList().size() != 0) {
@@ -301,10 +300,7 @@ public class FileController extends BaseController {
 			path=path.trim();
 			new File(basePath + path).mkdirs();
 			return path;
-		} catch (SQLException e) {
-			Sentry.capture(e, "files");
-			throw e;
-		}
+		
 
 	}
 
@@ -346,7 +342,7 @@ public class FileController extends BaseController {
 			if (docFile != null) {
 				// Se obtiene el archivo plantilla
 				File fileTemplate = new File(env.getProperty("fileStore.templates") + docFile.getTemplateName());
-				String path = basePath + createPath(releaseId, basePath) + "documentos/";
+				String path = basePath + createPath(release, basePath) + "documentos/";
 				new File(path).mkdirs();
 				String sufix = (docFile.getSufix() == null) ? "" : docFile.getSufix();
 				// Se genera el archivo de salida

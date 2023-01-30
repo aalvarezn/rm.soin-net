@@ -64,6 +64,9 @@ $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
 	$dtRFCs.ajax.reload();
 });
+function refreshTable(){
+	$dtRFCs.ajax.reload();
+}
 
 $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val('');

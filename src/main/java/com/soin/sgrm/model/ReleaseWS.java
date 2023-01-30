@@ -10,12 +10,14 @@ public class ReleaseWS {
 	String  desc;
 	String objects;
 	String auto;
+    String versionNumber;
 	String solTecnic;
 	String soluFunc;
 	String consecNoInstala;
 	Integer prioridad;
 	Integer riesgo;
 	Integer impacto;
+	
 	public String getSystem() {
 		return system;
 	}
@@ -54,7 +56,12 @@ public class ReleaseWS {
 		this.userId = userId;
 	}
 	
-	
+	public String getVersionNumber() {
+		return versionNumber;
+	}
+	public void setVersionNumber(String versionNumber) {
+		this.versionNumber = versionNumber;
+	}
 	public String getDesc() {
 		return desc;
 	}

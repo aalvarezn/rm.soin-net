@@ -70,6 +70,9 @@ $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 	$dtRFCs.ajax.reload();
 });
 
+function refreshTable(){
+	$dtRFCs.ajax.reload();
+}
 $('#tableFilters #projectId').change(function() {
 	$dtRFCs.ajax.reload();
 });

@@ -65,7 +65,9 @@ $(function() {
 	loadTableRelease('systemReleaseQA');
 	setTab();
 });
-
+function refreshTable(){
+	releaseTable.ajax.reload();
+}
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
 	releaseTable.ajax.reload();

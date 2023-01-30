@@ -81,7 +81,9 @@ $('#tableFilters #systemId').change(function() {
 $('#tableFilters #statusId').change(function() {
 	$dtRequests.ajax.reload();
 });
-
+function refreshTable(){
+	$dtRequests.ajax.reload();
+}
 
 function initRFCTable() {
 	$dtRequests = $('#dtRequests').DataTable(

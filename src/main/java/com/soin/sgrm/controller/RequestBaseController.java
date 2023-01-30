@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_Requests;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestRM_P1_R1;
@@ -42,6 +43,7 @@ import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ErrorRequestService;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RequestBaseR1Service;
 import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestRM_P1_R1Service;
@@ -65,6 +67,9 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	SystemService systemService;
+	
+	@Autowired
+	ProjectService projectService;
 
 	@Autowired
 	SigesService sigeService;
@@ -301,9 +306,17 @@ public class RequestBaseController extends BaseController {
 				return "/request/editRequestR3";
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+				Project project=projectService.findById(requestEdit.getSystemInfo().getProyectId());
+				boolean verifySos=false;
+				if(project.getCode().equals("Sostenibilidad")) {
+					verifySos=true;
+				}else {
+					verifySos=false;
+				}
 				model.addAttribute("typesPetition",  typePetitionR4Service.listTypePetition());
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				model.addAttribute("SGRMList", ambientService.list("", "SGRM"));
+				model.addAttribute("verifySos",verifySos);
 				return "/request/editRequestR4";
 			}
 

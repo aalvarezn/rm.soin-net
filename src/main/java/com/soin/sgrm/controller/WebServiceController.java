@@ -160,6 +160,12 @@ public class WebServiceController extends BaseController {
 		releaseWs.setObservations(jsonObject.get("observacion").toString().replace("\\r\\n","\n").replace("\"", ""));
 		releaseWs.setSystem(jsonObject.get("system").toString().replace("\"", ""));
 		releaseWs.setRequirementName(jsonObject.get("requirementName").toString().replace("\"", ""));
+		if(jsonObject.get("versionNumber")==null) {
+			releaseWs.setVersionNumber("Sin version");
+		}else {
+			releaseWs.setVersionNumber(jsonObject.get("versionNumber").toString().replace("\"", ""));
+		}
+		
 		releaseWs.setRequirement(jsonObject.get("requirement").toString().replace("\"", ""));
 		releaseWs.setUserId(jsonObject.get("userId").toString().replace("\"", ""));
 		releaseWs.setObjects(jsonObject.get("objects").toString().replace("\"", "").replace(" ","\n"));
@@ -204,6 +210,7 @@ public class WebServiceController extends BaseController {
 			//Status status = statusService.findByName("Borrador");
 			release.setStatus(status);
 			release.setModule(module);
+		
 			release.setCreateDate(CommonUtils.getSystemTimestamp());
 			Risk risk=new Risk();
 			risk.setId(releaseWs.getRiesgo());
@@ -217,6 +224,7 @@ public class WebServiceController extends BaseController {
 			release.setTechnicalSolution(releaseWs.getSolTecnic());
 			release.setFunctionalSolution(releaseWs.getSoluFunc());
 			release.setNotInstalling(releaseWs.getConsecNoInstala());
+			release.setVersionNumber(releaseWs.getVersionNumber());
 			release.setReportHaveArt(false);
 			release.setReportfixedTelephony(false);
 			release.setReportHistoryTables(false);
