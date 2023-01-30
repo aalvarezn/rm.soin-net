@@ -160,11 +160,11 @@ input[type=radio] {
 					<div class="col-md-8 col-lg-10 col-sm-12 col-xs-12 setReleaseIcon">
 						<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
 							<h5 class="rel_num">
-								<span>Solicitud: </span>${request.numRequest} <input
-									type="hidden" id="requestId" value="${request.id}"> <input
-									type="hidden" id="requestNumber" value="${request.numRequest}">
-								<input type="hidden" id="systemInfoId"
-									value="${request.systemInfo.id}">
+								<span>Solicitud: </span>${request.numRequest}
+								<input type="hidden" id="verifySos" value="${verifySos}"> 
+								<input type="hidden" id="requestId" value="${request.id}"> 
+								<input type="hidden" id="requestNumber" value="${request.numRequest}">
+								<input type="hidden" id="systemInfoId" value="${request.systemInfo.id}">
 
 							</h5>
 						</div>

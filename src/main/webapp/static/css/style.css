@@ -2709,6 +2709,12 @@ to {
 	min-width: 120px;
 }
 
+.button-demo-refresh .btn {
+	margin-right: 8px;
+	margin-bottom: 13px;
+	min-width: 10px;
+}
+
 .demo-button-groups .btn-group {
 	margin-right: 10px;
 }
@@ -12000,6 +12006,9 @@ ul.stepper>li>a::before {
 	vertical-align: middle;
 	height: 35px;
 }
+
+
+
 
 .btn_add {
 	width: 30px;
