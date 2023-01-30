@@ -77,6 +77,9 @@ $('#tableFilters #statusId').change(function() {
 	releaseTable.ajax.reload();
 });
 
+function refreshTable(){
+	releaseTable.ajax.reload();
+}
 $('#formAddReleaseDraft #requirement_name').keydown(function( event ) {
 	if ( event.which == 13 || event.which == 32 ) {
 		event.preventDefault();

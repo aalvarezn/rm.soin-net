@@ -30,6 +30,9 @@ public class RequestRM_P1_R4 implements Serializable {
 
 	@Column(name = "CORREO")
 	private String email;
+	
+	@Column(name = "USUARIO_GIT")
+	private String userGit;
 
 	@Column(name = "PERMISOS")
 	private String permissions;
@@ -146,6 +149,14 @@ public class RequestRM_P1_R4 implements Serializable {
 
 	public void setTypeId(Long typeId) {
 		this.typeId = typeId;
+	}
+
+	public String getUserGit() {
+		return userGit;
+	}
+
+	public void setUserGit(String userGit) {
+		this.userGit = userGit;
 	}
 	
 	

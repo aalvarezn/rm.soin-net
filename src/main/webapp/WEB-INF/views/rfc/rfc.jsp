@@ -202,6 +202,15 @@
 						</div>
 
 					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="button-demo-refresh flr">
+							<button title="Refrescar tabla con filtros!" type="button" class="btn btn-primary setIcon"
+								onclick="refreshTable()">
+								<span><i
+									class="material-icons m-t--2 ">update</i></span>
+							</button>
+						</div>
+					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
 					<div id="tableSection" class="row clearfix">
