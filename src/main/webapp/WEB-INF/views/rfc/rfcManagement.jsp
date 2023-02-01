@@ -164,43 +164,40 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Sistemas</label>
-							<div class="form-group m-b-0">
-								<select id="systemId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${systems}" var="system">
-										<option value="${system.id }">${system.name }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-													<label>Estado</label>
-							<div class="form-group m-b-0">
-								<select id="statusId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${statuses}" var="status">
-										<c:if test="${status.name ne 'Anulado'}">
-											<option value="${status.id }">${status.name }</option>
-										</c:if>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-			</div>
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="button-demo-refresh flr">
-							<button title="Refrescar tabla con filtros!" type="button" class="btn btn-primary setIcon"
-								onclick="refreshTable()">
-								<span><i
-									class="material-icons m-t--2 ">update</i></span>
-							</button>
-						</div>
+					<label>Sistemas</label>
+					<div class="form-group m-b-0">
+						<select id="systemId" class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="0">-- Todos --</option>
+							<c:forEach items="${systems}" var="system">
+								<option value="${system.id }">${system.name }</option>
+							</c:forEach>
+						</select>
 					</div>
+				</div>
+				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+					<label>Estado</label>
+					<div class="form-group m-b-0">
+						<select id="statusId" class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="0">-- Todos --</option>
+							<c:forEach items="${statuses}" var="status">
+								<c:if test="${status.name ne 'Anulado'}">
+									<option value="${status.id }">${status.name }</option>
+								</c:if>
+							</c:forEach>
+						</select>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+					<div class="button-demo-refresh" style="padding-top: 25px;">
+						<button title="Refrescar tabla con filtros!" type="button"
+							class="btn btn-primary setIcon" onclick="refreshTable()">
+							<span><i class="material-icons m-t--2 ">update</i></span>
+						</button>
+					</div>
+				</div>
+			</div>
 			<!-- #tableFilters# -->
 			<div class="row clearfix">
 				<div id="tableSection"
