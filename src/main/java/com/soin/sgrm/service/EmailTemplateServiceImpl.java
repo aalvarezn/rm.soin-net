@@ -298,6 +298,15 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	public EmailTemplate fillEmail(EmailTemplate email, Release release) {
 		String temp = "";
+		String releaseNumber= release.getReleaseNumber();
+		String[] parts =releaseNumber.split("\\.");
+		boolean test=releaseNumber.contains(".");
+		String tpo="";
+		for(String part:parts ) {
+			if(part.contains("TPO")) {
+				tpo=part;
+			}
+		}
 		/* ------ body ------ */
 		if (email.getHtml().contains("{{userName}}")) {
 			email.setHtml(email.getHtml().replace("{{userName}}",
@@ -382,6 +391,10 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		}
 
 		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{tpoNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{tpoNumber}}",
+					(tpo != "" ? tpo : "")));
+		}
 		if (email.getSubject().contains("{{releaseNumber}}")) {
 			email.setSubject(email.getSubject().replace("{{releaseNumber}}",
 					(release.getReleaseNumber() != null ? release.getReleaseNumber() : "")));

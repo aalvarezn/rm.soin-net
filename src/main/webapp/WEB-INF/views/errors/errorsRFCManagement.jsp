@@ -97,9 +97,10 @@
 			<!-- CountSection -->
 			<div class="row clearfix">
 				<div class="block-header">
-						<h1 class="title-Adm m-t-0">Gesti&oacute;n salidas no conformes RFC</h1>
-						<hr>
-					</div>
+					<h1 class="title-Adm m-t-0">Gesti&oacute;n salidas no
+						conformes RFC</h1>
+					<hr>
+				</div>
 
 
 				<!-- #CountSection -->
@@ -116,7 +117,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 						<label>Sistemas</label>
 						<div class="form-group m-b-0">
 							<select id="systemId" class="form-control show-tick selectpicker"
@@ -128,11 +129,10 @@
 							</select>
 						</div>
 					</div>
-					<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 						<label>Siges</label>
 						<div class="form-group m-b-0">
-							<select id="sigesId"
-								class="form-control show-tick selectpicker"
+							<select id="sigesId" class="form-control show-tick selectpicker"
 								data-live-search="true">
 								<option value="0">-- Todos --</option>
 								<c:forEach items="${siges}" var="sige">
@@ -142,7 +142,7 @@
 						</div>
 					</div>
 
-					<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 						<label>Tipo de error</label>
 						<div class="form-group m-b-0">
 							<select id="errorId" class="form-control show-tick selectpicker"
@@ -154,16 +154,15 @@
 							</select>
 						</div>
 					</div>
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="button-demo-refresh flr">
-							<button title="Refrescar tabla con filtros!" type="button" class="btn btn-primary setIcon"
-								onclick="refreshTable()">
-								<span><i
-									class="material-icons m-t--2 ">update</i></span>
+					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+						<div class="button-demo-refresh" style="padding-top: 20px;">
+							<button title="Refrescar tabla con filtros!" type="button"
+								class="btn btn-primary setIcon" onclick="refreshTable()">
+								<span><i class="material-icons m-t--2 ">update</i></span>
 							</button>
 						</div>
 					</div>
+				</div>
 				<!-- #tableFilters# -->
 				<div class="row clearfix">
 					<div id="tableSection"
