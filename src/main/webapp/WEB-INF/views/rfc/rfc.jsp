@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <html>
@@ -133,8 +133,9 @@
 										</div>
 										<div class="content">
 											<div class="text">COMPLETADOS</div>
-											<div class="number count-to" data-from="0" data-to="${userC['completed']}"
-												data-speed="1000" data-fresh-interval="20"></div>
+											<div class="number count-to" data-from="0"
+												data-to="${userC['completed']}" data-speed="1000"
+												data-fresh-interval="20"></div>
 										</div>
 									</div>
 								</div>
@@ -200,44 +201,43 @@
 								</select>
 							</div>
 						</div>
-
-					</div>
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="button-demo-refresh flr">
-							<button title="Refrescar tabla con filtros!" type="button" class="btn btn-primary setIcon"
-								onclick="refreshTable()">
-								<span><i
-									class="material-icons m-t--2 ">update</i></span>
-							</button>
+						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+							<div class="button-demo-refresh" style="padding-top: 25px;">
+								<button title="Refrescar tabla con filtros!" type="button"
+									class="btn btn-primary setIcon" onclick="refreshTable()">
+									<span><i class="material-icons m-t--2 ">update</i></span>
+								</button>
+							</div>
 						</div>
+
 					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-					<div id="tableSection" class="row clearfix">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="body ">
-								<div class="body table-responsive">
-									<table id="dtRFCs"
-										class="table table-bordered table-striped table-hover dataTable">
-										<thead>
-											<tr>
-												<th></th>
-												<th>N&uacute;mero RFC</th>
-												<th>Sistema</th>
-												<th>Raz&oacute;n de cambio</th>
-												<th>Solicitante</th>
-												<th>Modificado</th>
-												<th>Estado</th>
-												<th>Acciones</th>
-											</tr>
-										</thead>
+						<div id="tableSection" class="row clearfix">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="body ">
+									<div class="body table-responsive">
+										<table id="dtRFCs"
+											class="table table-bordered table-striped table-hover dataTable">
+											<thead>
+												<tr>
+													<th></th>
+													<th>N&uacute;mero RFC</th>
+													<th>Sistema</th>
+													<th>Raz&oacute;n de cambio</th>
+													<th>Solicitante</th>
+													<th>Modificado</th>
+													<th>Estado</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
 
-									</table>
+										</table>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					
+
 					</div>
 				</div>
 				<!-- #tableSection# -->
