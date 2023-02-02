@@ -26,7 +26,7 @@ $(function() {
 							},
 							{
 								"mRender" : function(data, type, row, meta) {
-									return moment(row.revision_Date).format('DD/MM/YYYY h:mm:ss a');
+									return moment(row.objects.revision_Date).format('DD/MM/YYYY h:mm:ss a');
 								}
 							},
 							{
