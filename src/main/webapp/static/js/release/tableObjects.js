@@ -77,7 +77,12 @@ $(function() {
 							},
 							{
 								"mRender" : function(data, type, row, meta) {
-									return row.objects.dbScheme.replace( ',', ', ')
+									if(row.objects.dbScheme!=null){
+										return row.objects.dbScheme.replace( ',', ', ')
+									}else{
+										return "Sin esquema ingresado";
+									}
+									
 									}
 								}
 							,
