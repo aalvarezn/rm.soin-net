@@ -168,7 +168,7 @@ public class WebServiceController extends BaseController {
 		
 		releaseWs.setRequirement(jsonObject.get("requirement").toString().replace("\"", ""));
 		releaseWs.setUserId(jsonObject.get("userId").toString().replace("\"", ""));
-		releaseWs.setObjects(jsonObject.get("objects").toString().replace("\"", "").replace(" ","\n"));
+		releaseWs.setObjects(jsonObject.get("objects").toString().replace("\"", ""));
 		releaseWs.setAuto(jsonObject.get("auto").toString().replace("\"", ""));
 		releaseWs.setSolTecnic(jsonObject.get("solTecnic").toString().replace("\\r\\n","\n").replace("\"", "").replace("--From", "\n"));
 		releaseWs.setSoluFunc(jsonObject.get("soluFunc").toString().replace("\\r\\n","\n").replace("\"", ""));
