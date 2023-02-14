@@ -2,9 +2,11 @@ package com.soin.sgrm.dao.wf;
 
 import java.util.List;
 
+import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
 
 public interface NodeDao {
@@ -36,4 +38,18 @@ public interface NodeDao {
 	NodeRFC existWorkFlowNodeRFC(RFC rfc);
 
 	boolean verifyStartNodeRFC(NodeRFC node);
+
+	NodeIncidence saveNodeIncidence(NodeIncidence node);
+
+	List<NodeIncidence> listNodeIncidence();
+
+	NodeIncidence findByIdNoInci(Integer id);
+
+	NodeIncidence updateNodeIncidence(NodeIncidence node);
+
+	void deleteNodeIncidence(Integer id);
+
+	boolean verifyStartNodeIncidence(NodeIncidence node);
+
+	NodeIncidence existWorkFlowNodeIn(Incidence incidence);
 }

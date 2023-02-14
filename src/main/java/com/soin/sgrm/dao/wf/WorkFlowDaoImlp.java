@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.model.wf.WorkFlow;
+import com.soin.sgrm.model.wf.WorkFlowIncidence;
 //import com.soin.sgrm.model.wf.WorkFlowIncidence;
 import com.soin.sgrm.model.wf.WorkFlowRFC;
 
@@ -48,14 +49,12 @@ public class WorkFlowDaoImlp implements WorkFlowDao {
 		WorkFlow workFlow = findById(id);
 		sessionFactory.getCurrentSession().delete(workFlow);
 	}
-/*
 	@Override
 	public WorkFlowIncidence findByIdIncidence(Integer id) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WorkFlowIncidence.class);
 		crit.add(Restrictions.eq("id", id));
 		return (WorkFlowIncidence) crit.uniqueResult();
 	}
-*/
 
 	@Override
 	public boolean verifyCreation(Integer systemId, Integer typeId) {

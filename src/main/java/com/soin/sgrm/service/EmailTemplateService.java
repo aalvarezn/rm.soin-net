@@ -4,12 +4,14 @@ import java.util.List;
 
 import com.soin.sgrm.dao.BaseDao;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRFC;
 import com.soin.sgrm.model.wf.WFRelease;
 
@@ -51,5 +53,11 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	void sendMailNotifyRFC(WFRFC rfcEmail, EmailTemplate emailNotify, String user);
 
 	void sendMailRFC(WFRFC rfcEmail, EmailTemplate email, String motive);
+
+	void sendMailActorIncidence(WFIncidence incidenceEmail, EmailTemplate emailActor);
+
+	void sendMailNotify(WFIncidence incidenceEmail, EmailTemplate emailNotify, String userS);
+
+	void sendMailIncidence(Incidence incidenceEmail, EmailTemplate email) throws Exception;
 
 }
