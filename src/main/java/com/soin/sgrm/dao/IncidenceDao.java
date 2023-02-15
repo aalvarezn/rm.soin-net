@@ -15,8 +15,6 @@ public interface IncidenceDao extends BaseDao<Long, Incidence> {
 
 	Integer countByType(Integer id, String type, int query, Object[] ids,Integer userLogin,String email);
 
-	
-
 	Incidence getIncidences(Long id);
 
 	Incidence getIncidenceByName(String numTicket);
@@ -25,6 +23,8 @@ public interface IncidenceDao extends BaseDao<Long, Incidence> {
 
 	void updateIncidenceResume(IncidenceResume incidenceResume);
 
-	List<IncidenceResume> getListIncideRequest(); 
+	List<IncidenceResume> getListIncideRequest();
+
+	Integer countByTypeBySystem(Integer id, String type, int query, Object[] ids, Integer userLogin, String email); 
 
 }

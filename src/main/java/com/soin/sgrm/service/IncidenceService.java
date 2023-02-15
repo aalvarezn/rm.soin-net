@@ -17,7 +17,6 @@ public interface IncidenceService extends BaseService<Long, Incidence>{
 
 	Integer countByType(Integer id, String type, int query, Object[] ids,Integer userLogin,String email);
 
-	
 
 	JsonSheet<Incidence> findAllRequest( Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			String sSearch, Long statusId, String dateRange, Long typeId, Long priorityId);

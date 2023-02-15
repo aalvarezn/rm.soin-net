@@ -1,5 +1,6 @@
 package com.soin.sgrm.controller.wf;
 
+import java.util.List;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -46,6 +47,7 @@ import com.soin.sgrm.service.StatusRFCService;
 //import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.System_StatusInService;
 import com.soin.sgrm.service.wf.EdgeService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.service.wf.TypeService;
@@ -78,7 +80,8 @@ public class WorkFlowController extends BaseController {
 	TypeService typeService;
 	@Autowired
 	AttentionGroupService attentionGroupService;
-
+	@Autowired
+	System_StatusInService statusSystemIncidenceService;
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		model.addAttribute("workFlows", workFlowService.list());
@@ -101,6 +104,19 @@ public class WorkFlowController extends BaseController {
 			model.addAttribute("users", wfUserService.list());
 			model.addAttribute("user", new WFUser());
 			return "/wf/workFlow/workFlowEdit";
+		}else if(workFlow.getType().getId()==2) {
+			WorkFlowIncidence workFlowIncidence = workFlowService.findByIdIncidence(id);
+			model.addAttribute("workFlow", workFlowIncidence);
+			//VA STATUS_SYS
+			com.soin.sgrm.model.System system=systemService.findSystemById(workFlowIncidence.getSystem().getId());
+		
+			List<System_StatusIn> listStatus=statusSystemIncidenceService.findBySystem(workFlowIncidence.getSystem().getId());
+			model.addAttribute("statuses", listStatus);
+			model.addAttribute("status", new System_StatusIn());
+			model.addAttribute("users", wfUserService.list());
+			model.addAttribute("groups", system.getAttentionGroup());
+			model.addAttribute("user", new WFUser());
+			return "/wf/workFlow/workFlowEditIncidence";
 		}else if(workFlow.getType().getId()==3) {
 			WorkFlowRFC workFlowRFC = workFlowService.findByIdRFC(id);
 			model.addAttribute("workFlow", workFlowRFC);

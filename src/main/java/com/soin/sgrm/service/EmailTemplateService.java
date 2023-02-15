@@ -60,4 +60,6 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 
 	void sendMailIncidence(Incidence incidenceEmail, EmailTemplate email) throws Exception;
 
+	void sendMailIncidence(WFIncidence incidenceEmail, EmailTemplate email, String motive);
+
 }

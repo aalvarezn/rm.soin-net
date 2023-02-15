@@ -12,6 +12,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.IncidenceResume;
 import com.soin.sgrm.model.RFC;
@@ -20,6 +21,7 @@ import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestRM_P1_R1;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.SystemService;
 
 @Repository
@@ -28,7 +30,8 @@ public class IncidenceDaoImpl extends AbstractDao<Long, Incidence> implements In
 	private SessionFactory sessionFactory;
 	@Autowired
 	SystemService systemService;
-	
+	@Autowired
+	AttentionGroupService attentionGroupService;
 	@Override
 	public Integer existNumTicket(String nameSystem) {
 		Criteria crit = getSession().createCriteria(Incidence.class);
@@ -57,6 +60,41 @@ public class IncidenceDaoImpl extends AbstractDao<Long, Incidence> implements In
 			crit.add(Restrictions.in("system.id", listaId));
 			crit.add(Restrictions.eq("statusFinal.name", type));
 			crit.add(Restrictions.like("createFor",email,MatchMode.ANYWHERE));
+			break;
+		case 2:
+			crit.add(Restrictions.eq("statusFinal.name", type));
+		
+		default:
+			break;
+		}
+		crit.setProjection(Projections.rowCount());
+		Long count = (Long) crit.uniqueResult();
+		return count.intValue();
+	}
+	
+	@Override
+	public Integer countByTypeBySystem(Integer id, String type, int query, Object[] ids,Integer userLogin,String email) {
+		Criteria crit = getSession().createCriteria(Incidence.class);
+		crit.createAlias("status", "status");
+		crit.createAlias("status.status", "statusFinal");
+		switch (query) {
+		case 1:
+			// query #1 Obtiene mis rfc
+			
+			List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(userLogin);
+			List<Long> listAttentionGroupId=new ArrayList<Long>();
+			for(AttentionGroup attentionGroup: attentionGroups) {
+				listAttentionGroupId.add(attentionGroup.getId());
+			}
+			List<System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+		
+			List<Integer> listaId=new ArrayList<Integer>();
+			for(System system: systemList) {
+				listaId.add(system.getId());
+			}
+			crit.createAlias("system", "system");
+			crit.add(Restrictions.in("system.id", listaId));
+			crit.add(Restrictions.eq("statusFinal.name", type));
 			break;
 		case 2:
 			crit.add(Restrictions.eq("statusFinal.name", type));

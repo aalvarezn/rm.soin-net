@@ -1588,8 +1588,10 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getHtml().contains("{{updateAt}}")) {
+				
 				DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm a");
 				String strDate = dateFormat.format(rfcEmail.getRequestDate());
+				
 				email.setHtml(email.getHtml().replace("{{updateAt}}", strDate));
 			}
 
@@ -1711,9 +1713,8 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getHtml().contains("{{updateAt}}")) {
-				DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm a");
-				String strDate = dateFormat.format(incidenceEmail.getUpdateDate());
-				email.setHtml(email.getHtml().replace("{{updateAt}}", strDate));
+				email.setHtml(email.getHtml().replace("{{updateAt}}",
+						new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(incidenceEmail.getUpdateDate().getTime())));
 			}
 
 			String temp;
@@ -1897,5 +1898,76 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		}
 
 		return email;
+	}
+
+	@Override
+	public void sendMailIncidence(WFIncidence incidenceEmail, EmailTemplate email, String motive) {
+		try {
+			MimeMessage mimeMessage = mailSender.createMimeMessage();
+			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
+			// ------------------Seccion del asunto del correo -------------------------- //
+			// Se agrega el nombre del sistema
+			if (email.getSubject().contains("{{systemName}}")) {
+				email.setSubject(email.getSubject().replace("{{systemName}}",
+						(incidenceEmail.getSystem() != null ? incidenceEmail.getSystem().getName() : "")));
+			}
+			// Se agrega el numero de release
+			if (email.getSubject().contains("{{releaseNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{releaseNumber}}",
+						(incidenceEmail.getNumTicket() != null ? incidenceEmail.getNumTicket() : "")));
+			}
+			// ------------------Seccion del cuerpo del correo -------------------------- //
+			if (email.getHtml().contains("{{releaseNumber}}")) {
+				email.setHtml(email.getHtml().replace("{{releaseNumber}}",
+						(incidenceEmail.getNumTicket() != null ? incidenceEmail.getNumTicket() : "")));
+			}
+
+			if (email.getHtml().contains("{{releaseStatus}}")) {
+				email.setHtml(email.getHtml().replace("{{releaseStatus}}",
+						(incidenceEmail.getStatus() != null ? incidenceEmail.getStatus().getStatus().getName() : "")));
+			}
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}",
+						(incidenceEmail.getCreateFor() != null ? incidenceEmail.getCreateFor() : "")));
+			}
+			if (email.getHtml().contains("{{operator}}")) {
+				email.setHtml(email.getHtml().replace("{{operator}}",
+						(incidenceEmail.getOperator() != null ? incidenceEmail.getOperator() : "")));
+			}
+
+			if (email.getHtml().contains("{{updateAt}}")) {
+				DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm a");
+				String strDate = dateFormat.format(incidenceEmail.getUpdateDate());
+				email.setHtml(email.getHtml().replace("{{updateAt}}", strDate));
+			}
+
+			if (email.getHtml().contains("{{motive}}")) {
+				email.setHtml(email.getHtml().replace("{{motive}}", (motive != null ? motive : "")));
+			}
+
+			String body = email.getHtml();
+			body = Constant.getCharacterEmail(body);
+			MimeMultipart mmp = MimeMultipart(body);
+			mimeMessage.setContent(mmp);
+			mimeMessage.setSubject(email.getSubject());
+			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
+			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
+			for (AttentionGroup toUserAttention :  incidenceEmail.getNode().getUsers()) {
+				for(User toUser:toUserAttention.getUserAttention()) {
+					mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
+				}
+			}	
+			// Se notifica el usuario que lo solicito
+			mimeMessage.addRecipient(Message.RecipientType.CC,
+					new InternetAddress(incidenceEmail.getUser().getEmail()));
+
+			mailSender.send(mimeMessage);
+		} catch (AddressException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

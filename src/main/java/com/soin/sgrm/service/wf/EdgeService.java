@@ -28,7 +28,14 @@ public interface EdgeService {
 
 	void deleteEdgeRFC(Integer id) throws Exception;
 
-	void deleteEdgeIncidence(Integer id);
+
+	List<EdgeIncidence> listEdgeIncidence();
+
+	EdgeIncidence findByIdEdgeIncidence(Integer id);
 
 	EdgeIncidence saveEdgeIncidence(EdgeIncidence edge);
+
+	EdgeIncidence updateEdgeIncidence(EdgeIncidence edge);
+
+	void deleteEdgeIncidence(Integer id) throws Exception;
 }

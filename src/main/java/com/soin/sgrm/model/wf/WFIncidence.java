@@ -247,6 +247,7 @@ public class WFIncidence   {
 	public void convertReleaseToWFIncidence(Incidence incidence) {
 		this.node = incidence.getNode();
 		this.requestDate=incidence.getRequestDate();
+		this.updateDate=incidence.getUpdateDate();
 		this.numTicket = incidence.getNumTicket();
 		this.system = incidence.getSystem();
 		this.status = incidence.getStatus();

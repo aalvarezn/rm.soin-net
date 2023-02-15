@@ -186,14 +186,14 @@ public class IncidenceServiceImpl implements IncidenceService {
 			int amount = existNumTicket(nameSystem);
 
 			if (amount == 0) {
-				numTicket = nameSystem +"_SP" + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
+				numTicket = nameSystem +"_TICKET" + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
 				return numTicket;
 			} else {
 				if (amount < 10) {
-					numTicket = nameSystem+"_SP"+ "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+					numTicket = nameSystem+"_TICKET"+ "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
 					return numTicket;
 				}
-				numTicket = nameSystem+"_SP" + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+				numTicket = nameSystem+"_TICKET" + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
 				return numTicket;
 			}
 

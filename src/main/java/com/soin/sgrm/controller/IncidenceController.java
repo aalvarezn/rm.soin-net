@@ -387,11 +387,13 @@ public class IncidenceController extends BaseController {
 			incidence.setStatus(status);
 			incidence.setSlaActive(status.getSlaActive());
 			incidence.setMotive(status.getStatus().getReason());
+			incidence.setOperator(getUserLogin().getFullName());
+
+			if(incidence.getRequestDate()==null) {
 			incidence.setRequestDate((CommonUtils.getSystemTimestamp()));
 			incidence.setUpdateDate((CommonUtils.getSystemTimestamp()));
 
-			incidence.setOperator(getUserLogin().getFullName());
-
+		
 			String[] time = incidence.getPriority().getTime().split(":");
 			int hours = Integer.parseInt(time[0]);
 			int minutes = Integer.parseInt(time[1]);
@@ -468,11 +470,10 @@ public class IncidenceController extends BaseController {
 							dayExit.set(Calendar.MINUTE, 0);
 							dayExit.set(Calendar.SECOND, 0);
 							dayExit.set(Calendar.MILLISECOND, 0);
+							dayExit.set(Calendar.MILLISECOND, res);
 							Timestamp timestampTest = new Timestamp(dayExit.getTimeInMillis());
 							java.lang.System.out.println(timestampTest);
 							java.lang.System.out.println( dayNext.get(Calendar.DATE));
-							
-							dayExit.set(Calendar.MILLISECOND, res);
 
 							dayFinish.set(Calendar.DATE, dayNext.get(Calendar.DATE));
 							dayFinish.set(Calendar.HOUR_OF_DAY, fiveHour);
@@ -488,7 +489,11 @@ public class IncidenceController extends BaseController {
 							Timestamp timestampFinishDay = new Timestamp(dayFinish.getTimeInMillis());
 							java.lang.System.out
 									.println("dia actual 5 debe ser igual al de salida optima" + timestampFinishDay);
-							
+							dayNext.add(Calendar.DAY_OF_YEAR, 1);
+							dayNext.set(Calendar.HOUR_OF_DAY, eightHour);
+							dayNext.set(Calendar.MINUTE, 0);
+							dayNext.set(Calendar.SECOND, 0);
+							dayNext.set(Calendar.MILLISECOND, 0);
 						}
 					}
 				} else {
@@ -541,6 +546,7 @@ public class IncidenceController extends BaseController {
 
 			Timestamp timestamp = new Timestamp(dayExit.getTimeInMillis());
 			incidence.setExitOptimalDate(timestamp);
+			}
 			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
 				if (incidence.getTypeIncidence().getEmailTemplate() != null) {
 					EmailTemplate email = incidence.getTypeIncidence().getEmailTemplate();

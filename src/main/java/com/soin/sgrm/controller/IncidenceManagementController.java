@@ -222,7 +222,7 @@ public class IncidenceManagementController extends BaseController {
 			redirectAttributes.addFlashAttribute("data",
 					"Error en la carga de la pagina resumen incidence." + " ERROR: " + e.getMessage());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			return "redirect:/homeIncidence";
+			return "redirect:/homeIncidenceAttention";
 		}
 
 	}
@@ -272,7 +272,7 @@ public class IncidenceManagementController extends BaseController {
 			String userName = getUserLogin().getUsername();
 			if (!incidence.getUser().getUsername().equals(userName)) {
 				redirectAttributes.addFlashAttribute("data", "Ticket no disponible para este usuario ");
-				return "redirect:/homeIncidence";
+				return "redirect:/homeIncidenceAttention";
 			}
 
 			model.addAttribute("incidence", incidence);
@@ -282,7 +282,7 @@ public class IncidenceManagementController extends BaseController {
 			redirectAttributes.addFlashAttribute("data",
 					"Error en la carga de la pagina ticket." + " ERROR: " + e.getMessage());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			return "redirect:/homeIncidence";
+			return "redirect:/homeIncidenceAttention";
 		}
 
 		return "/incidence/incidenceAttention";
@@ -311,7 +311,7 @@ public class IncidenceManagementController extends BaseController {
 			redirectAttributes.addFlashAttribute("data",
 					"Error en la carga de la pagina resumen incidence." + " ERROR: " + e.getMessage());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			return "redirect:/homeIncidence";
+			return "redirect:/homeIncidenceAttention";
 		}
 
 		return "/incidence/summaryIncidenceAttention";
@@ -411,12 +411,15 @@ public class IncidenceManagementController extends BaseController {
 	}
 
 	public void loadCountsRelease(HttpServletRequest request, Integer id) {
+		
+		Integer userLogin = getUserLogin().getId();
+		String email = getUserLogin().getFullName();
 		// PUser userLogin = getUserLogin();
 		// List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> userC = new HashMap<String, Integer>();
-		userC.put("draft", rfcService.countByType(id, "Borrador", 1, null));
-		userC.put("requested", rfcService.countByType(id, "Solicitado", 1, null));
-		userC.put("completed", rfcService.countByType(id, "Completado", 1, null));
+		userC.put("draft", incidenceService.countByType(id, "Borrador", 1, null, userLogin, email));
+		userC.put("requested", incidenceService.countByType(id, "Solicitado", 1, null, userLogin, email));
+		userC.put("completed", incidenceService.countByType(id, "Completado", 1, null, userLogin, email));
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
 		request.setAttribute("userC", userC);
 
