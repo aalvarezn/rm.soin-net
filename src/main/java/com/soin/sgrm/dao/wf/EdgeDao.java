@@ -3,6 +3,7 @@ package com.soin.sgrm.dao.wf;
 import java.util.List;
 
 import com.soin.sgrm.model.wf.Edge;
+import com.soin.sgrm.model.wf.EdgeIncidence;
 import com.soin.sgrm.model.wf.EdgeRFC;
 
 public interface EdgeDao {
@@ -27,7 +28,15 @@ public interface EdgeDao {
 
 	void deleteEdgeRFC(Integer id) throws Exception;
 
-	
+	List<EdgeIncidence> listEdgeIncidence();
+
+	EdgeIncidence findByIdEdgeIncidence(Integer id);
+
+	EdgeIncidence saveEdgeIncidence(EdgeIncidence edge);
+
+	EdgeIncidence updateEdgeIncidence(EdgeIncidence edge);
+
+	void deleteEdgeIncidence(Integer id) throws Exception;
 
 	
 }

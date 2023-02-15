@@ -1,5 +1,6 @@
 package com.soin.sgrm.controller.wf;
 
+import java.util.List;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -19,27 +20,34 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
 //import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.System_StatusIn;
 import com.soin.sgrm.model.wf.Edge;
+import com.soin.sgrm.model.wf.EdgeIncidence;
 import com.soin.sgrm.model.wf.EdgeRFC;
 //import com.soin.sgrm.model.wf.EdgeIncidence;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
 //import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.Type;
 import com.soin.sgrm.model.wf.WFSystem;
 import com.soin.sgrm.model.wf.WFUser;
 import com.soin.sgrm.model.wf.WorkFlow;
+import com.soin.sgrm.model.wf.WorkFlowIncidence;
 import com.soin.sgrm.model.wf.WorkFlowRFC;
+import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.StatusRFCService;
 //import com.soin.sgrm.model.wf.WorkFlowIncidence;
 //import com.soin.sgrm.service.AttentionGroupService;
 //import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.System_StatusInService;
 import com.soin.sgrm.service.wf.EdgeService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.service.wf.TypeService;
@@ -70,8 +78,10 @@ public class WorkFlowController extends BaseController {
 	SystemService systemService;
 	@Autowired
 	TypeService typeService;
-
-
+	@Autowired
+	AttentionGroupService attentionGroupService;
+	@Autowired
+	System_StatusInService statusSystemIncidenceService;
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		model.addAttribute("workFlows", workFlowService.list());
@@ -94,6 +104,19 @@ public class WorkFlowController extends BaseController {
 			model.addAttribute("users", wfUserService.list());
 			model.addAttribute("user", new WFUser());
 			return "/wf/workFlow/workFlowEdit";
+		}else if(workFlow.getType().getId()==2) {
+			WorkFlowIncidence workFlowIncidence = workFlowService.findByIdIncidence(id);
+			model.addAttribute("workFlow", workFlowIncidence);
+			//VA STATUS_SYS
+			com.soin.sgrm.model.System system=systemService.findSystemById(workFlowIncidence.getSystem().getId());
+		
+			List<System_StatusIn> listStatus=statusSystemIncidenceService.findBySystem(workFlowIncidence.getSystem().getId());
+			model.addAttribute("statuses", listStatus);
+			model.addAttribute("status", new System_StatusIn());
+			model.addAttribute("users", wfUserService.list());
+			model.addAttribute("groups", system.getAttentionGroup());
+			model.addAttribute("user", new WFUser());
+			return "/wf/workFlow/workFlowEditIncidence";
 		}else if(workFlow.getType().getId()==3) {
 			WorkFlowRFC workFlowRFC = workFlowService.findByIdRFC(id);
 			model.addAttribute("workFlow", workFlowRFC);
@@ -128,7 +151,7 @@ public class WorkFlowController extends BaseController {
 	}
 	
 	@RequestMapping(value = "/loadWorkFlowRFC/{id}", method = RequestMethod.GET)
-	public @ResponseBody WorkFlowRFC findWorkFlowIncidence(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+	public @ResponseBody WorkFlowRFC findWorkFlowRFC(@PathVariable Integer id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {
 		try {
 			WorkFlowRFC workFlow = workFlowService.findByIdRFC(id);
@@ -138,8 +161,6 @@ public class WorkFlowController extends BaseController {
 			return null;
 		}
 	}
-	
-	/*
 	@RequestMapping(value = "/loadWorkFlowIncidence/{id}", method = RequestMethod.GET)
 	public @ResponseBody WorkFlowIncidence findWorkFlowIncidence(@PathVariable Integer id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {
@@ -150,7 +171,8 @@ public class WorkFlowController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
-	}*/
+	}
+
 
 	@RequestMapping(path = "/saveWorkFlow", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveWorkFlow(HttpServletRequest request,
@@ -258,7 +280,7 @@ public class WorkFlowController extends BaseController {
 	}
 	
 	
-	/*
+	
 	@RequestMapping(path = "/saveNodeIncidence", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveNodeIncidence(HttpServletRequest request, @Valid @ModelAttribute("NodeIncidence") NodeIncidence node,
 			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
@@ -286,7 +308,7 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-	*/
+	
 
 	@RequestMapping(value = "/updateNode", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateNode(HttpServletRequest request, @Valid @ModelAttribute("Node") Node node,
@@ -405,7 +427,6 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-	/*
 	@RequestMapping(value = "/updateNodeIncidence", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateNodeIncidence(HttpServletRequest request, @Valid @ModelAttribute("NodeIncidence") NodeIncidence node,
 			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
@@ -423,14 +444,9 @@ public class WorkFlowController extends BaseController {
 				workFlow.setId(node.getWorkFlowId());
 				node.setWorkFlow(workFlow);
 				
-				if (node.getUserDefaultId()!= null) {
-					User user = new User();
-					user.setId(node.getUserDefaultId());
-					node.setUserDefault(user);
-				}
-				
+
 				if (node.getStatusId() != null) {
-					StatusIncidence status = new StatusIncidence();
+					System_StatusIn status = new System_StatusIn();
 					status.setId(node.getStatusId());
 					node.setStatus(status);
 				}else {
@@ -441,28 +457,20 @@ public class WorkFlowController extends BaseController {
 							res.setException("Error al crear el nodo ya hay un nodo inicio para este tramite.");
 						}
 					}
-				// se agregan los usuarios actores
+				// se agregan los grupos actores
 				node.clearActors();
-				WFUser actor = null;
-				for (Integer index : node.getActorsIds()) {
-					actor = wfUserService.findWFUserById(index);
+				AttentionGroup actor = null;
+				for (Long index : node.getActorsIds()) {
+					actor = attentionGroupService.findById(index);
 					if (actor != null)
 						node.addActor(actor);
 				}
-				WFUser temp = null;
-				Set<WFUser> listActors= node.getActors();
-				temp = wfUserService.findWFUserById(node.getUserDefaultId());
-				if(!listActors.contains(temp)) {
-					temp = wfUserService.findWFUserById(node.getUserDefaultId());
-					node.addActor(temp);
-				}
 
-
-				// se agregan los usuarios a notificar
+				// se agregan los grupos a notificar
 				node.clearUsers();
-				temp = null;
-				for (Integer index : node.getUsersIds()) {
-					temp = wfUserService.findWFUserById(index);
+				AttentionGroup temp = null;
+				for (Long index : node.getUsersIds()) {
+					temp = attentionGroupService.findById(index);
 					if (temp != null)
 						node.addUser(temp);
 				}
@@ -477,7 +485,6 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-*/
 	@RequestMapping(value = "/updateNodePosition", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateNodePosition(HttpServletRequest request,
 			@Valid @ModelAttribute("Node") Node node, BindingResult errors, ModelMap model, Locale locale,
@@ -518,7 +525,7 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-	/*
+	
 	@RequestMapping(value = "/updateNodeInPosition", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateNodeIncidencePosition(HttpServletRequest request,
 			@Valid @ModelAttribute("NodeIncidence") NodeIncidence node, BindingResult errors, ModelMap model, Locale locale,
@@ -539,7 +546,7 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-*/
+
 	@RequestMapping(value = "/deleteNode/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteWorkFlow(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
@@ -560,7 +567,7 @@ public class WorkFlowController extends BaseController {
 		return res;
 	}
 	@RequestMapping(value = "/deleteNodeRFC/{id}", method = RequestMethod.DELETE)
-	public @ResponseBody JsonResponse deleteWorkFlowIncidence(@PathVariable Integer id, Model model) {
+	public @ResponseBody JsonResponse deleteWorkFlowRFC(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
 			nodeService.deleteNodeRFC(id);
@@ -578,7 +585,7 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-	/*
+	
 	@RequestMapping(value = "/deleteNodeIncidence/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteWorkFlowIncidence(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
@@ -598,7 +605,7 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-*/
+
 	@RequestMapping(path = "/saveEdge", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveEdge(HttpServletRequest request, @Valid @ModelAttribute("Edge") Edge edge,
 			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
@@ -650,7 +657,7 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-	/*
+	
 	@RequestMapping(path = "/saveEdgeIncidence", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveEdge(HttpServletRequest request, @Valid @ModelAttribute("EdgeIncidence") EdgeIncidence edge,
 			BindingResult errors, ModelMap model, Locale locale, HttpSession session) {
@@ -676,7 +683,7 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-*/
+
 	@RequestMapping(value = "/deleteEdge/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteEdge(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
@@ -715,7 +722,7 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-	/*
+	
 	@RequestMapping(value = "/deleteEdgeIncidence/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteEdgeIncidence(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
@@ -735,7 +742,6 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
-	*/
 	@RequestMapping(value = "/deleteWorkFlow/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteWorkFlowT(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();

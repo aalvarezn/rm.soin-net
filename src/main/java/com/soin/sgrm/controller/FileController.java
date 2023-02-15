@@ -43,6 +43,8 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import com.soin.sgrm.model.BaseKnowledge;
 import com.soin.sgrm.model.BaseKnowledgeFile;
 import com.soin.sgrm.model.DocTemplate;
+import com.soin.sgrm.model.Incidence;
+import com.soin.sgrm.model.IncidenceFile;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.RFCFile;
@@ -58,6 +60,8 @@ import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.service.BaseKnowledgeFileService;
 import com.soin.sgrm.service.BaseKnowledgeService;
 import com.soin.sgrm.service.DocTemplateService;
+import com.soin.sgrm.service.IncidenceFileService;
+import com.soin.sgrm.service.IncidenceService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RFCFileService;
 import com.soin.sgrm.service.RFCService;
@@ -122,7 +126,12 @@ public class FileController extends BaseController {
 	
 	@Autowired
 	private Environment env;
-
+	
+	@Autowired
+	IncidenceService incidenceService;
+	
+	@Autowired
+	IncidenceFileService incidenceFileService;
 	DocxVariables docxVariables = null;
 
 	DocxContext context = null;
@@ -971,6 +980,130 @@ public class FileController extends BaseController {
 		}
 		return res;
 	}
+
 	
+	/**
+	 * @description: Descarga de un archivo particular del incidence.
+	 * @author: Anthony Alvarez N.
+	 * @return: archivo a descargar.
+	 **/
+	@RequestMapping(value = "/singleDownloadIncidence-{id}", method = RequestMethod.GET)
+	public void downloadFileIncidence(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+		IncidenceFile incidenceFile =incidenceFileService.findById(id);
+		File file = new File(incidenceFile.getPath());
+
+		// Se modifica la respuesta para descargar el archivo
+		response.setContentType("text/plain");
+		response.setHeader("Content-Disposition", "attachment;filename=" + incidenceFile.getName());
+		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+		response.setContentLength((int) file.length());
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	/**
+	 * @description: borra un archivo adjuntado de una incidencia.
+	 * @author: Anthony Alvarez N.
+	 * @return: response de la eliminacion.
+	 **/
+	@RequestMapping(value = "/deleteFileUploadIncidence-{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteFileUploadIncidence(@PathVariable Long id) {
+		JsonResponse res = new JsonResponse();
+		res.setStatus("success");
+		try {
+			IncidenceFile incidenceFile = incidenceFileService.findById(id);
+			incidenceFileService.deleteIncidence(incidenceFile);
+			File file = new File(incidenceFile.getPath());
+			if (file.exists()) {
+				file.delete();
+			}
+			res.setData(incidenceFile.getId() + "");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del incidencia.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathIncidence(Long id, String basePath) throws SQLException {
+		Incidence incidence;
+		try {
+			incidence = incidenceService.getIncidences(id);
+			String path =  "tickets"+ "/" +incidence.getSystem().getName() + "/";
+
+			path += incidence.getNumTicket() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	/**
+	 * @description: Adjunta el archivo al Incidence.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	
+	@RequestMapping(value = "/singleUploadIncidence-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadIncidence(@PathVariable Long id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		// valida que se selecciono un archivo
+				if (file.getName().equals("") || file.isEmpty()) {
+					json.setStatus("fail");
+					json.setException("Archivo no seleccionado");
+					return json;
+				}
+				
+				String basePath = env.getProperty("fileStore.path");
+				String path = createPathIncidence(id, basePath);
+				String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+				// Referencia del archivo
+				IncidenceFile incidenceFile = new IncidenceFile();
+				incidenceFile.setName(fileName);
+				incidenceFile.setPath(basePath + path + fileName);
+				long time = System.currentTimeMillis();
+				java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+				incidenceFile.setRevisionDate(revisionDate);
+				try {
+					// Se carga el archivo y se guarda la referencia
+					FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+					incidenceFileService.saveIncidenceFile(id, incidenceFile);
+					incidenceFile = incidenceFileService.findByKey("path", incidenceFile.getPath());
+					json.setStatus("success");
+					json.setObj(incidenceFile);
+				} catch (SQLException ex) {
+					Sentry.capture(ex, "files");
+					json.setStatus("exception");
+					json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+				} catch (Exception e) {
+					Sentry.capture(e, "files");
+					json.setStatus("exception");
+					json.setException(e.getMessage());
+					logger.log(MyLevel.RELEASE_ERROR, e.toString());
+					if (e instanceof MaxUploadSizeExceededException) {
+						json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+					}
+				}
+				return json;
+				
+	}
 
 }

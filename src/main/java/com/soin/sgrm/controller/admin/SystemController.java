@@ -1,6 +1,8 @@
 package com.soin.sgrm.controller.admin;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -23,11 +25,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.AttentionGroup;
+import com.soin.sgrm.model.Authority;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.SystemService;
@@ -52,6 +57,9 @@ public class SystemController extends BaseController {
 
 	@Autowired
 	EmailTemplateService emailService;
+	
+	@Autowired
+	AttentionGroupService attentionGroupService;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
@@ -65,6 +73,37 @@ public class SystemController extends BaseController {
 		model.addAttribute("email", new EmailTemplate());
 		return "/admin/system/system";
 	}
+	@RequestMapping(value = { "", "/ticket" }, method = RequestMethod.GET)
+	public String systemTicket(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		model.addAttribute("systems", systemService.list());
+		model.addAttribute("system", new System());
+		
+		List<UserInfo> listUser=userService.list();
+		List<UserInfo> userManagerIncidence=new ArrayList<UserInfo>();
+		List<UserInfo> userIncidence=new ArrayList<UserInfo>();
+		
+		for(UserInfo user: listUser) {
+			Set<Authority> roles=user.getAuthorities();
+			for(Authority rol: roles) {
+				if(rol.getName().equals("Incidencias")) {
+					userIncidence.add(user);
+				}else if(rol.getName().equals("Gestor Incidencias")) {
+					userManagerIncidence.add(user);
+				}
+			}
+		}
+		
+		model.addAttribute("userManager",userManagerIncidence );
+		model.addAttribute("userIncidence",userIncidence );
+		model.addAttribute("attentionGroups",attentionGroupService.findAll());
+		model.addAttribute("user", new UserInfo());
+		model.addAttribute("projects", projectService.listAll());
+		model.addAttribute("project", new Project());
+		model.addAttribute("emails", emailService.listAll());
+		model.addAttribute("email", new EmailTemplate());
+		return "/admin/systemTickets/system";
+	}
+
 
 	@RequestMapping(value = "/findSystem/{id}", method = RequestMethod.GET)
 	public @ResponseBody System findSystem(@PathVariable Integer id, HttpServletRequest request, Locale locale,
@@ -209,6 +248,57 @@ public class SystemController extends BaseController {
 						managersNews.add(temp);
 				}
 				systemOrigin.checkManagersExists(managersNews);
+
+				systemService.update(systemOrigin);
+				res.setObj(system);
+			}
+		} catch (Exception e) {
+			Sentry.capture(e, "system");
+			res.setStatus("exception");
+			res.setException("Error al modificar sistema: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/updateSystemIncidence", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse updateSystemIncidence(HttpServletRequest request,
+			@Valid @ModelAttribute("System") System system, BindingResult errors, ModelMap model, Locale locale,
+			HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			if (res.getStatus().equals("success")) {
+				System systemOrigin = systemService.findSystemById(system.getId());
+				// se agregan los usuarios de equipo
+				User temp = null;
+				Set<User> usersNews = new HashSet<>();
+				for (Integer index : system.getUserIncidenceId()) {
+					temp = userService.findUserById(index);
+					if (temp != null)
+						usersNews.add(temp);
+				}
+				systemOrigin.checkUserIncidenceExists(usersNews);
+
+				// se agregan los usuarios de gestion
+				temp = null;
+				Set<User> managersNews = new HashSet<>();
+				for (Integer index : system.getManagersIncidenceId()) {
+					temp = userService.findUserById(index);
+					if (temp != null)
+						managersNews.add(temp);
+				}
+				systemOrigin.checkManagersIncidenceExists(managersNews);
+				
+				// se agregan los grupos de atencion
+				AttentionGroup tempGroup = null;
+				Set<AttentionGroup> attentionGroupNew = new HashSet<>();
+				for (Long index : system.getAttentionGroupId()) {
+					tempGroup = attentionGroupService.findById(index);
+					if (tempGroup != null)
+						attentionGroupNew.add(tempGroup);
+				}
+				systemOrigin.checkattentionGroupExists(attentionGroupNew);
 
 				systemService.update(systemOrigin);
 				res.setObj(system);

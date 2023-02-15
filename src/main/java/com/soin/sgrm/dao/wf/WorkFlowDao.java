@@ -3,6 +3,7 @@ package com.soin.sgrm.dao.wf;
 import java.util.List;
 
 import com.soin.sgrm.model.wf.WorkFlow;
+import com.soin.sgrm.model.wf.WorkFlowIncidence;
 import com.soin.sgrm.model.wf.WorkFlowRFC;
 
 public interface WorkFlowDao {
@@ -20,5 +21,7 @@ public interface WorkFlowDao {
 	boolean verifyCreation(Integer systemId, Integer typeId);
 
 	WorkFlowRFC findByIdRFC(Integer id);
+
+	WorkFlowIncidence findByIdIncidence(Integer id);
 
 }
