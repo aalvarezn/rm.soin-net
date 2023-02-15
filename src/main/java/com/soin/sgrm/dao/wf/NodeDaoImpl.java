@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 //import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
 
 @Repository
@@ -216,7 +218,7 @@ public class NodeDaoImpl implements NodeDao {
 			return true;
 		}
 	}
-/*
+
 		@Override
 	public NodeIncidence saveNodeIncidence(NodeIncidence node) {
 		Transaction transObj = null;
@@ -252,7 +254,7 @@ public class NodeDaoImpl implements NodeDao {
 	}
 
 	@Override
-	public void deleteNodeIncidence(Integer id) throws Exception {
+	public void deleteNodeIncidence(Integer id) {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		String sql = "";
@@ -267,7 +269,6 @@ public class NodeDaoImpl implements NodeDao {
 		} catch (Exception e) {
 			Sentry.capture(e, "nodeIncidence");
 			transObj.rollback();
-			throw new Exception("Error al procesar la solucitud de eliminar.", e);
 		} finally {
 			sessionObj.close();
 		}
@@ -320,7 +321,7 @@ public class NodeDaoImpl implements NodeDao {
 		}else {
 			return true;
 		}
-	}*/
+	}
 	@Override
 	public boolean verifyStartNode(Node node) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Node.class);

@@ -112,6 +112,16 @@ public class HomeController extends BaseController {
 		return "redirect:/request/";
 	}
 	
+	@RequestMapping(value = "/homeIncidence", method = RequestMethod.GET)
+	public String indexIncidence(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		return "redirect:/incidence/";
+	}
+	
+	@RequestMapping(value = "/homeIncidenceAttention", method = RequestMethod.GET)
+	public String indexIncidenceAttention(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		return "redirect:/incidenceManagement/";
+	}
+	
 	@RequestMapping(value = "/homeBaseKnowledge", method = RequestMethod.GET)
 	public String indexBaseKnow(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
