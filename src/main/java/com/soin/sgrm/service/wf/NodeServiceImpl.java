@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.wf.NodeDao;
+import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 //import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeIncidence;
 //import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
 
@@ -50,7 +52,7 @@ public class NodeServiceImpl implements NodeService {
 	public Node existWorkFlow(Release release) {
 		return dao.existWorkFlow(release);
 	}
-/*
+
 	@Override
 	public NodeIncidence saveNodeIncidence(NodeIncidence node) {
 		
@@ -86,7 +88,7 @@ public class NodeServiceImpl implements NodeService {
 		// TODO Auto-generated method stub
 		return dao.verifyStartNodeIncidence(node);
 	}
-*/
+
 	@Override
 	public boolean verifyStartNode(Node node) {
 		
