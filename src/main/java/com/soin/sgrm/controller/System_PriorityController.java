@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.PriorityIncidence;
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.System_Priority;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.PriorityIncidenceService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.System_PriorityService;
@@ -41,13 +44,18 @@ public class System_PriorityController extends BaseController {
 
 	@Autowired
 	PriorityIncidenceService priorityService;
-
+	@Autowired
+	AttentionGroupService attentionGroupService;
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		Integer idUser = getUserLogin().getId();
-		List<com.soin.sgrm.model.System> systems = systemService.findByManagerIncidence(idUser);
-
-		model.addAttribute("systems", systems);
+		List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(idUser);
+		List<Long> listAttentionGroupId=new ArrayList<Long>();
+		for(AttentionGroup attentionGroup: attentionGroups) {
+			listAttentionGroupId.add(attentionGroup.getId());
+		}
+		List<System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+		model.addAttribute("systems", systemList);
 		return "/systemPriority/systemPriority";
 	}
 
