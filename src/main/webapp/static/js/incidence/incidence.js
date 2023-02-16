@@ -66,6 +66,10 @@ $(function() {
 	//setInterval(updateDataTable, 1000);
 	//setInterval(updateDataTable, 1000);
 	//setInterval(updateDataTable1, 1000);
+	dropDownChange();
+	resetDrops();
+	dropDownChangeMain();
+	resetDropsMain();
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -631,5 +635,209 @@ function changeStatusRelease(releaseId) {
 	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
 	$('#changeStatusModal').modal('show');
 }
+
+
+function dropDownChangeMain(){
+	console.log("AWDAW");
+	$('#systemId').on('change', function(){
+		var systemId =$('#tableFilters #systemId').val();
+		console.log(systemId);
+		if(systemId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemPriority/getPriority/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].priority.name + '</option>';
+					}
+					$('#priorityId').html(s);
+					$('#priorityId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#priorityId').selectpicker('refresh');
+				}else{
+					resetDropPriorityMain();
+				}
+				
+				
+			}
+		});
+		
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemTypeIn/getypeIncidence/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].typeIncidence.code + '</option>';
+					}
+					$('#typeId').html(s);
+					$('#typeId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#typeId').selectpicker('refresh');
+				}else{
+					resetDropTypeMain();
+				}
+				
+				
+			}
+		});
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemStatusIn/getStatus/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						if(status.name!='Anulado'){
+							s += '<option value="' + result[i].id + '">' + result[i].status.name + '</option>';
+						}
+						
+					}
+					$('#statusId').html(s);
+					$('#statusId').prop('disabled', false);
+					$('#statusId').selectpicker('refresh');
+				}else{
+					resetDropStatusMain();
+				}
+				
+				
+			}
+		});
+		}else{
+			resetDropPriorityMain();
+			resetDropTypeMain();
+			resetDropStatusMain();
+		}
+		
+	});
+}
+
+function dropDownChange(){
+	console.log("AWDAW");
+	$('#sId').on('change', function(){
+		var sId =$fmIncidence.find('#sId').val();
+		console.log("awdaw");
+		if(sId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemPriority/getPriority/"+sId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].priority.name + '</option>';
+					}
+					$('#pId').html(s);
+					$('#pId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#pId').selectpicker('refresh');
+				}else{
+					resetDropPriority();
+				}
+				
+				
+			}
+		});
+		
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemTypeIn/getypeIncidence/"+sId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].typeIncidence.code + '</option>';
+					}
+					$('#tId').html(s);
+					$('#tId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#tId').selectpicker('refresh');
+				}else{
+					resetDropType();
+				}
+				
+				
+			}
+		});
+		}else{
+			resetDropPriority();
+			resetDropType();
+		}
+		
+	});
+}
+function resetDrops(){
+	$fmRFC.find('#sId').selectpicker('val',  "");
+	resetDropPriority();
+	resetDropType();
+}	
+function resetDropsMain(){
+	$fmRFC.find('#systemId').selectpicker('val',  "");
+	resetDropPriority();
+	resetDropType();
+}	
+function resetDropPriority(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#pId').html(s);
+	$('#pId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#pId').selectpicker('refresh');
+	
+}
+function resetDropPriorityMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#priorityId').html(s);
+	$('#priorityId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#priorityId').selectpicker('refresh');
+	
+}
+
+function resetDropStatusMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#statusId').html(s);
+	$('#statusId').prop('disabled',true);
+	$('#statusId').selectpicker('refresh');
+	
+}
+
+function resetDropTypeMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#typeId').html(s);
+	$('#typeId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#typeId').selectpicker('refresh');
+	
+}
+function resetDropStatus(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#statusId').html(s);
+	$('#statusId').prop('disabled',true);
+	$('#statusId').selectpicker('refresh');
+	
+}
+function resetDropType(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#tId').html(s);
+	$('#tId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#tId').selectpicker('refresh');
+	
+}
+
 
 

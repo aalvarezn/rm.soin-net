@@ -5,16 +5,24 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.System_StatusIn;
+import com.soin.sgrm.service.AttentionGroupService;
+import com.soin.sgrm.service.SystemService;
 
 @Repository
 public class System_StatusInDaoImp extends AbstractDao<Long, System_StatusIn> implements System_StatusInDao{
 	
+	@Autowired
+	AttentionGroupService attentionGroupService;
 	
+	@Autowired
+	SystemService systemService;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -50,15 +58,18 @@ public class System_StatusInDaoImp extends AbstractDao<Long, System_StatusIn> im
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<System_StatusIn> findByManger(Integer idUser) {
-		Criteria crit =getSession().createCriteria(System.class); 
-		crit.createAlias("managersIncidence", "managersIncidence");
-		crit.add( Restrictions.eq("managersIncidence.id", idUser));
-		List<System> systemList = crit.list();
+		Criteria critSysStatus= getSession().createCriteria(System_StatusIn.class); 
 		List<Integer> listaId=new ArrayList<Integer>();
+		List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(idUser);
+		List<Long> listAttentionGroupId=new ArrayList<Long>();
+		for(AttentionGroup attentionGroup: attentionGroups) {
+			listAttentionGroupId.add(attentionGroup.getId());
+		}
+		List<System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
 		for(System system: systemList) {
 			listaId.add(system.getId());
 		}
-		Criteria critSysStatus= getSession().createCriteria(System_StatusIn.class); 
+	
 		critSysStatus.add(Restrictions.in("system.id", listaId));
 		List<System_StatusIn> systemStatusList = critSysStatus.list();
 		return systemStatusList;
