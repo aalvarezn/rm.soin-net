@@ -62,7 +62,8 @@ function showStatusRFC(index){
 	var obj = $dtStatusRFC.row(index).data();
 	$fmStatusRFC.find('#sId').val(obj.id);
 	$fmStatusRFC.find('#sName').val(obj.name);
-	$fmStatusRFC.find('#systemId').val(obj.system.id);
+	$fmStatusRFC.find('#systemId').selectpicker('val',obj.system.id);
+	$('#systemId').prop('disabled', true);
 	/*
 	$fmStatusRFC.find('#sCode').val(obj.code);
 	$fmStatusRFC.find('#sMotive').val(obj.reason);
@@ -205,6 +206,8 @@ function verifyLetters(e){
 
 function addStatusRFC(){
 	$fmStatusRFC.validate().resetForm();
+	$fmStatusRFC.find('#systemId').selectpicker('val',"");
+	$('#systemId').prop('disabled', false);
 	$fmStatusRFC[0].reset();
 	$mdStatusRFC.find('#save').show();
 	$mdStatusRFC.find('#update').hide();
