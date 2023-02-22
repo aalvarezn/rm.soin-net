@@ -160,7 +160,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Sistemas</label>
 							<div class="form-group m-b-0">
 								<select id="systemId"
@@ -173,7 +173,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Tipo de Solicitud</label>
 							<div class="form-group m-b-0">
 								<select id="typePetitionId"
@@ -186,7 +186,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Estado</label>
 							<div class="form-group m-b-0">
 								<select id="statusId"
@@ -201,7 +201,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<div class="button-demo-refresh" style="padding-top: 25px;">
 								<button title="Refrescar tabla con filtros!" type="button"
 									class="btn btn-primary setIcon" onclick="refreshTable()">

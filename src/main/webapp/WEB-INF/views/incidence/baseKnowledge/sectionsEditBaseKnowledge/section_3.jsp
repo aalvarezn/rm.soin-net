@@ -22,6 +22,16 @@
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+				<label for="email_address">Sistema</label>
+				<div class="form-group m-b-0i">
+					<div class="form-line disabled">
+						<input type="text" disabled id="systemName" name="systemName"
+							value="${baseKnowledge.system.name}" class="form-control"
+							placeholder="">
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 				<label for="email_address">Componente</label>
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
@@ -41,19 +51,20 @@
 					</div>
 				</div>
 			</div>
+
+		</div>
+		<div class="clearfix m-t-20 m-l--15">
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 				<label for="email_address">Fecha de creaci&oacute;n</label>
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="dateTinySummary" name="dateCreate"
 							value='<fmt:formatDate
-										value="${baseKnowledge.requestDate }" pattern="dd/MM/YYYY HH:mm:ss"  />' class="form-control"
-							placeholder="">
+										value="${baseKnowledge.requestDate }" pattern="dd/MM/YYYY HH:mm:ss"  />'
+							class="form-control" placeholder="">
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="clearfix m-t-20 m-l--15">
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 				<label for="email_address">Estado</label>
 				<div class="form-group m-b-0i">

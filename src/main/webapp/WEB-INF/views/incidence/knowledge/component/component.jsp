@@ -53,6 +53,7 @@
 							<thead>
 								<tr>
 									<th>Nombre</th>
+									<th>Sistema</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>
@@ -74,7 +75,7 @@
 	<%@include file="../../../plantilla/scriptSection.jsp"%>
 	<!-- #END# Script Section -->
 	<script
-		src="<c:url value='/static/js/incidence/component.js'/>"></script>
+		src="<c:url value='/static/js/baseKnowledge/component.js'/>"></script>
 	
 
 </body>

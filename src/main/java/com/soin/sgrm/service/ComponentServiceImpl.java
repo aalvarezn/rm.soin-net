@@ -49,4 +49,14 @@ public class ComponentServiceImpl  implements ComponentService{
 		dao.update(model);
 	}
 
+	@Override
+	public List<Component> findBySystem(List<Integer> systemIds) {
+		return dao.findBySystem(systemIds);
+	}
+
+	@Override
+	public List<Component> findBySystem(Integer id) {
+		return dao.findBySystem(id);
+	}
+
 }

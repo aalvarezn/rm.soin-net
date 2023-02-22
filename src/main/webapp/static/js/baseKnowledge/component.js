@@ -4,9 +4,15 @@ var $mdStatusRFC = $('#statusRFCModal');
 var $fmStatusRFC = $('#statusRFCModalForm');
 
 $(function() {
-	activeItemMenu("incidenceManagementItem", true);
+	activeItemMenu("knowledgeManagementItem", true);
 	initDataTable();
 	initStatusRFCFormValidation();
+	$('#sName').autocomplete('disable');
+	$('#sName').keydown(function( event ) {
+		if ( event.which == 13 || event.which == 32 ) {
+			event.preventDefault();
+		}
+	});
 });
 
 
@@ -19,7 +25,7 @@ function initDataTable() {
 					"iDisplayLength" : 10,
 					"language" : optionLanguaje,
 					"iDisplayStart" : 0,
-					"sAjaxSource" : getCont() + "statusKnowledge/list",
+					"sAjaxSource" : getCont() + "component/list",
 					"fnServerParams" : function(aoData) {
 					},
 					"aoColumns" : [
@@ -27,15 +33,8 @@ function initDataTable() {
 							"mDataProp" : 'name'
 						},
 						{
-							"mDataProp" : 'code'
+							"mDataProp" : 'system.name'
 						},
-						{
-							"mDataProp" : 'reason'
-						},
-						{
-							"mDataProp" : 'description'
-						},
-						
 						{
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';
@@ -63,9 +62,12 @@ function showStatusRFC(index){
 	var obj = $dtStatusRFC.row(index).data();
 	$fmStatusRFC.find('#sId').val(obj.id);
 	$fmStatusRFC.find('#sName').val(obj.name);
+	$fmStatusRFC.find('#systemId').val(obj.system.id);
+	/*
 	$fmStatusRFC.find('#sCode').val(obj.code);
 	$fmStatusRFC.find('#sMotive').val(obj.reason);
 	$fmStatusRFC.find('#sDescription').val(obj.description);
+	*/
 	$mdStatusRFC.find('#update').show();
 	$mdStatusRFC.find('#save').hide();
 	$mdStatusRFC.modal('show');
@@ -83,16 +85,19 @@ function updateStatusRFC() {
 			blockUI();
 			$.ajax({
 				type : "PUT",
-				url : getCont() + "statusKnowledge/" ,
+				url : getCont() + "component/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
 					id : $fmStatusRFC.find('#sId').val(),
 					name : $fmStatusRFC.find('#sName').val(),
+					systemId:$fmStatusRFC.find('#systemId').val(),
+					/*
 					code : $fmStatusRFC.find('#sCode').val(),
 					reason :$fmStatusRFC.find('#sMotive').val(),
 					description:$fmStatusRFC.find('#sDescription').val(),
+					*/
 				}),
 				success : function(response) {
 					unblockUI();
@@ -123,15 +128,18 @@ function saveStatusRFC() {
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "statusKnowledge/" ,
+				url : getCont() + "component/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
 					name : $fmStatusRFC.find('#sName').val(),
+					systemId:$fmStatusRFC.find('#systemId').val(),
+					/*
 					code : $fmStatusRFC.find('#sCode').val(),
 					reason :$fmStatusRFC.find('#sMotive').val(),
 					description:$fmStatusRFC.find('#sDescription').val(),
+					*/
 				}),
 				success : function(response) {
 					unblockUI();
@@ -159,7 +167,7 @@ function deleteStatusRFC(index) {
 			blockUI();
 			$.ajax({
 				type : "DELETE",
-				url : getCont() + "statusKnowledge/"+obj.id ,
+				url : getCont() + "component/"+obj.id ,
 				timeout : 60000,
 				data : {},
 				success : function(response) {
@@ -176,6 +184,24 @@ function deleteStatusRFC(index) {
 		}
 	});
 }
+function verifyLetters(e){
+	key=e.keyCode || e. which;
+	keyboard=String.fromCharCode(key);
+	characters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYYZ_1234567890";
+	specials="95";
+	
+	special_keyboard=false;
+	
+	for(var i in specials){
+		if(key==specials[i]){
+			special_keyboard=true;
+		}
+	}
+	if(characters.indexOf(keyboard)==-1&&!special_keyboard){
+		return false;
+	}
+}
+
 
 function addStatusRFC(){
 	$fmStatusRFC.validate().resetForm();
@@ -192,16 +218,22 @@ function closeStatusRFC(){
 function initStatusRFCFormValidation() {
 	$fmStatusRFC.validate({
 		rules : {
+			/*
 			'sCode' : {
 				required : true,
 				minlength : 1,
 				maxlength : 20,
 			},
+			*/
 			'sName' : {
 				required : true,
 				minlength : 1,
-				maxlength : 20,
+				maxlength : 100,
 			},
+			'systemId':{
+				required:true
+			}
+			/*
 			'sMotive' : {
 				minlength : 1,
 				maxlength : 50,
@@ -210,18 +242,26 @@ function initStatusRFCFormValidation() {
 				minlength : 1,
 				maxlength : 100,
 			}
+			*/
 		},
 		messages : {
+			/*
 			'sCode' : {
 				required :  "Ingrese un valor",
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
+			
+			*/
 			'sName' : {
 				required :  "Ingrese un valor",
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
+			'systemId' : {
+				required :  "Ingrese un valor"
+			},
+			/*
 			'sMotive' : {
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
@@ -230,6 +270,7 @@ function initStatusRFCFormValidation() {
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
+			*/
 		},
 		highlight,
 		unhighlight,

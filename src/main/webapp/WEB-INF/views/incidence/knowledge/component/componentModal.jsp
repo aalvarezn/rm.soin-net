@@ -15,7 +15,7 @@
 							value="${_csrf.token}" /> <input type="hidden" id="sId" value="" />
 					</div>
 					<div class="row clearfix">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 							<label for="name">Nombre</label>
 							<div class="form-group">
 								<div class="form-line">
@@ -26,6 +26,20 @@
 								</div>
 							</div>
 						</div>
+						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+							<label for="name">Sistema</label>
+							<div class="form-group">
+								<select id="systemId" name="systemId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="">-- Seleccione una opci&oacute;n --</option>
+									<c:forEach items="${system}" var="systems">
+										<option value="${systems.id}">${systems.name }</option>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
+						
 						<!-- 
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<label for="name">Código</label>

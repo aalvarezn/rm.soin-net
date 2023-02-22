@@ -19,4 +19,7 @@ public interface BaseKnowledgeService extends BaseService<Long, BaseKnowledge>{
 
 	Integer countByManager(Integer id, Long idBaseKnowledge);
 
+	public JsonSheet<BaseKnowledge> findAll2(Integer name, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, Long statusId, String dateRange, Long componentId,Integer systemId, Integer userLogin);
+
 }
