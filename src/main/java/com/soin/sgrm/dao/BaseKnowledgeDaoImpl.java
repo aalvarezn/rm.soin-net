@@ -1,7 +1,9 @@
 package com.soin.sgrm.dao;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -13,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.BaseKnowledge;
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.service.AttentionGroupService;
+import com.soin.sgrm.service.SystemService;
 
 @Repository
 public class BaseKnowledgeDaoImpl extends AbstractDao<Long,BaseKnowledge> implements BaseKnowledgeDao {
@@ -22,6 +28,11 @@ public class BaseKnowledgeDaoImpl extends AbstractDao<Long,BaseKnowledge> implem
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	@Autowired
+	AttentionGroupService attentionGroupService;
+	
+	@Autowired
+	SystemService systemService;
 	@Override
 	public Integer existNumError(String numError) {
 		Criteria crit = getSession().createCriteria(BaseKnowledge.class);
@@ -70,8 +81,21 @@ public class BaseKnowledgeDaoImpl extends AbstractDao<Long,BaseKnowledge> implem
 		switch (query) {
 		case 1:
 			// query #1 Obtiene mis BaseKnowledge
-
+			List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(id);
+			List<Long> listAttentionGroupId=new ArrayList<Long>();
+			for(AttentionGroup attentionGroup: attentionGroups) {
+				listAttentionGroupId.add(attentionGroup.getId());
+			}
+			List<System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+			Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
+			systemList.clear();
+			systemList.addAll(systemWithRepeat);
+			List<Integer> systemIds=new ArrayList<Integer>();
+			for(System system: systemList) {
+				systemIds.add(system.getId());
+			}
 			crit.add(Restrictions.eq("status.name", type));
+			crit.add(Restrictions.in("system.id", systemIds));
 			break;
 		case 2:
 			crit.add(Restrictions.eq("status.name", type));

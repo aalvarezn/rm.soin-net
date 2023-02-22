@@ -257,7 +257,7 @@ public class BaseKnowledgeServiceImpl implements BaseKnowledgeService {
 
 	@Override
 	public JsonSheet<BaseKnowledge> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			String sSearch, Long sStatus, String dateRange, Long component,Integer systemId, Integer userLogin) {
+			String sSearch, Long sStatus, String dateRange, Long component,Integer systemId, Integer userLogin,boolean isRm) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
@@ -309,20 +309,22 @@ public class BaseKnowledgeServiceImpl implements BaseKnowledgeService {
 		if(systemId!=0) {
 			columns.put("system", Restrictions.eq("system.id", systemId));
 		}else {
-			List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(userLogin);
-			List<Long> listAttentionGroupId=new ArrayList<Long>();
-			for(AttentionGroup attentionGroup: attentionGroups) {
-				listAttentionGroupId.add(attentionGroup.getId());
+			if(!isRm) {
+				List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(userLogin);
+				List<Long> listAttentionGroupId=new ArrayList<Long>();
+				for(AttentionGroup attentionGroup: attentionGroups) {
+					listAttentionGroupId.add(attentionGroup.getId());
+				}
+				List<System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+				Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
+				systemList.clear();
+				systemList.addAll(systemWithRepeat);
+				List<Integer> systemIds=new ArrayList<Integer>();
+				for(System system: systemList) {
+					systemIds.add(system.getId());
+				}
+				columns.put("system", Restrictions.in("system.id", systemIds));
 			}
-			List<System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
-			Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
-			systemList.clear();
-			systemList.addAll(systemWithRepeat);
-			List<Integer> systemIds=new ArrayList<Integer>();
-			for(System system: systemList) {
-				systemIds.add(system.getId());
-			}
-			columns.put("system", Restrictions.in("system.id", systemIds));
 		}
 	
 		if (component != null) {

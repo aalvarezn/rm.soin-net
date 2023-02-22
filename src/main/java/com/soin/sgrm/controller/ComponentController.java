@@ -1,7 +1,6 @@
 package com.soin.sgrm.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,9 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.AttentionGroup;
-import com.soin.sgrm.model.Authority;
 import com.soin.sgrm.model.Component;
-import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
@@ -81,20 +77,30 @@ public class ComponentController extends BaseController {
 		JsonSheet<Component> Components = new JsonSheet<>();
 		try {
 			Integer userLogin = getUserLogin().getId();
-			List<AttentionGroup> attentionGroups = attentionGroupService.findGroupByUserId(userLogin);
-			List<Long> listAttentionGroupId = new ArrayList<Long>();
-			for (AttentionGroup attentionGroup : attentionGroups) {
-				listAttentionGroupId.add(attentionGroup.getId());
+			boolean rolRM = false;
+			List<System> systemList = new ArrayList<System>();		
+			if (request.isUserInRole("ROLE_Release Manager")) {
+				rolRM = true;
 			}
-			List<System> systemList = systemService.findByGroupIncidence(listAttentionGroupId);
-			Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
-			systemList.clear();
-			systemList.addAll(systemWithRepeat);
-			List<Integer> systemIds = new ArrayList<Integer>();
-			for (System system : systemList) {
-				systemIds.add(system.getId());
+			if (rolRM) {
+				Components.setData(componentService.findAll());
+			} else {
+				List<AttentionGroup> attentionGroups = attentionGroupService.findGroupByUserId(userLogin);
+				List<Long> listAttentionGroupId = new ArrayList<Long>();
+				for (AttentionGroup attentionGroup : attentionGroups) {
+					listAttentionGroupId.add(attentionGroup.getId());
+				}
+				systemList = systemService.findByGroupIncidence(listAttentionGroupId);
+				Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
+				systemList.clear();
+				systemList.addAll(systemWithRepeat);
+				List<Integer> systemIds = new ArrayList<Integer>();
+				for (System system : systemList) {
+					systemIds.add(system.getId());
+				}
+				Components.setData(componentService.findBySystem(systemIds));
 			}
-			Components.setData(componentService.findBySystem(systemIds));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

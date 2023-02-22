@@ -87,18 +87,29 @@ public class BaseKnowledgeController extends BaseController {
 			RedirectAttributes redirectAttributes) {
 		try {
 			Integer userLogin = getUserLogin().getId();
-			loadCountsRelease(request, userLogin);
+			boolean rolRM = false;
+			List<System> systemList = new ArrayList<System>();		
+			if (request.isUserInRole("ROLE_Release Manager")) {
+				rolRM = true;
+			}
+			if (rolRM) {
+				systemList = systemService.list();
+			} else {
+				List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(userLogin);
+				List<Long> listAttentionGroupId=new ArrayList<Long>();
+				for(AttentionGroup attentionGroup: attentionGroups) {
+					listAttentionGroupId.add(attentionGroup.getId());
+				}
+			  systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+				Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
+				systemList.clear();
+				systemList.addAll(systemWithRepeat);
+			}
+			
+			loadCountsRelease(request, userLogin,rolRM);
 			List<Component> components = componentService.findAll();
 			List<StatusKnowlege> statuses = statusService.findAll();
-			List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(userLogin);
-			List<Long> listAttentionGroupId=new ArrayList<Long>();
-			for(AttentionGroup attentionGroup: attentionGroups) {
-				listAttentionGroupId.add(attentionGroup.getId());
-			}
-			List<System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
-			Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
-			systemList.clear();
-			systemList.addAll(systemWithRepeat);
+
 			
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("system", systemList);
@@ -144,8 +155,11 @@ public class BaseKnowledgeController extends BaseController {
 				componentId=(long)0;
 			}
 			String dateRange = request.getParameter("dateRange");
-
-			baseKnowledges = baseKnowledgeService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,componentId,systemId,userLogin);
+			boolean rolRM = false;	
+			if (request.isUserInRole("ROLE_Release Manager")) {
+				rolRM = true;
+			}
+			baseKnowledges = baseKnowledgeService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,componentId,systemId,userLogin,rolRM);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -204,7 +218,7 @@ public class BaseKnowledgeController extends BaseController {
 		try {
 			errors = validSections(addBaseKnowledge, errors);
 			BaseKnowledge baseKnowledgeMod = baseKnowledgeService.findById(addBaseKnowledge.getId());
-
+			addBaseKnowledge.setSystem(baseKnowledgeMod.getSystem());
 			addBaseKnowledge.setUser(baseKnowledgeMod.getUser());
 			addBaseKnowledge.setNumError(baseKnowledgeMod.getNumError());
 			addBaseKnowledge.setComponent(baseKnowledgeMod.getComponent());
@@ -566,15 +580,22 @@ public class BaseKnowledgeController extends BaseController {
 		}
 		return res;
 	}
-	public void loadCountsRelease(HttpServletRequest request, Integer id) {
+	public void loadCountsRelease(HttpServletRequest request, Integer id,boolean isRm) {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> userC = new HashMap<String, Integer>();
+		if(!isRm) {
 		
 		userC.put("draft", baseKnowledgeService.countByType(id, "Borrador", 1, null));
 		userC.put("requested", baseKnowledgeService.countByType(id, "Obsoleto", 1, null));
 		userC.put("completed", baseKnowledgeService.countByType(id, "Vigente", 1, null));
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+		}else {
+			userC.put("draft", baseKnowledgeService.countByType(id, "Borrador", 2, null));
+			userC.put("requested", baseKnowledgeService.countByType(id, "Obsoleto", 2, null));
+			userC.put("completed", baseKnowledgeService.countByType(id, "Vigente", 2, null));
+			userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+		}
 		request.setAttribute("userC", userC);
 		
 	}
