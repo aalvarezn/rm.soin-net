@@ -3,11 +3,13 @@ package com.soin.sgrm.controller;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -133,10 +135,6 @@ public class IncidenceManagementController extends BaseController {
 			Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
 			systemList.clear();
 			systemList.addAll(systemWithRepeat);
-			List<Integer> systemIds=new ArrayList<Integer>();
-			for(System system: systemList) {
-				systemIds.add(system.getId());
-			}
 			List<SystemTypeIncidence> typeIncidences = typeIncidenceService.findAll();
 			List<System_StatusIn> statuses = statusService.findAll();
 			List<System_Priority> priorities = priorityIncidenceService.findAll();

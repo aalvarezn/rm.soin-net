@@ -64,7 +64,6 @@ public class System_StatusInController extends BaseController {
 		Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
 		systemList.clear();
 		systemList.addAll(systemWithRepeat);
-
 		model.addAttribute("systems", systemList);
 		return "/systemStatusIn/systemStatusIn";
 	}

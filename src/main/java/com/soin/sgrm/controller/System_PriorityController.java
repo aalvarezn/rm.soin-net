@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -60,7 +61,6 @@ public class System_PriorityController extends BaseController {
 		Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
 		systemList.clear();
 		systemList.addAll(systemWithRepeat);
-
 		model.addAttribute("systems", systemList);
 		return "/systemPriority/systemPriority";
 	}

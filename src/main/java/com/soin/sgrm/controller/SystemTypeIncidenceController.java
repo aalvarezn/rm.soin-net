@@ -70,7 +70,6 @@ public class SystemTypeIncidenceController extends BaseController {
 		Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
 		systemList.clear();
 		systemList.addAll(systemWithRepeat);
-
 		List<EmailTemplate> emailTemplates =emailTemplateService.listAll();
 		model.addAttribute("emailTemplates", emailTemplates);
 		model.addAttribute("systems", systemList);
