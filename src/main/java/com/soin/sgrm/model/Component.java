@@ -3,9 +3,13 @@ package com.soin.sgrm.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -23,7 +27,13 @@ public class Component implements Serializable {
 
 	@Column(name = "NOMBRE")
 	private String name;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "SISTEMA_ID", nullable = true)
+	private SystemInfo system;
 
+	@Transient 
+	Integer systemId;
 	public Long getId() {
 		return id;
 	}
@@ -38,5 +48,23 @@ public class Component implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public SystemInfo getSystem() {
+		return system;
+	}
+
+	public void setSystem(SystemInfo system) {
+		this.system = system;
+	}
+
+	public Integer getSystemId() {
+		return systemId;
+	}
+
+	public void setSystemId(Integer systemId) {
+		this.systemId = systemId;
+	}
+	
+	
 	
 }

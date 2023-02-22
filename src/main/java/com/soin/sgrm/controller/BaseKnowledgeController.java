@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,17 +27,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.BaseKnowledge;
 import com.soin.sgrm.model.Component;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.EmailReadService;
+import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.BaseKnowledgeService;
 import com.soin.sgrm.service.ComponentService;
 import com.soin.sgrm.service.StatusKnowlegeService;
+import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.model.StatusKnowlege;
 import com.soin.sgrm.model.StatusRFC;
+import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.System_StatusIn;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
@@ -64,6 +71,15 @@ public class BaseKnowledgeController extends BaseController {
 	
 	@Autowired
 	EmailReadService emailReadService;
+	
+	@Autowired
+	AttentionGroupService attentionGroupService;
+	
+	@Autowired
+	SystemService systemService;
+	
+
+	
 	public static final Logger logger = Logger.getLogger(BaseKnowledgeController.class);
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -71,10 +87,32 @@ public class BaseKnowledgeController extends BaseController {
 			RedirectAttributes redirectAttributes) {
 		try {
 			Integer userLogin = getUserLogin().getId();
-			loadCountsRelease(request, userLogin);
+			boolean rolRM = false;
+			List<System> systemList = new ArrayList<System>();		
+			if (request.isUserInRole("ROLE_Release Manager")) {
+				rolRM = true;
+			}
+			if (rolRM) {
+				systemList = systemService.list();
+			} else {
+				List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(userLogin);
+				List<Long> listAttentionGroupId=new ArrayList<Long>();
+				for(AttentionGroup attentionGroup: attentionGroups) {
+					listAttentionGroupId.add(attentionGroup.getId());
+				}
+			  systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+				Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
+				systemList.clear();
+				systemList.addAll(systemWithRepeat);
+			}
+			
+			loadCountsRelease(request, userLogin,rolRM);
 			List<Component> components = componentService.findAll();
 			List<StatusKnowlege> statuses = statusService.findAll();
+
+			
 			model.addAttribute("statuses", statuses);
+			model.addAttribute("system", systemList);
 			model.addAttribute("components", components);
 		} catch (Exception e) {
 			Sentry.capture(e, "baseKnowledge");
@@ -89,7 +127,7 @@ public class BaseKnowledgeController extends BaseController {
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
 		JsonSheet<BaseKnowledge> baseKnowledges = new JsonSheet<>();
 		try {
-
+			Integer userLogin = getUserLogin().getId();
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
 			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
@@ -97,6 +135,7 @@ public class BaseKnowledgeController extends BaseController {
 			String sSearch = request.getParameter("sSearch");
 			 Long statusId;
 			 Long componentId;
+			 Integer systemId;
 			if (request.getParameter("statusId").equals("")) {
 				statusId = null;
 			} else {
@@ -107,11 +146,20 @@ public class BaseKnowledgeController extends BaseController {
 			} else {
 				componentId = (long) Integer.parseInt(request.getParameter("componentId"));
 			}
-			
-
+			if (request.getParameter("systemId").equals("")) {
+				systemId = null;
+			} else {
+				systemId =  Integer.parseInt(request.getParameter("systemId"));
+			}
+			if(systemId==0) {
+				componentId=(long)0;
+			}
 			String dateRange = request.getParameter("dateRange");
-
-			baseKnowledges = baseKnowledgeService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,componentId);
+			boolean rolRM = false;	
+			if (request.isUserInRole("ROLE_Release Manager")) {
+				rolRM = true;
+			}
+			baseKnowledges = baseKnowledgeService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,componentId,systemId,userLogin,rolRM);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -130,6 +178,9 @@ public class BaseKnowledgeController extends BaseController {
 				addBaseKnowledge.setStatus(status);
 				addBaseKnowledge.setUser(user);
 				addBaseKnowledge.setPublicate(false);
+				SystemInfo system=new SystemInfo();
+				system.setId(addBaseKnowledge.getSystemId());
+				addBaseKnowledge.setSystem(system);
 				addBaseKnowledge.setUrl("/wrk2/app_docs_gestInc");
 				addBaseKnowledge.setRequestDate(CommonUtils.getSystemTimestamp());
 				res.setStatus("success");
@@ -167,6 +218,7 @@ public class BaseKnowledgeController extends BaseController {
 		try {
 			errors = validSections(addBaseKnowledge, errors);
 			BaseKnowledge baseKnowledgeMod = baseKnowledgeService.findById(addBaseKnowledge.getId());
+			addBaseKnowledge.setSystem(baseKnowledgeMod.getSystem());
 			addBaseKnowledge.setUser(baseKnowledgeMod.getUser());
 			addBaseKnowledge.setNumError(baseKnowledgeMod.getNumError());
 			addBaseKnowledge.setComponent(baseKnowledgeMod.getComponent());
@@ -528,20 +580,40 @@ public class BaseKnowledgeController extends BaseController {
 		}
 		return res;
 	}
-	public void loadCountsRelease(HttpServletRequest request, Integer id) {
+	public void loadCountsRelease(HttpServletRequest request, Integer id,boolean isRm) {
 		//PUser userLogin = getUserLogin();
 		//List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> userC = new HashMap<String, Integer>();
+		if(!isRm) {
 		
 		userC.put("draft", baseKnowledgeService.countByType(id, "Borrador", 1, null));
 		userC.put("requested", baseKnowledgeService.countByType(id, "Obsoleto", 1, null));
 		userC.put("completed", baseKnowledgeService.countByType(id, "Vigente", 1, null));
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+		}else {
+			userC.put("draft", baseKnowledgeService.countByType(id, "Borrador", 2, null));
+			userC.put("requested", baseKnowledgeService.countByType(id, "Obsoleto", 2, null));
+			userC.put("completed", baseKnowledgeService.countByType(id, "Vigente", 2, null));
+			userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+		}
 		request.setAttribute("userC", userC);
 		
 	}
 	
+	@RequestMapping(value = { "/getComponent/{id}" }, method = RequestMethod.GET)
+	public @ResponseBody List<Component> getPriority(@PathVariable Integer id, Locale locale, Model model) {
+		List<Component> listSystemStatus=null;
+		try {
+			listSystemStatus = componentService.findBySystem(id);
+			
+		} catch (Exception e) {
+			Sentry.capture(e, "systemStatus");
 
+			e.printStackTrace();
+		}
+
+		return listSystemStatus;
+	}
 
 	public List<String> getCC(String ccs) {
 		

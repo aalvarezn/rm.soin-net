@@ -74,12 +74,15 @@
 				<c:if test="${authority.name == 'Gestor Incidencias'}">
 					<c:set var="managerIncidenceAccess" value="true"></c:set>
 				</c:if>
+				<c:if test="${authority.name == 'Gestor Basecono'or authority.name == 'Release Manager'}">
+					<c:set var="managerKnowledgeAccess" value="true"></c:set>
+				</c:if>
 			</c:forEach>
-			<c:if test="${managerIncidenceAccess}">
+			<c:if test="${managerKnowledgeAccess}">
 				<!---- 	#Seccion de incidencias ---->
-				<li class=""><a id="incidenceManagementItem"
+				<li class=""><a id="knowledgeManagementItem"
 					href="javascript:void(0);" class="menu-toggle"> <span>Gestión
-							Tickets</span>
+							base conocimientos</span>
 				</a>
 					<ul class="ml-menu">
 						<li><a id="incidenceManagementItem"
@@ -89,6 +92,24 @@
 								base conocimiento</a></li>
 						<li><a href="<c:url value='/baseKnowledge/'/>">Base
 								conocimiento</a></li>
+						<li><a href="<c:url value='/incidenceManagement/'/>">
+								Tickets</a></li>
+						<li><a href="<c:url value='/systemPriority/'/>">Prioridad
+								Ticket</a></li>
+						<li><a href="<c:url value='/systemTypeIn/'/>">Tipo Ticket</a></li>
+						<li><a href="<c:url value='/systemStatusIn/'/>">Estado
+								Ticket</a></li>
+					</ul></li>
+
+			</c:if>
+			
+			<c:if test="${managerIncidenceAccess}">
+				<!---- 	#Seccion de incidencias ---->
+				<li class=""><a id="incidenceManagementItem"
+					href="javascript:void(0);" class="menu-toggle"> <span>Gestión
+							Tickets</span>
+				</a>
+					<ul class="ml-menu">
 						<li><a href="<c:url value='/incidenceManagement/'/>">
 								Tickets</a></li>
 						<li><a href="<c:url value='/systemPriority/'/>">Prioridad
