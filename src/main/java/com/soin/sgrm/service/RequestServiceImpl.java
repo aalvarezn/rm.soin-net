@@ -73,4 +73,9 @@ public class RequestServiceImpl implements RequestService {
 		return dao.listByTypeAndCodeSoin(type,code_soin);
 	}
 
+	@Override
+	public Request findByNameCode(String tpo) {
+		return dao.findByNameCode(tpo);
+	}
+
 }

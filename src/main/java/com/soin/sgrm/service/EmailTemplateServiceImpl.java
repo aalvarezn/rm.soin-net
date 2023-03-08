@@ -40,6 +40,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestRM_P1_R1;
@@ -86,6 +87,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Autowired
 	SigesService sigeService;
+	
+	@Autowired
+	RequestService requestService;
 
 	EnviromentConfig envConfig = new EnviromentConfig();
 
@@ -307,6 +311,17 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				tpo=part;
 			}
 		}
+		String req="";
+		if(parts.length>3) {
+			req=parts[2];
+		}
+		
+		Request request =new Request();
+		if(tpo!="") {
+			 request =requestService.findByNameCode(req);
+		}
+	
+		
 		/* ------ body ------ */
 		if (email.getHtml().contains("{{userName}}")) {
 			email.setHtml(email.getHtml().replace("{{userName}}",
@@ -349,7 +364,13 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			email.setHtml(email.getHtml().replace("{{message}}",
 					(release.getMessage() != null ? release.getMessage() : "NA")));
 		}
-
+		if(request!=null) {
+			if (email.getHtml().contains("{{tpoDescription}}")) {
+				email.setHtml(email.getHtml().replace("{{tpoDescription}}",
+						(request.getDescription() != "" ? request.getDescription() : "NA")));
+			}
+		}
+		
 		if (email.getHtml().contains("{{technicalSolution}}")) {
 			String technicalSolution = release.getTechnicalSolution() != null ? release.getTechnicalSolution() : "";
 			technicalSolution = technicalSolution.replace("\n", "<br>");
