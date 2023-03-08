@@ -63,13 +63,13 @@
 									data-live-search="true" required="required">
 									<option value="">-- Seleccione una opci&oacute;n --</option>
 									<c:forEach items="${errors}" var="error">
-										<option  value="${error.id }">${error.name }</option>
+										<option value="${error.id }">${error.name }</option>
 									</c:forEach>
 								</select> <label id="errorId_error" class="error fieldError" for="name"
 									style="visibility: hidden">Campo Requerido.</label>
 							</div>
 						</div>
-						<div class="col-lg-12 col-md-12 col-sm-6 col-xs-6">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label for="email_address">Motivo</label>
 							<div class="form-group m-b-0i">
 								<div class="form-line">
@@ -79,6 +79,30 @@
 										maxlength="50"></textarea>
 								</div>
 								<label id="motive_error" class="error fieldError" for="name"
+									style="visibility: hidden;">Campo Requerido.</label>
+							</div>
+						</div>
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<label for="email_address">¿Quieres enviar correo?</label>
+							<div class="form-group m-b-0i" style="margin-top: 3%">
+								<div class="switch">
+									<label>NO<input id="sendMail" type="checkbox"
+										name="sendMail"><span class="lever"></span>S&Iacute;
+									</label>
+								</div>
+							</div>
+						</div>
+						<div id="divEmail" hidden
+							class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+							style="margin-top: 5%">
+							<label for="email_address">Correos a enviar</label>
+							<div class="form-group m-b-0i">
+								<div class="form-line">
+									<input type="text" id="senders" name="senders" required="required"
+									 class="form-control tagInitMail"
+										placeholder="">
+								</div>
+								<label id="senders_error" class="error fieldError" for="name"
 									style="visibility: hidden;">Campo Requerido.</label>
 							</div>
 						</div>

@@ -57,7 +57,10 @@
 
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
-
+<!-- TagInput Js -->
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
@@ -235,6 +238,9 @@
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/rfc/rfcManagement.js?v=${jsVersion}'/>"></script>
+			<!-- TagInput Js -->
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 </body>
 
 </html>
