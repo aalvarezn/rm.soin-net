@@ -1,4 +1,5 @@
 var $formChangeStatus = $('#changeStatusForm');
+var switchStatus=false;
 $(function() {
 	//initImpactFormValidation();
 	$("#contentSummary textarea").parent().removeClass(
@@ -39,6 +40,11 @@ $(function() {
 	});
 	
 	$formChangeStatus.find('#motive').prop('disabled', false);
+	
+	showSendEmail();
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
 });
 
 
@@ -94,11 +100,11 @@ function responseCancelRFC(response) {
 	}
 }
 
-function changeStatusRFC(releaseId, rfcNumRequest) {
+function changeStatusRFC(releaseId, rfcNumRequest,cc) {
 	$formChangeStatus[0].reset();
 	// $formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#idRFC').val(releaseId);
-	
+	$('.tagInitMail#senders').importTags(cc);
 	$formChangeStatus.find('#rfcNumRequest').val(rfcNumRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
@@ -110,6 +116,21 @@ function changeStatusRFC(releaseId, rfcNumRequest) {
 	$('#changeStatusModal').modal('show');
 }
 
+function showSendEmail(){
+	$('#sendMail').change(function() {
+		// this will contain a reference to the checkbox
+		if (this.checked) {
+			
+			 switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+			$('#divEmail').attr( "hidden",false);
+		} else {
+			$('#divEmail').attr( "hidden",true);
+			switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+		}
+		});
+}
 function saveChangeStatusModal(){
 
 	if (!validStatusRFC())
@@ -124,7 +145,9 @@ function saveChangeStatusModal(){
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
 			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
-			motive: $formChangeStatus.find('#motive').val()
+			motive: $formChangeStatus.find('#motive').val(),
+			sendEmail:switchStatus,
+			senders:$formChangeStatus.find('#senders').val()
 		},
 		success : function(response) {
 			responseStatusRFC(response);
@@ -166,17 +189,10 @@ function validStatusRFC() {
 	$formChangeStatus.find('.fieldError').removeClass('activeError');
 	$formChangeStatus.find('.form-line').removeClass('error');
 	$formChangeStatus.find('.form-line').removeClass('focused');
-	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
-		if($.trim(input.value) == ""){
-			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
-			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
-			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
-			"form-line error focused");
-			valid = false;
-		}
-	});
+	
 	$.each($formChangeStatus.find('select[required]'), function( index, select ) {
 		if($.trim(select.value).length === 0 || select.value === ""){
+			
 			var statusSelected =$("#statusId").find("option:selected").text();
 			if(select.id==="errorId"&&statusSelected!=="Error"){
 				valid = true;
@@ -185,6 +201,8 @@ function validStatusRFC() {
 				$formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
 				valid = false;
 			}
+			
+
 		
 		}
 	});
@@ -198,7 +216,28 @@ function validStatusRFC() {
 			valid = false;
 		}
 	});
-
+	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
+		console.log($.trim(input.value) === "");
+		console.log(input.id);
+		if($.trim(input.value) === ""){
+			console.log(input.id);
+			if(input.id==="senders"){
+				if(switchStatus){
+					$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+					$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+					$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+					"form-line error focused");
+					valid = false;
+				}
+			}else{
+			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+			}
+		}
+	});
 	return valid;
 }
 

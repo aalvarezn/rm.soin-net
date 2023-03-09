@@ -409,8 +409,6 @@ function validStatusRFC() {
 		}
 	});
 	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
-		console.log($.trim(input.value) === "");
-		console.log(input.id);
 		if($.trim(input.value) === ""){
 			console.log(input.id);
 			if(input.id==="senders"){
