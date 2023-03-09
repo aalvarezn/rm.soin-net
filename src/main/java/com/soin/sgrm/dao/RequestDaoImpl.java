@@ -87,7 +87,7 @@ public class RequestDaoImpl implements RequestDao {
 	@Override
 	public Request findByNameCode(String code_soin) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Request.class);
-		crit.add(Restrictions.eq("code_ice", code_soin));
+		crit.add(Restrictions.eq("code_soin", code_soin));
 		return (Request) crit.uniqueResult();
 	}
 	
