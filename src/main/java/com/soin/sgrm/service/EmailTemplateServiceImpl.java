@@ -87,7 +87,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Autowired
 	SigesService sigeService;
-	
+
 	@Autowired
 	RequestService requestService;
 
@@ -256,7 +256,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					ccUserFinal = ccUserFinal + "," + ccFinal;
 				}
 			}
-		
+
 		}
 		for (String ccUser : ccUserFinal.split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
@@ -302,26 +302,23 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	public EmailTemplate fillEmail(EmailTemplate email, Release release) {
 		String temp = "";
-		String releaseNumber= release.getReleaseNumber();
-		String[] parts =releaseNumber.split("\\.");
-		boolean test=releaseNumber.contains(".");
-		String tpo="";
-		for(String part:parts ) {
-			if(part.contains("TPO")) {
-				tpo=part;
+		String releaseNumber = release.getReleaseNumber();
+		String[] parts = releaseNumber.split("\\.");
+		boolean test = releaseNumber.contains(".");
+		String tpo = "";
+		for (String part : parts) {
+			if (part.contains("TPO")) {
+				String[] partsTPO = part.split("TPO");
+				String[] partsNumber = part.split(partsTPO[1]);
+				tpo = partsNumber[0] + "-" + partsTPO[1];
 			}
 		}
-		String req="";
-		if(parts.length>3) {
-			req=parts[2];
+
+		Request request = new Request();
+		if (tpo != "") {
+			request = requestService.findByNameCode(tpo);
 		}
-		
-		Request request =new Request();
-		if(tpo!="") {
-			 request =requestService.findByNameCode(req);
-		}
-	
-		
+
 		/* ------ body ------ */
 		if (email.getHtml().contains("{{userName}}")) {
 			email.setHtml(email.getHtml().replace("{{userName}}",
@@ -364,13 +361,12 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			email.setHtml(email.getHtml().replace("{{message}}",
 					(release.getMessage() != null ? release.getMessage() : "NA")));
 		}
-		if(request!=null) {
-			if (email.getHtml().contains("{{tpoDescription}}")) {
-				email.setHtml(email.getHtml().replace("{{tpoDescription}}",
-						(request.getDescription() != "" ? request.getDescription() : "NA")));
-			}
+
+		if (email.getHtml().contains("{{tpoDescription}}")) {
+			email.setHtml(email.getHtml().replace("{{tpoDescription}}",
+					(request.getDescription() != null ? request.getDescription() : "NA")));
 		}
-		
+
 		if (email.getHtml().contains("{{technicalSolution}}")) {
 			String technicalSolution = release.getTechnicalSolution() != null ? release.getTechnicalSolution() : "";
 			technicalSolution = technicalSolution.replace("\n", "<br>");
@@ -413,8 +409,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 		/* ------ Subject ------ */
 		if (email.getSubject().contains("{{tpoNumber}}")) {
-			email.setSubject(email.getSubject().replace("{{tpoNumber}}",
-					(tpo != "" ? tpo : "")));
+			email.setSubject(email.getSubject().replace("{{tpoNumber}}", (tpo != "" ? tpo : "")));
 		}
 		if (email.getSubject().contains("{{releaseNumber}}")) {
 			email.setSubject(email.getSubject().replace("{{releaseNumber}}",
@@ -788,12 +783,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					ccUserFinal = ccUserFinal + "," + ccFinal;
 				}
 			}
-		
+
 		}
 		for (String ccUser : ccUserFinal.split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 		}
-
 
 		mailSender.send(mimeMessage);
 	}
@@ -1105,12 +1099,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					ccUserFinal = ccUserFinal + "," + ccFinal;
 				}
 			}
-		
+
 		}
 		for (String ccUser : ccUserFinal.split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 		}
-
 
 		mailSender.send(mimeMessage);
 	}
@@ -1630,6 +1623,6 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 }
