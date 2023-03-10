@@ -361,6 +361,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			email.setHtml(email.getHtml().replace("{{message}}",
 					(release.getMessage() != null ? release.getMessage() : "NA")));
 		}
+		
+		if (email.getHtml().contains("{{tpoNumber}}")) {
+			email.setHtml(email.getHtml().replace("{{tpoNumber}}",
+					(tpo != null ? tpo : "NA")));
+		}
 
 		if (email.getHtml().contains("{{tpoDescription}}")) {
 			email.setHtml(email.getHtml().replace("{{tpoDescription}}",
