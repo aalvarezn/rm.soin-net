@@ -48,6 +48,9 @@
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 </head>
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
@@ -220,7 +223,7 @@
 									</button>
 								</c:if>
 								<button type="button" class="btn btn-default setIcon"
-									onclick="changeStatusRequest(${request.id}, '${request.numRequest}' )"
+									onclick="changeStatusRequest(${request.id}, '${request.numRequest}', '${request.typePetition.emailTemplate.cc }' )"
 									title="Borrador"
 									style="background-color: #00294c !important; color: #fff; border: none !important;">
 									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
@@ -241,7 +244,8 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 
 </body>
 

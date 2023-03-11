@@ -262,7 +262,7 @@ function changeStatusRelease(releaseId) {
 	var rowData = releaseTable.row(idRow).data();
 	formChangeStatus[0].reset();
 	formChangeStatus.find('#motive').val('');
-	$('.tagInitMail#senders').importTags(rowData.system.emailTemplate.cc);
+	$('.tagInitMail#senders').importTags(rowData.system.emailTemplate[0].cc ? rowData.system.emailTemplate[0].cc : "" );
 	formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	formChangeStatus.find('#idRelease').val(rowData.id);
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
@@ -305,7 +305,7 @@ function saveChangeStatusModal(){
 			dateChange: formChangeStatus.find('#dateChange').val(),
 			motive: formChangeStatus.find('#motive').val(),
 			sendEmail:switchStatus,
-			senders:$formChangeStatus.find('#senders').val(),
+			senders:formChangeStatus.find('#senders').val(),
 			
 		},
 		success : function(response) {
@@ -379,16 +379,16 @@ function validStatusRelease() {
 			console.log(input.id);
 			if(input.id==="senders"){
 				if(switchStatus){
-					$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
-					$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
-					$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+				formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+					formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+					formChangeStatus.find('#'+input.id+"").parent().attr("class",
 					"form-line error focused");
 					valid = false;
 				}
 			}else{
-			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
-			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
-			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			formChangeStatus.find('#'+input.id+"").parent().attr("class",
 			"form-line error focused");
 			valid = false;
 			}

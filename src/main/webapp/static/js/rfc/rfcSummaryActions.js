@@ -104,7 +104,7 @@ function changeStatusRFC(releaseId, rfcNumRequest,cc) {
 	$formChangeStatus[0].reset();
 	// $formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#idRFC').val(releaseId);
-	$('.tagInitMail#senders').importTags(cc);
+	$('.tagInitMail#senders').importTags(cc ? cc : "" );
 	$formChangeStatus.find('#rfcNumRequest').val(rfcNumRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
