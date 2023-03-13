@@ -47,6 +47,9 @@
 
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 </head>
 
 <body class="theme-grey">
@@ -214,11 +217,13 @@
 
 	<%@include file="../../plantilla/footer.jsp"%>
 
-	<script src="<c:url value='/static/js/newRequest/requestSummaryActions.js'/>"></script>
+	<script
+		src="<c:url value='/static/js/newRequest/requestSummaryActions.js'/>"></script>
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 </body>
 
 </html>

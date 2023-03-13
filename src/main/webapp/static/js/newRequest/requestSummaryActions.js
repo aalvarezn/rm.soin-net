@@ -1,4 +1,5 @@
 var $formChangeStatus = $('#changeStatusForm');
+var switchStatus=false;
 $(function() {
 	
 	$('.tableIni').DataTable({
@@ -33,6 +34,11 @@ $(function() {
 	$formChangeStatus.find('#statusId').change(function() {
 		$formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
+	
+	showSendEmail();
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
 });
 
 
@@ -101,10 +107,25 @@ function responseCancelRequest(response) {
 		break;
 	}
 }
-
-function changeStatusRequest(requestId, requestNumRequest) {
+function showSendEmail(){
+	$('#sendMail').change(function() {
+		// this will contain a reference to the checkbox
+		if (this.checked) {
+			
+			 switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+			$('#divEmail').attr( "hidden",false);
+		} else {
+			$('#divEmail').attr( "hidden",true);
+			switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+		}
+		});
+}
+function changeStatusRequest(requestId, requestNumRequest,cc) {
 	$formChangeStatus[0].reset();
 	$formChangeStatus.find('#idRequest').val(requestId);
+	$('.tagInitMail#senders').importTags(cc ? cc : "" );
 	$formChangeStatus.find('#requestNumRequest').val(requestNumRequest);
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'));
@@ -133,7 +154,9 @@ function saveChangeStatusModal(){
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
 			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
-			motive: $formChangeStatus.find('#motive').val()
+			motive: $formChangeStatus.find('#motive').val(),
+			sendEmail:switchStatus,
+			senders:$formChangeStatus.find('#senders').val(),
 		},
 		success : function(response) {
 			responseStatusRequest(response);
