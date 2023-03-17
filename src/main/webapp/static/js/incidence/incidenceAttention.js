@@ -1,6 +1,11 @@
 var $formChangeStatus = $('#changeStatusFormIns');
+var $formChangeStatus2 = $('#changeStatusFormIns2');
+var rowData=null;
+veriStatus=false;
+var hidden = false;
 $(function() {
-	initImpactFormValidation();
+	initRequestFormValidation();
+	initRequestFormValidation2();
 	$('.tableIni').DataTable({
 		"language": optionLanguaje,
 		"searching" : true,
@@ -34,36 +39,29 @@ $(function() {
 		$formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
 	
+	dropDownChange();
 	
-	//setInterval(waitAndshow, 1000);
-	//createFaction();
+	  document.getElementById('applyFor2').style.visibility = 'hidden';
+	  document.getElementById('applyFor').style.visibility = 'visible';
+	// setInterval(waitAndshow, 1000);
+	// createFaction();
 });
 /*
-function waitAndshow() {
-	var initialDate=Date.parse($('#dateInitial').val())/1000;
-	var finalDate=Date.parse($('#dateFinal').val())/1000
-	var	attentionTime=$('#attetionTime').val();
-	console.log(attentionTime);
-	var totalMinutes=(new Date().getTime()/1000-initialDate)/60;
-	var miliTrans=new Date().getTime()/1000-initialDate;
-	console.log(miliTrans);
-	const hours = Math.floor(totalMinutes / 60);
-	 const minutes = (totalMinutes % 60).toFixed(0);
-	 if(minutes<10){
-		 var timer=hours+":0"+minutes;
-	 }else{
-		 var timer=hours+":"+minutes;
-	 }
-	
-	 document.getElementById('timer').innerHTML = timer;
-	 
-	 if(miliTrans>attentionTime){
-		 var col= document.getElementById('timer').style.color="#DD1C5E";
-	 }
-	 //
-	 
-}
-*/
+ * function waitAndshow() { var
+ * initialDate=Date.parse($('#dateInitial').val())/1000; var
+ * finalDate=Date.parse($('#dateFinal').val())/1000 var
+ * attentionTime=$('#attetionTime').val(); console.log(attentionTime); var
+ * totalMinutes=(new Date().getTime()/1000-initialDate)/60; var miliTrans=new
+ * Date().getTime()/1000-initialDate; console.log(miliTrans); const hours =
+ * Math.floor(totalMinutes / 60); const minutes = (totalMinutes %
+ * 60).toFixed(0); if(minutes<10){ var timer=hours+":0"+minutes; }else{ var
+ * timer=hours+":"+minutes; }
+ * 
+ * document.getElementById('timer').innerHTML = timer;
+ * 
+ * if(miliTrans>attentionTime){ var col=
+ * document.getElementById('timer').style.color="#DD1C5E"; } // }
+ */
 function createFaction() {
     var timer = 0;
     
@@ -168,7 +166,7 @@ function responseStatusRFC(response) {
 				"success", 2000);
 		window.location = getCont() + "	incidenceManagement/";
 		
-		//closeChangeStatusModal();
+		// closeChangeStatusModal();
 		break;
 	case 'fail':
 		swal("Error!", response.exception, "error")
@@ -228,6 +226,36 @@ function requestIncidence(){
 	});
 }
 
+function requestIncidence2(){
+	console.log($formChangeStatus.valid());
+	console.log($formChangeStatus);
+	console.log($('#rfcId').val());
+	console.log($formChangeStatus.find('#nodeId').children("option:selected").val());
+	console.log($formChangeStatus.find('#motive').val());
+	console.log($formChangeStatus2.valid());
+	if (!$formChangeStatus.valid()&&!$formChangeStatus2.valid())
+		return false;
+	blockUI();
+	$.ajax({
+		type : "POST",
+		url : getCont() + "incidenceManagement/changeStatus",
+		timeout : 60000,
+		data : {
+			idIncidence : $('#rfcId').val(),
+			idNode: $formChangeStatus.find('#nodeId').children("option:selected").val(),
+			motive: $formChangeStatus.find('#motive').val(),
+			cause: $formChangeStatus2.find('#cause').val(),
+			errorNew: $formChangeStatus2.find('#errorNew').val(),
+			solution: $formChangeStatus2.find('#solution').val()
+		},
+		success : function(response) {
+			responseStatusRFC(response);
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+}
 function initImpactFormValidation() {
 	$formChangeStatus.validate({
 		
@@ -261,7 +289,8 @@ function initImpactFormValidation() {
 function changeStatusRelease(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
-	var rowData = releaseTable.row(idRow).data();
+	 rowData = releaseTable.row(idRow).data();
+	 console.log(rowData);
 	formChangeStatus[0].reset();
 	formChangeStatus.find("#nodeId").find('option').remove();
 	
@@ -284,4 +313,108 @@ function changeStatusRelease(releaseId) {
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
 	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
 	$('#changeStatusModal').modal('show');
+}
+
+function dropDownChange(){
+	
+	$('#nodeId').on('change', function(){
+		
+		var status =$("#nodeId").find("option:selected").data('motive');
+	    veriStatus=false;
+			if(status==="Completado"){
+				veriStatus=true;
+			}
+		if(veriStatus){
+			$('#divComplete').attr( "hidden",false);
+			 document.getElementById('applyFor2').style.visibility = 'visible';
+			  document.getElementById('applyFor').style.visibility = 'hidden';
+		}else{
+			$('#divComplete').attr( "hidden",true);
+			 document.getElementById('applyFor2').style.visibility = 'hidden';
+			  document.getElementById('applyFor').style.visibility = 'visible';
+		}
+		
+	});
+}
+
+function initRequestFormValidation() {
+
+		$formChangeStatus.validate({
+			
+			rules : {
+				'nodeId' : {
+					required : true,
+					
+				},
+				'motive' : {
+					required : true,
+					minlength : 1,
+					maxlength : 255,
+				}
+			},
+			messages : {
+				'nodeId' : {
+					required :  "Seleccione una opci&oacute;n",
+				},
+				'motive' : {
+					required : "Ingrese un valor",
+					minlength : "Ingrese un valor",
+					maxlength : "No puede poseer mas de {0} caracteres"
+				}
+			},
+			highlight,
+			unhighlight,
+			errorPlacement
+		});
+	
+}
+
+
+function initRequestFormValidation2() {
+	
+		$formChangeStatus2.validate({
+			
+			rules : {
+				'errorNew':{
+					required : true,
+					minlength : 1,
+					maxlength : 255,
+				},
+				
+				'cause':{
+					required : true,
+					minlength : 1,
+					maxlength : 255,
+				}
+				,
+				
+				'solution':{
+					required : true,
+					minlength : 1,
+					maxlength : 255,
+				}
+			},
+			messages : {
+				'errorNew' : {
+					required : "Ingrese un valor",
+					minlength : "Ingrese un valor",
+					maxlength : "No puede poseer mas de {0} caracteres"
+				},
+				'cause' : {
+					required : "Ingrese un valor",
+					minlength : "Ingrese un valor",
+					maxlength : "No puede poseer mas de {0} caracteres"
+				},
+				'solution' : {
+					required : "Ingrese un valor",
+					minlength : "Ingrese un valor",
+					maxlength : "No puede poseer mas de {0} caracteres"
+				}
+			},
+			highlight,
+			unhighlight,
+			errorPlacement
+		});
+
+	
 }

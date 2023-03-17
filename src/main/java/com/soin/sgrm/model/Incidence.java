@@ -1,6 +1,5 @@
 package com.soin.sgrm.model;
 
-
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -32,7 +31,7 @@ import com.soin.sgrm.model.wf.NodeIncidence;
 @Entity
 @Table(name = "INCIDENCIA")
 public class Incidence implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -49,30 +48,39 @@ public class Incidence implements Serializable {
 
 	@Column(name = "DETALLE")
 	private String detail;
-	
+
 	@Column(name = "RESULTADO")
 	private String result;
-	
+
 	@Column(name = "NOTA_ADICIONAL")
 	private String note;
-	
+
 	@Column(name = "GENERADO_POR")
 	private String createFor;
-	
+
 	@Column(name = "ASIGNADO")
 	private String assigned;
-	
+
 	@Column(name = "OPERADOR")
 	private String operator;
-	
+
 	@Column(name = "MOTIVO")
 	private String motive;
-	
+
 	@Column(name = "REMITENTES")
 	private String senders;
 
 	@Column(name = "MENSAJE")
 	private String message;
+
+	@Column(name = "ERROR")
+	private String errorNew;
+	
+	@Column(name = "SOLUCION")
+	private String solution;
+	
+	@Column(name = "CAUSA")
+	private String cause;
 	
 	@Column(name = "SLA_ACTIVO")
 	private Integer slaActive;
@@ -80,23 +88,22 @@ public class Incidence implements Serializable {
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHAACTU")
 	private Timestamp updateDate;
-	
-	
+
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
-	
+
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "SALIDA_OPTIMA")
 	private Timestamp exitOptimalDate;
-	
+
 	@Column(name = "TIEMPO_MILI")
 	private Integer timeMili;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_USUARIO", nullable = true)
 	private User user;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_TIPO", nullable = false)
 	private SystemTypeIncidence typeIncidence;
@@ -104,51 +111,50 @@ public class Incidence implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ESTADO", nullable = false)
 	private System_StatusIn status;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_PRIORIDAD", nullable = false)
 	private System_Priority priority;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_SISTEMA", nullable = false)
-	private SystemInfo  system;
+	private SystemInfo system;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "INCIDENCIA_ARCHIVOINCIDENCIA", joinColumns = { @JoinColumn(name = "ID_INCIDENCIA") }, inverseJoinColumns = {
-			@JoinColumn(name = "ARCHIVO_ID") })
+	@JoinTable(name = "INCIDENCIA_ARCHIVOINCIDENCIA", joinColumns = {
+			@JoinColumn(name = "ID_INCIDENCIA") }, inverseJoinColumns = { @JoinColumn(name = "ARCHIVO_ID") })
 	private Set<IncidenceFile> files = new HashSet<>();
 
 	@OrderBy("trackingDate ASC")
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "incidence")
 	private Set<IncidenceTracking> tracking = new HashSet<IncidenceTracking>();
-	
+
 	@OrderBy("logDate ASC")
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "incidence")
 	private Set<IncidenceLog> log = new HashSet<IncidenceLog>();
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_NODO", nullable = true)
 	private NodeIncidence node;
-	
+
 	@Transient
 	private Long typeIncidenceId;
 	@Transient
 	private Integer systemId;
 	@Transient
 	private Long priorityId;
-	
+
 	@Transient
 	private Integer userNewId;
 	@Transient
 	private Long ticketId;
-	
-	
+
 	@Transient
 	private String email;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -204,8 +210,6 @@ public class Incidence implements Serializable {
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
-	
-	
 
 	public String getMotive() {
 		return motive;
@@ -222,7 +226,7 @@ public class Incidence implements Serializable {
 	public void setRequestDate(Timestamp requestDate) {
 		this.requestDate = requestDate;
 	}
-	
+
 	public Timestamp getExitOptimalDate() {
 		return exitOptimalDate;
 	}
@@ -247,7 +251,6 @@ public class Incidence implements Serializable {
 		this.user = user;
 	}
 
-	
 	public SystemTypeIncidence getTypeIncidence() {
 		return typeIncidence;
 	}
@@ -407,8 +410,29 @@ public class Incidence implements Serializable {
 	public void setSlaActive(Integer slaActive) {
 		this.slaActive = slaActive;
 	}
-	
-	
-	
+
+	public String getErrorNew() {
+		return errorNew;
+	}
+
+	public void setErrorNew(String errorNew) {
+		this.errorNew = errorNew;
+	}
+
+	public String getSolution() {
+		return solution;
+	}
+
+	public void setSolution(String solution) {
+		this.solution = solution;
+	}
+
+	public String getCause() {
+		return cause;
+	}
+
+	public void setCause(String cause) {
+		this.cause = cause;
+	}
 	
 }
