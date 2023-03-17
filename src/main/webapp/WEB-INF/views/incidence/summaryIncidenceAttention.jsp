@@ -214,6 +214,20 @@
 					<label for="">Notas adicionales</label>
 					<textarea class="areaWidth" disabled="disabled" rows="" cols="">${incidence.note }</textarea>
 				</div>
+				<c:if test="${incidence.cause != null}">
+								<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-t-10 m-b-10">
+					<label for="">Error presentado</label>
+					<textarea class="areaWidth" disabled="disabled" rows="" cols="">${incidence.errorNew }</textarea>
+				</div>
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+					<label for="">Causa de la incidencia</label>
+					<textarea class="areaWidth" disabled="disabled" rows="" cols="">${incidence.cause }</textarea>
+				</div>
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+					<label for="">Solución aplicada</label>
+					<textarea class="areaWidth" disabled="disabled" rows="" cols="">${incidence.solution }</textarea>
+				</div>
+				</c:if>
 			</div>
 
 			<div class="row clearfix">

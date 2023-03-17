@@ -118,6 +118,9 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 		}if(veri==2) {
 			criteria.addOrder(Order.desc("errorDate"));
 		}
+		if(veri==3) {
+			criteria.addOrder(Order.desc("updateDate"));
+		}
 		else {
 			criteria.addOrder(Order.desc("id"));
 		}

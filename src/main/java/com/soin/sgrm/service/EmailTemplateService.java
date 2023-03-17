@@ -11,6 +11,7 @@ import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.StatusRFC;
+import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFIncidence;
@@ -71,5 +72,8 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
 			String operator, Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate emailNotify,
 			String motive);
+
+	void sendMailNotifyChangeUserIncidence(String numTicket, User userOperator, String motive, Timestamp timestamp,
+			User newUser, EmailTemplate emailNotify);
 
 }

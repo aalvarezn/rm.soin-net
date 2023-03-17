@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -125,13 +124,13 @@ public class IncidenceManagementController extends BaseController {
 		try {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
-			
-			List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(userLogin);
-			List<Long> listAttentionGroupId=new ArrayList<Long>();
-			for(AttentionGroup attentionGroup: attentionGroups) {
+
+			List<AttentionGroup> attentionGroups = attentionGroupService.findGroupByUserId(userLogin);
+			List<Long> listAttentionGroupId = new ArrayList<Long>();
+			for (AttentionGroup attentionGroup : attentionGroups) {
 				listAttentionGroupId.add(attentionGroup.getId());
 			}
-			List<System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+			List<System> systemList = systemService.findByGroupIncidence(listAttentionGroupId);
 			Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
 			systemList.clear();
 			systemList.addAll(systemWithRepeat);
@@ -168,7 +167,7 @@ public class IncidenceManagementController extends BaseController {
 			if (request.getParameter("systemId").equals("")) {
 				systemId = 0;
 			} else {
-				systemId =  Integer.parseInt(request.getParameter("systemId"));
+				systemId = Integer.parseInt(request.getParameter("systemId"));
 			}
 			if (request.getParameter("statusId").equals("")) {
 				statusId = (long) 0;
@@ -188,8 +187,8 @@ public class IncidenceManagementController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			incidences = incidenceService.findAllRequest2(dateRange, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
-					dateRange, typeId, priorityId,systemId,userLogin);
+			incidences = incidenceService.findAllRequest2(dateRange, sEcho, iDisplayStart, iDisplayLength, sSearch,
+					statusId, dateRange, typeId, priorityId, systemId, userLogin);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -252,6 +251,19 @@ public class IncidenceManagementController extends BaseController {
 			incidence.setAssigned(newUser.getFullName());
 			incidence.setUpdateDate(CommonUtils.getSystemTimestamp());
 			incidenceService.update(incidence);
+
+			Integer idTemplate = Integer.parseInt(parameterService.findByCode(32).getParamValue());
+			EmailTemplate emailNotify = emailService.findById(idTemplate);
+			Thread newThread = new Thread(() -> {
+				try {
+					emailService.sendMailNotifyChangeUserIncidence(incidence.getNumTicket(), user,
+							incidence.getMotive(), incidence.getUpdateDate(), newUser, emailNotify);
+				} catch (Exception e) {
+					Sentry.capture(e, "incidence");
+				}
+
+			});
+			newThread.start();
 
 		} catch (Exception e) {
 			Sentry.capture(e, "incidenceChangeUser");
@@ -328,12 +340,22 @@ public class IncidenceManagementController extends BaseController {
 	public @ResponseBody JsonResponse draftRelease(HttpServletRequest request, Model model,
 			@RequestParam(value = "idIncidence", required = true) Long idIncidence,
 			@RequestParam(value = "idNode", required = true) Integer idNode,
-			@RequestParam(value = "motive", required = true) String motive) {
+			@RequestParam(value = "motive", required = true) String motive,
+			@RequestParam(value = "cause", required = false) String cause,
+			@RequestParam(value = "errorNew", required = false) String errorNew,
+			@RequestParam(value = "solution", required = false) String solution
+			) {
 		JsonResponse res = new JsonResponse();
 		try {
 			User user = userService.getUserByUsername(getUserLogin().getUsername());
 			Incidence incidence = incidenceService.findById(idIncidence);
 			NodeIncidence node = nodeService.findByIdNoInci(idNode);
+			
+			if(cause!=null) {
+				incidence.setCause(cause);
+				incidence.setSolution(solution);
+				incidence.setErrorNew(errorNew);
+			}
 			// node.getStatus().setReason(motive);
 			incidence.setNode(node);
 			incidence.setStatus(node.getStatus());
@@ -341,10 +363,9 @@ public class IncidenceManagementController extends BaseController {
 			incidence.setOperator(getUserLogin().getFullName());
 			incidence.setMotive(motive);
 			if (node.getStatus() != null) {
-				
-				
+
 				if (node.getActors() != null) {
-					for(AttentionGroup attentionGroup:node.getActors()) {
+					for (AttentionGroup attentionGroup : node.getActors()) {
 						incidence.setUser(attentionGroup.getLead());
 						incidence.setAssigned(attentionGroup.getLead().getFullName());
 					}
@@ -418,7 +439,7 @@ public class IncidenceManagementController extends BaseController {
 	}
 
 	public void loadCountsRelease(HttpServletRequest request, Integer id) {
-		
+
 		Integer userLogin = getUserLogin().getId();
 		String email = getUserLogin().getFullName();
 		// PUser userLogin = getUserLogin();
@@ -431,6 +452,5 @@ public class IncidenceManagementController extends BaseController {
 		request.setAttribute("userC", userC);
 
 	}
-
 
 }
