@@ -100,7 +100,7 @@ public class BaseKnowledgeController extends BaseController {
 				for(AttentionGroup attentionGroup: attentionGroups) {
 					listAttentionGroupId.add(attentionGroup.getId());
 				}
-			  systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+			   systemList=systemService.findByGroupIncidence(listAttentionGroupId);
 				Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
 				systemList.clear();
 				systemList.addAll(systemWithRepeat);

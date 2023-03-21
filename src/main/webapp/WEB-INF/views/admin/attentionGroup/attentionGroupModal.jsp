@@ -19,7 +19,7 @@
 							<!-- Nav tabs -->
 							<ul class="nav nav-tabs tab-nav-right" role="tablist">
 								<li role="presentation" class="active"><a href="#tabHome"
-									data-toggle="tab">INFORMACIÓN</a></li>
+									data-toggle="tab">INFORMACION</a></li>
 								<li role="presentation"><a href="#tabTeam"
 									data-toggle="tab">GRUPO</a></li>
 							</ul>
@@ -36,18 +36,18 @@
 											<input type="text" maxlength="50" class="form-control"
 												id="name" name="name" placeholder="Ingrese un nombre"
 												style="height: 49px;">
-											<div class="help-info">Máx. 50 caracteres</div>
+											<div class="help-info">M&aacute;x. 50 caracteres</div>
 										</div>
 									</div>
 								</div>
 								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-									<label for="name">Código</label>
+									<label for="name">C&oacute;digo</label>
 									<div class="form-group">
 										<div class="form-line">
 											<input type="text" maxlength="10" class="form-control"
-												id="code" name="code" placeholder="Ingrese un código"
+												id="code" name="code" placeholder="Ingrese un c&oacute;digo"
 												style="height: 49px;">
-											<div class="help-info">Máx. 10 caracteres</div>
+											<div class="help-info">M&aacute;x. 10 caracteres</div>
 										</div>
 									</div>
 								</div>

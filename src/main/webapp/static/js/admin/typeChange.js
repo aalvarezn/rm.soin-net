@@ -4,7 +4,7 @@ var $mdTypeChange = $('#typeChangeModal');
 var $fmTypeChange = $('#typeChangeModalForm');
 
 $(function() {
-	activeItemMenu("typeChangeItem", true);
+	activeItemMenu("releaseItem", true);
 	initDataTable();
 	initTypeChangeFormValidation();
 });
