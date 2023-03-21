@@ -123,13 +123,18 @@ public class SystemServiceImpl implements SystemService {
 	}
 
 	@Override
-	public List<System> findByManagerIncidence(Integer id) {
-		
-		return dao.findByManagerIncidence(id);
+	public List<System> findByGroupIncidence(List<Long> listAttentionGroupId) {
+		return dao.findByGroupIncidence(listAttentionGroupId);
 	}
 
 	@Override
-	public List<System> findByUserIncidence(Integer id) {
-		return dao.findByUserIncidence(id);
+	public List<System> findByUserIncidence(Integer userLogin) {
+		return dao.findByUserIncidence(userLogin);
+	}
+
+	@Override
+	public List<System> findByManagerIncidence(Integer idUser) {
+		// TODO Auto-generated method stub
+		return dao.findByManagerIncidence(idUser);
 	}
 }

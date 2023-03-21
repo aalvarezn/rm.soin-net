@@ -57,7 +57,10 @@
 
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
-
+<!-- TagInput Js -->
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
@@ -164,33 +167,39 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Sistemas</label>
-							<div class="form-group m-b-0">
-								<select id="systemId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${systems}" var="system">
-										<option value="${system.id }">${system.name }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-													<label>Estado</label>
-							<div class="form-group m-b-0">
-								<select id="statusId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${statuses}" var="status">
-										<c:if test="${status.name ne 'Anulado'}">
-											<option value="${status.id }">${status.name }</option>
-										</c:if>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
+					<label>Sistemas</label>
+					<div class="form-group m-b-0">
+						<select id="systemId" class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="0">-- Todos --</option>
+							<c:forEach items="${systems}" var="system">
+								<option value="${system.id }">${system.name }</option>
+							</c:forEach>
+						</select>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+					<label>Estado</label>
+					<div class="form-group m-b-0">
+						<select id="statusId" class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="0">-- Todos --</option>
+							<c:forEach items="${statuses}" var="status">
+								<c:if test="${status.name ne 'Anulado'}">
+									<option value="${status.id }">${status.name }</option>
+								</c:if>
+							</c:forEach>
+						</select>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+					<div class="button-demo-refresh" style="padding-top: 25px;">
+						<button title="Refrescar tabla con filtros!" type="button"
+							class="btn btn-primary setIcon" onclick="refreshTable()">
+							<span><i class="material-icons m-t--2 ">update</i></span>
+						</button>
+					</div>
+				</div>
 			</div>
 			<!-- #tableFilters# -->
 			<div class="row clearfix">
@@ -203,7 +212,7 @@
 								<thead>
 									<tr>
 										<th>ID</th>
-										<th>Número RFC</th>
+										<th>N&uacute;mero RFC</th>
 										<th>Sistema</th>
 										<th>Solicitante</th>
 										<th>Modificado</th>
@@ -220,8 +229,7 @@
 	</section>
 
 	<%@include file="../plantilla/footer.jsp"%>
-<script
-	src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
+
 	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
 	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
 	<script
@@ -230,6 +238,9 @@
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/rfc/rfcManagement.js?v=${jsVersion}'/>"></script>
+			<!-- TagInput Js -->
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 </body>
 
 </html>

@@ -7,10 +7,15 @@ import java.util.List;
 
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
+import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.ReleaseCreate;
@@ -66,7 +71,16 @@ public interface ReleaseDao {
 	Integer getDependency(int id);
 
 	void updateStatusReleaseRFC(Release_RFC release,String operator);
+  
+	Releases_WithoutObj findReleaseWithouObj(Integer id);
 
-	Integer findReleaseByName(String name);
+	void insertReleaseError(ReleaseError release) throws Exception;
+
+	ReleaseSummaryMin findByIdMin(Integer id);
+
+	ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease);
+
+	ReleaseTinySummary findByIdTiny(int id);
+	
 
 }

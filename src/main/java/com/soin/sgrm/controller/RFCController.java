@@ -1,6 +1,7 @@
 package com.soin.sgrm.controller;
 
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -29,6 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Sets;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Status;
@@ -37,13 +40,17 @@ import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
 
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ErrorRFCService;
 import com.soin.sgrm.service.ImpactService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.RFCService;
+import com.soin.sgrm.service.RFCWithoutReleaseService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRFCService;
@@ -51,11 +58,15 @@ import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeRFC;
+import com.soin.sgrm.model.wf.WFRFC;
+import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
-
+import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
@@ -69,6 +80,9 @@ public class RFCController extends BaseController {
 
 	@Autowired
 	RFCService rfcService;
+	
+	@Autowired
+	RFCWithoutReleaseService  rfcWRService;
 
 	@Autowired
 	StatusRFCService statusService;
@@ -101,8 +115,18 @@ public class RFCController extends BaseController {
 	TreeService treeService;
 	
 	@Autowired
+	ErrorRFCService errorService;
+	
+	@Autowired
 	com.soin.sgrm.service.UserService userService;
 	
+	@Autowired
+	EmailReadService emailReadService;
+	
+	@Autowired
+	private NodeService nodeService;
+	@Autowired
+	private ParameterService paramService;
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -130,7 +154,7 @@ public class RFCController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<RFC> rfcs = new JsonSheet<>();
+		JsonSheet<RFC_WithoutRelease> rfcs = new JsonSheet<>();
 		try {
 
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
@@ -159,7 +183,7 @@ public class RFCController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
+			rfcs = rfcWRService.findAll2(name,sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,priorityId, systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -279,6 +303,16 @@ public class RFCController extends BaseController {
 				typeChange = typeChangeService.findById(addRFC.getTypeChangeId());
 				addRFC.setTypeChange(typeChange);
 
+			}
+			if (addRFC.getSenders().length() < 256) {
+				addRFC.setSenders(addRFC.getSenders());
+			} else {
+				addRFC.setSenders(rfcMod.getSenders());
+			}
+			if (addRFC.getMessage().length() < 256) {
+				addRFC.setMessage(addRFC.getMessage());
+			} else {
+				addRFC.setMessage(rfcMod.getMessage());
 			}
 			if (addRFC.getReleasesList() != null) {
 				JSONArray jsonArray = new JSONArray(addRFC.getReleasesList());
@@ -466,6 +500,8 @@ public class RFCController extends BaseController {
 				}
 
 			}
+			List<Errors_RFC> errors = errorService.findAll();
+			model.addAttribute("errors", errors);
 			model.addAttribute("statuses", statusService.findAll());
 			model.addAttribute("systems", systems);
 			model.addAttribute("impacts", impactService.list());
@@ -571,7 +607,7 @@ public class RFCController extends BaseController {
 				return "redirect:/homeRFC";
 			}
 			// Verificar si existe un flujo para el sistema
-
+			NodeRFC node = nodeService.existWorkFlowNodeRFC(rfc);
 			StatusRFC status = statusService.findByKey("name", "Solicitado");
 
 //			if (node != null)
@@ -599,19 +635,45 @@ public class RFCController extends BaseController {
 					newThread.start();
 				}
 			}
-			/*
-			 * // si tiene un nodo y ademas tiene actor se notifica por correo if (node !=
-			 * null && node.getActors().size() > 0) { Integer idTemplate =
-			 * Integer.parseInt(paramService.findByCode(22).getParamValue()); EmailTemplate
-			 * emailActor = emailService.findById(idTemplate); WFRelease releaseEmail = new
-			 * WFRelease(); releaseEmail.convertReleaseToWFRelease(release); Thread
-			 * newThread = new Thread(() -> { try { emailService.sendMailActor(releaseEmail,
-			 * emailActor); } catch (Exception e) { Sentry.capture(e, "release"); }
-			 * 
-			 * });
-			 * 
-			 * newThread.start(); }
-			 */
+			if (node != null) {
+			rfc.setNode(node);
+
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getActors().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(27).getParamValue());
+				EmailTemplate emailActor = emailService.findById(idTemplate);
+				WFRFC rfcEmail = new WFRFC();
+				rfcEmail.convertRFCToWFRFC(rfc);
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailActorRFC(rfcEmail, emailActor);
+					} catch (Exception e) {
+						Sentry.capture(e, "rfc");
+					}
+
+				});
+				newThread.start();
+			}
+			
+			// si tiene un nodo y ademas tiene actor se notifica por correo
+			if (node != null && node.getUsers().size() > 0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(29).getParamValue());
+				
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				WFRFC rfcEmail = new WFRFC();
+				rfcEmail.convertRFCToWFRFC(rfc);
+				String user=getUserLogin().getFullName();
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotifyRFC(rfcEmail, emailNotify,user);
+					} catch (Exception e) {
+						Sentry.capture(e, "rfc");
+					}
+
+				});
+				newThread.start();
+			}
+			}
 
 			rfcService.update(rfc);
 			Set<Release_RFC> releases=  rfc.getReleases();
@@ -781,4 +843,16 @@ public class RFCController extends BaseController {
 		return getCC;
 	}
 	
+	@RequestMapping(value = "/readEmail", method = RequestMethod.GET)
+	public String readEmails(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) throws IOException {
+		try {
+			emailReadService.emailRead();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "se leyo correctamente";
+
+	}
 }

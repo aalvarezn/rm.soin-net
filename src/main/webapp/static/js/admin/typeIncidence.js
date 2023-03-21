@@ -32,20 +32,6 @@ function initDataTable() {
 						{
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';
-								if(row.status){
-									options += '<a onclick="softDeleteRequest('+row.id+')" title="Editar"><i class="material-icons gris" style="font-size: 30px;">check_circle</i></a>';
-									}else{
-										options += '<a onclick="softDeleteRequest('+row.id+')" title="Editar"><i class="material-icons gris" style="font-size: 30px;">cancel</i></a>';
-									}
-								
-								options += ' </div>';
-
-								return options;
-							}
-						},
-						{
-							render : function(data, type, row, meta) {
-								var options = '<div class="iconLineC">';
 
 								options += '<a onclick="showTypeIncidence('
 									+ meta.row
@@ -138,7 +124,6 @@ function showTypeIncidence(index){
 	$fmTypeIncidence.find('#sId').val(obj.id);
 	$fmTypeIncidence.find('#sCode').val(obj.code);
 	$fmTypeIncidence.find('#sDescription').val(obj.description);
-	$fmTypeIncidence.find('#sEmailId').selectpicker('val',obj.emailTemplate.id);
 	$mdTypeIncidence.find('#update').show();
 	$mdTypeIncidence.find('#save').hide();
 	$mdTypeIncidence.modal('show');
@@ -163,8 +148,7 @@ function updateTypeIncidence() {
 				data : JSON.stringify({
 					id : $fmTypeIncidence.find('#sId').val(),
 					code : $fmTypeIncidence.find('#sCode').val(),
-					description:$fmTypeIncidence.find('#sDescription').val(),
-					emailTemplateId :$fmTypeIncidence.find('#sEmailId').val()
+					description:$fmTypeIncidence.find('#sDescription').val()
 				}),
 				success : function(response) {
 					unblockUI();
@@ -201,8 +185,7 @@ function saveTypeIncidence() {
 				timeout : 60000,
 				data : JSON.stringify({
 					code : $fmTypeIncidence.find('#sCode').val(),
-					description:$fmTypeIncidence.find('#sDescription').val(),
-					emailTemplateId :$fmTypeIncidence.find('#sEmailId').val()
+					description:$fmTypeIncidence.find('#sDescription').val()
 				}),
 				success : function(response) {
 					unblockUI();
@@ -251,7 +234,6 @@ function deleteTypeIncidence(index) {
 function addTypeIncidence(){
 	$fmTypeIncidence.validate().resetForm();
 	$fmTypeIncidence[0].reset();
-	$fmTypeIncidence.find('#sEmailId').selectpicker('val',"");
 	$mdTypeIncidence.find('#save').show();
 	$mdTypeIncidence.find('#update').hide();
 	$mdTypeIncidence.modal('show');
@@ -275,9 +257,6 @@ function initTypeIncidenceFormValidation() {
 				required : true,
 				minlength : 1,
 				maxlength : 100,
-			},
-			'sEmailId' : {
-				required : true,
 			}
 		},
 		messages : {
@@ -293,9 +272,6 @@ function initTypeIncidenceFormValidation() {
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
 			
-			'sEmailId' : {
-				required : "Seleccione un valor"
-			},
 		},
 		highlight,
 		unhighlight,

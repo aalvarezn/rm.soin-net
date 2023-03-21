@@ -12,7 +12,7 @@
 	<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
 		<div class="clearfix m-l--15">
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-				<label for="email_address">Numero Ticket</label>
+				<label for="email_address">N&uacute;mero Ticket</label>
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="releaseNumberTinySummary"
@@ -42,12 +42,12 @@
 				</div>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-				<label for="email_address">Fecha de creaci&oacute;n</label>
+				<label for="email_address">Fecha de actualizaci&oacute;n</label>
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="dateTinySummary" name="dateCreate"
 							value='<fmt:formatDate
-										value="${incidence.requestDate }" pattern="dd/MM/YYYY HH:mm:ss"  />' class="form-control"
+										value="${incidence.updateDate }" pattern="dd/MM/YYYY HH:mm:ss"  />' class="form-control"
 							placeholder="">
 					</div>
 				</div>
@@ -59,7 +59,7 @@
 				<div class="form-group m-b-0i">
 					<div class="form-line disabled">
 						<input type="text" disabled id="statusTinySummary"
-							name="systemCode" value="${incidence.status.name }"
+							name="systemCode" value="${incidence.status.status.name }"
 							class="form-control" placeholder="">
 					</div>
 				</div>

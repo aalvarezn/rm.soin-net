@@ -47,6 +47,9 @@
 
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 </head>
 
 <body class="theme-grey">
@@ -103,7 +106,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -152,7 +155,7 @@
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
-									<p>${requestR5.typeChange}</p>
+								<p>${requestR5.typeChange}</p>
 							</div>
 						</div>
 					</div>
@@ -160,8 +163,8 @@
 
 
 			</div>
-	<div class="row clearfix">
-					<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
+			<div class="row clearfix">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
 					<label for="email_address">Cambios de servicio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
@@ -177,7 +180,7 @@
 						</div>
 					</div>
 				</div>
-	</div>
+			</div>
 
 
 			<div class="row clearfix">
@@ -254,14 +257,9 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$("#contentSummary textarea").parent().removeClass('focused');
-			$("#contentSummary textarea").attr("disabled", true);
-			autosize($('textarea'));
-		});
-	</script>
 
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 </body>
 
 </html>

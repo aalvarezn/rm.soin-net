@@ -61,6 +61,9 @@ $(function() {
 	initIncidenceFormValidation();
 	dropDownChange();
 	resetDrops();
+	dropDownChangeMain();
+	resetDropsMain();
+	
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -87,6 +90,9 @@ $('#tableFilters #typeId').change(function() {
 $('#tableFilters #statusId').change(function() {
 	$dtRFCs.ajax.reload();
 });
+$('#tableFilters #systemId').change(function() {
+	$dtRFCs.ajax.reload();
+});
 
 function initIncidenceTable() {
 	$dtRFCs = $('#dtRFCs').DataTable(
@@ -106,6 +112,7 @@ function initIncidenceTable() {
 					"sAjaxSource" : getCont() + "incidence/list",
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
+								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
 								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
 								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
 								{"name": "typeId", "value": $('#tableFilters #typeId').children("option:selected").val()}
@@ -143,7 +150,7 @@ function initIncidenceTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return moment(row.requestDate).format('DD/MM/YYYY h:mm:ss a');
+							return moment(row.updateDate).format('DD/MM/YYYY h:mm:ss a');
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
@@ -156,7 +163,7 @@ function initIncidenceTable() {
 					 {
 						"mRender" : function(data, type, row, meta) {
 							if(row.status)
-								return row.status.name;
+								return row.status.status.name;
 							else
 								return '';
 						},
@@ -164,7 +171,7 @@ function initIncidenceTable() {
 					{
 						"mRender" : function(data, type, row, meta) {
 							var options = '<div class="iconLine">';
-							if (row.status.name == 'Borrador') {
+							if (row.status.status.name == 'Borrador') {
 								
 									options = options
 									+ '<a onclick="editRFC('
@@ -416,6 +423,87 @@ function getColorNode(status){
 	break;
 	}
 }
+function dropDownChangeMain(){
+	console.log("AWDAW");
+	$('#systemId').on('change', function(){
+		var systemId =$('#tableFilters #systemId').val();
+		console.log(systemId);
+		if(systemId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemPriority/getPriority/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].priority.name + '</option>';
+					}
+					$('#priorityId').html(s);
+					$('#priorityId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#priorityId').selectpicker('refresh');
+				}else{
+					resetDropPriorityMain();
+				}
+				
+				
+			}
+		});
+		
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemTypeIn/getypeIncidence/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].typeIncidence.code + '</option>';
+					}
+					$('#typeId').html(s);
+					$('#typeId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#typeId').selectpicker('refresh');
+				}else{
+					resetDropTypeMain();
+				}
+				
+				
+			}
+		});
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemStatusIn/getStatus/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						if(status.name!='Anulado'){
+							s += '<option value="' + result[i].id + '">' + result[i].status.name + '</option>';
+						}
+						
+					}
+					$('#statusId').html(s);
+					$('#statusId').prop('disabled', false);
+					$('#statusId').selectpicker('refresh');
+				}else{
+					resetDropStatusMain();
+				}
+				
+				
+			}
+		});
+		}else{
+			resetDropPriorityMain();
+			resetDropTypeMain();
+			resetDropStatusMain();
+		}
+		
+	});
+}
+
 function dropDownChange(){
 	console.log("AWDAW");
 	$('#sId').on('change', function(){
@@ -466,7 +554,8 @@ function dropDownChange(){
 			}
 		});
 		}else{
-			resetDrop();
+			resetDropPriority();
+			resetDropType();
 		}
 		
 	});
@@ -474,6 +563,12 @@ function dropDownChange(){
 function resetDrops(){
 	$fmIncidence.find('#sId').selectpicker('val',  "");
 	resetDropPriority();
+	resetDropType();
+}	
+function resetDropsMain(){
+	$fmIncidence.find('#systemId').selectpicker('val',  "");
+	resetDropPriority();
+	resetDropType();
 }	
 function resetDropPriority(){
 	var s = '';
@@ -484,7 +579,42 @@ function resetDropPriority(){
 	$('#pId').selectpicker('refresh');
 	
 }
+function resetDropPriorityMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#priorityId').html(s);
+	$('#priorityId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#priorityId').selectpicker('refresh');
+	
+}
 
+function resetDropStatusMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#statusId').html(s);
+	$('#statusId').prop('disabled',true);
+	$('#statusId').selectpicker('refresh');
+	
+}
+
+function resetDropTypeMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#typeId').html(s);
+	$('#typeId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#typeId').selectpicker('refresh');
+	
+}
+function resetDropStatus(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#statusId').html(s);
+	$('#statusId').prop('disabled',true);
+	$('#statusId').selectpicker('refresh');
+	
+}
 function resetDropType(){
 	var s = '';
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
@@ -494,5 +624,4 @@ function resetDropType(){
 	$('#tId').selectpicker('refresh');
 	
 }
-
 

@@ -40,6 +40,10 @@ public class AttentionGroup implements Serializable{
 	
 	@Column(name = "CODIGO")
 	private String code;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ID_LEAD")
+	private User lead;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -50,6 +54,9 @@ public class AttentionGroup implements Serializable{
 
 	@Transient
 	List<Integer> usersAttentionId;
+	
+	@Transient
+	 int leaderId;
 	
 
 	@Transient
@@ -78,6 +85,22 @@ public class AttentionGroup implements Serializable{
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+	
+	public User getLead() {
+		return lead;
+	}
+
+	public void setLead(User lead) {
+		this.lead = lead;
+	}
+
+	public int getLeaderId() {
+		return leaderId;
+	}
+
+	public void setLeaderId(int leadId) {
+		this.leaderId = leadId;
 	}
 
 	public Set<User> getUserAttention() {

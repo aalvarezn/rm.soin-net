@@ -9,22 +9,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.mail.Message;
-import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,16 +22,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.collect.Sets;
-import com.google.gdata.client.appsforyourdomain.UserService;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.Authority;
 import com.soin.sgrm.model.EmailTemplate;
-import com.soin.sgrm.model.Impact;
-import com.soin.sgrm.model.Priority;
-import com.soin.sgrm.model.RFC;
-import com.soin.sgrm.model.ReleaseObject;
-import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Errors_Requests;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestRM_P1_R1;
@@ -50,19 +34,16 @@ import com.soin.sgrm.model.RequestRM_P1_R3;
 import com.soin.sgrm.model.RequestRM_P1_R4;
 import com.soin.sgrm.model.RequestRM_P1_R5;
 import com.soin.sgrm.model.Siges;
-import com.soin.sgrm.model.Status;
-import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.model.System;
-import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.TypePetition;
-import com.soin.sgrm.model.TypeRequest;
 import com.soin.sgrm.model.User;
-import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ErrorRequestService;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RequestBaseR1Service;
 import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestRM_P1_R1Service;
@@ -86,6 +67,9 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	SystemService systemService;
+	
+	@Autowired
+	ProjectService projectService;
 
 	@Autowired
 	SigesService sigeService;
@@ -131,6 +115,9 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	ParameterService parameterService;
+
+	@Autowired
+	ErrorRequestService errorService;
 
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 
@@ -319,9 +306,17 @@ public class RequestBaseController extends BaseController {
 				return "/request/editRequestR3";
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+				Project project=projectService.findById(requestEdit.getSystemInfo().getProyectId());
+				boolean verifySos=false;
+				if(project.getCode().equals("Sostenibilidad")) {
+					verifySos=true;
+				}else {
+					verifySos=false;
+				}
 				model.addAttribute("typesPetition",  typePetitionR4Service.listTypePetition());
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				model.addAttribute("SGRMList", ambientService.list("", "SGRM"));
+				model.addAttribute("verifySos",verifySos);
 				return "/request/editRequestR4";
 			}
 
@@ -450,6 +445,7 @@ public class RequestBaseController extends BaseController {
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
+		
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
 				model.addAttribute("request", requestEdit);
 				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
@@ -821,6 +817,8 @@ public class RequestBaseController extends BaseController {
 				return "/plantilla/404";
 			}
 
+			List<Errors_Requests> errors=errorService.findAll();
+			model.addAttribute("errors", errors);
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
 				model.addAttribute("request", requestEdit);
 				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());

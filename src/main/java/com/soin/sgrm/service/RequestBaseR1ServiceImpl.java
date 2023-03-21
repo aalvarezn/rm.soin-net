@@ -81,7 +81,7 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 		List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
 				.createAlias("managers", "managers").add(Restrictions.eq("managers.id", id)).list();
 		alias.put("status", "status");
-
+		alias.put("user", "user");
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {
 			if (range.length > 1) {
@@ -123,7 +123,7 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 
 			columns.put("status", Restrictions.eq("status.id", statusId));
 		} else {
-			columns.put("status", Restrictions.in("status.name", Constant.FILTREDRFC));
+			columns.put("status", Restrictions.not(Restrictions.in("status.name", Constant.FILTREDRFC)));
 		}
 
 		if (systemId != 0) {
@@ -159,6 +159,7 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 		Map<String, String> alias = new HashMap<String, String>();
 
 		alias.put("status", "status");
+		alias.put("user", "user");
 
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {

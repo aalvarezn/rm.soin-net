@@ -69,5 +69,8 @@ public class System_PriorityServiceImpl implements System_PriorityService  {
 	public System_Priority findByIdAndSys(Integer systemId, Long priorityId) {
 		return dao.findByIdAndSys(systemId,priorityId);
 	}
-
+	@Override
+	public List<System_Priority> findByManger(Integer idUser){
+		return dao.findByManger(idUser);
+	}
 }

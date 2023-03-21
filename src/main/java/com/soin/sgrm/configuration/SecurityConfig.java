@@ -32,6 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.defaultSuccessUrl("/successLogin").permitAll().and().logout()// default logout handling
 				.logoutSuccessUrl("/login")// our new logout success url, we are not replacing other defaults.
 				.permitAll().and().headers().frameOptions().sameOrigin();
+		
+		http.csrf().ignoringAntMatchers("/ws/**");
 	}
 
 	@Autowired

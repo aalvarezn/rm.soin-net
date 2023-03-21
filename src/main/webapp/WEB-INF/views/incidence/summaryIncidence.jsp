@@ -110,12 +110,12 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de actualizaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
 								<p>
-									<fmt:formatDate value="${incidence.requestDate }"
+									<fmt:formatDate value="${incidence.updateDate }"
 										pattern="dd/MM/YYYY HH:mm:ss" />
 								</p>
 							</div>
@@ -134,7 +134,7 @@
 					<label for="email_address">Estado</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${incidence.status.name}</p>
+							<p>${incidence.status.status.name}</p>
 						</div>
 					</div>
 				</div>
@@ -173,7 +173,7 @@
 					<h5 class="titulares">Detalles del tiempo del ticket</h5>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Ingreso del ticket</label>
+					<label for="email_address">Fecha de solicitud del ticket</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -187,7 +187,7 @@
 				</div>
 				
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha limite de atencion</label>
+					<label for="email_address">Fecha limite de atenci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -208,20 +208,6 @@
 						</div>
 					</div>
 				</div>
-					<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Tiempo transcurrido</label>
-					<div class="form-group m-b-0i">
-						<div class="form-group m-b-0i">
-							<div class="form-line disabled">
-								<p id="timer" style="color:white; color:#009688;">
-									0:00
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				
-
 			</div>
 			<div class="row clearfix">
 				<div class="col-sm-12">
@@ -281,29 +267,7 @@
 
 				</div>
 
-				<c:forEach items="${userInfo.authorities}" var="authority">
-					<c:if test="${authority.name == 'Gestor Incidencias'}">
-						<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
-							<div class="m-b-20">
-								<c:if test="${incidence.status.name ne 'Anulado'}">
-									<button type="button" class="btn btn-default setIcon"
-										onclick="confirmCancelRFC(${rfc.id})" title="Anular"
-										style="background-color: #00294c !important; color: #fff; border: none !important;">
-										<span>ANULAR</span><span style="margin-left: 10px;"><i
-											class="material-icons m-t--2">highlight_off</i></span>
-									</button>
-								</c:if>
-								<button type="button" class="btn btn-default setIcon"
-									onclick="changeStatusRFC(${incidence.id}, '${incidence.numTicket}' )"
-									title="Borrador"
-									style="background-color: #00294c !important; color: #fff; border: none !important;">
-									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
-										class="material-icons m-t--2">offline_pin</i></span>
-								</button>
-							</div>
-						</div>
-					</c:if>
-				</c:forEach>
+				
 			</div>
 		</div>
 	</section>

@@ -3,10 +3,12 @@ package com.soin.sgrm.dao.wf;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -75,13 +77,14 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 	public Criteria criteriaByWorkFlow(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] ids)
 			throws SQLException, ParseException {
-
+		List<String> fetchs=new ArrayList<String>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFRelease.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "status");
 		crit.createAlias("user", "user");
 		crit.createAlias("node", "node");
 		crit.createAlias("node.workFlow", "workFlow");
+		crit.createAlias("node.workFlow.type", "type");
 		if (filtred != null) {
 			crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
 		}
@@ -111,7 +114,17 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 		if (statusId != 0) {
 			crit.add(Restrictions.eq("status.id", statusId));
 		}
-		crit.add(Restrictions.eq("workFlow.id", 1));
+		fetchs.add("node");
+		fetchs.add("workFlow");
+		fetchs.add("type");
+		fetchs.add("system");
+		fetchs.add("status");
+		fetchs.add("user");
+		if (fetchs != null)
+			for (String itemModel : fetchs)
+				crit.setFetchMode(itemModel, FetchMode.SELECT);
+		
+		crit.add(Restrictions.eq("type.id", 1));
 		crit.add(Restrictions.isNotNull("node"));
 		crit.addOrder(Order.desc("createDate"));
 		
@@ -178,13 +191,49 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 		crit.createAlias("system", "system");
 		crit.createAlias("node", "node");
 		crit.createAlias("node.workFlow", "workFlow");
-		crit.add(Restrictions.eq("workFlow.id", 1));
+		crit.createAlias("workFlow.type", "type");
+		crit.add(Restrictions.eq("type.id", 1));
 		crit.add(Restrictions.isNotNull("node"));
 		crit.add(Restrictions.in("system.id", ids));
 		crit.add(Restrictions.eq("node.group", group));
-
+		List<String> fetchs=new ArrayList<String>();
+		
+		fetchs.add("node");
+		fetchs.add("workFlow");
+		fetchs.add("type");
+		fetchs.add("system");
+		if (fetchs != null)
+			for (String itemModel : fetchs)
+				crit.setFetchMode(itemModel, FetchMode.SELECT);
+		
 		crit.setProjection(Projections.rowCount());
 		Long count = (Long) crit.uniqueResult();
 		return count.intValue();
+	}
+
+	@Override
+	public void wfStatusReleaseWithOutMin(WFRelease release) {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		String sql = "";
+		Query query = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+			sql = String.format(
+					"update releases_release set estado_id = %s , nodo_id = %s , operador = '%s' , motivo = '%s' , fecha_creacion = sysdate-(1/1440*1)  where id = %s",
+					release.getStatus().getId(), release.getNode().getId(), release.getOperator(),
+					release.getNode().getStatus().getMotive(), release.getId());
+			query = sessionObj.createSQLQuery(sql);
+			query.executeUpdate();
+
+			transObj.commit();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
 	}
 }

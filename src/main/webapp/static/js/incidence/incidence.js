@@ -4,7 +4,7 @@ var $dtRFCs;
 var $fmRFC = $('#fmIncidence');
 var $formChangeUser = $('#changeUserForm');
 var $trackingRFCForm = $('#trackingRFCForm');
-
+var formChangeStatus = $('#changeUserForm');
 $(function() {
 
 	$('input[name="daterange"]').daterangepicker({
@@ -55,12 +55,21 @@ $(function() {
 	 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
 	activeItemMenu("incidenceManagementItem", true);
-	//dropDownChange();
+	// dropDownChange();
 	$("#addRFCSection").hide();
 	$fmRFC.find("#sId").selectpicker('val',"");
 
 	initRFCTable();
 	initRFCFormValidation();
+	initChangeUserFormValidate();
+	updateDataTable();
+	//setInterval(updateDataTable, 1000);
+	//setInterval(updateDataTable, 1000);
+	//setInterval(updateDataTable1, 1000);
+	dropDownChange();
+	resetDrops();
+	dropDownChangeMain();
+	resetDropsMain();
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -87,14 +96,32 @@ $('#tableFilters #typeId').change(function() {
 $('#tableFilters #statusId').change(function() {
 	$dtRFCs.ajax.reload();
 });
+$('#tableFilters #systemId').change(function() {
+	$dtRFCs.ajax.reload();
+});
 
+function updateDataTable(){
+
+			console.log("se actualizo");
+			$dtRFCs.ajax.reload();
+		
+	
+}
+function updateDataTable1(){
+
+	setTimeout(function () {
+		console.log("se actualizo 2");
+		//$dtRFCs.ajax.reload();
+	}, 1000);
+
+}
 function initRFCTable() {
 	$dtRFCs = $('#dtRFCs').DataTable(
 			{
 				
 				'columnDefs' : [ {
 					'visible' : false,
-					'targets' : [ 0]
+					'targets' : [ 0,1]
 				} ],
 				lengthMenu : [ [ 10, 25, 50, -1 ],
 					[ '10', '25', '50', 'Mostrar todo' ] ],
@@ -103,17 +130,21 @@ function initRFCTable() {
 					"iDisplayStart" : 0,
 					"processing" : true,
 					"serverSide" : true,
-					"sAjaxSource" : getCont() + "management/incidence/list",
+					"sAjaxSource" : getCont() + "incidenceManagement/list",
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
+								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
 								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
-								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
-								{"name": "typeId", "value": $('#tableFilters #typeId').children("option:selected").val()}
+								{"name": "typeId", "value": $('#tableFilters #typeId').children("option:selected").val()},
+								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
 						{
 							"mDataProp" : "id",
+						},
+						{
+							"mDataProp" : "node",
 						},
 						{
 						
@@ -143,7 +174,7 @@ function initRFCTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return moment(row.requestDate).format('DD/MM/YYYY h:mm:ss a');
+							return moment(row.updateDate).format('DD/MM/YYYY h:mm:ss a');
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
@@ -156,7 +187,8 @@ function initRFCTable() {
 					 {
 						"mRender" : function(data, type, row, meta) {
 							if(row.status)
-								return row.status.name;
+								
+								return row.status.status.name;
 							else
 								return '';
 						},
@@ -164,47 +196,29 @@ function initRFCTable() {
 					{
 						"mRender" : function(data, type, row, meta) {
 							var options = '<div class="iconLine">';
-							if (row.status.name == 'Solicitado') {
-									if($('#isGI').val()){
+							let userId = $('#userInfo_Id').val();
+								if(row.node!=null){
+								var actor=row.node.actors[0];
+								if(actor!=null){
+									if(actor.userAttention.find(element => element.id == userId)){
 										options = options
-										//aca debe ir un mensaje de asignacion si no se asigando a un usuario
-										+ '<a onclick="editRFC('
-										+ row.id
-										+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
-									}
+										+ '<a onclick="openChangeUserModal('
+										+	 row.id
+										+ ')" title="Asignar"><i class="material-icons gris" style="font-size: 25px;">account_circle</i> </a>';
+										if(row.user!=null){
+										if(userId==row.user.id){
+											options = options
+				
+											+ '<a onclick="attendIncidence('
+											+ row.id
+											+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
+										}
+										}
 
-								
 							}
-							if (row.status.name == 'Enviado a RM') {
-								if($('#isRM').val()){
-									options = options
-									+ '<a onclick="editRFC('
-									+ row.id
-									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
 								}
 
-							
-						}
-							if (row.status.name == 'Enviado a LABS') {
-								if($('#isLABS').val()){
-									options = options
-									+ '<a onclick="editRFC('
-									+ row.id
-									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
 								}
-
-							
-						}
-							if (row.status.name == 'Enviado a INFRA') {
-								if($('#isINFRA').val()){
-									options = options
-									+ '<a onclick="editRFC('
-									+ row.id
-									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>';
-								}
-
-							
-						}
 							options = options
 							+ '<a onclick="openIncidenceTrackingModal('
 							+ row.id
@@ -213,7 +227,7 @@ function initRFCTable() {
 							options = options
 							+ '<a href="'
 							+ getCont()
-							+ 'incidence/summaryIncidence-'
+							+ 'incidenceManagement/summaryIncidenceAttention-'
 							+ row.id
 							+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
 							return options;
@@ -221,6 +235,71 @@ function initRFCTable() {
 					} ],
 					ordering : false,
 			});
+}
+
+function openChangeUserModal(releaseId) {
+	var dtReleases = $('#dtRFCs').dataTable(); // tabla
+	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
+	var rowData = $('#dtRFCs').DataTable().row(idRow).data();
+	formChangeStatus[0].reset();
+	formChangeStatus.find("#userId").find('option').remove();
+	
+	formChangeStatus.find('#userId').append('<option value="">-- Seleccione una opci\u00F3n --</option>' );
+
+	let userId = $('#userInfo_Id').val();
+	let allowActor = null;
+	var actor=rowData.node.actors[0];
+	$.each(actor.userAttention, function(i, value) {
+			allowActor = actor.userAttention.find(element => element.id == userId);
+			if( typeof allowActor !== 'undefined'){
+				formChangeStatus.find('#userId').append('<option data-motive="'+value.fullName+'"  value="'+value.id+'">'+value.fullName+'</option>' );
+
+			}
+		
+	});
+
+	formChangeStatus.find('.selectpicker').selectpicker('refresh');
+	formChangeStatus.find('#idRelease').val(rowData.id);
+	formChangeStatus.find('#releaseNumber').val(rowData.numTicket);
+	//formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
+	$('#changeUserModal').modal('show');
+}
+
+function saveChangeUserModal() {
+	console.log(formChangeStatus.find('#userId').val());
+	if (!formChangeStatus.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea asignar este usuario?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "PUT",
+				url : getCont() + "incidenceManagement/assignIncidence" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					ticketId : formChangeStatus.find('#idRelease').val(),
+					motive : formChangeStatus.find('#motive').val(),
+					userNewId : formChangeStatus.find('#userId').val(),
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtRFCs.ajax.reload();
+					$('#changeUserModal').modal('hide');
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					
+				}
+			});
+		}
+	});
 }
 
 function changeSlide() {
@@ -252,10 +331,33 @@ function closeRFCSection(){
 	changeSlide();
 }
 
-function editRFC(element) {
+function attendIncidence(element) {
 	var cont = getCont();
-	window.location = cont + "	management/incidence/editIncidence-" + element;
+	window.location = cont + "	incidenceManagement/attentionIncidence-" + element;
 }
+
+function editWithUser(element) {
+	// $('#deleteReleaseModal').modal('show');
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea asignarse este ticket?',
+		text: "Esta acci\u00F3n no se puede reversar.",
+		icon: 'question',
+		showCancelButton: true,
+		customClass: 'swal-wide',
+		cancelButtonText: 'Cancelar',
+		cancelButtonColor: '#f14747',
+		confirmButtonColor: '#3085d6',
+		confirmButtonText: 'Aceptar',
+	}).then((result) => {
+		if(result.value){
+			assignIncidence(element);
+		}		
+	});
+	
+	var cont = getCont();
+	window.location = cont + "	incidenceManagement/editIncidence-" + element;
+}
+
 
 
 
@@ -273,9 +375,44 @@ function confirmDeleteRFC(element) {
 		confirmButtonText: 'Aceptar',
 	}).then((result) => {
 		if(result.value){
-			deleteRFC(element);
+			assignIncidence(element);
 		}		
 	});
+}
+
+function assignIncidence(element) {
+	blockUI();
+	var cont = getCont();
+	$.ajax({
+		type : "PUT",
+		url : cont + "incidenceManagement/assignIncidence/" + element,
+		timeout : 60000,
+		data : {},
+		success : function(response) {
+			switch (response.status) {
+			case 'success':
+				swal("Correcto!", "El ticket ha sido asignado exitosamente.",
+						"success", 2000)
+						$dtRFCs.DataTable().ajax.reload();
+				break;
+			case 'fail':
+				swal("Error!", response.exception, "error")
+				break;
+			case 'exception':
+				swal("Error!", response.exception, "warning")
+				break;
+			default:
+				location.reload();
+			}
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+}
+function closeChangeUserModal(){
+	
+	$('#changeUserModal').modal('hide');
 }
 
 function deleteRFC(element) {
@@ -376,6 +513,40 @@ function initRFCFormValidation() {
 	});
 }
 
+function initChangeUserFormValidate() {
+	formChangeStatus.validate({
+		rules : {
+			
+			'userId':{
+				required : true
+			},
+			'motive':{
+				required :true,
+				minlength : 1,
+				maxlength : 100,
+			},
+			
+			
+		},
+		messages : {
+			
+			'userId' : {
+				required : "Ingrese un valor",
+				
+			},
+			'motive' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
+	});
+}
+
+
 
 function openIncidenceTrackingModal(idIncidence) {
 
@@ -434,6 +605,237 @@ function resetDrop(){
 	$('#pId').prop('disabled',true);
 	$('#createRFC').prop('disabled',true);
 	$('#pId').selectpicker('refresh');
+	
+}
+
+function changeStatusRelease(releaseId) {
+	var dtReleases = $('#dtReleases').dataTable(); // tabla
+	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
+	var rowData = releaseTable.row(idRow).data();
+	formChangeStatus[0].reset();
+	formChangeStatus.find("#nodeId").find('option').remove();
+	
+	formChangeStatus.find('#nodeId').append('<option value="">-- Seleccione una opci\u00F3n --</option>' );
+
+	let userId = $('#userInfo_Id').val();
+	let allowActor = null;
+	$.each(rowData.node.edges, function(i, value) {
+		if(value.nodeTo.status && value.nodeTo.status !== null){
+			allowActor = rowData.node.actors.userAttention.find(element => element.id == userId);
+			if( typeof allowActor !== 'undefined'){
+				formChangeStatus.find('#nodeId').append('<option data-motive="'+value.nodeTo.status.motive+'"  value="'+value.nodeTo.id+'">'+value.nodeTo.label+'</option>' );
+
+			}
+		}
+	});
+
+	formChangeStatus.find('.selectpicker').selectpicker('refresh');
+	formChangeStatus.find('#idRelease').val(rowData.id);
+	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
+	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
+	$('#changeStatusModal').modal('show');
+}
+
+
+function dropDownChangeMain(){
+	console.log("AWDAW");
+	$('#systemId').on('change', function(){
+		var systemId =$('#tableFilters #systemId').val();
+		console.log(systemId);
+		if(systemId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemPriority/getPriority/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].priority.name + '</option>';
+					}
+					$('#priorityId').html(s);
+					$('#priorityId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#priorityId').selectpicker('refresh');
+				}else{
+					resetDropPriorityMain();
+				}
+				
+				
+			}
+		});
+		
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemTypeIn/getypeIncidence/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].typeIncidence.code + '</option>';
+					}
+					$('#typeId').html(s);
+					$('#typeId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#typeId').selectpicker('refresh');
+				}else{
+					resetDropTypeMain();
+				}
+				
+				
+			}
+		});
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemStatusIn/getStatus/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						if(status.name!='Anulado'){
+							s += '<option value="' + result[i].id + '">' + result[i].status.name + '</option>';
+						}
+						
+					}
+					$('#statusId').html(s);
+					$('#statusId').prop('disabled', false);
+					$('#statusId').selectpicker('refresh');
+				}else{
+					resetDropStatusMain();
+				}
+				
+				
+			}
+		});
+		}else{
+			resetDropPriorityMain();
+			resetDropTypeMain();
+			resetDropStatusMain();
+		}
+		
+	});
+}
+
+function dropDownChange(){
+	console.log("AWDAW");
+	$('#sId').on('change', function(){
+		var sId =$fmIncidence.find('#sId').val();
+		console.log("awdaw");
+		if(sId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemPriority/getPriority/"+sId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].priority.name + '</option>';
+					}
+					$('#pId').html(s);
+					$('#pId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#pId').selectpicker('refresh');
+				}else{
+					resetDropPriority();
+				}
+				
+				
+			}
+		});
+		
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "systemTypeIn/getypeIncidence/"+sId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].typeIncidence.code + '</option>';
+					}
+					$('#tId').html(s);
+					$('#tId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#tId').selectpicker('refresh');
+				}else{
+					resetDropType();
+				}
+				
+				
+			}
+		});
+		}else{
+			resetDropPriority();
+			resetDropType();
+		}
+		
+	});
+}
+function resetDrops(){
+	$fmRFC.find('#sId').selectpicker('val',  "");
+	resetDropPriority();
+	resetDropType();
+}	
+function resetDropsMain(){
+	$fmRFC.find('#systemId').selectpicker('val',  "");
+	resetDropPriority();
+	resetDropType();
+}	
+function resetDropPriority(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#pId').html(s);
+	$('#pId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#pId').selectpicker('refresh');
+	
+}
+function resetDropPriorityMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#priorityId').html(s);
+	$('#priorityId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#priorityId').selectpicker('refresh');
+	
+}
+
+function resetDropStatusMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#statusId').html(s);
+	$('#statusId').prop('disabled',true);
+	$('#statusId').selectpicker('refresh');
+	
+}
+
+function resetDropTypeMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#typeId').html(s);
+	$('#typeId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#typeId').selectpicker('refresh');
+	
+}
+function resetDropStatus(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#statusId').html(s);
+	$('#statusId').prop('disabled',true);
+	$('#statusId').selectpicker('refresh');
+	
+}
+function resetDropType(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#tId').html(s);
+	$('#tId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#tId').selectpicker('refresh');
 	
 }
 

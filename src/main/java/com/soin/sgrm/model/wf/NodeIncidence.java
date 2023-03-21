@@ -10,20 +10,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
@@ -33,9 +29,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.Ambient;
-import com.soin.sgrm.model.Status;
-import com.soin.sgrm.model.StatusIncidence;
+import com.soin.sgrm.model.AttentionGroup;
+import com.soin.sgrm.model.System_StatusIn;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.utils.Constant;
 
@@ -66,7 +61,11 @@ public class NodeIncidence implements Serializable {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ESTADO_ID", nullable = true)
-	private StatusIncidence status;
+	private System_StatusIn status;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "USERDEFAULT_ID", nullable = true)
+	private User userDefault;
 
 	@Column(name = "X")
 	private Float x;
@@ -79,6 +78,8 @@ public class NodeIncidence implements Serializable {
 
 	@Transient
 	private Integer workFlowId;
+	
+	
 
 	@Transient
 	private Long statusId;
@@ -89,20 +90,20 @@ public class NodeIncidence implements Serializable {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "TRAMITES_NODO_NOT_INC", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
-			@JoinColumn(name = "CUSTOMUSER_ID") })
-	private Set<WFUser> users = new HashSet<WFUser>();
+			@JoinColumn(name = "GRUPOATENCION_ID") })
+	private Set<AttentionGroup> users = new HashSet<AttentionGroup>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "TRAMITES_NODO_ACT_INC", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
-			@JoinColumn(name = "CUSTOMUSER_ID") })
-	private Set<WFUser> actors = new HashSet<WFUser>();
+			@JoinColumn(name = "GRUPOATENCION_ID") })
+	private Set<AttentionGroup> actors = new HashSet<AttentionGroup>();
 
 	@Transient
-	private List<Integer> usersIds;
+	private List<Long> usersIds;
 
 	@Transient
-	private List<Integer> actorsIds;
+	private List<Long> actorsIds;
 
 	public NodeIncidence() {
 		super();
@@ -177,11 +178,11 @@ public class NodeIncidence implements Serializable {
 		this.edges = edges;
 	}
 
-	public StatusIncidence getStatus() {
+	public System_StatusIn getStatus() {
 		return status;
 	}
 
-	public void setStatus(StatusIncidence status) {
+	public void setStatus(System_StatusIn status) {
 		this.status = status;
 	}
 
@@ -201,22 +202,22 @@ public class NodeIncidence implements Serializable {
 		this.sendEmail = sendEmail;
 	}
 
-	public Set<WFUser> getUsers() {
+	public Set<AttentionGroup> getUsers() {
 		return users;
 	}
 
-	public void setUsers(Set<WFUser> users) {
+	public void setUsers(Set<AttentionGroup> users) {
 		this.users = users;
 	}
 
-	public List<Integer> getUsersIds() {
+	public List<Long> getUsersIds() {
 		return usersIds;
 	}
 
 	public void setUsersIds(String usersIds) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			List<Integer> jsonList = mapper.readValue(usersIds, new TypeReference<List<Integer>>() {
+			List<Long> jsonList = mapper.readValue(usersIds, new TypeReference<List<Long>>() {
 			});
 			this.usersIds = jsonList;
 		} catch (Exception e) {
@@ -226,31 +227,31 @@ public class NodeIncidence implements Serializable {
 	}
 
 	public void clearUsers() {
-		for (WFUser user : this.users) {
+		for (AttentionGroup user : this.users) {
 			this.users.remove(user);
 		}
 	}
 
-	public void addUser(WFUser user) {
+	public void addUser(AttentionGroup user) {
 		this.users.add(user);
 	}
 
-	public Set<WFUser> getActors() {
+	public Set<AttentionGroup> getActors() {
 		return actors;
 	}
 
-	public void setActors(Set<WFUser> actors) {
+	public void setActors(Set<AttentionGroup> actors) {
 		this.actors = actors;
 	}
 
-	public List<Integer> getActorsIds() {
+	public List<Long> getActorsIds() {
 		return actorsIds;
 	}
 
 	public void setActorsIds(String actorsIds) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			List<Integer> jsonList = mapper.readValue(actorsIds, new TypeReference<List<Integer>>() {
+			List<Long> jsonList = mapper.readValue(actorsIds, new TypeReference<List<Long>>() {
 			});
 			this.actorsIds = jsonList;
 		} catch (Exception e) {
@@ -260,13 +261,22 @@ public class NodeIncidence implements Serializable {
 	}
 	
 	public void clearActors() {
-		for (WFUser user : this.actors) {
+		for (AttentionGroup user : this.actors) {
 			this.actors.remove(user);
 		}
 	}
 
-	public void addActor(WFUser user) {
+	public void addActor(AttentionGroup user) {
 		this.actors.add(user);
 	}
 
+	public User getUserDefault() {
+		return userDefault;
+	}
+
+	public void setUserDefault(User userDefault) {
+		this.userDefault = userDefault;
+	}
+	
+	
 }

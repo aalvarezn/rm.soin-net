@@ -18,8 +18,6 @@ public interface SystemDao {
 	
 	List<SystemUser> listSystemUserByIds(Object[] ids);
 
-	List<System> findByManagerIncidence(Integer id);
-
 	JsonSheet<?> listSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch);
 
 	SystemInfo findByCode(String code) throws Exception;
@@ -52,6 +50,10 @@ public interface SystemDao {
 	
 	List<System> listProjects(int id);
 
-	List<System> findByUserIncidence(Integer id);
+	List<System> findByGroupIncidence(List<Long> listAttentionGroupId);
+
+	List<System> findByUserIncidence(Integer userLogin);
+
+	List<System> findByManagerIncidence(Integer idUser);
 
 }

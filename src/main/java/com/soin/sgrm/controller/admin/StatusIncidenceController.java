@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.StatusIncidence;
-import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.StatusIncidenceService;
-import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
@@ -59,7 +57,6 @@ public class StatusIncidenceController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-
 			statusIncidenceService.save(addStatusIncidence);
 
 			res.setMessage("Estado incidencia agregado!");
@@ -78,7 +75,7 @@ public class StatusIncidenceController extends BaseController {
 		try {
 			res.setStatus("success");
 			statusIncidenceService.update(uptStatusIncidence);
-
+			
 			res.setMessage("Estado incidencia modificado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "statusIncidence");
@@ -104,4 +101,6 @@ public class StatusIncidenceController extends BaseController {
 		}
 		return res;
 	}
+	
+
 }

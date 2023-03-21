@@ -12,4 +12,6 @@ public interface System_PriorityService extends BaseService<Long,System_Priority
 
 	System_Priority findByIdAndSys(Integer systemId, Long priorityId);
 
+	List<System_Priority> findByManger(Integer idUser);
+
 }

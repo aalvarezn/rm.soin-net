@@ -1,16 +1,14 @@
 package com.soin.sgrm.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.model.AttentionGroup;
-import com.soin.sgrm.model.RFC;
-import com.soin.sgrm.model.StatusIncidence;
+import com.soin.sgrm.response.JsonSheet;
 
 
 @Repository
@@ -24,6 +22,10 @@ public class AttentionGroupDaoImpl extends AbstractDao<Long,AttentionGroup> impl
 		crit.add(Restrictions.eq("userAttention.id", id));
 		return crit.list();
 	}
+
+
+
+
 
 }
 								

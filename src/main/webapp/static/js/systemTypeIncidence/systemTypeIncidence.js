@@ -220,6 +220,7 @@ function showPriorityIncidence(index){
 	console.log(obj);
 	$fmPriorityIncidence.find('#sId').selectpicker('val',obj.system.id);
 	$fmPriorityIncidence.find('#eId').selectpicker('val',obj.emailTemplate.id);
+	$('#typeIncidenceId').prop('disabled', true);
 	var s = '';
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 	$('#typeIncidenceId').html(s);

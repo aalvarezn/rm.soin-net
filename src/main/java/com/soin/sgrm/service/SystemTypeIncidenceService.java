@@ -1,3 +1,4 @@
+
 package com.soin.sgrm.service;
 
 import java.util.List;
@@ -11,5 +12,7 @@ public interface SystemTypeIncidenceService extends BaseService<Long,SystemTypeI
 	List<SystemTypeIncidence> findBySystem(Integer id);
 
 	SystemTypeIncidence findByIdAndSys(Integer systemId, Long typeIncidence);
+
+	List<SystemTypeIncidence> findByManager(Integer idUser);
 
 }

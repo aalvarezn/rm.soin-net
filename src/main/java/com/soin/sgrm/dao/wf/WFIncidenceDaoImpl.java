@@ -83,6 +83,7 @@ public class WFIncidenceDaoImpl implements WFIncidenceDao {
 		crit.createAlias("user", "user");
 		crit.createAlias("node", "node");
 		crit.createAlias("node.workFlow", "workFlow");
+		crit.createAlias("node.workFlow.type", "type");
 		if (filtred != null) {
 			crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
 		}
@@ -112,7 +113,7 @@ public class WFIncidenceDaoImpl implements WFIncidenceDao {
 		if (statusId != 0) {
 			crit.add(Restrictions.eq("status.id", statusId));
 		}
-		crit.add(Restrictions.eq("workFlow.id", 2));
+		crit.add(Restrictions.eq("type.id", 2));
 		crit.add(Restrictions.isNotNull("node"));
 		crit.addOrder(Order.desc("createDate"));
 		
@@ -131,7 +132,7 @@ public class WFIncidenceDaoImpl implements WFIncidenceDao {
 			sql = String.format(
 					"update incidencia set estado_id = %s , nodo_id = %s , operador = '%s' , motivo = '%s' , fecha_creacion = sysdate  where id = %s",
 					incidence.getStatus().getId(), incidence.getNode().getId(), incidence.getOperator(),
-					incidence.getNode().getStatus().getReason(), incidence.getId());
+					incidence.getNode().getStatus().getStatus().getReason(), incidence.getId());
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();
 
@@ -179,7 +180,8 @@ public class WFIncidenceDaoImpl implements WFIncidenceDao {
 		crit.createAlias("system", "system");
 		crit.createAlias("node", "node");
 		crit.createAlias("node.workFlow", "workFlow");
-		crit.add(Restrictions.eq("workFlow.id", 1));
+		crit.createAlias("node.workFlow.type", "type");
+		crit.add(Restrictions.eq("workFlow.id", 2));
 		crit.add(Restrictions.isNotNull("node"));
 		crit.add(Restrictions.in("system.id", ids));
 		crit.add(Restrictions.eq("node.group", group));

@@ -120,6 +120,7 @@ function upload() {
 function uploadInputFile(f, idRow) {
 	var cont = getCont()
 	var formData = new FormData();
+	console.log(cont + "file/" + "singleUploadIncidence-" + $('#rfcId').val());
 	formData
 			.append('file', $('#addFileModal table #file_' + idRow)[0].files[0]);
 	// Ajax call for file uploaling

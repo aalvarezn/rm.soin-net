@@ -211,6 +211,25 @@ public class SystemDaoImpl implements SystemDao {
 		    		.add(Restrictions.eq("managers.id", id))
 		    		.list();
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<System> findByUserIncidence(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("usersIncidence", "usersIncidence");
+		crit.add( Restrictions.eq("usersIncidence.id", id));
+		List<System> systemList = crit.list();
+		return systemList;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<System> findByGroupIncidence(List<Long> listAttentionGroupId) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("attentionGroup", "attentionGroup");
+		crit.add( Restrictions.in("attentionGroup.id", listAttentionGroupId));
+		List<System> systemList = crit.list();
+		return systemList;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -222,15 +241,4 @@ public class SystemDaoImpl implements SystemDao {
 
 		return systemList;
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<System> findByUserIncidence(Integer id) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
-		crit.createAlias("usersIncidence", "usersIncidence");
-		crit.add( Restrictions.eq("usersIncidence.id", id));
-		List<System> systemList = crit.list();
-		return systemList;
-	}
-
 }

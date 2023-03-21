@@ -11,7 +11,7 @@ public class Constant {
 
 	public static final String[] FILTRED = new String[] { "Anulado", "Rollback" };
 	
-	public static final String[] FILTREDRFC=new String[] {"Borrador","Solicitado","Completado","Rechazado"};
+	public static final String[] FILTREDRFC=new String[] {"Anulado"};
 
 	public static final String[] STATISTICBAR = new String[] { "Completados", "Certificacion", "En Revision",
 			"Borrador" };

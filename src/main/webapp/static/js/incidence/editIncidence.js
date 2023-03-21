@@ -15,7 +15,7 @@ $(function() {
 	 $('#systemId').selectpicker('val',$('#systemInfoId').val());
 	initTable();
 	initTableAdd();
-	initData();
+	//initData();
 	 $('#releaseTable tbody').on( 'click', 'tr', function () {
 	      if ( $(this).hasClass('selected') ) {
 	            $(this).removeClass('selected');
@@ -244,7 +244,7 @@ function sendPartialRFC() {
 			// responseAjaxSendPartialRelease(response);
 			changeSaveButton(false);
 			origForm = $rfcEditForm.serialize();
-			$dataReleaseCheck=$dataRelease.slice();
+			//$dataReleaseCheck=$dataRelease.slice();
 			reloadPreview();
 		},
 		error: function(x, t, m) {
@@ -290,28 +290,7 @@ function chargeData(charge){
 
 	}
 }
-function initData(){
-	var idRFC=$('#rfcId').val();
-	chargeData(true);
-		$.ajax({
-			type: 'GET',
-			url: getCont() + "rfc/getRFC-"+idRFC,
-			success: function(result) {
-				if(result.length!=0){
-					$dataRelease=result.releases;
-					$dataReleaseCheck=$dataRelease.slice();
-					chargeData(false);
-				}else{
-					chargeData(false);
-				}
-				
-				
-			}
-		});
-		
-		
-	
-}
+
 function initTable(){
 
 	
@@ -1005,7 +984,7 @@ function sendRFC() {
 			responseAjaxSendRFC(response);
 			changeSaveButton(false);
 			origForm = $rfcEditForm.serialize();
-			$dataReleaseCheck=$dataRelease.slice();
+			//$dataReleaseCheck=$dataRelease.slice();
 			reloadPreview();
 		},
 		error: function(x, t, m) {
@@ -1043,7 +1022,7 @@ function requestIncidence() {
 			responseAjaxRequestRFC(response);
 			changeSaveButton(false);
 			origForm = $rfcEditForm.serialize();
-			$dataReleaseCheck=$dataRelease.slice();
+			//$dataReleaseCheck=$dataRelease.slice();
 			reloadPreview();
 		},
 		error: function(x, t, m) {

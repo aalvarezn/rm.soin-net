@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.RFCDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.CommonUtils;
@@ -33,7 +35,7 @@ public class RFCServiceImpl implements RFCService {
 
 	@Autowired
 	RFCDao dao;
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
 
@@ -84,7 +86,7 @@ public class RFCServiceImpl implements RFCService {
 
 		alias.put("status", "status");
 		alias.put("user", "user");
-		
+		alias.put("typeChange", "typeChange");
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {
 			if (range.length > 1) {
@@ -103,19 +105,17 @@ public class RFCServiceImpl implements RFCService {
 
 		Criterion qSrch = null;
 		if (sSearch != null && sSearch.length() > 0) {
-			qSrch = Restrictions.or(
-
-					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+			qSrch = Restrictions.or(Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("reasonChange", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
-					
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("typeChange.name", sSearch, MatchMode.ANYWHERE).ignoreCase()
 					);
 		}
 		if (sStatus == 0) {
 			sStatus = null;
 		}
 		if (sStatus != null) {
-			
+
 			columns.put("status", Restrictions.eq("status.id", sStatus));
 		}
 
@@ -128,10 +128,10 @@ public class RFCServiceImpl implements RFCService {
 			columns.put("siges", Restrictions.or(Restrictions.eq("siges.system.id", systemId)));
 
 		}
-		 
 
 		List<String> fetchs = new ArrayList<String>();
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
+
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
 	}
 
 	public String verifySecuence(String partCode) {
@@ -184,7 +184,7 @@ public class RFCServiceImpl implements RFCService {
 		// TODO Auto-generated method stub
 		return dao.countByType(id, type, query, ids);
 	}
-	
+
 	@Override
 	public Integer countByManager(Integer id, Long idRFC) {
 		return dao.countByManager(id, idRFC);
@@ -199,10 +199,9 @@ public class RFCServiceImpl implements RFCService {
 		Map<String, String> alias = new HashMap<String, String>();
 
 		List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
-		.createAlias("managers","managers")
-		.add(Restrictions.eq("managers.id", id)).list();
+				.createAlias("managers", "managers").add(Restrictions.eq("managers.id", id)).list();
 		alias.put("status", "status");
-		
+		alias.put("typeChange", "typeChange");
 		String[] range = (dateRange != null) ? dateRange.split("-") : null;
 		if (range != null) {
 			if (range.length > 1) {
@@ -226,21 +225,20 @@ public class RFCServiceImpl implements RFCService {
 
 					Restrictions.like("numRequest", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 					Restrictions.like("reasonChange", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase()
-					
-					
-					);
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("typeChange.name", sSearch, MatchMode.ANYWHERE).ignoreCase()
+
+			);
 		}
 		if (sStatus == 0) {
 			sStatus = null;
 		}
 
 		if (sStatus != null) {
-			
+
 			columns.put("status", Restrictions.eq("status.id", sStatus));
-		}else {
-			columns.put("status",Restrictions.in("status.name",
-					Constant.FILTREDRFC));
+		} else {
+			columns.put("status", Restrictions.not(Restrictions.in("status.name", Constant.FILTREDRFC)));
 		}
 
 		if (sPriority != 0) {
@@ -251,24 +249,26 @@ public class RFCServiceImpl implements RFCService {
 			alias.put("siges", "siges");
 			columns.put("siges", Restrictions.or(Restrictions.eq("siges.system.id", systemId)));
 
-		}else {
-			List<Integer> listaId=new ArrayList<Integer>();
-			for(SystemInfo system: systems) {
+		} else {
+			List<Integer> listaId = new ArrayList<Integer>();
+			for (SystemInfo system : systems) {
 				listaId.add(system.getId());
 			}
 			alias.put("systemInfo", "systemInfo");
-			columns.put("systemInfo",(Restrictions.in("systemInfo.id", listaId)));
+			columns.put("systemInfo", (Restrictions.in("systemInfo.id", listaId)));
 		}
-	
-		
-		 
 
 		List<String> fetchs = new ArrayList<String>();
 		fetchs.add("releases");
 		fetchs.add("files");
 		fetchs.add("tracking");
 		fetchs.add("user");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
+	}
+	@Override
+	public RFC_WithoutRelease findRfcWithRelease(Long id) {
+		
+		return dao.findRfcWithRelease(id);
 	}
 
 }

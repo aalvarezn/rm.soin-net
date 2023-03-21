@@ -223,7 +223,7 @@ function sendPartialRFC() {
 		// async : false,
 		type : "PUT",
 		url : getCont() + "rfc/saveRFC",
-		timeout: 60000,
+		timeout: 600000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
@@ -460,7 +460,7 @@ function searchTree(releaseNumber) {
 	$.ajax({
 		type : "GET",
 		url : getCont() + "rfc/tree/"+ releaseNumber + "/2",
-		timeout : 60000,
+		timeout : 600000,
 		data : {},
 		success : function(response) {
 			ajaxSearchTree(response);
@@ -735,6 +735,7 @@ var dataRFC = $dtRFCs.rows('.selected').data();
 			});
 			if(verification){
 				var description=data.description;
+				description=description.replace(/"/g, "'");
 				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+description.replace(/\n|\r/g, "")+'","user":'+JSON.stringify(data.user)+',"haveSQL":'+data.haveSQL+',"haveDependecy":"'+data.haveDependecy+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
 				$dataRelease.unshift(obj);
@@ -772,6 +773,7 @@ var dataRFC = $dtRFCs.rows('.selected').data();
 			if(verification){
 				
 				var description=""+data.description+"";
+				description=description.replace(/"/g, "'");
 				let text ='{"id":'+(data.id).toString()+',"releaseNumber":"'+(data.releaseNumber).toString()+'","description":"'+description.replace(/\n|\r/g, "")+'","user":'+JSON.stringify(data.user)+',"haveSQL":'+data.haveSQL+',"haveDependecy":"'+data.haveDependecy+'","createDate":'+data.createDate+',"status":{"name":"'+(data.status.name).toString()+'"},"tracking":'+JSON.stringify(data.tracking)+'}';
 				const obj = JSON.parse(text);
 				$dataRelease.unshift(obj);
@@ -999,7 +1001,7 @@ function sendRFC() {
 		// async : false,
 		type : "PUT",
 		url : getCont() + "rfc/saveRFC",
-		timeout: 60000,
+		timeout: 600000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({
@@ -1053,7 +1055,7 @@ function requestRFC() {
 		// async : false,
 		type : "PUT",
 		url : getCont() + "rfc/saveRFC",
-		timeout: 60000,
+		timeout: 600000,
 		dataType : "json",
 		contentType: "application/json; charset=utf-8",
 		data : JSON.stringify({

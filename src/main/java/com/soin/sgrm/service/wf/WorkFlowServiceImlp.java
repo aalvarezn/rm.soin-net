@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.wf.WorkFlowDao;
 import com.soin.sgrm.model.wf.WorkFlow;
 import com.soin.sgrm.model.wf.WorkFlowIncidence;
+import com.soin.sgrm.model.wf.WorkFlowRFC;
 
 @Transactional("transactionManager")
 @Service("WorkFlowService")
@@ -43,7 +44,19 @@ public class WorkFlowServiceImlp implements WorkFlowService {
 	}
 
 	@Override
+	public boolean verifyCreation(Integer systemId, Integer typeId) {
+		return dao.verifyCreation(systemId,typeId);
+	}
+
+	@Override
+	public WorkFlowRFC findByIdRFC(Integer id) {
+		// TODO Auto-generated method stub
+		return dao.findByIdRFC(id);
+	}
+
+	@Override
 	public WorkFlowIncidence findByIdIncidence(Integer id) {
+		// TODO Auto-generated method stub
 		return dao.findByIdIncidence(id);
 	}
 

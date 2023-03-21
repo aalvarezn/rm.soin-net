@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <html>
@@ -133,8 +133,9 @@
 										</div>
 										<div class="content">
 											<div class="text">COMPLETADOS</div>
-											<div class="number count-to" data-from="0" data-to="${userC['completed']}"
-												data-speed="1000" data-fresh-interval="20"></div>
+											<div class="number count-to" data-from="0"
+												data-to="${userC['completed']}" data-speed="1000"
+												data-fresh-interval="20"></div>
 										</div>
 									</div>
 								</div>
@@ -159,78 +160,87 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Tipo</label>
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+							<label>Sistema</label>
 							<div class="form-group m-b-0">
-								<select id="typeId"
+								<select id="systemId" name="systemId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${typeincidences}" var="typeincidence">
-										<option value="${typeincidence.id }">${typeincidence.code }</option>
+									<option value="">-- Todos --</option>
+									<c:forEach items="${systems}" var="system">
+										<option value="${system.id }">${system.name }</option>
 									</c:forEach>
 								</select>
+
 							</div>
+
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+							<label>Tipo de ticket </label>
+							<div class="form-group m-b-0">
+								<select id="typeId" disabled name="typeId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="">-- Todos --</option>
+								</select>
+
+							</div>
+
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 							<label>Prioridad</label>
 							<div class="form-group m-b-0">
-								<select id="priorityId"
+								<select id="priorityId" name="priorityId" disabled
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${priorities}" var="priority">
-										<option value="${priority.id }">${priority.name }</option>
-									</c:forEach>
+									<option value="">-- Todos --</option>
 								</select>
+
 							</div>
+
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 							<label>Estado</label>
 							<div class="form-group m-b-0">
-								<select id="statusId"
+								<select id="statusId" name="statusId" disabled
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${statuses}" var="status">
-										<c:if test="${status.name ne 'Anulado'}">
-											<option value="${status.id }">${status.name }</option>
-										</c:if>
-									</c:forEach>
+									<option value="">-- Todos --</option>
 								</select>
-							</div>
-						</div>
 
+							</div>
+
+						</div>
 					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-					<div id="tableSection" class="row clearfix">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="body ">
-								<div class="body table-responsive">
-									<table id="dtRFCs"
-										class="table table-bordered table-striped table-hover dataTable">
-										<thead>
-											<tr>
-												<th></th>
-												<th>Número Ticket</th>
-												<th>Titulo</th>
-												<th>Detalle del problema</th>
-												<th>Asignado A</th>
-												<th>Creado por</th>
-												<th>Modificado</th>
-												<th>Prioridad</th>
-												<th>Estado</th>
-												<th>Acciones</th>
-											</tr>
-										</thead>
+						<div id="tableSection" class="row clearfix">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="body ">
+									<div class="body table-responsive">
+										<table id="dtRFCs"
+											class="table table-bordered table-striped table-hover dataTable">
+											<thead>
+												<tr>
+													<th></th>
+													<th>N&uacute;mero Ticket</th>
+													<th>Titulo</th>
+													<th>Detalle del problema</th>
+													<th>Asignado A</th>
+													<th>Creado por</th>
+													<th>Modificado</th>
+													<th>Prioridad</th>
+													<th>Estado</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
 
-									</table>
+										</table>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					
+
 					</div>
 				</div>
 				<!-- #tableSection# -->

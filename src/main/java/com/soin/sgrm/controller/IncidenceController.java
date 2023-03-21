@@ -1,5 +1,6 @@
 package com.soin.sgrm.controller;
 
+import java.awt.print.Printable;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -50,7 +51,10 @@ import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.SystemTypeIncidence;
 import com.soin.sgrm.model.System_Priority;
+import com.soin.sgrm.model.System_StatusIn;
 import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.model.User;
@@ -58,6 +62,7 @@ import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRelease;
+import com.soin.sgrm.model.wf.WFUser;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.EmailReadService;
@@ -73,6 +78,7 @@ import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.SystemTypeIncidenceService;
 import com.soin.sgrm.service.System_PriorityService;
+import com.soin.sgrm.service.System_StatusInService;
 import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
 import com.soin.sgrm.service.TypeIncidenceService;
@@ -88,7 +94,7 @@ public class IncidenceController extends BaseController {
 	@Autowired
 	RFCService rfcService;
 	@Autowired
-	StatusIncidenceService statusService;
+	System_StatusInService statusService;
 	@Autowired
 	StatusService statusReleaseService;
 	@Autowired
@@ -120,7 +126,7 @@ public class IncidenceController extends BaseController {
 	@Autowired
 	NodeService nodeService;
 	@Autowired
-    ParameterService paramService;
+	ParameterService paramService;
 	public static final Logger logger = Logger.getLogger(IncidenceController.class);
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -130,10 +136,11 @@ public class IncidenceController extends BaseController {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
 			List<System> systems = systemService.findByUserIncidence(userLogin);
-			// List<TypeIncidence> typeIncidences = typeIncidenceService.findAll();
-			List<StatusIncidence> statuses = statusService.findAll();
-			// List<PriorityIncidence> priorities = priorityIncidenceService.findAll();
-			// model.addAttribute("typeincidences", typeIncidences);
+			List<SystemTypeIncidence> typeIncidences = typeIncidenceService.findAll();
+			List<System_StatusIn> statuses = statusService.findAll();
+			List<System_Priority> priorities = priorityIncidenceService.findAll();
+			model.addAttribute("typeincidences", typeIncidences);
+			model.addAttribute("priorities", priorities);
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("systems", systems);
 		} catch (Exception e) {
@@ -157,27 +164,34 @@ public class IncidenceController extends BaseController {
 			String sSearch = request.getParameter("sSearch");
 			Long statusId;
 			Long priorityId;
+			Integer systemId;
+			Integer userLogin = getUserLogin().getId();
 			Long typeId;
+			if (request.getParameter("systemId").equals("")) {
+				systemId = 0;
+			} else {
+				systemId = Integer.parseInt(request.getParameter("systemId"));
+			}
 			if (request.getParameter("statusId").equals("")) {
-				statusId = null;
+				statusId = (long) 0;
 			} else {
 				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
 			}
 			if (request.getParameter("priorityId").equals("")) {
-				priorityId = null;
+				priorityId = (long) 0;
 			} else {
 				priorityId = (long) Integer.parseInt(request.getParameter("priorityId"));
 			}
 
 			if (request.getParameter("typeId").equals("")) {
-				typeId = null;
+				typeId = (long) 0;
 			} else {
 				typeId = (long) Integer.parseInt(request.getParameter("typeId"));
 			}
 			String dateRange = request.getParameter("dateRange");
 
 			incidences = incidenceService.findAllRequest(email, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
-					dateRange, typeId, priorityId);
+					dateRange, typeId, priorityId, userLogin, systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -202,7 +216,7 @@ public class IncidenceController extends BaseController {
 				return "/plantilla/404";
 			}
 
-			if (!incidenceEdit.getStatus().getName().equals("Borrador")) {
+			if (!incidenceEdit.getStatus().getStatus().getName().equals("Borrador")) {
 				redirectAttributes.addFlashAttribute("data", "Ticket no disponible para editar.");
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
@@ -232,7 +246,7 @@ public class IncidenceController extends BaseController {
 			 * "No tiene permisos sobre el rfc."); String referer =
 			 * request.getHeader("Referer"); return "redirect:" + referer; }
 			 */
-			List<System_Priority> priorities= priorityIncidenceService.findBySystem(incidenceEdit.getSystem().getId());
+			List<System_Priority> priorities = priorityIncidenceService.findBySystem(incidenceEdit.getSystem().getId());
 			model.addAttribute("systems", systems);
 			model.addAttribute("typeChange", typeChangeService.findAll());
 			model.addAttribute("priorities", priorities);
@@ -241,8 +255,7 @@ public class IncidenceController extends BaseController {
 			model.addAttribute("senders", incidenceEdit.getSenders());
 			model.addAttribute("message", incidenceEdit.getMessage());
 			if (incidenceEdit.getTypeIncidence() != null) {
-				model.addAttribute("ccs",
-				 getCC(incidenceEdit.getTypeIncidence().getEmailTemplate().getCc()));
+				model.addAttribute("ccs", getCC(incidenceEdit.getTypeIncidence().getEmailTemplate().getCc()));
 			}
 			return "/incidence/editIncidence";
 
@@ -260,19 +273,20 @@ public class IncidenceController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			User user = userService.getUserByUsername(getUserLogin().getUsername());
-			StatusIncidence status = statusService.findByKey("code", "draft");
+			SystemInfo system = systemService.findById(addIncidence.getSystemId());
+			System_StatusIn status = statusService.findByIdByCode(system.getId(), "draft");
 			if (status != null) {
 				addIncidence.setStatus(status);
+				addIncidence.setSlaActive(status.getSlaActive());
 				addIncidence.setCreateFor(user.getFullName());
-				addIncidence.setSystem(systemService.findById(addIncidence.getSystemId()));
-				addIncidence.setRequestDate(CommonUtils.getSystemTimestamp());
+				addIncidence.setSystem(system);
+				//addIncidence.setRequestDate(CommonUtils.getSystemTimestamp());
+				addIncidence.setUpdateDate(CommonUtils.getSystemTimestamp());
 				addIncidence.setMotive("Inicio de ticket");
 				addIncidence.setOperator(user.getFullName());
 				addIncidence.setTypeIncidence(typeIncidenceService.findById(addIncidence.getTypeIncidenceId()));
-				addIncidence.setNumTicket(incidenceService.generatTicketNumber(addIncidence.getSystem().getName()));
+				addIncidence.setNumTicket(incidenceService.generatTicketNumber(addIncidence.getSystem().getName(),addIncidence.getTypeIncidence().getTypeIncidence().getCode()));
 				addIncidence.setPriority(priorityIncidenceService.findById(addIncidence.getPriorityId()));
-				addIncidence.setTypeIncidence(typeIncidenceService.findById(addIncidence.getTypeIncidenceId()));
-				addIncidence.setNumTicket(incidenceService.generatTicketNumber(addIncidence.getSystem().getName()));
 				incidenceService.save(addIncidence);
 				res.setData(addIncidence.getId().toString());
 				res.setStatus("success");
@@ -305,7 +319,7 @@ public class IncidenceController extends BaseController {
 
 		try {
 			errors = validSections(addIncidence, errors);
-			Incidence incidenceMod =incidenceService.getIncidences(addIncidence.getId());
+			Incidence incidenceMod = incidenceService.getIncidences(addIncidence.getId());
 			incidenceMod.setPriority(priorityIncidenceService.findById(addIncidence.getPriorityId()));
 			incidenceMod.setTypeIncidence(typeIncidenceService.findById(addIncidence.getTypeIncidenceId()));
 			incidenceMod.setNote(addIncidence.getNote());
@@ -315,21 +329,17 @@ public class IncidenceController extends BaseController {
 			incidenceMod.setSenders(addIncidence.getSenders());
 			incidenceMod.setMessage(addIncidence.getMessage());
 			/*
-			if (addRFC.getImpactId() != 0) {
-				impact = impactService.findById(addRFC.getImpactId());
-				addRFC.setImpact(impact);
-			}
-
-			if (addRFC.getPriorityId() != 0) {
-				priority = priorityService.findById(addRFC.getPriorityId());
-				addRFC.setPriority(priority);
-			}
-			if (addRFC.getTypeChangeId() != null) {
-				typeChange = typeChangeService.findById(addRFC.getTypeChangeId());
-				addRFC.setTypeChange(typeChange);
-
-			}
-			*/
+			 * if (addRFC.getImpactId() != 0) { impact =
+			 * impactService.findById(addRFC.getImpactId()); addRFC.setImpact(impact); }
+			 * 
+			 * if (addRFC.getPriorityId() != 0) { priority =
+			 * priorityService.findById(addRFC.getPriorityId());
+			 * addRFC.setPriority(priority); } if (addRFC.getTypeChangeId() != null) {
+			 * typeChange = typeChangeService.findById(addRFC.getTypeChangeId());
+			 * addRFC.setTypeChange(typeChange);
+			 * 
+			 * }
+			 */
 			incidenceService.update(incidenceMod);
 			res.setStatus("success");
 			if (errors.size() > 0) {
@@ -348,8 +358,8 @@ public class IncidenceController extends BaseController {
 	}
 
 	@RequestMapping(value = "/updateIncidence/{incidenceId}", method = RequestMethod.GET)
-	public String updateRFC(@PathVariable String incidenceId, HttpServletRequest request, Locale locale, HttpSession session,
-			RedirectAttributes redirectAttributes) {
+	public String updateRFC(@PathVariable String incidenceId, HttpServletRequest request, Locale locale,
+			HttpSession session, RedirectAttributes redirectAttributes) {
 		try {
 			Incidence incidence = null;
 
@@ -362,30 +372,181 @@ public class IncidenceController extends BaseController {
 			}
 			// Verificar si existe un flujo para el sistema
 
-			StatusIncidence status = statusService.findByKey("name", "Solicitado");
-			AttentionGroup attentionGroup=attentionGroupService.findByKey("code", "GI");
-			incidence.setAttentionGroup(attentionGroup);
+			System_StatusIn status = statusService.findByIdByName(incidence.getSystem().getId(), "Solicitado");
+
+			if (status == null) {
+				redirectAttributes.addFlashAttribute("data",
+						"Necesita tener el estado Solicitado asignado al release.");
+				return "redirect:/incidence/editIncidence-" + incidence.getId();
+			}
 			NodeIncidence node = nodeService.existWorkFlowNodeIn(incidence);
 //			if (node != null)
-			
+
 //				release.setNode(node);
 
 			incidence.setStatus(status);
-			incidence.setMotive(status.getReason());
-			incidence.setRequestDate((CommonUtils.getSystemTimestamp()));
+			incidence.setSlaActive(status.getSlaActive());
+			incidence.setMotive(status.getStatus().getReason());
 			incidence.setOperator(getUserLogin().getFullName());
-			
-			String[] time=incidence.getPriority().getTime().split(":");
-			int hours=Integer.parseInt(time[0]);
-			int minutes=Integer.parseInt(time[1]);
-			int mili=hours*3600+minutes*60;
+
+			if(incidence.getRequestDate()==null) {
+			incidence.setRequestDate((CommonUtils.getSystemTimestamp()));
+			incidence.setUpdateDate((CommonUtils.getSystemTimestamp()));
+
+		
+			String[] time = incidence.getPriority().getTime().split(":");
+			int hours = Integer.parseInt(time[0]);
+			int minutes = Integer.parseInt(time[1]);
+			int mili = hours * 3600000 + minutes * 60000;
 			incidence.setTimeMili(mili);
-			 Calendar calendar = Calendar.getInstance();
-			    calendar.setTime(incidence.getRequestDate());
-			    calendar.add(Calendar.HOUR, hours);
-			    calendar.add(Calendar.MINUTE, minutes);
-			    Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
-			    incidence.setExitOptimalDate(timestamp);
+			Calendar dayExit = Calendar.getInstance();
+			dayExit.setTime(incidence.getRequestDate());
+			dayExit.add(Calendar.HOUR, hours);
+			dayExit.add(Calendar.MINUTE, minutes);
+			Date dateNow = new Date();
+			Calendar dayFinish = Calendar.getInstance();
+			dayFinish.setTime(dateNow);
+			int fiveHour = 17;
+			// c.add(Calendar.HOUR, fiveHour);
+			dayFinish.set(Calendar.HOUR_OF_DAY, fiveHour);
+			dayFinish.set(Calendar.MINUTE, 0);
+			dayFinish.set(Calendar.SECOND, 0);
+			dayFinish.set(Calendar.MILLISECOND, 0);
+
+			Calendar dayNext = Calendar.getInstance();
+			dayNext.setTime(dateNow);
+			int eightHour = 8;
+			// c.add(Calendar.HOUR, fiveHour);
+			dayNext.set(Calendar.HOUR_OF_DAY, eightHour);
+			dayNext.set(Calendar.MINUTE, 0);
+			dayNext.set(Calendar.SECOND, 0);
+			dayNext.set(Calendar.MILLISECOND, 0);
+			dayNext.add(Calendar.DAY_OF_YEAR, 1);
+			int dayOfWeek = dayNext.get(Calendar.DAY_OF_WEEK);
+
+			// c.add(Calendar.DATE, 1);
+			Timestamp timestampDayFive = new Timestamp(dayFinish.getTimeInMillis());
+
+			/*
+			 * Date dt = new Date(); Calendar c = Calendar.getInstance(); c.setTime(dt);
+			 * c.add(Calendar.DATE, 1); dt = c.getTime();
+			 * 
+			 * 
+			 */
+			int res = 0;
+			do {
+				res = (int) dayExit.getTimeInMillis() - (int) dayFinish.getTimeInMillis();
+				if (mili > res) {
+					if (res > 0) {
+						if (dayNext.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+
+							dayNext.add(Calendar.DAY_OF_YEAR, 1);
+
+							dayExit.set(Calendar.DATE, dayNext.get(Calendar.DATE));
+							dayExit.set(Calendar.HOUR_OF_DAY, eightHour);
+							dayExit.set(Calendar.MINUTE, 0);
+							dayExit.set(Calendar.SECOND, 0);
+							dayExit.set(Calendar.MILLISECOND, 0);
+							dayExit.set(Calendar.MILLISECOND, res);
+							dayFinish.set(Calendar.DATE, dayNext.get(Calendar.DATE));
+							dayFinish.set(Calendar.HOUR_OF_DAY, fiveHour);
+							// dayFinish=dayNext;
+							Timestamp timestampTest = new Timestamp(dayNext.getTimeInMillis());
+							timestampTest = new Timestamp(dayFinish.getTimeInMillis());
+							timestampTest = new Timestamp(dayExit.getTimeInMillis());
+							java.lang.System.out.println(timestampTest);
+							// dayExit=dayNext;
+							Timestamp timestampDayNext = new Timestamp(dayNext.getTimeInMillis());
+							java.lang.System.out.println("dia siguiente 8 " + timestampDayNext);
+							Timestamp timestampOptim = new Timestamp(dayExit.getTimeInMillis());
+							java.lang.System.out.println("salida optima" + timestampOptim);
+							Timestamp timestampFinishDay = new Timestamp(dayFinish.getTimeInMillis());
+							java.lang.System.out
+									.println("dia actual 5 debe ser igual al de salida optima" + timestampFinishDay);
+							dayOfWeek = dayNext.get(Calendar.DAY_OF_WEEK);
+						} else {
+							dayExit.set(Calendar.DATE, dayNext.get(Calendar.DATE));
+							dayExit.set(Calendar.HOUR_OF_DAY, eightHour);
+							dayExit.set(Calendar.MINUTE, 0);
+							dayExit.set(Calendar.SECOND, 0);
+							dayExit.set(Calendar.MILLISECOND, 0);
+							dayExit.set(Calendar.MILLISECOND, res);
+							Timestamp timestampTest = new Timestamp(dayExit.getTimeInMillis());
+							java.lang.System.out.println(timestampTest);
+							java.lang.System.out.println( dayNext.get(Calendar.DATE));
+
+							dayFinish.set(Calendar.DATE, dayNext.get(Calendar.DATE));
+							dayFinish.set(Calendar.HOUR_OF_DAY, fiveHour);
+							// dayFinish=dayNext;
+							timestampTest = new Timestamp(dayExit.getTimeInMillis());
+							java.lang.System.out.println(timestampTest);
+							java.lang.System.out.println(timestampTest);
+							// dayExit=dayNext;
+							Timestamp timestampDayNext = new Timestamp(dayNext.getTimeInMillis());
+							java.lang.System.out.println("dia siguiente 8 " + timestampDayNext);
+							Timestamp timestampOptim = new Timestamp(dayExit.getTimeInMillis());
+							java.lang.System.out.println("salida optima" + timestampOptim);
+							Timestamp timestampFinishDay = new Timestamp(dayFinish.getTimeInMillis());
+							java.lang.System.out
+									.println("dia actual 5 debe ser igual al de salida optima" + timestampFinishDay);
+							dayNext.add(Calendar.DAY_OF_YEAR, 1);
+							dayNext.set(Calendar.HOUR_OF_DAY, eightHour);
+							dayNext.set(Calendar.MINUTE, 0);
+							dayNext.set(Calendar.SECOND, 0);
+							dayNext.set(Calendar.MILLISECOND, 0);
+						}
+					}
+				} else {
+
+					dayExit.setTime(incidence.getRequestDate());
+					dayExit.add(Calendar.DAY_OF_YEAR, 1);
+					if(dayExit.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY) {
+						dayExit.add(Calendar.DAY_OF_YEAR, 2);
+						dayExit.set(Calendar.HOUR_OF_DAY, eightHour);
+						dayExit.set(Calendar.MINUTE, 0);
+						dayExit.set(Calendar.SECOND, 0);
+						dayExit.set(Calendar.MILLISECOND, 0);
+						
+						dayFinish.set(Calendar.DATE, dayExit.get(Calendar.DATE));
+						dayFinish.set(Calendar.HOUR_OF_DAY, fiveHour);
+						dayFinish.set(Calendar.MINUTE, 0);
+						dayFinish.set(Calendar.SECOND, 0);
+						dayFinish.set(Calendar.MILLISECOND, 0);
+						
+						dayNext.set(Calendar.DATE, dayExit.get(Calendar.DATE));
+						dayNext.set(Calendar.HOUR_OF_DAY, eightHour);
+						dayNext.set(Calendar.MINUTE, 0);
+						dayNext.set(Calendar.SECOND, 0);
+						dayNext.set(Calendar.MILLISECOND, 0);
+						dayNext.add(Calendar.DAY_OF_YEAR, 1);
+					}else {
+						dayExit.set(Calendar.HOUR_OF_DAY, eightHour);
+						dayExit.set(Calendar.MINUTE, 0);
+						dayExit.set(Calendar.SECOND, 0);
+						dayExit.set(Calendar.MILLISECOND, 0);
+						dayFinish.set(Calendar.DATE, dayExit.get(Calendar.DATE));
+						dayFinish.set(Calendar.HOUR_OF_DAY, fiveHour);
+						dayFinish.set(Calendar.MINUTE, 0);
+						dayFinish.set(Calendar.SECOND, 0);
+						dayFinish.set(Calendar.MILLISECOND, 0);
+						
+						dayNext.set(Calendar.DATE, dayExit.get(Calendar.DATE));
+						dayNext.set(Calendar.HOUR_OF_DAY, eightHour);
+						dayNext.set(Calendar.MINUTE, 0);
+						dayNext.set(Calendar.SECOND, 0);
+						dayNext.set(Calendar.MILLISECOND, 0);
+						dayNext.add(Calendar.DAY_OF_YEAR, 1);
+					}
+					Timestamp timestampNewRequest = new Timestamp(dayExit.getTimeInMillis());
+					incidence.setRequestDate(timestampNewRequest);
+					dayExit.add(Calendar.HOUR, hours);
+					dayExit.add(Calendar.MINUTE, minutes);
+				}
+			} while (res > 0);
+
+			Timestamp timestamp = new Timestamp(dayExit.getTimeInMillis());
+			incidence.setExitOptimalDate(timestamp);
+			}
 			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
 				if (incidence.getTypeIncidence().getEmailTemplate() != null) {
 					EmailTemplate email = incidence.getTypeIncidence().getEmailTemplate();
@@ -402,45 +563,49 @@ public class IncidenceController extends BaseController {
 					newThread.start();
 				}
 			}
-			
+
 			if (node != null) {
-			incidence.setNode(node);
+				incidence.setNode(node);
 
-			// si tiene un nodo y ademas tiene actor se notifica por correo
-			if (node != null && node.getActors().size() > 0) {
-				Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
-				EmailTemplate emailActor = emailService.findById(idTemplate);
-				WFIncidence incidenceEmail = new WFIncidence();
-				incidenceEmail.convertReleaseToWFIncidence(incidence);
-				Thread newThread = new Thread(() -> {
-					try {
-						emailService.sendMailActorIncidence(incidenceEmail, emailActor);
-					} catch (Exception e) {
-						Sentry.capture(e, "release");
-					}
+				// si tiene un nodo y ademas tiene actor se notifica por correo
+				if (node != null && node.getActors().size() > 0) {
+					Integer idTemplate = Integer.parseInt(paramService.findByCode(25).getParamValue());
+					EmailTemplate emailActor = emailService.findById(idTemplate);
+					WFIncidence incidenceEmail = new WFIncidence();
+					incidenceEmail.convertReleaseToWFIncidence(incidence);
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailActorIncidence(incidenceEmail, emailActor);
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
 
-				});
-				newThread.start();
-			}
-			
-			// si tiene un nodo y ademas tiene actor se notifica por correo
-			if (node != null && node.getUsers().size() > 0) {
-				Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
-				
-				EmailTemplate emailNotify = emailService.findById(idTemplate);
-				WFIncidence incidenceEmail = new WFIncidence();
-				incidenceEmail.convertReleaseToWFIncidence(incidence);
-				String user=getUserLogin().getFullName();
-				Thread newThread = new Thread(() -> {
-					try {
-						emailService.sendMailNotify(incidenceEmail, emailNotify,user);
-					} catch (Exception e) {
-						Sentry.capture(e, "release");
-					}
+					});
+					newThread.start();
+				}
 
-				});
-				newThread.start();
-			}
+				// si tiene un nodo y ademas tiene actor se notifica por correo
+				if (node != null && node.getUsers().size() > 0) {
+					Integer idTemplate = Integer.parseInt(paramService.findByCode(26).getParamValue());
+
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					WFIncidence incidenceEmail = new WFIncidence();
+					incidenceEmail.convertReleaseToWFIncidence(incidence);
+					String user = getUserLogin().getFullName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotify(incidenceEmail, emailNotify, user);
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+
+					});
+					newThread.start();
+				}
+			} else {
+				User userNew = userService.getUserByUsername(getUserLogin().getFullName());
+				incidence.setUser(userNew);
+				incidence.setAssigned(userNew.getFullName());
 			}
 
 			incidenceService.update(incidence);
@@ -452,11 +617,11 @@ public class IncidenceController extends BaseController {
 
 		return "redirect:/homeIncidence";
 	}
-	
+
 	@RequestMapping(value = "/summaryIncidence-{status}", method = RequestMethod.GET)
 	public String summmary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
-		User user =  userService.getUserByUsername(getUserLogin().getUsername());
+		User user = userService.getUserByUsername(getUserLogin().getUsername());
 
 		try {
 			model.addAttribute("parameter", status);
@@ -468,7 +633,7 @@ public class IncidenceController extends BaseController {
 			if (incidence == null) {
 				return "redirect:/";
 			}
-			
+
 			model.addAttribute("incidence", incidence);
 
 		} catch (Exception e) {
@@ -481,11 +646,12 @@ public class IncidenceController extends BaseController {
 
 		return "/incidence/summaryIncidence";
 	}
+
 	@SuppressWarnings("null")
 	@RequestMapping(value = "/tinySummary-{status}", method = RequestMethod.GET)
 	public String tinySummary(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
-	
+
 		try {
 			model.addAttribute("parameter", status);
 			Incidence incidence = null;
@@ -498,7 +664,7 @@ public class IncidenceController extends BaseController {
 			}
 
 			model.addAttribute("incidence", incidence);
-	
+
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
 			redirectAttributes.addFlashAttribute("data",
@@ -508,15 +674,16 @@ public class IncidenceController extends BaseController {
 		}
 		return "/incidence/tinySummaryIncidence";
 	}
+
 	private ArrayList<MyError> validSections(Incidence addIncidence, ArrayList<MyError> errors) {
-		
+
 		if (addIncidence.getPriorityId() == null) {
 			errors.add(new MyError("pId", "Valor requerido."));
 		} else {
 			if (addIncidence.getPriorityId() == 0)
 				errors.add(new MyError("pId", "Valor requerido."));
 		}
-		
+
 		if (addIncidence.getTypeIncidenceId() == null) {
 			errors.add(new MyError("tId", "Valor requerido."));
 		} else {
@@ -588,30 +755,15 @@ public class IncidenceController extends BaseController {
 	}
 
 	public void loadCountsRelease(HttpServletRequest request, Integer id) {
-		// PUser userLogin = getUserLogin();
+		Integer userLogin = getUserLogin().getId();
+		String email = getUserLogin().getFullName();
 		// List<PSystem> systems = systemService.listProjects(userLogin.getId());
 		Map<String, Integer> userC = new HashMap<String, Integer>();
-		userC.put("draft", rfcService.countByType(id, "Borrador", 1, null));
-		userC.put("requested", rfcService.countByType(id, "Solicitado", 1, null));
-		userC.put("completed", rfcService.countByType(id, "Completado", 1, null));
+		userC.put("draft", incidenceService.countByType(id, "Borrador", 1, null, userLogin, email));
+		userC.put("requested", incidenceService.countByType(id, "Solicitado", 1, null, userLogin, email));
+		userC.put("completed", incidenceService.countByType(id, "Completado", 1, null, userLogin, email));
 		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
 		request.setAttribute("userC", userC);
-
-	}
-
-	@RequestMapping(value = { "/readEmail" }, method = RequestMethod.GET)
-	@ResponseStatus(HttpStatus.OK)
-	public String readEmails() {
-		try {
-			emailReadService.emailRead();
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "se leyo correctamente";
 
 	}
 

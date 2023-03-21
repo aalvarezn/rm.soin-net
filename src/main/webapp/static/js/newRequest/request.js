@@ -84,6 +84,9 @@ $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 $('#tableFilters #typePetitionId').change(function() {
 	$dtRequests.ajax.reload();
 });
+function refreshTable(){
+	$dtRequests.ajax.reload();
+}
 
 $('#tableFilters #systemId').change(function() {
 	$dtRequests.ajax.reload();
@@ -574,5 +577,4 @@ function resetDrop(){
 	$('#sigesId').selectpicker('refresh');
 	
 }
-
 

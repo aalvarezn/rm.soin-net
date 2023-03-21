@@ -39,6 +39,9 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+
+import com.soin.sgrm.model.BaseKnowledge;
+import com.soin.sgrm.model.BaseKnowledgeFile;
 import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.IncidenceFile;
@@ -54,6 +57,8 @@ import com.soin.sgrm.model.RequestBaseFile;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.service.BaseKnowledgeFileService;
+import com.soin.sgrm.service.BaseKnowledgeService;
 import com.soin.sgrm.service.DocTemplateService;
 import com.soin.sgrm.service.IncidenceFileService;
 import com.soin.sgrm.service.IncidenceService;
@@ -102,7 +107,11 @@ public class FileController extends BaseController {
 	RFCService rfcService;
 	
 	@Autowired
+	BaseKnowledgeService baseKnowledgeService;
+	
+	@Autowired
 	IncidenceService incidenceService;
+
 	
 	@Autowired
 	RequestBaseService requestBaseService;
@@ -110,6 +119,9 @@ public class FileController extends BaseController {
 	@Autowired 
 	RFCFileService rfcFileService;
 
+	@Autowired 
+	BaseKnowledgeFileService baseKnowFileService;
+	
 	@Autowired 
 	RequestFileService requestFileService;
 	
@@ -121,7 +133,7 @@ public class FileController extends BaseController {
 	
 	@Autowired
 	private Environment env;
-
+	
 	DocxVariables docxVariables = null;
 
 	DocxContext context = null;
@@ -137,8 +149,8 @@ public class FileController extends BaseController {
 	@RequestMapping(value = "/impactObject-{id}", method = RequestMethod.GET)
 	public void impactObject(HttpServletResponse response, @PathVariable Integer id) throws IOException, SQLException {
 		String basePath = env.getProperty("fileStore.path");
-		ReleaseEdit release = releaseService.findEditById(id); // se obtiene el release
-		String path = basePath + createPath(release.getId(), basePath) + "documentos/";
+		ReleaseSummary release = releaseService.findById(id); // se obtiene el release
+		String path = basePath + createPath(release, basePath) + "documentos/";
 		new File(path).mkdirs();
 		File temp = new File(path + release.getReleaseNumber() + ".csv");
 		List<String> list = releaseFileService.ImpactObjects(id); // lista de objetos
@@ -188,7 +200,8 @@ public class FileController extends BaseController {
 
 		// Direccion del archivo a guardar
 		String basePath = env.getProperty("fileStore.path");
-		String path = createPath(id, basePath);
+		ReleaseSummary release=releaseService.findById(id);
+		String path = createPath(release, basePath);
 		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
 
 		// Referencia del archivo
@@ -282,27 +295,23 @@ public class FileController extends BaseController {
 	 * @return: Base path del release.
 	 * @throws SQLException
 	 **/
-	public String createPath(Integer id, String basePath) throws SQLException {
-		ReleaseEdit release;
-		try {
-			release = releaseService.findEditById(id);
+	public String createPath(ReleaseSummary release, String basePath) throws SQLException {
+
 			Project project = projectService.findById(release.getSystem().getProyectId());
 			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
 			if (release.getRequestList().size() != 0) {
 				Request request = release.getRequestList().iterator().next();
 				if (request.getCode_ice() != null) {
-					path += request.getCode_soin() + "_" + request.getCode_ice() + "/";
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
 				} else {
-					path += request.getCode_soin() + "/";
+					path += request.getCode_soin().replace(" ","") + "/";
 				}
 			}
 			path += release.getReleaseNumber() + "/";
+			path=path.trim();
 			new File(basePath + path).mkdirs();
 			return path;
-		} catch (SQLException e) {
-			Sentry.capture(e, "files");
-			throw e;
-		}
+		
 
 	}
 
@@ -344,7 +353,7 @@ public class FileController extends BaseController {
 			if (docFile != null) {
 				// Se obtiene el archivo plantilla
 				File fileTemplate = new File(env.getProperty("fileStore.templates") + docFile.getTemplateName());
-				String path = basePath + createPath(releaseId, basePath) + "documentos/";
+				String path = basePath + createPath(release, basePath) + "documentos/";
 				new File(path).mkdirs();
 				String sufix = (docFile.getSufix() == null) ? "" : docFile.getSufix();
 				// Se genera el archivo de salida
@@ -846,19 +855,40 @@ public class FileController extends BaseController {
 		}
 		return res;
 	}
-
+	
+	
 	
 	/**
-	 * @description: Adjunta el archivo al Incidence.
+	 * @description: Se crea la direccion donde se guardan los archivos del error know.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del error know.
+	 * @throws SQLException
+	 **/
+	public String createPathBaseKnow(BaseKnowledge baseKnowledge, String basePath) throws SQLException {
+		try {
+			String path = "/"+baseKnowledge.getComponent().getName()  + "/";
+			path += baseKnowledge.getNumError() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	
+	/**
+	 * @description: Adjunta el archivo al error know.
 	 * @author: Anthony Alvarez N.
 	 * @return: estado de la carga del archivo.
 	 * @throws SQLException
 	 **/
-	@RequestMapping(value = "/singleUploadIncidence-{id}", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse singleFileUploadIncidence(@PathVariable Long id,
+
+	@RequestMapping(value = "/singleUploadBaseKnow-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadBaseKnowledge(@PathVariable Long id,
 			@RequestParam("file") MultipartFile file) throws SQLException {
 		JsonResponse json = new JsonResponse();
-		
+		BaseKnowledge baseKnowledge = baseKnowledgeService.findById(id);
 		
 		// valida que se selecciono un archivo
 		if (file.getName().equals("") || file.isEmpty()) {
@@ -868,24 +898,24 @@ public class FileController extends BaseController {
 		}
 		
 		// Direccion del archivo a guardar
-		String basePath = env.getProperty("fileStore.path");
-		String path = createPathIncidence(id, basePath);
+		String basePath = baseKnowledge.getUrl();
+		String path = createPathBaseKnow(baseKnowledge, basePath);
 		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
 
 		// Referencia del archivo
-		IncidenceFile incidenceFile = new IncidenceFile();
-		incidenceFile.setName(fileName);
-		incidenceFile.setPath(basePath + path + fileName);
+		BaseKnowledgeFile baseKnowFile = new BaseKnowledgeFile();
+		baseKnowFile.setName(fileName);
+		baseKnowFile.setPath(basePath + path + fileName);
 		long time = System.currentTimeMillis();
 		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
-		incidenceFile.setRevisionDate(revisionDate);
+		baseKnowFile.setRevisionDate(revisionDate);
 		try {
 			// Se carga el archivo y se guarda la referencia
 			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
-			incidenceFileService.saveIncidenceFile(id, incidenceFile);
-			incidenceFile = incidenceFileService.findByKey("path", incidenceFile.getPath());
+			baseKnowFileService.saveBaseKnowledgeFile(id, baseKnowFile);
+			baseKnowFile = baseKnowFileService.findByKey("path", baseKnowFile.getPath());
 			json.setStatus("success");
-			json.setObj(incidenceFile);
+			json.setObj(baseKnowFile);
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "files");
 			json.setStatus("exception");
@@ -901,6 +931,58 @@ public class FileController extends BaseController {
 		}
 		return json;
 	}
+	
+	/**
+	 * @description: Descarga de un archivo particular del error baseKnow.
+	 * @author: Anthony Alvarez N.
+	 * @return: archivo a descargar.
+	 **/
+	@RequestMapping(value = "/singleDownloadBaseKnowledge-{id}", method = RequestMethod.GET)
+	public void downloadFileBaseKnowledge(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+		BaseKnowledgeFile baseKnowFile = baseKnowFileService.findById(id);
+		File file = new File(baseKnowFile.getPath());
+
+		// Se modifica la respuesta para descargar el archivo
+		response.setContentType("text/plain");
+		response.setHeader("Content-Disposition", "attachment;filename=" + baseKnowFile.getName());
+		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+		response.setContentLength((int) file.length());
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	/**
+	 * @description: borra un archivo adjuntado de un base knowledge.
+	 * @author: Anthony Alvarez N.
+	 * @return: response de la eliminacion.
+	 **/
+	@RequestMapping(value = "/deleteFileUploadBaseKnowledge-{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteFileUploadBaseKnowledge(@PathVariable Long id) {
+		JsonResponse res = new JsonResponse();
+		res.setStatus("success");
+		try {
+			BaseKnowledgeFile baseKnowledgeFile = baseKnowFileService.findById(id);
+			baseKnowFileService.deleteBaseKnowLedgeFile(baseKnowledgeFile);
+			File file = new File(baseKnowledgeFile.getPath());
+			if (file.exists()) {
+				file.delete();
+			}
+			res.setData(baseKnowledgeFile.getId() + "");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
 	
 	/**
 	 * @description: Descarga de un archivo particular del incidence.
@@ -974,4 +1056,56 @@ public class FileController extends BaseController {
 		}
 
 	}
+	/**
+	 * @description: Adjunta el archivo al Incidence.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	
+	@RequestMapping(value = "/singleUploadIncidence-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadIncidence(@PathVariable Long id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		// valida que se selecciono un archivo
+				if (file.getName().equals("") || file.isEmpty()) {
+					json.setStatus("fail");
+					json.setException("Archivo no seleccionado");
+					return json;
+				}
+				
+				String basePath = env.getProperty("fileStore.path");
+				String path = createPathIncidence(id, basePath);
+				String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+				// Referencia del archivo
+				IncidenceFile incidenceFile = new IncidenceFile();
+				incidenceFile.setName(fileName);
+				incidenceFile.setPath(basePath + path + fileName);
+				long time = System.currentTimeMillis();
+				java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+				incidenceFile.setRevisionDate(revisionDate);
+				try {
+					// Se carga el archivo y se guarda la referencia
+					FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+					incidenceFileService.saveIncidenceFile(id, incidenceFile);
+					incidenceFile = incidenceFileService.findByKey("path", incidenceFile.getPath());
+					json.setStatus("success");
+					json.setObj(incidenceFile);
+				} catch (SQLException ex) {
+					Sentry.capture(ex, "files");
+					json.setStatus("exception");
+					json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+				} catch (Exception e) {
+					Sentry.capture(e, "files");
+					json.setStatus("exception");
+					json.setException(e.getMessage());
+					logger.log(MyLevel.RELEASE_ERROR, e.toString());
+					if (e instanceof MaxUploadSizeExceededException) {
+						json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+					}
+				}
+				return json;
+				
+	}
+
 }

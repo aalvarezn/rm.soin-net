@@ -22,34 +22,22 @@
 									<input type="text" class="form-control" id="sCode"
 										maxlength="50" name="sCode" placeholder="Ingrese un codigo"
 										style="height: 60px;">
-									<div class="help-info">Máx. 20 caracteres</div>
+									<div class="help-info">M&aacute;x. 20 caracteres</div>
 								</div>
 							</div>
 						</div>
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-							<label for="name">Descripción</label>
+							<label for="name">Descripci&oacute;n</label>
 							<div class="form-group">
 								<div class="form-line">
 									<input type="text" class="form-control" id="sDescription"
-										maxlength="50" name="sDescription" placeholder="Ingrese una descripción"
+										maxlength="50" name="sDescription" placeholder="Ingrese una descripci&oacute;n"
 										style="height: 60px;">
-									<div class="help-info">Máx. 100 caracteres</div>
+									<div class="help-info">M&aacute;x. 100 caracteres</div>
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-							<label for="description">Plantilla Correo</label>
-							<div class="form-group m-t-12">
-								<select id="sEmailId" name="sEmailId" required="required"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="">-- Seleccione una opci&oacute;n --</option>
-									<c:forEach items="${emailTemplates}" var="emailTemplate">
-										<option value="${emailTemplate.id }">${emailTemplate.name }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
+
 					</div>
 				</form>
 			</div>

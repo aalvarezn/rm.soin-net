@@ -73,4 +73,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return dao.findUserById(id);
 	}
 
+	@Override
+	public UserInfo getUserByGitUsername(String username) {
+		return dao.getUserByGitUsername(username);
+	}
+
+	@Override
+	public boolean uniqueGitUsername(UserInfo userInfo) {
+		return dao.uniqueGitUsername(userInfo);
+	}
+
 }

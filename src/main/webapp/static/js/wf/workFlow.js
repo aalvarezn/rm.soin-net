@@ -17,6 +17,8 @@ var $workFlowModalForm = $('#workFlowModalForm');
 function openWorkFlowModal() {
 	resetErrors();
 	$workFlowModalForm[0].reset();
+	$workFlowModalForm.find('#systemId').selectpicker('val',"");
+	$workFlowModalForm.find('#typeId').selectpicker('val',"");
 	$('#btnSaveWorkFlow').show();
 	$workFlowModal.modal('show');
 }

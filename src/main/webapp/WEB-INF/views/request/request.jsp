@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <html>
@@ -133,8 +133,9 @@
 										</div>
 										<div class="content">
 											<div class="text">COMPLETADOS</div>
-											<div class="number count-to" data-from="0" data-to="${userC['completed']}"
-												data-speed="1000" data-fresh-interval="20"></div>
+											<div class="number count-to" data-from="0"
+												data-to="${userC['completed']}" data-speed="1000"
+												data-fresh-interval="20"></div>
 										</div>
 									</div>
 								</div>
@@ -159,7 +160,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Sistemas</label>
 							<div class="form-group m-b-0">
 								<select id="systemId"
@@ -172,7 +173,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Tipo de Solicitud</label>
 							<div class="form-group m-b-0">
 								<select id="typePetitionId"
@@ -185,7 +186,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Estado</label>
 							<div class="form-group m-b-0">
 								<select id="statusId"
@@ -200,35 +201,42 @@
 								</select>
 							</div>
 						</div>
-
-					</div>
-					<!-- #tableFilters# -->
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-					<div id="tableSection" class="row clearfix">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="body ">
-								<div class="body table-responsive">
-									<table id="dtRequests"
-										class="table table-bordered table-striped table-hover dataTable">
-										<thead>
-											<tr>
-												<th></th>
-												<th>Número Solicitud</th>
-												<th>Sistema</th>
-												<th>Tipo Solicitud</th>
-												<th>Solicitante</th>
-												<th>Modificado</th>
-												<th>Estado</th>
-												<th>Acciones</th>
-											</tr>
-										</thead>
-
-									</table>
-								</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+							<div class="button-demo-refresh" style="padding-top: 25px;">
+								<button title="Refrescar tabla con filtros!" type="button"
+									class="btn btn-primary setIcon" onclick="refreshTable()">
+									<span><i class="material-icons m-t--2 ">update</i></span>
+								</button>
 							</div>
 						</div>
 					</div>
-					
+					<!-- #tableFilters# -->
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+						<div id="tableSection" class="row clearfix">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="body ">
+									<div class="body table-responsive">
+										<table id="dtRequests"
+											class="table table-bordered table-striped table-hover dataTable">
+											<thead>
+												<tr>
+													<th></th>
+													<th>Número Solicitud</th>
+													<th>Sistema</th>
+													<th>Tipo Solicitud</th>
+													<th>Solicitante</th>
+													<th>Modificado</th>
+													<th>Estado</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+
 					</div>
 				</div>
 				<!-- #tableSection# -->

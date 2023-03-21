@@ -35,7 +35,10 @@ function initDataTable() {
 						{
 							"mDataProp" : 'description'
 						},
+<<<<<<< HEAD
+=======
 						
+>>>>>>> rc_gestion_incidencias
 						{
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';
@@ -56,7 +59,37 @@ function initDataTable() {
 						ordering : false,
 			});
 }
+<<<<<<< HEAD
+function updateSLA(index) {	
+	console.log(index);
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea modificar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "PUT",
+				url : getCont() + "statusIncidence/changeSla/"+index ,
+				timeout : 60000,
+				data : {},
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtStatusIncidence.ajax.reload();
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					
+				}
+			});
+		}
+	});
+}
+=======
 
+>>>>>>> rc_gestion_incidencias
 function showStatusIncidence(index){
 	$fmStatusIncidence.validate().resetForm();
 	$fmStatusIncidence[0].reset();
@@ -109,7 +142,10 @@ function updateStatusIncidence() {
 	});
 }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> rc_gestion_incidencias
 function saveStatusIncidence() {
 	
 	if (!$fmStatusIncidence.valid())

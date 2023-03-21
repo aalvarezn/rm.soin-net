@@ -9,13 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.ReleaseCreate;
@@ -46,6 +50,8 @@ public interface ReleaseService {
 	ReleaseEdit findEditById(Integer id) throws SQLException;
 
 	ReleaseUser findReleaseUserById(Integer id) throws SQLException;
+	
+	Releases_WithoutObj findReleaseWithouObj(Integer id) throws SQLException;
 
 	void save(Release release, String tpos) throws Exception;
 
@@ -78,7 +84,11 @@ public interface ReleaseService {
 	Release_RFC findRelease_RFCById(Integer id) throws SQLException;
 
 	Integer getDependency(int id);
+	
+	ReleaseSummaryMin findByIdMin(Integer id) throws SQLException;
 
-	Integer findReleaseByName(String name) throws SQLException;
+	ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease);
+
+	ReleaseTinySummary findByIdTiny(int parseInt);
 
 }

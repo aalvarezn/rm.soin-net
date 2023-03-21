@@ -237,69 +237,144 @@ $('#systemId').change(function() {
 
 function initUserTable() {
 	var idRequest=$('#requestId').val();
-	$dtUser = $('#userTable').DataTable(
-			{
-				
-				'columnDefs' : [ {
-					'visible' : false,
-					'targets' : [ 0]
-				} ],
-				lengthMenu : [ [ 10, 25, 50, -1 ],
-					[ '10', '25', '50', 'Mostrar todo' ] ],
-					"iDisplayLength" : 10,
-					"language" : optionLanguaje,
-					"iDisplayStart" : 0,
-					"processing" : true,
-					"serverSide" : true,
-					"sAjaxSource" : getCont() + "request/listUser/"+idRequest,
-					"aoColumns" : [
-						{
-							"mDataProp" : "id",
-						},
-						{
-							
-							"mDataProp" : "name"
-						},
-						{
-						
-						"mDataProp" : "email"
-					},
-					{
-						
-						"mDataProp" : "type.code"
-					},
-					{
-						
-						"mDataProp" : "permissions"
-					}
-					,
-					{
-						
-						"mDataProp" : "ambient.name"
-					},
-					{
-						
-						"mDataProp" : "espec"
-					},
+	console.log($('#requestId').val());
+	console.log($('#verifySos').val());
+	if($('#verifySos').val()==="true"){
+		console.log("soy true");
+		$dtUser = $('#userTable').DataTable(
+				{
 					
-					{
-						"mRender" : function(data, type, row, meta) {
-							var options = '<div class="iconLineC">';
-							
-									options += options
-									+ '<a onclick="showUser('
-									+ row.id
-									+ ')" title="Borrar"><i class="material-icons gris">mode_edit</i></a>'
-									+ '<a onclick="confirmDeleteUser('
-									+ row.id
-									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
-								
-							
-							return options;
-						},
+					'columnDefs' : [ {
+						'visible' : false,
+						'targets' : [ 0]
 					} ],
-					ordering : false,
-			});
+					lengthMenu : [ [ 10, 25, 50, -1 ],
+						[ '10', '25', '50', 'Mostrar todo' ] ],
+						"iDisplayLength" : 10,
+						"language" : optionLanguaje,
+						"iDisplayStart" : 0,
+						"processing" : true,
+						"serverSide" : true,
+						"sAjaxSource" : getCont() + "request/listUser/"+idRequest,
+						"aoColumns" : [
+							{
+								"mDataProp" : "id",
+							},
+							{
+								
+								"mDataProp" : "name"
+							},
+							{
+							
+							"mDataProp" : "email"
+						},
+						{
+							
+							"mDataProp" : "type.code"
+						},
+						{
+							
+							"mDataProp" : "permissions"
+						}
+						,
+						{
+							
+							"mDataProp" : "ambient.name"
+						},
+						{
+							
+							"mDataProp" : "espec"
+						},
+						
+						{
+							"mRender" : function(data, type, row, meta) {
+								var options = '<div class="iconLineC">';
+								
+										options += options
+										+ '<a onclick="showUser('
+										+ row.id
+										+ ')" title="Borrar"><i class="material-icons gris">mode_edit</i></a>'
+										+ '<a onclick="confirmDeleteUser('
+										+ row.id
+										+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
+									
+								
+								return options;
+							},
+						} ],
+						ordering : false,
+				});
+	}else{
+		console.log("soy false");
+		$dtUser = $('#userTable').DataTable(
+				{
+					
+					'columnDefs' : [ {
+						'visible' : false,
+						'targets' : [ 0]
+					} ],
+					lengthMenu : [ [ 10, 25, 50, -1 ],
+						[ '10', '25', '50', 'Mostrar todo' ] ],
+						"iDisplayLength" : 10,
+						"language" : optionLanguaje,
+						"iDisplayStart" : 0,
+						"processing" : true,
+						"serverSide" : true,
+						"sAjaxSource" : getCont() + "request/listUser/"+idRequest,
+						"aoColumns" : [
+							{
+								"mDataProp" : "id",
+							},
+							{
+								
+								"mDataProp" : "name"
+							},
+							{
+							
+							"mDataProp" : "email"
+						},
+						{
+							
+							"mDataProp" : "userGit"
+						},
+						{
+							
+							"mDataProp" : "type.code"
+						},
+						{
+							
+							"mDataProp" : "permissions"
+						}
+						,
+						{
+							
+							"mDataProp" : "ambient.name"
+						},
+						{
+							
+							"mDataProp" : "espec"
+						},
+						
+						{
+							"mRender" : function(data, type, row, meta) {
+								var options = '<div class="iconLineC">';
+								
+										options += options
+										+ '<a onclick="showUser('
+										+ row.id
+										+ ')" title="Borrar"><i class="material-icons gris">mode_edit</i></a>'
+										+ '<a onclick="confirmDeleteUser('
+										+ row.id
+										+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
+									
+								
+								return options;
+							},
+						} ],
+						ordering : false,
+				});
+	}
+	
 }
 
 function showUser(id){
@@ -311,6 +386,7 @@ function showUser(id){
 		var data = $dtUser.row(idRow[0]).data();
 		$requestEditForm.find('#user').val(data.name);
 		$requestEditForm.find('#email').val(data.email);
+		$requestEditForm.find('#userGit').val(data.userGit);
 		const splitString = data.permissions.split(",");
 		for(x=0;splitString.length>x;x++){
 			if(splitString[x]==="Lectura"){
@@ -469,6 +545,7 @@ function modUser(){
 					ambientId:$requestEditForm.find('#ambientId').val(),
 					typeId:$requestEditForm.find('#typeId').val(),
 					requestBaseId:$('#requestId').val(),
+					userGit:$('#userGit').val(),
 				}),
 				success : function(response) {
 					unblockUI();
@@ -552,6 +629,7 @@ function addUser(){
 					ambientId:$requestEditForm.find('#ambientId').val(),
 					typeId:$requestEditForm.find('#typeId').val(),
 					requestBaseId:$('#requestId').val(),
+					userGit:$('#userGit').val(),
 				}),
 				success : function(response) {
 					unblockUI();
@@ -579,6 +657,7 @@ function addUser(){
 
 function resetSpaces(){
 	$requestEditForm.find('#user').val('');
+	$requestEditForm.find('#userGit').val('');
 	$requestEditForm.find('#email').val('');
 	$("input:radio").attr("checked", false);
 	$('#permission1').prop('checked',false);
@@ -595,16 +674,81 @@ function resetSpaces(){
 	$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
 }
 function initRequestFormValidation() {
+	if($('#verifySos').val()==="true"){
+		$requestEditForm.validate({
+			rules : {
+				'user':{
+					required : true,
+					maxlength : 255,
+				},
+				'email':{
+					required :true,
+					maxlength : 255,
+			        email: true
+				},
+				'ambientId':{
+					required:true,		
+				},
+				'espec':{
+					required:true,
+					minlength : 2,			
+				},
+				'typeId':{
+					required:true,		
+				}
+				,
+				'permission':{
+					required:true,		
+				}
+					
+				
+			},
+			messages : {
+				
+				'user' : {
+					required : "Ingrese un valor",
+					maxlength : "No puede poseer mas de {0} caracteres"
+				},
+				'email' : {
+					required : "Ingrese un valor",
+					maxlength : "No puede poseer mas de {0} caracteres",
+					email:"Ingrese un correo v\u00E1lido"
+						
+				},
+
+				'ambientId' : {
+					required : "Seleccione un valor"
+				},
+				'espec' : {
+					required : "Ingrese un valor",
+					minlength : "Debe ser un minimo de dos caracteres"
+				},
+				'typeId':{
+					required:"Se debe seleccionar un valor",		
+				},
+				'permission':{
+					required:"Se debe seleccionar al menos una opci\u00F3n",		
+				}
+			},
+			highlight,
+			unhighlight,
+			errorPlacement
+		});
+	}else{
 	$requestEditForm.validate({
 		rules : {
 			'user':{
 				required : true,
-				maxlength : 20,
+				maxlength : 255,
 			},
 			'email':{
 				required :true,
-				maxlength : 20,
+				maxlength : 255,
 		        email: true
+			},
+			'userGit':{
+				required :true,
+				maxlength : 255,
 			},
 			'ambientId':{
 				required:true,		
@@ -626,6 +770,10 @@ function initRequestFormValidation() {
 		messages : {
 			
 			'user' : {
+				required : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+			'userGit' : {
 				required : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
@@ -654,11 +802,13 @@ function initRequestFormValidation() {
 		unhighlight,
 		errorPlacement
 	});
+	}
 }
 
 function reloadPreview() {
 	var src = $("#tinySummary").attr("src")
-	$("#tinySummary").attr("src", src)
+	$("#tinySummary").attr("src", src);
+	console.log("");
 }
 
 

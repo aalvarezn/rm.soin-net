@@ -47,6 +47,10 @@
 
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+	<!-- TagInput Js -->
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 </head>
 
 <body class="theme-grey">
@@ -103,7 +107,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -169,7 +173,7 @@
 			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -209,24 +213,24 @@
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 m-t-10">
 					<label for="">Raz&oacute;n del cambio.</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.reasonChange }</textarea>
+					<textarea disabled class="areaWidth" rows="" cols="">${rfc.reasonChange }</textarea>
 				</div>
 
 
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Efecto si no se implementa el cambio.</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.effect }</textarea>
+					<textarea disabled class="areaWidth disabled" rows="" cols="">${rfc.effect }</textarea>
 				</div>
 			</div>
 			<div class="row clearfix m-t-10">
 				<div class="col-sm-12">
-					<h5 class="titulares">Información de Cambio</h5>
+					<h5 class="titulares">Informaci&oacute;n de Cambio</h5>
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
 					<label for="">Sistemas impactados</label>
 
 					<div id="listSystems">
-						<ul class="nav nav-pills">
+						<ul class="nav nav-pills disabled">
 
 
 							<c:forEach items="${systemsImplicated}" var="system">
@@ -240,10 +244,10 @@
 				</div>
 
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Releases a instalar en producción</label>
+					<label for="">Releases a instalar en producci&oacute;n</label>
 
 					<div id="listSystems">
-						<ul class="nav nav-pills">
+						<ul class="nav nav-pills disabled">
 
 
 							<c:forEach items="${rfc.releases}" var="release">
@@ -270,8 +274,8 @@
 										id="userTable">
 										<thead>
 											<tr>
-												<th>Número Release</th>
-												<th>Descripción</th>
+												<th>N&uacute;mero Release</th>
+												<th>Descripci&oacute;n</th>
 												<th>Total de objetos</th>
 											</tr>
 										</thead>
@@ -307,7 +311,7 @@
 											<tr>
 												<th style="width: 338px;">Release al que pertenece</th>
 												<th style="width: 338px;">Nombre objeto</th>
-												<th>Descripción</th>
+												<th>Descripci&oacute;n</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -331,34 +335,34 @@
 				<div class="col-sm-12">
 					<h5 class="titulares">Detalles de la implementaci&oacute;n</h5>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Detalles</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.detail }</textarea>
+					<textarea disabled class="areaWidth" rows="" cols="">${rfc.detail }</textarea>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Plan de retorno</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.returnPlan }</textarea>
+					<textarea disabled class="areaWidth" rows="" cols="">${rfc.returnPlan }</textarea>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Evidencias</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.evidence }</textarea>
+					<textarea disabled class="areaWidth" disabled rows="" cols="">${rfc.evidence }</textarea>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Requisitos especiales</label>
-					<textarea class="areaWidth" rows="" cols="">${rfc.requestEsp }</textarea>
+					<textarea disabled class="areaWidth" rows="" cols="">${rfc.requestEsp }</textarea>
 				</div>
-				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
+				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10 disabled">
 					<label for="">Requiere base de datos</label>
 					<div class="switch">
 						<c:choose>
 							<c:when test="${rfc.requiredBD}">
 								<label>No<input type="checkbox" checked="checked"
-									disabled="disabled"><span class="lever"></span>Sí
+									disabled="disabled"><span class="lever"></span>S&iacute;
 								</label>
 							</c:when>
 							<c:otherwise>
 								<label>No<input type="checkbox" disabled="disabled"><span
-									class="lever"></span>Sí
+									class="lever"></span>S&iacute;
 								</label>
 							</c:otherwise>
 						</c:choose>
@@ -427,7 +431,7 @@
 									</button>
 								</c:if>
 								<button type="button" class="btn btn-default setIcon"
-									onclick="changeStatusRFC(${rfc.id}, '${rfc.numRequest}' )"
+									onclick="changeStatusRFC(${rfc.id}, '${rfc.numRequest}','${rfc.siges.emailTemplate.cc}' )"
 									title="Borrador"
 									style="background-color: #00294c !important; color: #fff; border: none !important;">
 									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
@@ -447,14 +451,8 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$("#contentSummary textarea").parent().removeClass('focused');
-			$("#contentSummary textarea").attr("disabled", true);
-			autosize($('textarea'));
-		});
-	</script>
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 
 </body>
-
 </html>

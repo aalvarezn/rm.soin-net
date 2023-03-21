@@ -224,6 +224,7 @@ function showPriorityIncidence(index){
 	$fmPriorityIncidence.validate().resetForm();
 	$fmPriorityIncidence[0].reset();
 	 obj = $dtPriorityIncidence.row(index).data();
+	$('#priorityId').prop('disabled', true);
 	console.log(obj);
 	$fmPriorityIncidence.find('#sId').selectpicker('val',obj.system.id);
 	var s = '';

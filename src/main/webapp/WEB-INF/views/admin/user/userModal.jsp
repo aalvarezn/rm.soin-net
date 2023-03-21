@@ -17,8 +17,8 @@
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<!-- Nav tabs -->
 							<ul class="nav nav-tabs tab-nav-right" role="tablist">
-								<li role="presentation" class="active"><a
-									href="#tabHome" data-toggle="tab">INFORMACIÓN</a></li>
+								<li role="presentation" class="active"><a href="#tabHome"
+									data-toggle="tab">INFORMACIÓN</a></li>
 								<li role="presentation"><a href="#tabRoles"
 									data-toggle="tab">ROLES</a></li>
 							</ul>
@@ -85,6 +85,20 @@
 											Requerido.</label>
 									</div>
 								</div>
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<label for="name">Usuario de GitHub</label>
+									<div class="form-group">
+										<div class="form-line">
+											<input type="text" maxlength="50" class="form-control"
+												id="gitusername" name="gitusername"
+												placeholder="Ingrese un usuario" style="height: 60px;">
+											<div class="help-info">Máx. 50 caracteres</div>
+										</div>
+										<label id="shortName_error" class="error fieldError"
+											for="name" style="visibility: hidden">Campo
+											Requerido.</label>
+									</div>
+								</div>
 							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane" id="tabRoles">
@@ -104,10 +118,10 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
 					onclick="closeUserModal()">CANCELAR</button>
-				<button type="button" id="btnSave" class="btn btn-primary waves-effect"
-					onclick="saveUser()">GUARDAR</button>
-				<button type="button" id="btnUpdate" class="btn btn-primary waves-effect"
-					onclick="updateUser()">ACTUALIZAR</button>
+				<button type="button" id="btnSave"
+					class="btn btn-primary waves-effect" onclick="saveUser()">GUARDAR</button>
+				<button type="button" id="btnUpdate"
+					class="btn btn-primary waves-effect" onclick="updateUser()">ACTUALIZAR</button>
 			</div>
 		</div>
 	</div>

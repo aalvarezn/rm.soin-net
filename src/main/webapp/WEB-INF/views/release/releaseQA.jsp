@@ -314,6 +314,14 @@
 								</select>
 							</div>
 						</div>
+						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+							<div class="button-demo-refresh" style="padding-top: 25px;">
+								<button title="Refrescar tabla con filtros!" type="button"
+									class="btn btn-primary setIcon" onclick="refreshTable()">
+									<span><i class="material-icons m-t--2 ">update</i></span>
+								</button>
+							</div>
+						</div>
 					</div>
 					<!-- #tableFilters# -->
 					<div id="tableSection" class="row clearfix">
@@ -325,8 +333,8 @@
 										<thead>
 											<tr>
 												<th>ID</th>
-												<th>Sistema</th>
 												<th>Número</th>
+												<th>Sistema</th>
 												<th>Descripción</th>
 												<th>Observación</th>
 												<th>Release</th>

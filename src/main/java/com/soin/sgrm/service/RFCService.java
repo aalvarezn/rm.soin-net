@@ -3,6 +3,7 @@ package com.soin.sgrm.service;
 import java.sql.SQLException;
 
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.response.JsonSheet;
 
 public interface RFCService extends BaseService<Long, RFC>{
@@ -18,5 +19,7 @@ public interface RFCService extends BaseService<Long, RFC>{
 			String sSearch, Long statusId, String dateRange, int priorityId, int systemId);
 
 	Integer countByManager(Integer id, Long idRFC);
+
+	public RFC_WithoutRelease findRfcWithRelease(Long id);
 
 }

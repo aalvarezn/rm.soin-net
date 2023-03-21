@@ -11,6 +11,8 @@ public interface UserInfoService {
 	List<UserInfo> list();
 
 	UserInfo getUserByUsername(String username);
+	
+	UserInfo getUserByGitUsername(String username);
 
 	UserInfo getUserByEmail(String email);
 
@@ -29,4 +31,6 @@ public interface UserInfoService {
 	boolean uniqueUsername(UserInfo userInfo);
 	
 	User findUserById(Integer id);
+
+	boolean uniqueGitUsername(UserInfo userInfo);
 }

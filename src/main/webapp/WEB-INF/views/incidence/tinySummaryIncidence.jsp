@@ -67,12 +67,12 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de actualizaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
 								<p>
-									<fmt:formatDate value="${incidence.requestDate }"
+									<fmt:formatDate value="${incidence.updateDate }"
 										pattern="dd/MM/YYYY HH:mm:ss" />
 								</p>
 							</div>
@@ -91,7 +91,7 @@
 					<label for="email_address">Estado</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${incidence.status.name}</p>
+							<p>${incidence.status.status.name}</p>
 						</div>
 					</div>
 				</div>

@@ -99,9 +99,12 @@ function initRFCTable() {
 					"serverSide" : true,
 					"sAjaxSource" : getCont() + "management/rfc/list",
 					"fnServerParams" : function(aoData) {
-						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
+						aoData.push(
+								{"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
+								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
 								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
-								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
+								{"name": "typeId", "value": $('#tableFilters #typeId').children("option:selected").val()},
+								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
@@ -122,7 +125,7 @@ function initRFCTable() {
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {
-							return moment(row.requestDate).format('DD/MM/YYYY h:mm:ss a');
+							return moment(row.updateDate).format('DD/MM/YYYY h:mm:ss a');
 						},
 					}, {
 						"mRender" : function(data, type, row, meta) {

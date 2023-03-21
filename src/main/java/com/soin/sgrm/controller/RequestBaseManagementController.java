@@ -1,5 +1,8 @@
 package com.soin.sgrm.controller;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -21,20 +24,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_RFC;
+import com.soin.sgrm.model.Errors_Requests;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCError;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestError;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ErrorRFCService;
+import com.soin.sgrm.service.ErrorRequestService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.RequestBaseR1Service;
 import com.soin.sgrm.service.RequestBaseService;
+import com.soin.sgrm.service.RequestErrorService;
 import com.soin.sgrm.service.RequestRM_P1_R4Service;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRequestService;
@@ -81,6 +94,13 @@ public class RequestBaseManagementController extends BaseController {
 
 	@Autowired
 	ParameterService parameterService;
+	
+	@Autowired
+	ErrorRequestService errorService;
+	
+	@Autowired
+	RequestErrorService requestErrorService;
+	
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -91,8 +111,10 @@ public class RequestBaseManagementController extends BaseController {
 			List<System> systems = systemService.list();
 			List<StatusRequest> statuses = statusService.findAll();
 			List<TypePetition> typePetitions = typePetitionService.findAll();
+			List<Errors_Requests> errors = errorService.findAll();
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("typePetitions", typePetitions);
+			model.addAttribute("errors", errors);
 			model.addAttribute("systems", systems);
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
@@ -151,16 +173,23 @@ public class RequestBaseManagementController extends BaseController {
 			@RequestParam(value = "idRequest", required = true) Long idRequest,
 			@RequestParam(value = "idStatus", required = true) Long idStatus,
 			@RequestParam(value = "dateChange", required = false) String dateChange,
-			@RequestParam(value = "motive", required = true) String motive) {
+			@RequestParam(value = "motive", required = true) String motive,
+			@RequestParam(value = "idError", required = false) Long idError,
+			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
+			@RequestParam(value = "senders", required = false) String senders
+			) {
 		JsonResponse res = new JsonResponse();
 		try {
 			RequestBaseR1 requestBase = requestBaseService.findByR1(idRequest);
 			StatusRequest status = statusService.findById(idStatus);
 			String user = getUserLogin().getFullName();
-
+			Errors_Requests error=new Errors_Requests();
+			Boolean errorVer = false;
+			UserLogin userLogin = getUserLogin();
 			requestBase.setStatus(status);
 			requestBase.setOperator(getUserLogin().getFullName());
-			requestBase.setRequestDate((CommonUtils.getSystemTimestamp()));
+			Timestamp dateFormatNow = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+			requestBase.setRequestDate(dateFormatNow);
 
 			requestBase.setMotive(motive);
 			RequestBase requestBaseNew = new RequestBase();
@@ -181,8 +210,87 @@ public class RequestBaseManagementController extends BaseController {
 			if (!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
 				requestBaseNew.setSiges(requestBaseService.findById(idRequest).getSiges());
 			}
+			
+			if (status != null && status.getName().equals("Error")) {
+				error = errorService.findById(idError);
+				RequestError requestError = new RequestError();
+				requestError.setSystem(requestBaseNew.getSystemInfo());
+				requestError.setTypePetition(requestBaseNew.getTypePetition());
+				requestError.setError(error);
+				requestError.setRequest(requestBaseNew);
+				requestError.setObservations(motive);
+				Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+				requestError.setErrorDate(dateFormat);
+				requestErrorService.save(requestError);
+				requestBaseNew.setStatus(status);
+				requestBaseNew.setOperator(getUserLogin().getFullName());
+				requestBaseNew.setMotive(motive);
+				requestBaseNew.setRequestDate(dateFormat);
+				requestBaseService.update(requestBaseNew);
+			
+				StatusRequest statusChange = statusService.findByKey("name","Borrador");
+				requestBaseNew.setStatus(statusChange);
+
+	
+				status = statusChange;
+				motive = "Paso a borrador por " + error.getName();
+				dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(dateFormat);
+				calendar.add(Calendar.MINUTE, 1);
+				Timestamp time1Minute = new Timestamp(calendar.getTimeInMillis());
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				java.util.Date fechaNueva = (java.util.Date) format.parse(time1Minute.toString());
+				format = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+				String time1MinuteFormat = format.format(fechaNueva);
+				dateChange=time1MinuteFormat;
+				Timestamp dateFormat2 = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+				requestBaseNew.setStatus(status);
+				requestBaseNew.setOperator(getUserLogin().getFullName());
+				requestBaseNew.setMotive(motive);
+				requestBaseNew.setRequestDate(dateFormat2);
+			}
+
 			requestBaseService.update(requestBaseNew);
 			res.setStatus("success");
+			
+			if (sendEmail) {
+
+				if (!errorVer) {
+					Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					String statusName = status.getName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotifyChangeStatus(requestBaseNew.getNumRequest(), " de la Solicitud "+requestBaseNew.getTypePetition().getCode(),
+									statusName, requestBaseNew.getOperator(),
+									requestBaseNew.getRequestDate(),
+									userLogin, senders, emailNotify, requestBaseNew.getMotive());
+						} catch (Exception e) {
+							Sentry.capture(e, "request");
+						}
+
+					});
+					newThread.start();
+				} else {
+					Integer idTemplate = Integer.parseInt(parameterService.findByCode(31).getParamValue());
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					String statusName = status.getName();
+					String typeError = error.getName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotifyChangeStatusError(typeError, requestBaseNew.getNumRequest(),
+									" de la Solicitud "+requestBaseNew.getTypePetition().getCode(), statusName, requestBaseNew.getOperator(),
+									requestBaseNew.getRequestDate(),
+									userLogin, senders, emailNotify, requestBaseNew.getMotive());
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+
+					});
+					newThread.start();
+				}
+			}
 
 		} catch (Exception e) {
 			Sentry.capture(e, "requestManagement");

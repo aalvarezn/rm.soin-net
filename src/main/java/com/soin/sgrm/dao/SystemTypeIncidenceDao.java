@@ -12,4 +12,6 @@ public interface SystemTypeIncidenceDao extends BaseDao<Long, SystemTypeIncidenc
 
 	SystemTypeIncidence findByIdAndSys(Integer systemId, Long typeIncidenceId);
 
+	List<SystemTypeIncidence> findByManager(Integer idUser);
+
 }

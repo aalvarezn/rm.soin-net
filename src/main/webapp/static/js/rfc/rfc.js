@@ -60,6 +60,7 @@ $(function() {
 
 	initRFCTable();
 	initRFCFormValidation();
+	console.log("hola prueba");
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -86,8 +87,11 @@ $('#tableFilters #systemId').change(function() {
 $('#tableFilters #statusId').change(function() {
 	$dtRFCs.ajax.reload();
 });
-
+function refreshTable(){
+	$dtRFCs.ajax.reload();
+}
 function initRFCTable() {
+	console.log("pruebaPr");
 	$dtRFCs = $('#dtRFCs').DataTable(
 			{
 				
@@ -429,5 +433,4 @@ function resetDrop(){
 	$('#sigesId').selectpicker('refresh');
 	
 }
-
 

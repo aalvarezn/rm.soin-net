@@ -90,7 +90,7 @@
 			<div class="row clearfix">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="" style="padding-top: -5pc;">
-						<h2 class="title-Adm m-t-0">TRÁMITES</h2>
+						<h2 class="title-Adm m-t-0">TR&Aacute;MITES</h2>
 					</div>
 					<hr>
 				</div>

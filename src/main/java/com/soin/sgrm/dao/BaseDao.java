@@ -36,7 +36,7 @@ public interface BaseDao<PK, T> {
 			Criterion qSrch, List<String> fetchs);
 
 	JsonSheet<T> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, Map<String, Object> columns,
-			Criterion qSrch, List<String> fetchs, Map<String, String> alias,Integer veri);
+			Criterion qSrch, List<String> fetchs, Map<String, String> alias,Integer order);
 
 	List<T> findAll();
 

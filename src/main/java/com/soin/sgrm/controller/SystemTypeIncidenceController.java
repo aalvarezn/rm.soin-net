@@ -1,8 +1,10 @@
 package com.soin.sgrm.controller;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -19,12 +21,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.PriorityIncidence;
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemTypeIncidence;
 import com.soin.sgrm.model.System_Priority;
 import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.PriorityIncidenceService;
 import com.soin.sgrm.service.SystemService;
@@ -51,13 +56,23 @@ public class SystemTypeIncidenceController extends BaseController {
 	@Autowired
 	EmailTemplateService emailTemplateService;
 
+	@Autowired
+	AttentionGroupService attentionGroupService;
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		Integer idUser = getUserLogin().getId();
-		List<com.soin.sgrm.model.System> systems = systemService.findByManagerIncidence(idUser);
+		List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(idUser);
+		List<Long> listAttentionGroupId=new ArrayList<Long>();
+		for(AttentionGroup attentionGroup: attentionGroups) {
+			listAttentionGroupId.add(attentionGroup.getId());
+		}
+		List<com.soin.sgrm.model.System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+		Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
+		systemList.clear();
+		systemList.addAll(systemWithRepeat);
 		List<EmailTemplate> emailTemplates =emailTemplateService.listAll();
 		model.addAttribute("emailTemplates", emailTemplates);
-		model.addAttribute("systems", systems);
+		model.addAttribute("systems", systemList);
 		return "/systemTypeIncidence/systemTypeIncidence";
 	}
 
@@ -66,7 +81,8 @@ public class SystemTypeIncidenceController extends BaseController {
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
 		JsonSheet<SystemTypeIncidence> systemType = new JsonSheet<>();
 		try {
-			systemType.setData(systemTypeService.findAll());
+			Integer idUser = getUserLogin().getId();
+			systemType.setData(systemTypeService.findByManager(idUser));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

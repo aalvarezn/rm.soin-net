@@ -6,19 +6,20 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="largeModalLabel">Grupo de atencion de tickets</h4>
+				<h4 class="modal-title" id="largeModalLabel">Grupo de atencion
+					de tickets</h4>
 			</div>
 			<div class="modal-body">
 				<form id="systemModalForm" action="">
 					<input type="hidden" name="${_csrf.parameterName}"
-						value="${_csrf.token}" /> <input type="hidden" id="id"
-						value="" />
+						value="${_csrf.token}" /> <input type="hidden" id="id" value="" />
+					<input type="hidden" id="id" value="${lead}" />
 					<div class="row">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<!-- Nav tabs -->
 							<ul class="nav nav-tabs tab-nav-right" role="tablist">
 								<li role="presentation" class="active"><a href="#tabHome"
-									data-toggle="tab">INFORMACIÓN</a></li>
+									data-toggle="tab">INFORMACION</a></li>
 								<li role="presentation"><a href="#tabTeam"
 									data-toggle="tab">GRUPO</a></li>
 							</ul>
@@ -35,21 +36,39 @@
 											<input type="text" maxlength="50" class="form-control"
 												id="name" name="name" placeholder="Ingrese un nombre"
 												style="height: 49px;">
-											<div class="help-info">Máx. 50 caracteres</div>
+											<div class="help-info">M&aacute;x. 50 caracteres</div>
 										</div>
 									</div>
 								</div>
 								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-									<label for="name">Código</label>
+									<label for="name">C&oacute;digo</label>
 									<div class="form-group">
 										<div class="form-line">
 											<input type="text" maxlength="10" class="form-control"
-												id="code" name="code" placeholder="Ingrese un código"
+												id="code" name="code" placeholder="Ingrese un c&oacute;digo"
 												style="height: 49px;">
-											<div class="help-info">Máx. 10 caracteres</div>
+											<div class="help-info">M&aacute;x. 10 caracteres</div>
 										</div>
 									</div>
 								</div>
+
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<label for="name">Lider de grupo</label>
+									<div class="form-group">
+										<div class="form-line">
+											<select id="leaderId" name="leaderId" required="required"
+												class="form-control show-tick selectpicker"
+												data-live-search="true">
+												<option value="">-- Seleccione una opci&oacute;n --</option>
+												<c:forEach items="${users}" var="user">
+													<option id="${user.id }" value="${user.id }">${user.fullName }</option>
+												</c:forEach>
+											</select>
+										</div>
+									</div>
+								</div>
+
+
 							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane" id="tabTeam">

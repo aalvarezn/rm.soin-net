@@ -2,8 +2,14 @@ var $network;
 var container = document.getElementById('wfEdit');
 var nodes = new vis.DataSet([]);
 var edges = new vis.DataSet([]);
-
-//provide the data in the vis format
+var scales=0.8;
+var x;
+var y;
+var position={
+		x:x,
+		y:y
+}
+// provide the data in the vis format
 var data = {
 		nodes : nodes,
 		edges : edges
@@ -110,6 +116,10 @@ var options = {
 					save = false;
 					alert('El enlace ya existe');
 				}
+				
+				
+				 if (existEdgeInvert(edgeData)) { save = false; alert('Ya hay un enlace directo para este nodo'); }
+				 
 				if (save) {
 					saveEdge(edgeData, callback);
 				}
@@ -129,13 +139,13 @@ var options = {
 };
 
 $(function() {
-
+	
 	$nodeModal
 	.find('#users')
 	.multiSelect(
 			{
-				selectableHeader: "<div class='custom-header'>Usuarios</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
-				selectionHeader: "<div class='custom-header'>Notificar</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+				selectableHeader: "<div class='custom-header'>Grupos de atencion</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+				selectionHeader: "<div class='custom-header'>Grupo a Notificar</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
 				afterInit: function(ms){
 					var that = this,
 					$selectableSearch = that.$selectableUl.prev(),
@@ -173,8 +183,8 @@ $(function() {
 
 	$nodeModal.find('#actors').multiSelect(
 			{
-				selectableHeader: "<div class='custom-header'>Usuarios</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
-				selectionHeader: "<div class='custom-header'>Actores</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+				selectableHeader: "<div class='custom-header'>Grupos de atencion</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
+				selectionHeader: "<div class='custom-header'>Grupo actor</div><input type='text' class='search-input filterMS' autocomplete='off' placeholder='Buscar ...'>",
 				afterInit: function(ms){
 					var that = this,
 					$selectableSearch = that.$selectableUl.prev(),
@@ -253,6 +263,7 @@ function ajaxLoadWorkFlow(response) {
 						status : dataNodes[i].status,
 						sendEmail : dataNodes[i].sendEmail,
 						users : dataNodes[i].users,
+						userDefault:dataNodes[i].userDefault,
 						actors : dataNodes[i].actors,
 				};
 
@@ -284,9 +295,17 @@ function ajaxLoadWorkFlow(response) {
 
 			$network = new vis.Network(container, data, options);
 			$network.enableEditMode();
-			$network.moveTo({
-				scale : 0.8
-			});
+			if(x===undefined){
+				$network.moveTo({
+					scale : scales,
+				});
+			}else{
+				$network.moveTo({
+					scale : scales,
+					position:position
+				});
+			}
+		
 
 			$network.on("doubleClick", function(properties) {
 				openUpdateNodeModal(properties);
@@ -391,6 +410,8 @@ function updateNodeModal() {
 	.val();
 	let usersNotyIds = getSelectIds($nodeForm, "#users");
 	let actorsNotyIds = getSelectIds($nodeForm, "#actors");
+	console.log(JSON.stringify(actorsNotyIds));
+	console.log(JSON.stringify(usersNotyIds));
 	$.ajax({
 		type : "POST",
 		url : getCont() + "wf/workFlow/" + "updateNodeIncidence",
@@ -402,6 +423,8 @@ function updateNodeModal() {
 			y : $nodeForm.find('#y').val(),
 			group : activity,
 			statusId : $nodeForm.find("#statusId").children("option:selected")
+			.val(),
+			userDefaultId : $nodeForm.find("#defaultUserId").children("option:selected")
 			.val(),
 			sendEmail : $nodeForm.find('#sendEmail').prop('checked'),
 			usersIds : JSON.stringify(usersNotyIds),
@@ -418,23 +441,46 @@ function updateNodeModal() {
 		}
 	});
 }
-
 function ajaxUpdateNode(response) {
 	switch (response.status) {
 	case 'success':
-		nodes.update({
-			id : response.obj.id,
-			label : response.obj.label,
-			group : response.obj.group,
-			x : response.obj.x,
-			y : response.obj.y,
-			status : response.obj.status,
-			sendEmail : response.obj.sendEmail,
-			users : response.obj.users,
-			actors : response.obj.actors
-		});
+		//console.log(response.obj);
+		//console.log(nodes);
+		//console.log( $network.getScale());
+		//console.log( $network.getViewPosition());
+		try {
+			nodes.update({
+				id : response.obj.id,
+				label : response.obj.label,
+				group : response.obj.group,
+				x : response.obj.x,
+				y : response.obj.y,
+				status : response.obj.status,
+				sendEmail : response.obj.sendEmail,
+				userDefault:response.obj.userDefault,
+				users : response.obj.users,
+				actors : response.obj.actors
+			});
+		}catch(err){
+			//console.log(err);
+			 nodes = new vis.DataSet([]);
+			 edges = new vis.DataSet([]);
+			 x=$network.getViewPosition().x;
+			 y=$network.getViewPosition().y;
+			 scales=$network.getScale();
+			  position = {
+						x : x,
+						y : y
+				};
+			  data = {
+						nodes : nodes,
+						edges : edges
+				};
+			  $network.getScale();
+			  $network.getViewPosition();
+			loadWorkFlow();
+		}
 		
-		console.log(response);
 		$network.redraw();
 		$nodeModal.modal('hide');
 		break;
@@ -451,6 +497,7 @@ function ajaxUpdateNode(response) {
 
 function updateNodePosition(nodeId, params) {
 	let node = nodes.get(nodeId);
+	console.log(node);
 	let position = params.pointer.canvas;
 	if (typeof node.id !== 'undefined') {
 		$.ajax({
@@ -564,7 +611,7 @@ function removeEdge(id) {
 	}
 }
 
-//show nodes info
+// show nodes info
 function showNodes() {
 	let listNodes = $network.canvas.body.nodes;
 	$.each(listNodes, function(index, value) {
@@ -591,11 +638,22 @@ function existEdge(edgeData) {
 	return  found.length > 0;
 }
 
+function existEdgeInvert(edgeData) {
+	var found = edges.get({
+		filter: function (item) {
+			return (item != null && item.to == edgeData.from && item.from == edgeData.to);
+		}
+	});
+	return  found.length > 0;
+}
+
 function closeNodeModal() {
 	$nodeModal.modal('hide');
 }
 
 function openUpdateNodeModal(properties) {
+	
+	
 	if (typeof properties.nodes[0] !== 'undefined') {
 		let tempNode = nodes.get(properties.nodes[0]);
 		$nodeForm.find('#users option').removeAttr('selected');
@@ -603,8 +661,13 @@ function openUpdateNodeModal(properties) {
 		$nodeForm.find('a[href="#tabHome"]').click();
 		$nodeForm[0].reset();
 		$nodeForm.find("#statusId").selectpicker('val', '');
-		if (tempNode.status != null)
+		$nodeForm.find("#defaultUserId").selectpicker('val', '');
+		if (tempNode.status != null){
 			$nodeForm.find("#statusId").selectpicker('val', tempNode.status.id);
+		}
+		if (tempNode.userDefault != null){
+			$nodeForm.find("#defaultUserId").selectpicker('val', tempNode.userDefault.id);
+		}
 		$nodeForm.find("#typeGroup").selectpicker('val', tempNode.group);
 		$nodeForm.find('#sendEmail').prop('checked', tempNode.sendEmail);
 		$nodeForm.find('#id').val(tempNode.id);

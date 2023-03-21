@@ -25,6 +25,7 @@ import com.soin.sgrm.model.IncidenceTracking;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.System_StatusIn;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.wf.NodeIncidence;
 
@@ -51,6 +52,14 @@ public class WFIncidence   {
 	@Column(name = "MENSAJE")
 	private String message;
 	
+	@Column(name = "ASIGNADO")
+	private String assigned;
+	
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	@Column(name = "FECHAACTU")
+	private Timestamp updateDate;
+	
+	
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
@@ -61,7 +70,7 @@ public class WFIncidence   {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ESTADO", nullable = false)
-	private StatusIncidence status;
+	private System_StatusIn status;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_SISTEMA", nullable = false)
@@ -137,11 +146,11 @@ public class WFIncidence   {
 		this.system = system;
 	}
 
-	public StatusIncidence getStatus() {
+	public System_StatusIn getStatus() {
 		return status;
 	}
 
-	public void setStatus(StatusIncidence status) {
+	public void setStatus(System_StatusIn status) {
 		this.status = status;
 	}
 
@@ -218,9 +227,27 @@ public class WFIncidence   {
 		this.node = node;
 	}
 	
+	
+	public String getAssigned() {
+		return assigned;
+	}
+
+	public void setAssigned(String assigned) {
+		this.assigned = assigned;
+	}
+	
+	public Timestamp getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Timestamp updateDate) {
+		this.updateDate = updateDate;
+	}
+
 	public void convertReleaseToWFIncidence(Incidence incidence) {
 		this.node = incidence.getNode();
 		this.requestDate=incidence.getRequestDate();
+		this.updateDate=incidence.getUpdateDate();
 		this.numTicket = incidence.getNumTicket();
 		this.system = incidence.getSystem();
 		this.status = incidence.getStatus();

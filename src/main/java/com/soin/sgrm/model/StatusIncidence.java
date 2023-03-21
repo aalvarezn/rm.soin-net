@@ -33,6 +33,7 @@ public class StatusIncidence implements Serializable{
 
 	@Column(name = "MOTIVO")
 	private String reason;
+	
 
 	public Long getId() {
 		return id;
@@ -73,8 +74,5 @@ public class StatusIncidence implements Serializable{
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
-	
-	
-
 	
 }

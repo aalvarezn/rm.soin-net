@@ -17,12 +17,11 @@
 	<div id="menuListItems" class="menu">
 		<ul class="list">
 			<!---- 	#Seccion de pagina de inicio ---->
-			<li class=""><a href="<c:url value='/'/> "> <span>Página
+			<li class=""><a href="<c:url value='/'/> "> <span>P&aacute;gina
 						principal</span></a></li>
 			<!---- 	#Seccion de proyectos ---->
 			<li class=""><a id="treeItem"
-				href="<c:url value='/admin/tree/'/>"> <span>Árbol
-						dependencias</span>
+				href="<c:url value='/admin/tree/'/>"> <span>&Aacute;rbol dependencias</span>
 			</a></li>
 			<!---- 	#Seccion de ambientes ---->
 			<li class=""><a id="ambientItem" href="javascript:void(0);"
@@ -35,11 +34,11 @@
 				</ul></li>
 			<!---- 	#Seccion de configuracion ---->
 			<li class=""><a id="configurationItem"
-				href="javascript:void(0);" class="menu-toggle"> <span>Configuración</span>
+				href="javascript:void(0);" class="menu-toggle"> <span>Configuraci&oacute;n</span>
 			</a>
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/admin/email/'/>">Correos</a></li>
-					<li><a href="<c:url value='/admin/parameter/'/>">Parámetros</a></li>
+					<li><a href="<c:url value='/admin/parameter/'/>">Par&aacute;metros</a></li>
 				</ul></li>
 			<!---- 	#Seccion de documentos ---->
 			<li class=""><a id="documentItem" href="javascript:void(0);"
@@ -54,45 +53,37 @@
 				</ul></li>
 			<!---- 	#Seccion de releases ---->
 			<li class=""><a id="releaseItem" href="javascript:void(0);"
-				class="menu-toggle"> <span>Catalogos</span>
+				class="menu-toggle"> <span>Cat&aacute;logos</span>
 			</a>
 				<ul class="ml-menu">
+					<li><a href="<c:url value='/admin/error/release'/>">Errores Release</a></li>
+					<li><a href="<c:url value='/admin/error/rfc'/>">Errores RFC</a></li>
+					<li><a href="<c:url value='/admin/error/request'/>">Errores Solicitudes</a></li>
 					<li><a href="<c:url value='/admin/status/'/>">Estados</a></li>
-					<li><a href="<c:url value='/admin/statusRFC/'/>">Estados
-							RFC</a></li>
-					<li><a href="<c:url value='/admin/statusRequest/'/>">Estados
-							Solicitud</a></li>
-					<li><a href="<c:url value='/admin/statusIncidence/'/>">Estados
-							Incidencia</a></li>
+					<li><a href="<c:url value='/admin/statusRFC/'/>">Estados RFC</a></li> 
+					<li><a href="<c:url value='/admin/statusRequest/'/>">Estados Solicitud</a></li>
 					<li><a href="<c:url value='/admin/impact/'/>">Impacto</a></li>
 					<li><a href="<c:url value='/admin/priority/'/>">Prioridad</a></li>
 					<li><a href="<c:url value='/admin/risk/'/>">Riesgo</a></li>
-					<li><a href="<c:url value='/admin/typeChange/'/>">Tipo
-							Cambio</a></li>
-					<li><a href="<c:url value='/admin/typePetition/'/>">Tipo
-							Solicitud</a></li>
-					<li><a href="<c:url value='/admin/typePetitionR4/'/>">Tipo
-							Solicitud R4</a></li>
-					<li><a href="<c:url value='/admin/typeIncidence/'/>">Tipo
-							Incidencia</a></li>
-					<li><a href="<c:url value='/admin/priorityIncidence/'/>">Prioridad
-							Incidencia</a></li>
+					<li><a href="<c:url value='/admin/typeChange/'/>">Tipo Cambio</a></li>
+					<li><a href="<c:url value='/admin/typePetition/'/>">Tipo Solicitud</a></li>  
+					<li><a href="<c:url value='/admin/typePetitionR4/'/>">Tipo Solicitud R4</a></li> 
 				</ul></li>
-			<!---- 	#Seccion de releases ---->
+				<!---- 	#Seccion de ticket ---->
 			<li class=""><a id="ticketsItem" href="javascript:void(0);"
 				class="menu-toggle"> <span>Catalogo Tickets</span>
 			</a>
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/admin/system/ticket/'/>">Sistemas
 							Ticket</a></li>
-							<li><a href="<c:url value='/admin/attentionGroup/'/>">Grupos atencion
+							<li><a href="<c:url value='/admin/attentionGroup/'/>">Grupos atenci&oacute;n
 							 de Tickets</a></li>
 					<li><a href="<c:url value='/admin/typeIncidence/'/>">Tipo
 							Incidencia</a></li>
 					<li><a href="<c:url value='/admin/priorityIncidence/'/>">Prioridad
-							Incidencia</a></li>
+							Ticket</a></li>
 					<li><a href="<c:url value='/admin/statusIncidence/'/>">Estados
-							Incidencia</a></li>
+							Ticket</a></li>
 				</ul></li>
 			<!---- 	#Seccion de requerimientos ---->
 			<li class=""><a id="requestItem" href="javascript:void(0);"
@@ -110,9 +101,9 @@
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/admin/action/'/>">Acciones</a></li>
 					<li><a href="<c:url value='/admin/environment/'/>">Entorno</a></li>
-					<li><a href="<c:url value='/admin/siges/'/>">Código Siges</a></li>
+					<li><a href="<c:url value='/admin/siges/'/>">C&oacute;digo Siges</a></li>
 					<li><a href="<c:url value='/admin/configurationItem/'/>">Item
-							Configuración</a></li>
+							Configuraci&oacute;n</a></li>
 					<li><a href="<c:url value='/admin/module/'/>">Modulo</a></li>
 					<li><a href="<c:url value='/admin/typeObject/'/>">Tipo
 							Objeto</a></li>
@@ -133,11 +124,11 @@
 			</a></li>
 			<!---- 	#Seccion de tramites ---->
 			<li class=""><a id="wfItem" href="javascript:void(0);"
-				class="menu-toggle"> <span>Tramites</span>
+				class="menu-toggle"> <span>Tr&aacute;mites</span>
 			</a>
 				<ul class="ml-menu">
 					<li><a href="<c:url value='/wf/type/'/>">Tipos</a></li>
-					<li><a href="<c:url value='/wf/workFlow/'/>">Trámites</a></li>
+					<li><a href="<c:url value='/wf/workFlow/'/>">Tr&aacute;mites</a></li>
 				</ul></li>
 		</ul>
 	</div>

@@ -87,7 +87,9 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_QA")) {
 			return "redirect:/release/qa";
 		}
-
+		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
+			return "redirect:/baseKnowledge/";
+		}
 		return "redirect:/release/";
 	}
 	
@@ -103,20 +105,29 @@ public class HomeController extends BaseController {
 	@RequestMapping(value = "/homeRequest", method = RequestMethod.GET)
 	public String indexRequest(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
-		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
+		if (request.isUserInRole("ROLE_Release Manager")) {
 			return "redirect:/management/request/";
 		}
 
 		return "redirect:/request/";
 	}
+	
 	@RequestMapping(value = "/homeIncidence", method = RequestMethod.GET)
 	public String indexIncidence(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-
-		if (request.isUserInRole("ROLE_Release Manager")) {
-			return "redirect:/management/incidence/";
-		}
-
 		return "redirect:/incidence/";
+	}
+	
+	@RequestMapping(value = "/homeIncidenceAttention", method = RequestMethod.GET)
+	public String indexIncidenceAttention(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		return "redirect:/incidenceManagement/";
+	}
+	
+	@RequestMapping(value = "/homeBaseKnowledge", method = RequestMethod.GET)
+	public String indexBaseKnow(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+
+
+		return "redirect:/baseKnowledge/";
 	}
 
 
@@ -125,6 +136,10 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_Admin")) {
 			return "redirect:/admin/";
 		}
+		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
+			return "redirect:/baseKnowledge/";
+		}
+		
 
 		return "redirect:/";
 	}

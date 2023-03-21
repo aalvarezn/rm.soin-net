@@ -34,4 +34,8 @@ public interface UserInfoDao {
 	
 	User findUserById(Integer id);
 
+	UserInfo getUserByGitUsername(String username);
+
+	boolean uniqueGitUsername(UserInfo userInfo);
+
 }

@@ -1,6 +1,8 @@
 package com.soin.sgrm.controller;
 
-import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -22,20 +24,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
-import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.RFCError;
+import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.Release_RFC;
-import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.wf.WFRFC;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.security.UserLogin;
+import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ErrorRFCService;
 import com.soin.sgrm.service.ImpactService;
+import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.RFCErrorService;
 import com.soin.sgrm.service.RFCService;
+import com.soin.sgrm.service.RFCWithoutReleaseService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
@@ -49,6 +61,9 @@ public class RFCManagementController extends BaseController {
 	public static final Logger logger = Logger.getLogger(RFCManagementController.class);
 	@Autowired
 	RFCService rfcService;
+
+	@Autowired
+	RFCWithoutReleaseService rfcWRService;
 	@Autowired
 	StatusRFCService statusService;
 
@@ -70,6 +85,21 @@ public class RFCManagementController extends BaseController {
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
 
+	@Autowired
+	ErrorRFCService errorService;
+
+	@Autowired
+	SigesService sigesService;
+
+	@Autowired
+	RFCErrorService rfcErrorService;
+	
+	@Autowired
+	ParameterService parameterService;
+
+	@Autowired
+	EmailTemplateService emailService;
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -80,10 +110,12 @@ public class RFCManagementController extends BaseController {
 			List<Priority> priorities = priorityService.list();
 			List<StatusRFC> statuses = statusService.findAll();
 			List<Impact> impacts = impactService.list();
+			List<Errors_RFC> errors = errorService.findAll();
 			model.addAttribute("priorities", priorities);
 			model.addAttribute("impacts", impacts);
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("systems", systems);
+			model.addAttribute("errors", errors);
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
 			e.printStackTrace();
@@ -95,7 +127,7 @@ public class RFCManagementController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<RFC> rfcs = new JsonSheet<>();
+		JsonSheet<RFC_WithoutRelease> rfcs = new JsonSheet<>();
 		try {
 
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
@@ -118,7 +150,7 @@ public class RFCManagementController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcs = rfcService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange, priorityId,
+			rfcs = rfcWRService.findAll1(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange, priorityId,
 					systemId);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -154,12 +186,19 @@ public class RFCManagementController extends BaseController {
 			@RequestParam(value = "idRFC", required = true) Long idRFC,
 			@RequestParam(value = "idStatus", required = true) Long idStatus,
 			@RequestParam(value = "dateChange", required = false) String dateChange,
-			@RequestParam(value = "motive", required = true) String motive) {
+			@RequestParam(value = "motive", required = true) String motive,
+			@RequestParam(value = "idError", required = false) Long idError,
+			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
+			@RequestParam(value = "senders", required = false) String senders) {
 		JsonResponse res = new JsonResponse();
 		try {
 			RFC rfc = rfcService.findById(idRFC);
 			StatusRFC status = statusService.findById(idStatus);
 			String user = getUserLogin().getFullName();
+			UserLogin userLogin=getUserLogin();
+			Errors_RFC error= new Errors_RFC();
+			boolean errorVer=false;
+			
 			if (status != null && status.getName().equals("Borrador")) {
 				Set<Release_RFC> releases = rfc.getReleases();
 				for (Release_RFC release : releases) {
@@ -172,13 +211,87 @@ public class RFCManagementController extends BaseController {
 				 * if (release.getStatus().getId() != status.getId())
 				 * release.setRetries(release.getRetries() + 1);
 				 */
+			} else if (status != null && status.getName().equals("Error")) {
+				 error = errorService.findById(idError);
+				errorVer=true;
+				
+				RFCError rfcError = new RFCError();
+				rfcError.setSystem(rfc.getSystemInfo());
+				rfcError.setSiges(sigesService.findByKey("codeSiges", rfc.getCodeProyect()));
+				rfcError.setError(error);
+				RFC_WithoutRelease rfcWithRelease = rfcService.findRfcWithRelease(rfc.getId());
+				rfcError.setRfc(rfcWithRelease);
+				rfcError.setObservations(motive);
+				Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+				rfcError.setErrorDate(dateFormat);
+				rfcErrorService.save(rfcError);
+				rfc.setStatus(status);
+				rfc.setOperator(getUserLogin().getFullName());
+				rfc.setMotive(motive);
+				rfc.setRequestDate(dateFormat);
+				rfcService.update(rfc);
+
+				StatusRFC statusChange = statusService.findByKey("name", "Borrador");
+				rfc.setStatus(statusChange);
+
+				if (statusChange != null && statusChange.getName().equals("Borrador")) {
+					Set<Release_RFC> releases = rfc.getReleases();
+					for (Release_RFC release : releases) {
+						release.setStatus(release.getStatusBefore());
+						release.setMotive("Devuelto al estado " + release.getStatus().getName());
+						releaseService.updateStatusReleaseRFC(release, user);
+					}
+				}
+				status = statusChange;
+				motive = "Paso a borrador por " + error.getName();
+				dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(dateFormat);
+				calendar.add(Calendar.MINUTE, 1);
+				Timestamp time1Minute = new Timestamp(calendar.getTimeInMillis());
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				java.util.Date fechaNueva = (java.util.Date) format.parse(time1Minute.toString());
+				format = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+				String time1MinuteFormat = format.format(fechaNueva);
+				dateChange = time1MinuteFormat;
 			}
 			rfc.setStatus(status);
 			rfc.setOperator(getUserLogin().getFullName());
-			rfc.setRequestDate((CommonUtils.getSystemTimestamp()));
-
+			Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+			rfc.setRequestDate(dateFormat);
 			rfc.setMotive(motive);
 			rfcService.update(rfc);
+			if (sendEmail) {
+
+				if(!errorVer) {
+				Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				String statusName=status.getName();
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,rfc.getMotive());
+					} catch (Exception e) {
+						Sentry.capture(e, "rfc");
+					}
+
+				});
+				newThread.start();
+				}else {
+					Integer idTemplate = Integer.parseInt(parameterService.findByCode(31).getParamValue());
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					String statusName=status.getName();
+					String typeError=error.getName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,rfc.getMotive());
+						} catch (Exception e) {
+							Sentry.capture(e, "rfc");
+						}
+
+					});
+					newThread.start();
+				}
+			}
 			res.setStatus("success");
 
 		} catch (Exception e) {

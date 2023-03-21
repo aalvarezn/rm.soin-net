@@ -93,9 +93,50 @@ $(function() {
 	});
 	initDataTable();
 });
+/*
 
+jQuery("#lead").autocomplete(
+		{
+			source : function(request, response) {
+				$.get(getCont() + "admin/attentionGroup/" + "requestAutoComplete-"
+						+ $("#lead").val(), function(data) {
+					response(data);
+				});
+			},
+			response : function(event, ui) {
+				countRequest = ui.content.length;
+				console.log(ui);
+				if (countRequest === 0) {
+					notifyInfo('Sin resultados');
+				}
+			},
+			select : function(e, ui) {
+				
+				if (!($('#listName ul #' + ui.item.id).length)) {
+					if ($('#listName ul li').length < 1) {
+						
+						console.log(ui.item.name);
+						$("#listName ul")
+						.append(
+								'<li id="'
+								+ ui.item.id
+								+ '" class="list-group-item">'
+								+ ui.item.name
+								+ ' <span class="flr"> <a onclick="deleteName('
+								+ ui.item.id
+								+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
+								+ ' </span>' + ' </li>');
+					} else {
+						notifyInfo('Ya existe un nombre ');
+					}
 
-
+				}
+				$(this).val('');
+				return false;
+			},
+			delay : 0
+		});
+*/
 function initDataTable() {
 	$dtAttentionGroup = $('#attentionTable')
 	.DataTable(
@@ -145,7 +186,8 @@ function getSelectIds(form, name){
 }
 
 function openSystemModal() {
-	//resetErrors();
+	$systemModalForm.validate().resetForm();
+	$systemModalForm[0].reset();
 	$systemModalForm.find('a[href="#tabHome"]').click();
 	$systemModalForm.find('input[type="checkbox"]').val('0');
 	$systemModalForm[0].reset();
@@ -183,6 +225,7 @@ function updateSystemModal() {
 					id : $systemModalForm.find('#id').val(),
 					name : $systemModalForm.find('#name').val(),
 					code : $systemModalForm.find('#code').val(),
+					leaderId:$systemModalForm.find('#leaderId').val(),
 					usersAttentionId: usersAttentionId
 				}),
 				success : function(response) {
@@ -223,6 +266,7 @@ function saveSystem() {
 					// Informacion sistemas
 					name : $systemModalForm.find('#name').val(),
 					code : $systemModalForm.find('#code').val(),
+					leaderId:$systemModalForm.find('#leaderId').val(),
 					usersAttentionId: usersAttentionId
 				}),
 				success : function(response) {
@@ -318,11 +362,13 @@ function ajaxSaveSystem(response) {
 
 
 function ajaxEditSystem(index) {
+	$systemModalForm.validate().resetForm();
+	$systemModalForm[0].reset();
 	var obj = $dtAttentionGroup.row(index).data();
 	$systemModalForm.find('#id').val(obj.id);
 	$systemModalForm.find('#name').val(obj.name);
 	$systemModalForm.find('#code').val(obj.code);
-	
+	$systemModalForm.find('#leaderId').selectpicker('val',obj.lead.id);
 	var userAttention = [];
 	for (var i = 0, l = obj.userAttention.length; i < l; i++) {
 		$systemModalForm.find('#team option').each(
@@ -357,6 +403,7 @@ function updateSystem() {
 			id : $systemModalForm.find('#systemId').val(),
 			name : $systemModalForm.find('#name').val(),
 			code : $systemModalForm.find('#code').val(),
+			leaderId:$systemModalForm.find('#leaderId').val(),
 			usersAttentionId: usersAttentionId
 		},
 		success : function(response) {
@@ -457,6 +504,11 @@ function initAttentionFormValidation() {
 				minlength : 1,
 				maxlength : 50,
 			},
+			
+			'leaderId' : {
+				required : true,
+
+			},
 
 		},
 		messages : {
@@ -469,7 +521,10 @@ function initAttentionFormValidation() {
 				required :  "Ingrese un valor",
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
-			}
+			},	
+			'leaderId' : {
+				required :  "Seleccione una opcion",
+			},
 		},
 		highlight,
 		unhighlight,

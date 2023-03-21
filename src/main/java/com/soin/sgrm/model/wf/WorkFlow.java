@@ -23,7 +23,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.soin.sgrm.model.Status;
 import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")

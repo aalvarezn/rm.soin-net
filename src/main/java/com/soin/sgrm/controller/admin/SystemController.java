@@ -1,7 +1,6 @@
 package com.soin.sgrm.controller.admin;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -13,7 +12,6 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -59,10 +57,10 @@ public class SystemController extends BaseController {
 
 	@Autowired
 	EmailTemplateService emailService;
-
+	
 	@Autowired
 	AttentionGroupService attentionGroupService;
-	
+
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		model.addAttribute("systems", systemService.list());
@@ -75,7 +73,6 @@ public class SystemController extends BaseController {
 		model.addAttribute("email", new EmailTemplate());
 		return "/admin/system/system";
 	}
-	
 	@RequestMapping(value = { "", "/ticket" }, method = RequestMethod.GET)
 	public String systemTicket(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		model.addAttribute("systems", systemService.list());
@@ -106,6 +103,7 @@ public class SystemController extends BaseController {
 		model.addAttribute("email", new EmailTemplate());
 		return "/admin/systemTickets/system";
 	}
+
 
 	@RequestMapping(value = "/findSystem/{id}", method = RequestMethod.GET)
 	public @ResponseBody System findSystem(@PathVariable Integer id, HttpServletRequest request, Locale locale,
@@ -262,7 +260,7 @@ public class SystemController extends BaseController {
 		}
 		return res;
 	}
-
+	
 	@RequestMapping(value = "/updateSystemIncidence", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateSystemIncidence(HttpServletRequest request,
 			@Valid @ModelAttribute("System") System system, BindingResult errors, ModelMap model, Locale locale,
@@ -314,7 +312,6 @@ public class SystemController extends BaseController {
 		return res;
 	}
 
-	
 	@RequestMapping(value = "/deleteSystem/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteSystem(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();

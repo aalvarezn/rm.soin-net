@@ -33,11 +33,15 @@ import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.Module;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
-import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.Release_Objects;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.User;
@@ -55,12 +59,13 @@ import com.soin.sgrm.service.ModifiedComponentService;
 import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
-import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.RiskService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
 import com.soin.sgrm.service.EnvironmentService;
+import com.soin.sgrm.service.ErrorReleaseService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.service.TypeObjectService;
@@ -122,6 +127,10 @@ public class ReleaseController extends BaseController {
 	private ParameterService paramService;
 	@Autowired
 	private NodeService nodeService;
+	@Autowired 
+	ReleaseObjectService releaseObjectService;
+	@Autowired
+	private ErrorReleaseService errorService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -287,9 +296,9 @@ public class ReleaseController extends BaseController {
 
 		try {
 			model.addAttribute("parameter", status);
-			ReleaseSummary release = null;
+			ReleaseSummaryMin release = null;
 			if (CommonUtils.isNumeric(status)) {
-				release = releaseService.findById(Integer.parseInt(status));
+				release = releaseService.findByIdMin(Integer.parseInt(status));
 			}
 
 			if (release == null) {
@@ -299,13 +308,15 @@ public class ReleaseController extends BaseController {
 					.findBySystemId(release.getSystem().getId());
 			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
 			model.addAttribute("dependency", new Release());
-			model.addAttribute("object", new ReleaseObject());
 			model.addAttribute("doc", new DocTemplate());
 			model.addAttribute("docs", docs);
 			model.addAttribute("release", release);
 			model.addAttribute("systemConfiguration", systemConfiguration);
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
+			model.addAttribute("errors", errorService.findAll());
+			
+			model.addAttribute("cc", release.getSystem().getEmailTemplate().iterator().next().getCc());
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
@@ -325,9 +336,9 @@ public class ReleaseController extends BaseController {
 
 		try {
 			model.addAttribute("parameter", status);
-			ReleaseSummary release = null;
+			ReleaseSummaryMin release = null;
 			if (CommonUtils.isNumeric(status)) {
-				release = releaseService.findById(Integer.parseInt(status));
+				release = releaseService.findByIdMin(Integer.parseInt(status));
 			}
 
 			if (release == null) {
@@ -337,7 +348,6 @@ public class ReleaseController extends BaseController {
 					.findBySystemId(release.getSystem().getId());
 			List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
 			model.addAttribute("dependency", new Release());
-			model.addAttribute("object", new ReleaseObject());
 			model.addAttribute("doc", new DocTemplate());
 			model.addAttribute("docs", docs);
 			model.addAttribute("release", release);
@@ -361,9 +371,9 @@ public class ReleaseController extends BaseController {
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
 		try {
 			model.addAttribute("parameter", status);
-			ReleaseSummary release = null;
+			ReleaseTinySummary release = null;
 			if (CommonUtils.isNumeric(status)) {
-				release = releaseService.findById(Integer.parseInt(status));
+				release = releaseService.findByIdTiny(Integer.parseInt(status));
 			}
 
 			if (release == null) {
@@ -392,7 +402,7 @@ public class ReleaseController extends BaseController {
 	@RequestMapping(value = "/editRelease-{id}", method = RequestMethod.GET)
 	public String editRelease(@PathVariable String id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) {
-		ReleaseEdit release = new ReleaseEdit();
+		ReleaseEditWithOutObjects release = new ReleaseEditWithOutObjects();
 		SystemConfiguration systemConfiguration = new SystemConfiguration();
 		UserLogin user = getUserLogin();
 		try {
@@ -401,7 +411,7 @@ public class ReleaseController extends BaseController {
 			}
 
 			Integer idRelease = Integer.parseInt(id);
-			release = releaseService.findEditById(idRelease);
+			release = releaseService.findEditByIdWithOutObjects(idRelease);
 
 			if (release == null) {
 				return "/plantilla/404";
@@ -426,7 +436,9 @@ public class ReleaseController extends BaseController {
 			if (release.getSystem().getImportObjects()) {
 				model.addAttribute("typeDetailList", typeDetail.list());
 			}
-
+			
+			List<Release_Objects> listObjects=	releaseObjectService.listObjectsSql(idRelease); 
+			
 			model.addAttribute("systems", systemService.listSystemByUser(getUserLogin().getUsername()));
 			model.addAttribute("impacts", impactService.list());
 			model.addAttribute("risks", riskService.list());
@@ -441,7 +453,21 @@ public class ReleaseController extends BaseController {
 			model.addAttribute("doc", new DocTemplate());
 			model.addAttribute("docs", docs);
 			model.addAttribute("release", release);
-
+			model.addAttribute("senders", release.getSenders());
+			model.addAttribute("message", release.getMessage());
+			model.addAttribute("releaseObject",listObjects);
+			if(release.getSystem().getEmailTemplate()!=null) {
+				if(release.getSystem().getEmailTemplate().size()>1) {
+					model.addAttribute("ccs", getCC(release.getSystem().getEmailTemplate().iterator().next().getCc()));
+				}else {
+					for(EmailTemplate emailTemplate:release.getSystem().getEmailTemplate()) {
+						model.addAttribute("ccs", getCC(emailTemplate.getCc()));
+					}
+				}
+			
+			}else {
+				model.addAttribute("ccs", "");
+			}
 			return "/release/editRelease";
 
 		} catch (Exception e) {
@@ -720,7 +746,23 @@ public class ReleaseController extends BaseController {
 			release.checkModifiedComponents(modifiedComponents);
 			release.checkAmbientsExists(ambients);
 			release.checkDependenciesExists(dependencies);
+			if(rc.getSenders()!=null) {
+			if (rc.getSenders().length() < 256) {
+				rc.setSenders(rc.getSenders());
+			} else {
+				rc.setSenders(release.getSenders());
+			}
+			}
+			
+			if(rc.getMessage()!=null) {
+			if (rc.getMessage().length() < 256) {
+				rc.setMessage(rc.getMessage());
+			} else {
+				rc.setMessage(release.getMessage());
+			}
+			}
 			releaseService.saveRelease(release, rc);
+			
 			res.setStatus("success");
 			if (errors.size() > 0) {
 				// Se adjunta lista de errores
@@ -830,6 +872,8 @@ public class ReleaseController extends BaseController {
 	public ArrayList<MyError> validSections(Release release, ArrayList<MyError> errors, ReleaseCreate rc) {
 		// Se verifican las secciones que se deben validar por release.
 		try {
+			
+			errors =rc.validEmailInformation(rc,errors);
 			SystemConfiguration systemConfiguration = systemConfigurationService
 					.findBySystemId(release.getSystem().getId());
 
@@ -869,7 +913,7 @@ public class ReleaseController extends BaseController {
 				errors = rc.validMinimalEvidence(rc, errors);
 
 			if (systemConfiguration.getConfigurationItems()) {
-				if (rc.getObjectItemConfiguration().size() == 0) {
+				if (release.getObjects().size() == 0) {
 					errors.add(new MyError("configurationItemsTable", "Ingrese un objeto."));
 				}
 				errors = rc.validSqlObject(rc, errors);
@@ -923,5 +967,57 @@ public class ReleaseController extends BaseController {
 		systemC.put("all", (systemC.get("draft") + systemC.get("requested") + systemC.get("completed")));
 		request.setAttribute("systemC", systemC);
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = { "/listObjects" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet listObjects(HttpServletRequest request, Locale locale, Model model) {
+		JsonSheet<?> releaseObjects = new JsonSheet<>();
+		try {
 
+			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
+			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
+			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			String sSearch = request.getParameter("sSearch");
+			Integer releaseId =  Integer.parseInt(request.getParameter("releaseId"));
+			String sqlS=request.getParameter("sql");
+			Integer sql=0;
+			if(sqlS!=null) {
+				sql=Integer.parseInt(request.getParameter("sql"));
+			}
+
+			releaseObjects = releaseObjectService.listObjectsByReleases(sEcho, iDisplayStart, iDisplayLength, sSearch, releaseId,sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return releaseObjects;
+	}
+	
+	@RequestMapping(value = { "/countObjects/{releaseId}" }, method = RequestMethod.GET)
+	public @ResponseBody Integer changeProject(@PathVariable Integer releaseId, Locale locale, Model model) {
+		Integer releaseObjects = 0;
+		try {
+			releaseObjects = releaseObjectService.listCountByReleases( releaseId);
+		} catch (Exception e) {
+			Sentry.capture(e, "countObjects");
+
+			e.printStackTrace();
+		}
+
+		return releaseObjects;
+	}
+
+
+	
+	public List<String> getCC(String ccs) {
+		
+		List<String> getCC = new ArrayList<String>();
+		if(ccs!=null) {
+			ccs.split(",");
+			for (String cc : ccs.split(",")) {
+				getCC.add(cc);
+				}
+		}
+		return getCC;
+	}
 }

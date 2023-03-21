@@ -15,13 +15,17 @@ import com.soin.sgrm.dao.ReleaseDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.CommonUtils;
@@ -86,11 +90,6 @@ public class ReleaseServiceImpl implements ReleaseService {
 	@Override
 	public ReleaseEdit findEditById(Integer id) throws SQLException {
 		return dao.findEditById(id);
-	}
-	
-	@Override
-	public Integer findReleaseByName(String name) throws SQLException {
-		return dao.findReleaseByName(name);
 	}
 
 	@Override
@@ -275,5 +274,27 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public void updateStatusReleaseRFC(Release_RFC release,String operator) throws Exception {
 		dao.updateStatusReleaseRFC(release,operator);
 	}
+
+	@Override
+	public Releases_WithoutObj findReleaseWithouObj(Integer id) throws SQLException {
+		
+		return dao.findReleaseWithouObj(id);
+	}
+
+  @Override
+	public ReleaseSummaryMin findByIdMin(Integer id) throws SQLException {
+		return dao.findByIdMin(id);
+	}
+
+@Override
+public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
+	
+	return dao.findEditByIdWithOutObjects(idRelease);
+}
+
+@Override
+public ReleaseTinySummary findByIdTiny(int id) {
+	return dao.findByIdTiny(id);
+}
 
 }

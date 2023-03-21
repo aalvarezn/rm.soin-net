@@ -25,6 +25,9 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeRFC;
+
 @Entity
 @Table(name = "RFC")
 public class RFC implements Serializable {
@@ -117,6 +120,11 @@ public class RFC implements Serializable {
 
 	@Column(name = "FECHA_EJECUCION_FINAL")
 	private String requestDateFinish;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "NODO_ID", nullable = true)
+	private NodeRFC node;
+	
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -425,6 +433,14 @@ public class RFC implements Serializable {
 
 	public void setSystemId(Integer systemId) {
 		this.systemId = systemId;
+	}
+
+	public NodeRFC getNode() {
+		return node;
+	}
+
+	public void setNode(NodeRFC node) {
+		this.node = node;
 	}
 	
 	

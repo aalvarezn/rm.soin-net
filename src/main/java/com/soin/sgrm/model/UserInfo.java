@@ -49,6 +49,10 @@ public class UserInfo implements Serializable {
 	@NotEmpty(message = Constant.EMPTY)
 	@Size(max = 30, message = "Máximo 30 caracteres.")
 	private String username;
+	
+	@Column(unique = true, name = "GITUSERNAME")
+	@Size(max = 50, message = "Máximo 50 caracteres.")
+	private String gitusername;
 
 	@Column(name = "FULL_NAME")
 	@NotEmpty(message = Constant.EMPTY)
@@ -171,6 +175,14 @@ public class UserInfo implements Serializable {
 
 	public List<Integer> getRolesId() {
 		return rolesId;
+	}
+
+	public String getGitusername() {
+		return gitusername;
+	}
+
+	public void setGitusername(String gitusername) {
+		this.gitusername = gitusername;
 	}
 
 	public void setRolesId(String rolesId) {

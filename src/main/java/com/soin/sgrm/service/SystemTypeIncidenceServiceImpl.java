@@ -72,4 +72,10 @@ public class SystemTypeIncidenceServiceImpl implements SystemTypeIncidenceServic
 		return dao.findByIdAndSys(systemId,priorityId);
 	}
 
+	@Override
+	public List<SystemTypeIncidence> findByManager(Integer idUser) {
+	
+		 return dao.findByManager(idUser);
+	}
+
 }

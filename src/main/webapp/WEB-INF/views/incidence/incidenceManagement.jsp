@@ -51,6 +51,8 @@
 </head>
 <body class="theme-grey">
 	<input type="text" id="postMSG" name="postMSG" value="${data}">
+<<<<<<< HEAD
+=======
 	<c:forEach items="${attentionGroup}" var="attentionGroup">
 		<c:if test="${attentionGroup.code == 'RM'}">
 			<input type="text" id="isRM" name="isRM" value="true">
@@ -65,6 +67,7 @@
 			<input type="text" id="isINFRA" name="isINFRA" value="true">
 		</c:if>
 	</c:forEach>
+>>>>>>> rc_gestion_incidencias
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
@@ -89,7 +92,11 @@
 				<!-- #addRFCSection#  -->
 				<%@include file="../incidence/trackingIncidenceModal.jsp"%>
 				<!-- #addRFCSection#-->
+<<<<<<< HEAD
+				<%@include file="../incidence/changeUserModal.jsp"%>
+=======
 
+>>>>>>> rc_gestion_incidencias
 				<!-- #tableSection#-->
 				<div id="tableSection">
 					<div class="block-header">
@@ -160,6 +167,10 @@
 
 
 					<!-- tableFilters -->
+<<<<<<< HEAD
+					<!-- tableFilters -->
+=======
+>>>>>>> rc_gestion_incidencias
 					<div id="tableFilters" class="row clearfix m-t-20">
 						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 							<label>Rango de Fechas</label>
@@ -173,6 +184,59 @@
 								</div>
 							</div>
 						</div>
+<<<<<<< HEAD
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+							<label>Sistema</label>
+							<div class="form-group m-b-0">
+								<select id="systemId" name="systemId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="">-- Todos --</option>
+									<c:forEach items="${systems}" var="system">
+										<option value="${system.id }">${system.name }</option>
+									</c:forEach>
+								</select>
+
+							</div>
+
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+							<label>Tipo de ticket </label>
+							<div class="form-group m-b-0">
+								<select id="typeId" disabled name="typeId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="">-- Todos --</option>
+								</select>
+
+							</div>
+
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+							<label>Prioridad</label>
+							<div class="form-group m-b-0">
+								<select id="priorityId" name="priorityId" disabled
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="">-- Todos --</option>
+								</select>
+
+							</div>
+
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+							<label>Estado</label>
+							<div class="form-group m-b-0">
+								<select id="statusId" name="statusId" disabled
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="">-- Todos --</option>
+								</select>
+
+							</div>
+
+						</div>
+=======
 						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
 							<label>Tipo</label>
 							<div class="form-group m-b-0">
@@ -214,6 +278,7 @@
 							</div>
 						</div>
 
+>>>>>>> rc_gestion_incidencias
 					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
@@ -225,7 +290,12 @@
 											class="table table-bordered table-striped table-hover dataTable">
 											<thead>
 												<tr>
+<<<<<<< HEAD
+													<th>ID</th>
+													<th>Nodo</th>
+=======
 													<th></th>
+>>>>>>> rc_gestion_incidencias
 													<th>Número Ticket</th>
 													<th>Titulo</th>
 													<th>Detalle del problema</th>

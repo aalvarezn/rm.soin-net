@@ -48,7 +48,9 @@
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 </head>
-
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
 	<!-- Page Loader -->
@@ -103,7 +105,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de creaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -158,7 +160,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Jerarquía de ambientes</label>
+					<label for="email_address">Jerarqu&iacute;a de ambientes</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${requestR2.hierarchy}</p>
@@ -250,14 +252,8 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$("#contentSummary textarea").parent().removeClass('focused');
-			$("#contentSummary textarea").attr("disabled", true);
-			autosize($('textarea'));
-		});
-	</script>
-
+<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 </body>
 
 </html>

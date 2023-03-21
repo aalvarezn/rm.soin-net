@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <html>
@@ -133,8 +133,9 @@
 										</div>
 										<div class="content">
 											<div class="text">COMPLETADOS</div>
-											<div class="number count-to" data-from="0" data-to="${userC['completed']}"
-												data-speed="1000" data-fresh-interval="20"></div>
+											<div class="number count-to" data-from="0"
+												data-to="${userC['completed']}" data-speed="1000"
+												data-fresh-interval="20"></div>
 										</div>
 									</div>
 								</div>
@@ -147,7 +148,7 @@
 
 					<!-- tableFilters -->
 					<div id="tableFilters" class="row clearfix m-t-20">
-						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
 							<label>Rango de Fechas</label>
 							<div class="input-group">
 								<span class="input-group-addon"> <i
@@ -159,7 +160,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Sistemas</label>
 							<div class="form-group m-b-0">
 								<select id="systemId"
@@ -172,7 +173,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Prioridad</label>
 							<div class="form-group m-b-0">
 								<select id="priorityId"
@@ -185,7 +186,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Estado</label>
 							<div class="form-group m-b-0">
 								<select id="statusId"
@@ -200,35 +201,43 @@
 								</select>
 							</div>
 						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+							<div class="button-demo-refresh" style="padding-top: 25px;">
+								<button title="Refrescar tabla con filtros!" type="button"
+									class="btn btn-primary setIcon" onclick="refreshTable()">
+									<span><i class="material-icons m-t--2 ">update</i></span>
+								</button>
+							</div>
+						</div>
 
 					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-					<div id="tableSection" class="row clearfix">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="body ">
-								<div class="body table-responsive">
-									<table id="dtRFCs"
-										class="table table-bordered table-striped table-hover dataTable">
-										<thead>
-											<tr>
-												<th></th>
-												<th>Número RFC</th>
-												<th>Sistema</th>
-												<th>Raz&oacute;n de cambio</th>
-												<th>Solicitante</th>
-												<th>Modificado</th>
-												<th>Estado</th>
-												<th>Acciones</th>
-											</tr>
-										</thead>
+						<div id="tableSection" class="row clearfix">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="body ">
+									<div class="body table-responsive">
+										<table id="dtRFCs"
+											class="table table-bordered table-striped table-hover dataTable">
+											<thead>
+												<tr>
+													<th></th>
+													<th>N&uacute;mero RFC</th>
+													<th>Sistema</th>
+													<th>Raz&oacute;n de cambio</th>
+													<th>Solicitante</th>
+													<th>Modificado</th>
+													<th>Estado</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
 
-									</table>
+										</table>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					
+
 					</div>
 				</div>
 				<!-- #tableSection# -->

@@ -1,6 +1,7 @@
 package com.soin.sgrm.controller.admin;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -70,9 +71,14 @@ public class AttentionGroupController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			User temp = null;
-
+			User lead=userService.findUserById(addAttentionGroup.getLeaderId());
+			addAttentionGroup.setLead(lead);
 			Set<User> authsUser = new HashSet<>();
-			for (Integer index : addAttentionGroup.getUsersAttentionId()) {
+			List<Integer> listUser=addAttentionGroup.getUsersAttentionId();
+			if(!listUser.contains(addAttentionGroup.getLeaderId())) {
+				listUser.add(addAttentionGroup.getLeaderId());
+			}
+			for (Integer index : listUser) {
 				temp = userService.findUserById(index);
 				if (temp != null) {
 					authsUser.add(temp);
@@ -101,9 +107,14 @@ public class AttentionGroupController extends BaseController {
 		try {
 			res.setStatus("success");
 			User temp = null;
-
+			User lead=userService.findUserById(uptAttentionGroup.getLeaderId());
+			uptAttentionGroup.setLead(lead);
 			Set<User> authsUser = new HashSet<>();
-			for (Integer index : uptAttentionGroup.getUsersAttentionId()) {
+			List<Integer> listUser=uptAttentionGroup.getUsersAttentionId();
+			if(!listUser.contains(uptAttentionGroup.getLeaderId())) {
+				listUser.add(uptAttentionGroup.getLeaderId());
+			}
+			for (Integer index : listUser) {
 				temp = userService.findUserById(index);
 				if (temp != null) {
 					authsUser.add(temp);
@@ -115,7 +126,7 @@ public class AttentionGroupController extends BaseController {
 			res.setMessage("Grupo de atencion modificado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "attentionGroup");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al modificar el grupo de atencion!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
@@ -137,6 +148,8 @@ public class AttentionGroupController extends BaseController {
 		}
 		return res;
 	}
+	
+
 	
 }
 
