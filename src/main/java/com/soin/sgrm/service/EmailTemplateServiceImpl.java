@@ -44,6 +44,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestRM_P1_R1;
@@ -98,8 +99,13 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	SigesService sigeService;
 
 	@Autowired
+
 	private EmailIncidenceService emailIncidenceService;
 	
+  @Autowired
+	RequestService requestService;
+
+
 	EnviromentConfig envConfig = new EnviromentConfig();
 
 	@Override
@@ -265,7 +271,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					ccUserFinal = ccUserFinal + "," + ccFinal;
 				}
 			}
-		
+
 		}
 		for (String ccUser : ccUserFinal.split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
@@ -311,15 +317,23 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	public EmailTemplate fillEmail(EmailTemplate email, Release release) {
 		String temp = "";
-		String releaseNumber= release.getReleaseNumber();
-		String[] parts =releaseNumber.split("\\.");
-		boolean test=releaseNumber.contains(".");
-		String tpo="";
-		for(String part:parts ) {
-			if(part.contains("TPO")) {
-				tpo=part;
+		String releaseNumber = release.getReleaseNumber();
+		String[] parts = releaseNumber.split("\\.");
+		boolean test = releaseNumber.contains(".");
+		String tpo = "";
+		for (String part : parts) {
+			if (part.contains("TPO")) {
+				String[] partsTPO = part.split("TPO");
+				String[] partsNumber = part.split(partsTPO[1]);
+				tpo = partsNumber[0] + "-" + partsTPO[1];
 			}
 		}
+
+		Request request = new Request();
+		if (tpo != "") {
+			request = requestService.findByNameCode(tpo);
+		}
+
 		/* ------ body ------ */
 		if (email.getHtml().contains("{{userName}}")) {
 			email.setHtml(email.getHtml().replace("{{userName}}",
@@ -361,6 +375,16 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		if (email.getHtml().contains("{{message}}")) {
 			email.setHtml(email.getHtml().replace("{{message}}",
 					(release.getMessage() != null ? release.getMessage() : "NA")));
+		}
+		
+		if (email.getHtml().contains("{{tpoNumber}}")) {
+			email.setHtml(email.getHtml().replace("{{tpoNumber}}",
+					(tpo != null ? tpo : "NA")));
+		}
+
+		if (email.getHtml().contains("{{tpoDescription}}")) {
+			email.setHtml(email.getHtml().replace("{{tpoDescription}}",
+					(request.getDescription() != null ? request.getDescription() : "NA")));
 		}
 
 		if (email.getHtml().contains("{{technicalSolution}}")) {
@@ -405,8 +429,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 		/* ------ Subject ------ */
 		if (email.getSubject().contains("{{tpoNumber}}")) {
-			email.setSubject(email.getSubject().replace("{{tpoNumber}}",
-					(tpo != "" ? tpo : "")));
+			email.setSubject(email.getSubject().replace("{{tpoNumber}}", (tpo != "" ? tpo : "")));
 		}
 		if (email.getSubject().contains("{{releaseNumber}}")) {
 			email.setSubject(email.getSubject().replace("{{releaseNumber}}",
@@ -780,12 +803,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					ccUserFinal = ccUserFinal + "," + ccFinal;
 				}
 			}
-		
+
 		}
 		for (String ccUser : ccUserFinal.split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 		}
-
 
 		mailSender.send(mimeMessage);
 	}
@@ -1097,12 +1119,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 					ccUserFinal = ccUserFinal + "," + ccFinal;
 				}
 			}
-		
+
 		}
 		for (String ccUser : ccUserFinal.split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 		}
-
 
 		mailSender.send(mimeMessage);
 	}
@@ -1625,7 +1646,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override

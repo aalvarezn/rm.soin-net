@@ -30,4 +30,6 @@ public interface RequestDao {
 
 	Request listByTypeAndCodeSoin(TypeRequest type, String code_soin);
 
+	Request findByNameCode(String code_soin);
+
 }
