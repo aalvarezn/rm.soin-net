@@ -92,13 +92,6 @@
 								base conocimiento</a></li>
 						<li><a href="<c:url value='/baseKnowledge/'/>">Base
 								conocimiento</a></li>
-						<li><a href="<c:url value='/incidenceManagement/'/>">
-								Tickets</a></li>
-						<li><a href="<c:url value='/systemPriority/'/>">Prioridad
-								Ticket</a></li>
-						<li><a href="<c:url value='/systemTypeIn/'/>">Tipo Ticket</a></li>
-						<li><a href="<c:url value='/systemStatusIn/'/>">Estado
-								Ticket</a></li>
 					</ul></li>
 
 			</c:if>
