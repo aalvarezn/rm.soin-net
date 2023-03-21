@@ -4,7 +4,7 @@ var $mdStatusRequest = $('#statusRequestModal');
 var $fmStatusRequest = $('#statusRequestModalForm');
 
 $(function() {
-	activeItemMenu("statusRequestItem", true);
+	activeItemMenu("releaseItem", true);
 	initDataTable();
 	initStatusRequestFormValidation();
 });

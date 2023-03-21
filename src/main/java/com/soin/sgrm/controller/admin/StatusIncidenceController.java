@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.StatusIncidence;
-import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.StatusIncidenceService;
-import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 

@@ -81,7 +81,7 @@
 			<c:if test="${managerKnowledgeAccess}">
 				<!---- 	#Seccion de incidencias ---->
 				<li class=""><a id="knowledgeManagementItem"
-					href="javascript:void(0);" class="menu-toggle"> <span>Gestión
+					href="javascript:void(0);" class="menu-toggle"> <span>Gesti&oacute;n
 							base conocimientos</span>
 				</a>
 					<ul class="ml-menu">
@@ -99,7 +99,7 @@
 			<c:if test="${managerIncidenceAccess}">
 				<!---- 	#Seccion de incidencias ---->
 				<li class=""><a id="incidenceManagementItem"
-					href="javascript:void(0);" class="menu-toggle"> <span>Gestión
+					href="javascript:void(0);" class="menu-toggle"> <span>Gesti&oacute;n
 							Tickets</span>
 				</a>
 					<ul class="ml-menu">

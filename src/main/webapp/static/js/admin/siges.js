@@ -4,7 +4,7 @@ var $mdSiges = $('#sigesModal');
 var $fmSiges = $('#sigesModalForm');
 
 $(function() {
-	activeItemMenu("sigesItem", true);
+	activeItemMenu("systemItem", true);
 	initDataTable();
 	initSigesFormValidation();
 });

@@ -29,7 +29,7 @@
 						</div>
 						<div
 							class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t--20 m-b--20">
-							<label for="description">Descripci�n</label>
+							<label for="description">Descripción</label>
 							<div class="form-group">
 								<div class="form-line">
 									<input type="text" class="form-control" id="description"

@@ -212,9 +212,10 @@ tr.selected {
 													<i class="material-icons spanError">warning</i>
 											</span>
 										</a></li>
-										<li id="2" role="presentation" class="without-line" style="margin-left: 60%;"><a
-											href="#step3" data-toggle="tab" aria-controls="step3"
-											role="tab" title=""> <span class="round-tab"> 2 </span>
+										<li id="2" role="presentation" class="without-line"
+											style="margin-left: 60%;"><a href="#step3"
+											data-toggle="tab" aria-controls="step3" role="tab" title="">
+												<span class="round-tab"> 2 </span>
 										</a></li>
 									</ul>
 								</div>
@@ -225,11 +226,11 @@ tr.selected {
 										<div class="body">
 											<%@include file="../request/sectionsEditR2/section_1.jsp"%>
 										</div>
-											<div class="button-demo flr">
-												<button type="button" id="nextStep"
-													class="btn btn-primary next-step"
-													style="margin-bottom: 100px;">SIGUIENTE</button>
-											</div>
+										<div class="button-demo flr">
+											<button type="button" id="nextStep"
+												class="btn btn-primary next-step"
+												style="margin-bottom: 100px;">SIGUIENTE</button>
+										</div>
 									</div>
 									<!--#Step_1 -->
 

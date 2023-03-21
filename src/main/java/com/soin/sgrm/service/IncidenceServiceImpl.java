@@ -19,18 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.IncidenceDao;
-import com.soin.sgrm.dao.RequestBaseDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.IncidenceResume;
-import com.soin.sgrm.model.RequestBase;
-import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.System;
-import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.CommonUtils;
-import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.MyLevel;
 
 @Service("IncidenceService")
