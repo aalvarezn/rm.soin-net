@@ -1,5 +1,4 @@
 package com.soin.sgrm.model;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -31,7 +30,6 @@ import com.soin.sgrm.model.wf.NodeIncidence;
 @Entity
 @Table(name = "INCIDENCIA")
 public class Incidence implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -67,11 +65,13 @@ public class Incidence implements Serializable {
 	@Column(name = "MOTIVO")
 	private String motive;
 
+
 	@Column(name = "REMITENTES")
 	private String senders;
 
 	@Column(name = "MENSAJE")
 	private String message;
+
 
 	@Column(name = "ERROR")
 	private String errorNew;
@@ -81,6 +81,7 @@ public class Incidence implements Serializable {
 	
 	@Column(name = "CAUSA")
 	private String cause;
+
 	
 	@Column(name = "SLA_ACTIVO")
 	private Integer slaActive;
@@ -88,6 +89,7 @@ public class Incidence implements Serializable {
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHAACTU")
 	private Timestamp updateDate;
+
 
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
@@ -104,6 +106,7 @@ public class Incidence implements Serializable {
 	@JoinColumn(name = "ID_USUARIO", nullable = true)
 	private User user;
 
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_TIPO", nullable = false)
 	private SystemTypeIncidence typeIncidence;
@@ -111,6 +114,7 @@ public class Incidence implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_ESTADO", nullable = false)
 	private System_StatusIn status;
+
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_PRIORIDAD", nullable = false)
@@ -124,6 +128,7 @@ public class Incidence implements Serializable {
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "INCIDENCIA_ARCHIVOINCIDENCIA", joinColumns = {
 			@JoinColumn(name = "ID_INCIDENCIA") }, inverseJoinColumns = { @JoinColumn(name = "ARCHIVO_ID") })
+
 	private Set<IncidenceFile> files = new HashSet<>();
 
 	@OrderBy("trackingDate ASC")
@@ -140,6 +145,7 @@ public class Incidence implements Serializable {
 	@JoinColumn(name = "ID_NODO", nullable = true)
 	private NodeIncidence node;
 
+
 	@Transient
 	private Long typeIncidenceId;
 	@Transient
@@ -154,6 +160,7 @@ public class Incidence implements Serializable {
 
 	@Transient
 	private String email;
+
 
 	public Long getId() {
 		return id;
@@ -250,6 +257,7 @@ public class Incidence implements Serializable {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
 
 	public SystemTypeIncidence getTypeIncidence() {
 		return typeIncidence;
@@ -411,6 +419,7 @@ public class Incidence implements Serializable {
 		this.slaActive = slaActive;
 	}
 
+
 	public String getErrorNew() {
 		return errorNew;
 	}
@@ -434,5 +443,6 @@ public class Incidence implements Serializable {
 	public void setCause(String cause) {
 		this.cause = cause;
 	}
+
 	
 }

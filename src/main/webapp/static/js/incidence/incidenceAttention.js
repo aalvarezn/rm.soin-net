@@ -1,4 +1,5 @@
 var $formChangeStatus = $('#changeStatusFormIns');
+
 var $formChangeStatus2 = $('#changeStatusFormIns2');
 var rowData=null;
 veriStatus=false;
@@ -6,6 +7,7 @@ var hidden = false;
 $(function() {
 	initRequestFormValidation();
 	initRequestFormValidation2();
+
 	$('.tableIni').DataTable({
 		"language": optionLanguaje,
 		"searching" : true,
@@ -39,6 +41,7 @@ $(function() {
 		$formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
 	
+
 	dropDownChange();
 	
 	  document.getElementById('applyFor2').style.visibility = 'hidden';
@@ -62,6 +65,7 @@ $(function() {
  * if(miliTrans>attentionTime){ var col=
  * document.getElementById('timer').style.color="#DD1C5E"; } // }
  */
+
 function createFaction() {
     var timer = 0;
     
@@ -166,7 +170,9 @@ function responseStatusRFC(response) {
 				"success", 2000);
 		window.location = getCont() + "	incidenceManagement/";
 		
+
 		// closeChangeStatusModal();
+
 		break;
 	case 'fail':
 		swal("Error!", response.exception, "error")
@@ -226,6 +232,7 @@ function requestIncidence(){
 	});
 }
 
+
 function requestIncidence2(){
 	console.log($formChangeStatus.valid());
 	console.log($formChangeStatus);
@@ -256,6 +263,7 @@ function requestIncidence2(){
 		}
 	});
 }
+
 function initImpactFormValidation() {
 	$formChangeStatus.validate({
 		
@@ -289,8 +297,10 @@ function initImpactFormValidation() {
 function changeStatusRelease(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
+
 	 rowData = releaseTable.row(idRow).data();
 	 console.log(rowData);
+
 	formChangeStatus[0].reset();
 	formChangeStatus.find("#nodeId").find('option').remove();
 	
@@ -313,6 +323,7 @@ function changeStatusRelease(releaseId) {
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
 	formChangeStatus.find("#nodeId_error").css("visibility", "hidden");
 	$('#changeStatusModal').modal('show');
+
 }
 
 function dropDownChange(){
@@ -417,4 +428,5 @@ function initRequestFormValidation2() {
 		});
 
 	
+
 }

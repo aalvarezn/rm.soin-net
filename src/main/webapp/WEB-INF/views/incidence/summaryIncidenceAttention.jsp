@@ -110,7 +110,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">N° Ticket</label>
+					<label for="email_address">NÂ° Ticket</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${incidence.numTicket}</p>
@@ -214,6 +214,7 @@
 					<label for="">Notas adicionales</label>
 					<textarea class="areaWidth" disabled="disabled" rows="" cols="">${incidence.note }</textarea>
 				</div>
+
 				<c:if test="${incidence.cause != null}">
 								<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-t-10 m-b-10">
 					<label for="">Error presentado</label>
@@ -224,10 +225,11 @@
 					<textarea class="areaWidth" disabled="disabled" rows="" cols="">${incidence.cause }</textarea>
 				</div>
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-					<label for="">Solución aplicada</label>
+					<label for="">SoluciÃ³n aplicada</label>
 					<textarea class="areaWidth" disabled="disabled" rows="" cols="">${incidence.solution }</textarea>
 				</div>
 				</c:if>
+
 			</div>
 
 			<div class="row clearfix">
