@@ -28,11 +28,14 @@ import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.StatusRFC;
 //import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
+import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRFC;
 //import com.soin.sgrm.model.wf.NodeIncidence;
 //import com.soin.sgrm.model.wf.WFIncidence;
@@ -47,11 +50,13 @@ import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.SigesService;
+import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusRFCService;
 //import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.wf.NodeService;
+import com.soin.sgrm.service.wf.WFIncidenceService;
 import com.soin.sgrm.service.wf.WFRFCService;
 //import com.soin.sgrm.service.wf.WFIncidenceService;
 import com.soin.sgrm.service.wf.WFReleaseService;
@@ -80,11 +85,10 @@ public class WorkFlowManagementController extends BaseController {
 	@Autowired
 	private WFRFCService wfrfcService;
 
-	/*@Autowired
+	@Autowired
 	private WFIncidenceService wfIncidenceService;
 	@Autowired
 	private StatusIncidenceService statusIncidenceService;
-	*/
 	@Autowired
 	private SystemService systemService;
 	@Autowired
@@ -393,6 +397,63 @@ public class WorkFlowManagementController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
+	}
+	@RequestMapping(value = "/wfStatusIncidence", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse draftIncidence(HttpServletRequest request, Model model,
+			@RequestParam(value = "idIncidence", required = true) Long idIncidence,
+			@RequestParam(value = "idNode", required = true) Integer idNode,
+			@RequestParam(value = "motive", required = true) String motive) {
+		JsonResponse res = new JsonResponse();
+		try {
+			WFIncidence incidence = wfIncidenceService.findWFIncidenceById(idIncidence);
+			NodeIncidence node = nodeService.findByIdNoInci(idNode);
+			node.getStatus().getStatus().setReason(motive);
+			incidence.setNode(node);
+			incidence.setStatus(node.getStatus());
+			incidence.setOperator(getUserLogin().getFullName());
+			wfIncidenceService.wfStatusIncidence(incidence);
+
+			// Si esta marcado para enviar correo
+			if (node.getSendEmail()) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(24).getParamValue());
+				EmailTemplate email = emailService.findById(idTemplate);
+				WFIncidence incidenceEmail = incidence;
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailIncidence(incidenceEmail, email, motive);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+				});
+				newThread.start();
+			}
+
+			res.setStatus("success");
+		} catch (Exception e) {
+			Sentry.capture(e, "wfIncidenceManagement");
+			res.setStatus("exception");
+			res.setException("Error al cambiar estado del release: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/incidence", method = RequestMethod.GET)
+	public String indexIncidence(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			model.addAttribute("system", new SystemUser());
+			model.addAttribute("systems", systemService.listSystemUser());
+			model.addAttribute("status", new StatusIncidence());
+			model.addAttribute("statuses", statusIncidenceService.findAll());
+		} catch (Exception e) {
+			Sentry.capture(e, "wfReleaseManagement");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina inicial/systemas." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return "/wf/workFlow/workFlowManagementIncidence";
+
 	}
 /*
 	@RequestMapping(value = "/wfStatusIncidence", method = RequestMethod.POST)

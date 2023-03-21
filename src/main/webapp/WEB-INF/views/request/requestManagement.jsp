@@ -57,7 +57,9 @@
 
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
-
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
@@ -151,103 +153,100 @@
 				</div>
 			</div>
 			<!-- #CountSection -->
-					<!-- tableFilters -->
-					<div id="tableFilters" class="row clearfix m-t-20">
-						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-							<label>Rango de Fechas</label>
-							<div class="input-group">
-								<span class="input-group-addon"> <i
-									class="material-icons">date_range</i>
-								</span>
-								<div class="form-line">
-									<input type="text" class="form-control" name="daterange"
-										id="daterange" value="" />
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-							<label>Sistemas</label>
-							<div class="form-group m-b-0">
-								<select id="systemId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${systems}" var="system">
-										<option value="${system.id }">${system.name }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-							<label>Tipo de Solicitud</label>
-							<div class="form-group m-b-0">
-								<select id="typePetitionId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${typePetitions}" var="typePetition">
-										<option value="${typePetition.id }">${typePetition.code }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-							<label>Estado</label>
-							<div class="form-group m-b-0">
-								<select id="statusId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${statuses}" var="status">
-										<c:if test="${status.name ne 'Anulado'}">
-											<option value="${status.id }">${status.name }</option>
-										</c:if>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
-							<div class="button-demo-refresh" style="padding-top: 25px;">
-								<button title="Refrescar tabla con filtros!" type="button"
-									class="btn btn-primary setIcon" onclick="refreshTable()">
-									<span><i class="material-icons m-t--2 ">update</i></span>
-								</button>
-							</div>
+			<!-- tableFilters -->
+			<div id="tableFilters" class="row clearfix m-t-20">
+				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+					<label>Rango de Fechas</label>
+					<div class="input-group">
+						<span class="input-group-addon"> <i class="material-icons">date_range</i>
+						</span>
+						<div class="form-line">
+							<input type="text" class="form-control" name="daterange"
+								id="daterange" value="" />
 						</div>
 					</div>
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
-					<div id="tableSection" class="row clearfix">
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="body ">
-								<div class="body table-responsive">
-									<table id="dtRequests"
-										class="table table-bordered table-striped table-hover dataTable">
-										<thead>
-											<tr>
-												<th></th>
-												<th>Número Solicitud</th>
-												<th>Sistema</th>
-												<th>Tipo Solicitud</th>
-												<th>Solicitante</th>
-												<th>Modificado</th>
-												<th>Estado</th>
-												<th>Acciones</th>
-											</tr>
-										</thead>
+				</div>
+				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+					<label>Sistemas</label>
+					<div class="form-group m-b-0">
+						<select id="systemId" class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="0">-- Todos --</option>
+							<c:forEach items="${systems}" var="system">
+								<option value="${system.id }">${system.name }</option>
+							</c:forEach>
+						</select>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+					<label>Tipo de Solicitud</label>
+					<div class="form-group m-b-0">
+						<select id="typePetitionId"
+							class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="0">-- Todos --</option>
+							<c:forEach items="${typePetitions}" var="typePetition">
+								<option value="${typePetition.id }">${typePetition.code }</option>
+							</c:forEach>
+						</select>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+					<label>Estado</label>
+					<div class="form-group m-b-0">
+						<select id="statusId" class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="0">-- Todos --</option>
+							<c:forEach items="${statuses}" var="status">
+								<c:if test="${status.name ne 'Anulado'}">
+									<option value="${status.id }">${status.name }</option>
+								</c:if>
+							</c:forEach>
+						</select>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+					<div class="button-demo-refresh" style="padding-top: 25px;">
+						<button title="Refrescar tabla con filtros!" type="button"
+							class="btn btn-primary setIcon" onclick="refreshTable()">
+							<span><i class="material-icons m-t--2 ">update</i></span>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+				<div id="tableSection" class="row clearfix">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="body ">
+							<div class="body table-responsive">
+								<table id="dtRequests"
+									class="table table-bordered table-striped table-hover dataTable">
+									<thead>
+										<tr>
+											<th></th>
+											<th>Número Solicitud</th>
+											<th>Sistema</th>
+											<th>Tipo Solicitud</th>
+											<th>Solicitante</th>
+											<th>Modificado</th>
+											<th>Estado</th>
+											<th>Acciones</th>
+										</tr>
+									</thead>
 
-									</table>
-								</div>
+								</table>
 							</div>
 						</div>
 					</div>
-					
-					</div>
+				</div>
+
+			</div>
 		</div>
 	</section>
 
 	<%@include file="../plantilla/footer.jsp"%>
-<script
-	src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
 	<script src="<c:url value='/static/js/pages/index.js'/>"></script>
 	<script src="<c:url value='/static/js/pages/ui/modals.js'/>"></script>
 	<script
@@ -256,6 +255,9 @@
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/newRequest/requestManagement.js'/>"></script>
+
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 </body>
 
 </html>

@@ -2,10 +2,12 @@ package com.soin.sgrm.service.wf;
 
 import java.util.List;
 
+import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 //import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeIncidence;
 //import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
 
@@ -38,20 +40,20 @@ public interface NodeService {
 	NodeRFC existWorkFlowNodeRFC(RFC rfc);
 	
 	boolean verifyStartNodeRFC(NodeRFC node);
-	
-	//List<NodeIncidence> listNodeIncidence();
-	
-	//NodeIncidence findByIdNoInci(Integer id);
-	
-	//NodeIncidence saveNodeIncidence(NodeIncidence node);
-	
-	//NodeIncidence updateNodeIncidence(NodeIncidence node);
 
-	//void deleteNodeIncidence(Integer id) throws Exception;
+	List<NodeIncidence> listNodeIncidence();
 	
-	//NodeIncidence existWorkFlowNodeIn(Incidence incidence);
+	NodeIncidence findByIdNoInci(Integer id);
+	
+	NodeIncidence saveNodeIncidence(NodeIncidence node);
+	
+	NodeIncidence updateNodeIncidence(NodeIncidence node);
+
+	void deleteNodeIncidence(Integer id) throws Exception;
+	
+	NodeIncidence existWorkFlowNodeIn(Incidence incidence);
 
 
-	//boolean verifyStartNodeIncidence(NodeIncidence node);
+	boolean verifyStartNodeIncidence(NodeIncidence node);
 
 }

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.Errors_Requests;
 import com.soin.sgrm.model.RFC;
@@ -38,6 +39,7 @@ import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ErrorRFCService;
@@ -172,13 +174,18 @@ public class RequestBaseManagementController extends BaseController {
 			@RequestParam(value = "idStatus", required = true) Long idStatus,
 			@RequestParam(value = "dateChange", required = false) String dateChange,
 			@RequestParam(value = "motive", required = true) String motive,
-			@RequestParam(value = "idError", required = false) Long idError
+			@RequestParam(value = "idError", required = false) Long idError,
+			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
+			@RequestParam(value = "senders", required = false) String senders
 			) {
 		JsonResponse res = new JsonResponse();
 		try {
 			RequestBaseR1 requestBase = requestBaseService.findByR1(idRequest);
 			StatusRequest status = statusService.findById(idStatus);
 			String user = getUserLogin().getFullName();
+			Errors_Requests error=new Errors_Requests();
+			Boolean errorVer = false;
+			UserLogin userLogin = getUserLogin();
 			requestBase.setStatus(status);
 			requestBase.setOperator(getUserLogin().getFullName());
 			Timestamp dateFormatNow = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
@@ -205,7 +212,7 @@ public class RequestBaseManagementController extends BaseController {
 			}
 			
 			if (status != null && status.getName().equals("Error")) {
-				Errors_Requests error = errorService.findById(idError);
+				error = errorService.findById(idError);
 				RequestError requestError = new RequestError();
 				requestError.setSystem(requestBaseNew.getSystemInfo());
 				requestError.setTypePetition(requestBaseNew.getTypePetition());
@@ -246,6 +253,44 @@ public class RequestBaseManagementController extends BaseController {
 
 			requestBaseService.update(requestBaseNew);
 			res.setStatus("success");
+			
+			if (sendEmail) {
+
+				if (!errorVer) {
+					Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					String statusName = status.getName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotifyChangeStatus(requestBaseNew.getNumRequest(), " de la Solicitud "+requestBaseNew.getTypePetition().getCode(),
+									statusName, requestBaseNew.getOperator(),
+									requestBaseNew.getRequestDate(),
+									userLogin, senders, emailNotify, requestBaseNew.getMotive());
+						} catch (Exception e) {
+							Sentry.capture(e, "request");
+						}
+
+					});
+					newThread.start();
+				} else {
+					Integer idTemplate = Integer.parseInt(parameterService.findByCode(31).getParamValue());
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					String statusName = status.getName();
+					String typeError = error.getName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotifyChangeStatusError(typeError, requestBaseNew.getNumRequest(),
+									" de la Solicitud "+requestBaseNew.getTypePetition().getCode(), statusName, requestBaseNew.getOperator(),
+									requestBaseNew.getRequestDate(),
+									userLogin, senders, emailNotify, requestBaseNew.getMotive());
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+
+					});
+					newThread.start();
+				}
+			}
 
 		} catch (Exception e) {
 			Sentry.capture(e, "requestManagement");

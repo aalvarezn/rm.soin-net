@@ -11,7 +11,7 @@ var nodes = [];
 var edges = [];
 $(function() {
 
-	activeItemMenu("incidenceManagementItem",true);
+	activeItemMenu("knowledgeManagementItem",true);
 	 $('#systemId').selectpicker('val',$('#systemInfoId').val());
 	//initTable();
 	//initTableAdd();

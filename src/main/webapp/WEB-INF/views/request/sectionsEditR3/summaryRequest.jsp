@@ -48,7 +48,9 @@
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 </head>
-
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
 	<!-- Page Loader -->
@@ -132,17 +134,16 @@
 					</div>
 				</div>
 			</div>
-				<div class="row clearfix">
+			<div class="row clearfix">
 				<div class="col-sm-12">
-					<h5 class="titulares">Lista de colaboradores con acceso a la herramienta</h5>
+					<h5 class="titulares">Lista de colaboradores con acceso a la
+						herramienta</h5>
 				</div>
 
 				<div class="col-lg-4 col-md-4 col-sm-6 col-xs-6 p-t-10">
 					<label for="email_address">Usuarios RM asignados</label>
 					<div class="form-group m-b-0i">
-						<div class="form-line disabled">
-						${requestR3.listNames}
-						</div>
+						<div class="form-line disabled">${requestR3.listNames}</div>
 					</div>
 				</div>
 				<div class="col-lg-8 col-md-8 col-sm-6 col-xs-6 p-t-10">
@@ -150,7 +151,7 @@
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
-									<p>${requestR3.connectionMethod}</p>
+								<p>${requestR3.connectionMethod}</p>
 							</div>
 						</div>
 					</div>
@@ -230,7 +231,8 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 
 </body>
 
