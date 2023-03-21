@@ -223,7 +223,7 @@
 											<thead>
 												<tr>
 													<th></th>
-													<th>Número Ticket</th>
+													<th>N&uacute;mero Ticket</th>
 													<th>Titulo</th>
 													<th>Detalle del problema</th>
 													<th>Asignado A</th>

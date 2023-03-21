@@ -4,7 +4,7 @@ var $mdTypePetition = $('#typePetitionModal');
 var $fmTypePetition = $('#typePetitionModalForm');
 
 $(function() {
-	activeItemMenu("typePetitionItem", true);
+	activeItemMenu("releaseItem", true);
 	initDataTable();
 	initTypePetitionFormValidation();
 });

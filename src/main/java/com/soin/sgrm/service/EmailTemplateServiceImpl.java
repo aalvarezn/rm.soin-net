@@ -2205,5 +2205,5 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			e.printStackTrace();
 		}
 	}
-
 }
+

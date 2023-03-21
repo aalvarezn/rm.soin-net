@@ -4,8 +4,6 @@ import java.util.List;
 
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.IncidenceResume;
-import com.soin.sgrm.model.RequestBase;
-import com.soin.sgrm.model.RequestBaseR1;
 
 public interface IncidenceDao extends BaseDao<Long, Incidence> {
 
