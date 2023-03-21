@@ -3,7 +3,7 @@ var $dtRequests;
 var $formChangeStatus = $('#changeStatusForm');
 var $formChangeUser = $('#changeUserForm');
 var $trackingRequestForm = $('#trackingRequestForm');
-
+var switchStatus=false;
 $(document).ready(function() {
 	$('input[name="daterange"]').daterangepicker({
 		"autoUpdateInput": false,
@@ -57,6 +57,10 @@ $(document).ready(function() {
 	// $fmRFC.find("#sId").selectpicker('val',"");
 	dropDownChange();
 	initRFCTable();
+	showSendEmail();
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
 	// initRFCFormValidation();
 });
 
@@ -277,7 +281,8 @@ function changeStatusRequest(idRequest) {
 	var idRow = dtRequests.fnFindCellRowIndexes(idRequest, 0); // idRow
 	var rowData = $dtRequests.row(idRow[0]).data();
 	$formChangeStatus[0].reset();
-	
+	console.log(rowData.typePetition.emailTemplate.cc ? rowData.typePetition.emailTemplate.cc : "" );
+	$('.tagInitMail#senders').importTags(rowData.typePetition.emailTemplate.cc ? rowData.typePetition.emailTemplate.cc : "" );
 	$formChangeStatus.find('#idRequest').val(idRequest);
 	$formChangeStatus.find('#requestNumRequest').val(rowData.numRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
@@ -305,6 +310,23 @@ function dropDownChange(){
 		
 	});
 }
+
+function showSendEmail(){
+	$('#sendMail').change(function() {
+		// this will contain a reference to the checkbox
+		if (this.checked) {
+			
+			 switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+			$('#divEmail').attr( "hidden",false);
+		} else {
+			$('#divEmail').attr( "hidden",true);
+			switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+		}
+		});
+}
+
 function saveChangeStatusModal(){
 
 	if (!validStatusRequest())
@@ -319,7 +341,9 @@ function saveChangeStatusModal(){
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
 			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
-			motive: $formChangeStatus.find('#motive').val()
+			motive: $formChangeStatus.find('#motive').val(),
+			sendEmail:switchStatus,
+			senders:$formChangeStatus.find('#senders').val(),
 		},
 		success : function(response) {
 			responseStatusRequest(response);
@@ -361,16 +385,7 @@ function validStatusRequest() {
 	$formChangeStatus.find('.fieldError').removeClass('activeError');
 	$formChangeStatus.find('.form-line').removeClass('error');
 	$formChangeStatus.find('.form-line').removeClass('focused');
-	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
-		if($.trim(input.value) == ""){
-			console.log(input.id);
-			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
-			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
-			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
-			"form-line error focused");
-			valid = false;
-		}
-	});
+
 	$.each($formChangeStatus.find('select[required]'), function( index, select ) {
 		if($.trim(select.value).length === 0 || select.value === ""){
 			
@@ -393,6 +408,27 @@ function validStatusRequest() {
 			$formChangeStatus.find('#'+textarea.id+"").parent().attr("class",
 			"form-line error focused");
 			valid = false;
+		}
+	});
+	
+	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
+		if($.trim(input.value) === ""){
+			console.log(input.id);
+			if(input.id==="senders"){
+				if(switchStatus){
+					$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+					$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+					$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+					"form-line error focused");
+					valid = false;
+				}
+			}else{
+			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+			}
 		}
 	});
 

@@ -12,7 +12,8 @@ public interface IncidenceService extends BaseService<Long, Incidence>{
 
 	
 
-	String generatTicketNumber(String nameSystem);
+	String generatTicketNumber(String nameSystem, String typeCode);
+
 
 
 	Integer countByType(Integer id, String type, int query, Object[] ids,Integer userLogin,String email);

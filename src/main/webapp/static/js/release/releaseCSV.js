@@ -17,7 +17,13 @@ function closeCSVModal() {
 
 function addRowObject(obj) {
 	var table = $('#configurationItemsTable').DataTable();
+	for (var i = 0; i < obj.length; i++) {
 
+
+		if (obj[i].isSql == 1) {
+			triggerDataBaseFile(obj[i].id, obj[i].name);
+		}
+	}
 	
 	closeCSVModal();
 }

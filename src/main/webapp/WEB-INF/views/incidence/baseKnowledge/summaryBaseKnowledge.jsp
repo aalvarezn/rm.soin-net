@@ -234,7 +234,7 @@
 
 	<%@include file="../../plantilla/footer.jsp"%>
 
-	<script src="<c:url value='/static/js/incidence/baseKnowledgeSummaryActions.js'/>"></script>
+	<script src="<c:url value='/static/js/baseKnowledge/baseKnowledgeSummaryActions.js'/>"></script>
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>

@@ -47,6 +47,11 @@
 
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<!-- TagInput Js -->
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 </head>
 
 <body class="theme-grey">
@@ -1039,7 +1044,7 @@
 									</button>
 								</c:if>
 								<button type="button" class="btn btn-default setIcon"
-									onclick="changeStatusRelease(${release.id}, '${release.releaseNumber}' )"
+									onclick="changeStatusRelease(${release.id}, '${release.releaseNumber}', '${cc}' )"
 									title="Borrador"
 									style="background-color: #00294c !important; color: #fff; border: none !important;">
 									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
@@ -1055,9 +1060,9 @@
 	<%@include file="../plantilla/footer.jsp"%>
 	<script
 		src="<c:url value='/static/js/release/releaseSummaryActions.js'/>"></script>
-		<script
-		src="<c:url value='/static/js/release/tableObjects.js'/>"></script>
-		
+	<script src="<c:url value='/static/js/release/tableObjects.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 
 </body>
 

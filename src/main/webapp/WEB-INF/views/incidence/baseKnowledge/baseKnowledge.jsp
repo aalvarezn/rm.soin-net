@@ -75,7 +75,8 @@
 				<!-- #addRFCSection#  -->
 				<%@include file="../../incidence/baseKnowledge/addBaseKnowledge.jsp"%>
 				<div class="row clearfix">
-						<%@include file="../../incidence/baseKnowledge/changeStatusModal.jsp"%>
+					<%@include
+						file="../../incidence/baseKnowledge/changeStatusModal.jsp"%>
 				</div>
 				<%@include
 					file="../../incidence/baseKnowledge/trackingKnowledgeModal.jsp"%>
@@ -87,7 +88,7 @@
 						<h2>Base de conocimientos</h2>
 					</div>
 
-		
+
 					<div class="tab-content">
 						<div role="tabpanel" class="tab-pane  active">
 							<div class="row clearfix">
@@ -137,8 +138,9 @@
 										</div>
 										<div class="content">
 											<div class="text">VIGENTES</div>
-											<div class="number count-to" data-from="0" data-to="${userC['completed']}"
-												data-speed="1000" data-fresh-interval="20"></div>
+											<div class="number count-to" data-from="0"
+												data-to="${userC['completed']}" data-speed="1000"
+												data-fresh-interval="20"></div>
 										</div>
 									</div>
 								</div>
@@ -146,12 +148,12 @@
 						</div>
 
 					</div>
-		
+
 
 
 					<!-- tableFilters -->
 					<div id="tableFilters" class="row clearfix m-t-20">
-						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
 							<label>Rango de Fechas</label>
 							<div class="input-group">
 								<span class="input-group-addon"> <i
@@ -163,20 +165,30 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Componente</label>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+							<label>Sistema</label>
 							<div class="form-group m-b-0">
-								<select id="componentId"
+								<select id="systemId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
-									<c:forEach items="${components}" var="component">
-										<option value="${component.id }">${component.name }</option>
+									<c:forEach items="${system}" var="systems">
+										<option value="${systems.id }">${systems.name }</option>
 									</c:forEach>
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+							<label>Componente</label>
+							<div class="form-group m-b-0">
+								<select id="componentId" disabled
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="0">-- Todos --</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<label>Estado</label>
 							<div class="form-group m-b-0">
 								<select id="statusId"
@@ -191,7 +203,7 @@
 								</select>
 							</div>
 						</div>
-							<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<div class="button-demo-refresh" style="padding-top: 20px;">
 								<button title="Refrescar tabla con filtros!" type="button"
 									class="btn btn-primary setIcon" onclick="refreshTable()">
@@ -212,8 +224,9 @@
 												<tr>
 													<th></th>
 													<th>C&oacute;digo Error</th>
+													<th>Sistema</th>
 													<th>Componente</th>
-													<th>Incidencia</th>
+													<th>Descripcion</th>
 													<th>Responsable</th>
 													<th>Publicado</th>
 													<th>Modificado</th>
@@ -245,7 +258,8 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-	<script src="<c:url value='/static/js/incidence/baseKnowledge.js'/>"></script>
+	<script
+		src="<c:url value='/static/js/baseKnowledge/baseKnowledge.js'/>"></script>
 	<script type="text/javascript">
 		$('.number').countTo();
 	</script>

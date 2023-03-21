@@ -94,7 +94,8 @@
 						id="dateFinal" value="${incidence.exitOptimalDate }"> <input
 						type="hidden" id="attetionTime" value="	${incidence.timeMili}">
 
-
+					<input type="hidden" id="nodeEdges"
+						value="	${incidence.node.edges}">
 				</div>
 			</div>
 			<div class="block-header">
@@ -110,7 +111,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">N� Ticket</label>
+					<label for="email_address">N° Ticket</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${incidence.numTicket}</p>
@@ -180,7 +181,10 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha limite de atenci&oacute;n </label>
+
+					<label for="email_address">Fecha limite de atenci&oacute;n
+					</label>
+
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -300,49 +304,100 @@
 
 					<form id="changeStatusFormIns" action="changePassword"
 						method="post">
-						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" /> <input type="hidden" id="id" value="" />
 
-						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-							<label>Mensaje</label>
-							<div class="form-group m-b-0 ">
-								<div class="form-line">
-									<input type="text" class="form-control" id="motive"
-										maxlength="255" name="motive"
-										placeholder="Ingrese el motivo del tramite"
-										style="height: 67px; padding-bottom: 20px;">
-									<div class="help-info">M�x. 255 caracteres</div>
+						<input type="hidden" id="nodeEdges"
+							value="	${incidence.node.edges}"> <input type="hidden"
+							name="${_csrf.parameterName}" value="${_csrf.token}" /> <input
+							type="hidden" id="id" value="" />
+						<div id="" class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+								<label>Mensaje</label>
+								<div class="form-group m-b-0 ">
+									<div class="form-line">
+										<input type="text" class="form-control" id="motive"
+											maxlength="255" name="motive"
+											placeholder="Ingrese el motivo del tramite"
+											style="height: 67px; padding-bottom: 20px;">
+										<div class="help-info">Máx. 255 caracteres</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+								<label>Acci&oacute;n</label>
+								<div class="form-group m-t-12">
+									<select id="nodeId" name="nodeId"
+										class="form-control show-tick selectpicker"
+										data-live-search="true">
+										<option value="">-- Seleccione una opci&oacute;n --</option>
+										<c:forEach items="${incidence.node.edges}" var="node">
+											<option data-motive="${node.nodeTo.status.status.name }"
+												value="${node.nodeTo.id }">${node.nodeTo.label}</option>
+										</c:forEach>
+									</select>
+
+								</div>
+
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+								<label>Archivos adjuntos</label>
+								<div class="button-demo ">
+									<button type="button" class="btn btn-primary setIcon"
+										onclick="openAddFileModal()">
+										<span>AGREGAR</span><span><i
+											class="material-icons m-t--2 ">add</i></span>
+									</button>
 								</div>
 							</div>
-
 						</div>
-						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-							<label>Acci&oacute;n</label>
-							<div class="form-group m-t-12">
-								<select id="nodeId" name="nodeId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="">-- Seleccione una opci&oacute;n --</option>
-									<c:forEach items="${incidence.node.edges}" var="node">
-										<option data-motive="${node.nodeTo.status.status.reason }"
-											value="${node.nodeTo.id }">${node.nodeTo.label}</option>
-									</c:forEach>
-								</select>
+
+					</form>
+					<form id="changeStatusFormIns2" action="changePassword"
+						method="post">
+						<div id="divComplete" hidden
+							class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+								<label>Error presentado</label>
+								<div class="form-group m-b-0 ">
+									<div class="form-line">
+										<input type="text" class="form-control" id="errorNew"
+											maxlength="255" name="errorNew"
+											placeholder="Ingrese el motivo del tramite"
+											style="height: 67px; padding-bottom: 20px;">
+										<div class="help-info">Máx. 255 caracteres</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+								<label>Causa de la incidencia</label>
+								<div class="form-group m-b-0 ">
+									<div class="form-line">
+										<input type="text" class="form-control" id="cause"
+											maxlength="255" name="cause"
+											placeholder="Ingrese el motivo del tramite"
+											style="height: 67px; padding-bottom: 20px;">
+										<div class="help-info">Máx. 255 caracteres</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+								<label>Solución aplicada</label>
+								<div class="form-group m-b-0 ">
+									<div class="form-line">
+										<input type="text" class="form-control" id="solution"
+											maxlength="255" name="solution"
+											placeholder="Ingrese el motivo del tramite"
+											style="height: 67px; padding-bottom: 20px;">
+										<div class="help-info">Máx. 255 caracteres</div>
+									</div>
+								</div>
 
 							</div>
 
-						</div>
-						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-							<label>Archivos adjuntos</label>
-							<div class="button-demo ">
-								<button type="button" class="btn btn-primary setIcon"
-									onclick="openAddFileModal()">
-									<span>AGREGAR</span><span><i
-										class="material-icons m-t--2 ">add</i></span>
-								</button>
-							</div>
-						</div>
 
+						</div>
 					</form>
 
 
@@ -352,6 +407,9 @@
 					<%-- 											<c:if test="${release.status.name == 'Borrador'}"> --%>
 					<button id="applyFor" onclick="requestIncidence()" type="button"
 						class="btn btn-primary">TRAMITAR</button>
+					<button id="applyFor2" onclick="requestIncidence2()"
+						type="button" class="btn btn-primary">TRAMITAR</button>
+
 					<%-- 											</c:if> --%>
 				</div>
 				<div class="clearfix"></div>

@@ -132,6 +132,9 @@ function addRowObjectTable(objId) {
 }
 
 function triggerDataBaseFile(objId, name) {
+	
+	console.log(objId);
+	console.log(name+"prueba")
 	var sqlObjectTable = $('#sqlObjectTable').DataTable();
 	sqlObjectTable.row
 			.add(

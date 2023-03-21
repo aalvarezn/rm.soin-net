@@ -103,7 +103,9 @@ public class IncidenceServiceImpl implements IncidenceService {
 					end.setHours(23);
 					end.setMinutes(59);
 					end.setSeconds(59);
-					columns.put("requestDate", Restrictions.between("requestDate", start, end));
+
+					columns.put("updateDate", Restrictions.between("updateDate", start, end));
+
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -159,19 +161,26 @@ public class IncidenceServiceImpl implements IncidenceService {
 		fetchs.add("user");
 		fetchs.add("attentionGroup");
 		fetchs.add("node");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
+
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,3);
+
 
 	}
 
 	@Override
-	public String generatTicketNumber(String nameSystem) {
+
+	public String generatTicketNumber(String nameSystem,String typeCode) {
 		String numTicket = "";
 		String partCode = "";
+		 partCode = typeCode.substring(0,3);
+
 		try {
 
 			
 
-			numTicket = verifySecuence(nameSystem);
+
+			numTicket = verifySecuence(nameSystem,partCode);
+
 
 		} catch (Exception e) {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -180,20 +189,24 @@ public class IncidenceServiceImpl implements IncidenceService {
 		return numTicket;
 	}
 	
-	public String verifySecuence(String nameSystem) {
+
+	public String verifySecuence(String nameSystem,String partCode) {
 		String numTicket = "";
+		String nameTicket=nameSystem +"_TKT_"+partCode;
+		nameTicket=nameTicket.toUpperCase();
 		try {
-			int amount = existNumTicket(nameSystem);
+			int amount = existNumTicket(nameTicket);
 
 			if (amount == 0) {
-				numTicket = nameSystem +"_TICKET" + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
+				numTicket = nameTicket+ "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
 				return numTicket;
 			} else {
 				if (amount < 10) {
-					numTicket = nameSystem+"_TICKET"+ "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+					numTicket = nameTicket+ "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
 					return numTicket;
 				}
-				numTicket = nameSystem+"_TICKET" + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+				numTicket = nameTicket + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+
 				return numTicket;
 			}
 
@@ -235,7 +248,9 @@ public class IncidenceServiceImpl implements IncidenceService {
 					end.setHours(23);
 					end.setMinutes(59);
 					end.setSeconds(59);
-					columns.put("requestDate", Restrictions.between("requestDate", start, end));
+
+					columns.put("updateDate", Restrictions.between("updateDate", start, end));
+
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -297,7 +312,9 @@ public class IncidenceServiceImpl implements IncidenceService {
 		fetchs.add("user");
 		fetchs.add("attentionGroup");
 		fetchs.add("node");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
+
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,3);
+
 
 	}
 	@Override
@@ -336,7 +353,9 @@ public class IncidenceServiceImpl implements IncidenceService {
 					end.setHours(23);
 					end.setMinutes(59);
 					end.setSeconds(59);
-					columns.put("requestDate", Restrictions.between("requestDate", start, end));
+
+					columns.put("updateDate", Restrictions.between("updateDate", start, end));
+
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -414,7 +433,9 @@ public class IncidenceServiceImpl implements IncidenceService {
 		fetchs.add("assigned");
 		fetchs.add("attentionGroup");
 		fetchs.add("node");
-		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
+
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,3);
+
 	}
 	@Override
 	public List<IncidenceResume> getListIncideRequest() {
