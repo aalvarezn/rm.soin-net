@@ -51,23 +51,7 @@
 </head>
 <body class="theme-grey">
 	<input type="text" id="postMSG" name="postMSG" value="${data}">
-<<<<<<< HEAD
-=======
-	<c:forEach items="${attentionGroup}" var="attentionGroup">
-		<c:if test="${attentionGroup.code == 'RM'}">
-			<input type="text" id="isRM" name="isRM" value="true">
-		</c:if>
-		<c:if test="${attentionGroup.code == 'GI'}">
-			<input type="text" id="isGI" name="isGI" value="true">
-		</c:if>
-		<c:if test="${attentionGroup.code == 'LABS'}">
-			<input type="text" id="isLABS" name="isLABS" value="true">
-		</c:if>
-		<c:if test="${attentionGroup.code == 'INFRA'}">
-			<input type="text" id="isINFRA" name="isINFRA" value="true">
-		</c:if>
-	</c:forEach>
->>>>>>> rc_gestion_incidencias
+
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
@@ -92,11 +76,9 @@
 				<!-- #addRFCSection#  -->
 				<%@include file="../incidence/trackingIncidenceModal.jsp"%>
 				<!-- #addRFCSection#-->
-<<<<<<< HEAD
-				<%@include file="../incidence/changeUserModal.jsp"%>
-=======
 
->>>>>>> rc_gestion_incidencias
+				<%@include file="../incidence/changeUserModal.jsp"%>
+
 				<!-- #tableSection#-->
 				<div id="tableSection">
 					<div class="block-header">
@@ -167,10 +149,7 @@
 
 
 					<!-- tableFilters -->
-<<<<<<< HEAD
-					<!-- tableFilters -->
-=======
->>>>>>> rc_gestion_incidencias
+
 					<div id="tableFilters" class="row clearfix m-t-20">
 						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 							<label>Rango de Fechas</label>
@@ -184,7 +163,7 @@
 								</div>
 							</div>
 						</div>
-<<<<<<< HEAD
+
 						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 							<label>Sistema</label>
 							<div class="form-group m-b-0">
@@ -236,49 +215,7 @@
 							</div>
 
 						</div>
-=======
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Tipo</label>
-							<div class="form-group m-b-0">
-								<select id="typeId" class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${typeincidences}" var="typeincidence">
-										<option value="${typeincidence.id }">${typeincidence.code }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Prioridad</label>
-							<div class="form-group m-b-0">
-								<select id="priorityId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${priorities}" var="priority">
-										<option value="${priority.id }">${priority.name }</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<label>Estado</label>
-							<div class="form-group m-b-0">
-								<select id="statusId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${statuses}" var="status">
-										<c:if test="${status.name ne 'Anulado'}">
-											<option value="${status.id }">${status.name }</option>
-										</c:if>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
 
->>>>>>> rc_gestion_incidencias
 					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
@@ -290,12 +227,8 @@
 											class="table table-bordered table-striped table-hover dataTable">
 											<thead>
 												<tr>
-<<<<<<< HEAD
 													<th>ID</th>
 													<th>Nodo</th>
-=======
-													<th></th>
->>>>>>> rc_gestion_incidencias
 													<th>Número Ticket</th>
 													<th>Titulo</th>
 													<th>Detalle del problema</th>
