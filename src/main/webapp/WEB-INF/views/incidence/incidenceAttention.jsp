@@ -93,9 +93,9 @@
 						value="${incidence.updateDate}"> <input type="hidden"
 						id="dateFinal" value="${incidence.exitOptimalDate }"> <input
 						type="hidden" id="attetionTime" value="	${incidence.timeMili}">
+
 					<input type="hidden" id="nodeEdges"
 						value="	${incidence.node.edges}">
-
 				</div>
 			</div>
 			<div class="block-header">
@@ -111,7 +111,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">N° Ticket</label>
+					<label for="email_address">NÂ° Ticket</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${incidence.numTicket}</p>
@@ -181,8 +181,10 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
+
 					<label for="email_address">Fecha limite de atenci&oacute;n
 					</label>
+
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -302,6 +304,7 @@
 
 					<form id="changeStatusFormIns" action="changePassword"
 						method="post">
+
 						<input type="hidden" id="nodeEdges"
 							value="	${incidence.node.edges}"> <input type="hidden"
 							name="${_csrf.parameterName}" value="${_csrf.token}" /> <input
@@ -315,7 +318,7 @@
 											maxlength="255" name="motive"
 											placeholder="Ingrese el motivo del tramite"
 											style="height: 67px; padding-bottom: 20px;">
-										<div class="help-info">Máx. 255 caracteres</div>
+										<div class="help-info">MÃ¡x. 255 caracteres</div>
 									</div>
 								</div>
 
@@ -361,7 +364,7 @@
 											maxlength="255" name="errorNew"
 											placeholder="Ingrese el motivo del tramite"
 											style="height: 67px; padding-bottom: 20px;">
-										<div class="help-info">Máx. 255 caracteres</div>
+										<div class="help-info">MÃ¡x. 255 caracteres</div>
 									</div>
 								</div>
 
@@ -374,20 +377,20 @@
 											maxlength="255" name="cause"
 											placeholder="Ingrese el motivo del tramite"
 											style="height: 67px; padding-bottom: 20px;">
-										<div class="help-info">Máx. 255 caracteres</div>
+										<div class="help-info">MÃ¡x. 255 caracteres</div>
 									</div>
 								</div>
 
 							</div>
 							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-								<label>Solución aplicada</label>
+								<label>SoluciÃ³n aplicada</label>
 								<div class="form-group m-b-0 ">
 									<div class="form-line">
 										<input type="text" class="form-control" id="solution"
 											maxlength="255" name="solution"
 											placeholder="Ingrese el motivo del tramite"
 											style="height: 67px; padding-bottom: 20px;">
-										<div class="help-info">Máx. 255 caracteres</div>
+										<div class="help-info">MÃ¡x. 255 caracteres</div>
 									</div>
 								</div>
 
@@ -397,6 +400,7 @@
 						</div>
 					</form>
 
+
 				</div>
 
 				<div class="button-demo flr p-r-30">
@@ -405,6 +409,7 @@
 						class="btn btn-primary">TRAMITAR</button>
 					<button id="applyFor2" onclick="requestIncidence2()"
 						type="button" class="btn btn-primary">TRAMITAR</button>
+
 					<%-- 											</c:if> --%>
 				</div>
 				<div class="clearfix"></div>

@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -125,6 +126,7 @@ public class IncidenceManagementController extends BaseController {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
 
+
 			List<AttentionGroup> attentionGroups = attentionGroupService.findGroupByUserId(userLogin);
 			List<Long> listAttentionGroupId = new ArrayList<Long>();
 			for (AttentionGroup attentionGroup : attentionGroups) {
@@ -134,6 +136,7 @@ public class IncidenceManagementController extends BaseController {
 			Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
 			systemList.clear();
 			systemList.addAll(systemWithRepeat);
+
 			List<SystemTypeIncidence> typeIncidences = typeIncidenceService.findAll();
 			List<System_StatusIn> statuses = statusService.findAll();
 			List<System_Priority> priorities = priorityIncidenceService.findAll();
@@ -167,7 +170,9 @@ public class IncidenceManagementController extends BaseController {
 			if (request.getParameter("systemId").equals("")) {
 				systemId = 0;
 			} else {
+
 				systemId = Integer.parseInt(request.getParameter("systemId"));
+
 			}
 			if (request.getParameter("statusId").equals("")) {
 				statusId = (long) 0;
@@ -187,8 +192,10 @@ public class IncidenceManagementController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
+
 			incidences = incidenceService.findAllRequest2(dateRange, sEcho, iDisplayStart, iDisplayLength, sSearch,
 					statusId, dateRange, typeId, priorityId, systemId, userLogin);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -340,22 +347,26 @@ public class IncidenceManagementController extends BaseController {
 	public @ResponseBody JsonResponse draftRelease(HttpServletRequest request, Model model,
 			@RequestParam(value = "idIncidence", required = true) Long idIncidence,
 			@RequestParam(value = "idNode", required = true) Integer idNode,
+
 			@RequestParam(value = "motive", required = true) String motive,
 			@RequestParam(value = "cause", required = false) String cause,
 			@RequestParam(value = "errorNew", required = false) String errorNew,
 			@RequestParam(value = "solution", required = false) String solution
 			) {
+
 		JsonResponse res = new JsonResponse();
 		try {
 			User user = userService.getUserByUsername(getUserLogin().getUsername());
 			Incidence incidence = incidenceService.findById(idIncidence);
 			NodeIncidence node = nodeService.findByIdNoInci(idNode);
+
 			
 			if(cause!=null) {
 				incidence.setCause(cause);
 				incidence.setSolution(solution);
 				incidence.setErrorNew(errorNew);
 			}
+
 			// node.getStatus().setReason(motive);
 			incidence.setNode(node);
 			incidence.setStatus(node.getStatus());

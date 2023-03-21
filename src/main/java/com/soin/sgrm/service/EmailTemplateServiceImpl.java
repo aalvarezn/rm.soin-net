@@ -59,7 +59,9 @@ import com.soin.sgrm.model.wf.WFRFC;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.model.wf.WFUser;
 import com.soin.sgrm.response.JsonSheet;
+
 import com.soin.sgrm.security.UserLogin;
+
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.EnviromentConfig;
@@ -1592,6 +1594,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{updateAt}}")) {
 				
 				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+
 				String strDate = dateFormat.format(rfcEmail.getRequestDate());
 				
 				email.setHtml(email.getHtml().replace("{{updateAt}}", strDate));
@@ -1938,7 +1941,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 			if (email.getHtml().contains("{{updateAt}}")) {
+
 				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+
 				String strDate = dateFormat.format(incidenceEmail.getUpdateDate());
 				email.setHtml(email.getHtml().replace("{{updateAt}}", strDate));
 			}
@@ -1972,7 +1977,6 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			e.printStackTrace();
 		}
 	}
-
 	@Override
 	public void sendMailNotifyChangeStatus(String numRequest, String type, String name, String operator,
 			Timestamp requestDate, UserLogin user,String senders, EmailTemplate email,String motive) {
@@ -2201,4 +2205,5 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			e.printStackTrace();
 		}
 	}
+
 }
