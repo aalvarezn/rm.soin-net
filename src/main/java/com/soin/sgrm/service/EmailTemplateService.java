@@ -77,3 +77,4 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 			User newUser, EmailTemplate emailNotify);
 
 }
+

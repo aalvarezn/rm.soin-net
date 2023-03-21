@@ -285,7 +285,9 @@ public class IncidenceController extends BaseController {
 				addIncidence.setMotive("Inicio de ticket");
 				addIncidence.setOperator(user.getFullName());
 				addIncidence.setTypeIncidence(typeIncidenceService.findById(addIncidence.getTypeIncidenceId()));
+
 				addIncidence.setNumTicket(incidenceService.generatTicketNumber(addIncidence.getSystem().getName(),addIncidence.getTypeIncidence().getTypeIncidence().getCode()));
+
 				addIncidence.setPriority(priorityIncidenceService.findById(addIncidence.getPriorityId()));
 				incidenceService.save(addIncidence);
 				res.setData(addIncidence.getId().toString());

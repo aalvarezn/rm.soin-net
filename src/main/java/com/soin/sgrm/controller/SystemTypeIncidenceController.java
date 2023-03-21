@@ -1,10 +1,12 @@
 package com.soin.sgrm.controller;
 
 import java.util.ArrayList;
+
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -24,7 +26,9 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.PriorityIncidence;
+
 import com.soin.sgrm.model.System;
+
 import com.soin.sgrm.model.SystemTypeIncidence;
 import com.soin.sgrm.model.System_Priority;
 import com.soin.sgrm.model.TypeIncidence;
@@ -67,9 +71,11 @@ public class SystemTypeIncidenceController extends BaseController {
 			listAttentionGroupId.add(attentionGroup.getId());
 		}
 		List<com.soin.sgrm.model.System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+
 		Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
 		systemList.clear();
 		systemList.addAll(systemWithRepeat);
+
 		List<EmailTemplate> emailTemplates =emailTemplateService.listAll();
 		model.addAttribute("emailTemplates", emailTemplates);
 		model.addAttribute("systems", systemList);
