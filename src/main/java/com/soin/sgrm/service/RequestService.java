@@ -30,4 +30,6 @@ public interface RequestService {
 	
 	void softDelete(Request request);
 
+	Request findByNameCode(String tpo);
+
 }
