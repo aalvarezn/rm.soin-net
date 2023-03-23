@@ -20,10 +20,10 @@
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<label id="rfcNumber" class="col-cyan">Número Ticket</label>
 						</div>
-
 						<div
 							class="col-lg-12 col-md-12 col-sm-12 col-xs-12 table-responsive">
-							<table id="trackingTable" class="table table-bordered table-hover">
+							<table id="trackingTable"
+								class="table table-bordered table-hover">
 								<thead>
 									<tr>
 										<th colspan="2" style="text-align: center;">Estado</th>
@@ -36,7 +36,6 @@
 								</tbody>
 							</table>
 						</div>
-
 					</form>
 				</div>
 
@@ -44,7 +43,9 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
 					onclick="closeTrackingRFCModal()">SALIR</button>
+
 			</div>
 		</div>
 	</div>
 </div>
+

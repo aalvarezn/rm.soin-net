@@ -110,11 +110,15 @@ public class FileController extends BaseController {
 	BaseKnowledgeService baseKnowledgeService;
 	
 	@Autowired
+	IncidenceService incidenceService;
+
+	
+	@Autowired
 	RequestBaseService requestBaseService;
 
 	@Autowired 
 	RFCFileService rfcFileService;
-	
+
 	@Autowired 
 	BaseKnowledgeFileService baseKnowFileService;
 	
@@ -122,16 +126,14 @@ public class FileController extends BaseController {
 	RequestFileService requestFileService;
 	
 	@Autowired
+	IncidenceFileService incidenceFileService;
+	
+	@Autowired
 	SigesService sigesService;
 	
 	@Autowired
 	private Environment env;
 	
-	@Autowired
-	IncidenceService incidenceService;
-	
-	@Autowired
-	IncidenceFileService incidenceFileService;
 	DocxVariables docxVariables = null;
 
 	DocxContext context = null;
@@ -864,8 +866,12 @@ public class FileController extends BaseController {
 	 **/
 	public String createPathBaseKnow(BaseKnowledge baseKnowledge, String basePath) throws SQLException {
 		try {
+<<<<<<< HEAD
 			String path = "/BaseConocimiento/"+baseKnowledge.getSystem().getName()+"/"+baseKnowledge.getComponent().getName()  + "/";
 
+=======
+			String path = "/"+baseKnowledge.getComponent().getName()  + "/";
+>>>>>>> 858177488e240b8e0b88d4b1e6a36f6e245fe93f
 			path += baseKnowledge.getNumError() + "/";
 			new File(basePath + path).mkdirs();
 			return path;
@@ -882,6 +888,7 @@ public class FileController extends BaseController {
 	 * @return: estado de la carga del archivo.
 	 * @throws SQLException
 	 **/
+
 	@RequestMapping(value = "/singleUploadBaseKnow-{id}", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse singleFileUploadBaseKnowledge(@PathVariable Long id,
 			@RequestParam("file") MultipartFile file) throws SQLException {

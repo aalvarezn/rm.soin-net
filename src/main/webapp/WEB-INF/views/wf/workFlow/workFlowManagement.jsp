@@ -88,7 +88,7 @@
 			</div>
 
 			<div class="block-header">
-				<h2>TRÁMITES</h2>
+				<h2>TRAMITES</h2>
 			</div>
 
 			<!-- tableFilters -->
@@ -140,7 +140,7 @@
 									<tr>
 										<th>ID</th>
 										<th>Node</th>
-										<th>Número release</th>
+										<th>N&uacute;mero release</th>
 										<th>Solicitante</th>
 										<th>Modificado</th>
 										<th>Estado</th>

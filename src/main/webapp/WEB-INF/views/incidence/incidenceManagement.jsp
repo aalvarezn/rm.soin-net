@@ -51,6 +51,7 @@
 </head>
 <body class="theme-grey">
 	<input type="text" id="postMSG" name="postMSG" value="${data}">
+
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
@@ -75,7 +76,9 @@
 				<!-- #addRFCSection#  -->
 				<%@include file="../incidence/trackingIncidenceModal.jsp"%>
 				<!-- #addRFCSection#-->
+
 				<%@include file="../incidence/changeUserModal.jsp"%>
+
 				<!-- #tableSection#-->
 				<div id="tableSection">
 					<div class="block-header">
@@ -146,7 +149,7 @@
 
 
 					<!-- tableFilters -->
-					<!-- tableFilters -->
+
 					<div id="tableFilters" class="row clearfix m-t-20">
 						<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 							<label>Rango de Fechas</label>
@@ -160,6 +163,7 @@
 								</div>
 							</div>
 						</div>
+
 						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 							<label>Sistema</label>
 							<div class="form-group m-b-0">
@@ -211,6 +215,7 @@
 							</div>
 
 						</div>
+
 					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">

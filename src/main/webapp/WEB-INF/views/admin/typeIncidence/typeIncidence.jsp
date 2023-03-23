@@ -55,7 +55,7 @@
 							<thead>
 								<tr>
 									<th>Codigo</th>
-									<th>Descripción</th>
+									<th>Descripci&oacute;n</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>

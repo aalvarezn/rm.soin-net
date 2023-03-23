@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemTypeIncidence;
-import com.soin.sgrm.model.System_Priority;
-import com.soin.sgrm.model.System_StatusIn;
 import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.SystemService;
 
