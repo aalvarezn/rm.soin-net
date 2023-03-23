@@ -13,6 +13,7 @@ import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -81,6 +82,8 @@ public interface ReleaseDao {
 	ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease);
 
 	ReleaseTinySummary findByIdTiny(int id);
+
+	List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId);
 	
 
 }

@@ -56,4 +56,6 @@ public interface SystemDao {
 
 	List<System> findByManagerIncidence(Integer idUser);
 
+	List<System> getSystemByProject(Integer projectId);
+
 }

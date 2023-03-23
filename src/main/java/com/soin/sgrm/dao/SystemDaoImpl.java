@@ -241,4 +241,15 @@ public class SystemDaoImpl implements SystemDao {
 
 		return systemList;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<System> getSystemByProject(Integer projectId) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("proyect", "proyect");
+		crit.add( Restrictions.eq("proyect.id", projectId));
+		List<System> systemList = crit.list();
+
+		return systemList;
+	}
 }

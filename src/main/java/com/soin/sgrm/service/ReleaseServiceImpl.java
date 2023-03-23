@@ -23,6 +23,7 @@ import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -295,6 +296,12 @@ public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
 @Override
 public ReleaseTinySummary findByIdTiny(int id) {
 	return dao.findByIdTiny(id);
+}
+
+@Override
+public List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId) {
+	// TODO Auto-generated method stub
+	return dao.listByAllSystemError(dateRange,systemId);
 }
 
 }

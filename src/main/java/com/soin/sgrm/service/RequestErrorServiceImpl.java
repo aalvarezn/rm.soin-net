@@ -121,5 +121,58 @@ public class RequestErrorServiceImpl  implements RequestErrorService{
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,2);
 	
 	}
+	@Override
+	public List<RequestError> findAllList(Long errorId, String dateRange, Long typePetitionId, int systemId) {
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+
+		alias.put("request", "request");
+		alias.put("request.user", "user");
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					columns.put("errorDate", Restrictions.between("errorDate", start, end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		if (errorId == 0) {
+			errorId = null;
+		}
+		if (errorId != null) {
+			
+			columns.put("error", Restrictions.eq("error.id", errorId));
+		}
+		if (typePetitionId == 0) {
+			typePetitionId = null;
+		}
+		
+		if (typePetitionId != null) {
+			alias.put("typePetition", "typePetition");
+			columns.put("typePetition", Restrictions.eq("typePetition.id", typePetitionId));
+		}
+		if (systemId != 0) {
+			alias.put("system", "system");
+			columns.put("system", Restrictions.eq("system.id", systemId));
+
+		}
+		 
+
+		List<String> fetchs = new ArrayList<String>();
+		fetchs.add("system");
+		fetchs.add("error");
+		fetchs.add("release");
+		fetchs.add("project");
+		return dao.findAll( columns, fetchs, alias,2);
+	}
 
 }

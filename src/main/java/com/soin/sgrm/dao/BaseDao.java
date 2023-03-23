@@ -40,4 +40,5 @@ public interface BaseDao<PK, T> {
 
 	List<T> findAll();
 
+	List<T> findAll(Map<String, Object> columns, List<String> fetchs, Map<String, String> alias, Integer veri);
 }

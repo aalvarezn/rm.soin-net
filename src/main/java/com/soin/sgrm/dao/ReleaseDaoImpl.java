@@ -32,6 +32,7 @@ import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -783,5 +784,36 @@ public ReleaseTinySummary findByIdTiny(int id) {
 			.createCriteria(ReleaseTinySummary.class).add(Restrictions.eq("id", id)).uniqueResult();
 	return release;
 }
+@SuppressWarnings("unchecked")
+@Override
+public List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId) {
+	Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseTrackingToError.class);
+	crit.createAlias("release", "release");
+	crit.createAlias("release.system", "system");
+	String[] range = (dateRange != null) ? dateRange.split("-") : null;
+	if (range != null) {
+		if (range.length > 1) {
+			try {
+				Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+				Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+				end.setHours(23);
+				end.setMinutes(59);
+				end.setSeconds(59);
+				crit.add(Restrictions.ge("trackingDate", start));
+				crit.add(Restrictions.le("trackingDate", end));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
+
+	if (systemId != 0) {
+		crit.add(Restrictions.eq("system.id", systemId));
+	}
+	crit.add(Restrictions.eq("status", "Solicitado"));
+	crit.addOrder(Order.desc("trackingDate"));
+
+	return crit.list();
+}
 }

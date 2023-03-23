@@ -2226,5 +2226,12 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public List<EmailTemplate> findAll(Map<String, Object> columns, List<String> fetchs, Map<String, String> alias,
+			Integer veri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 
