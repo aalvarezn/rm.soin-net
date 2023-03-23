@@ -864,7 +864,7 @@ public class FileController extends BaseController {
 	 **/
 	public String createPathBaseKnow(BaseKnowledge baseKnowledge, String basePath) throws SQLException {
 		try {
-			String path = "/"+baseKnowledge.getComponent().getName()  + "/";
+			String path = "/BaseConocimiento/"+baseKnowledge.getSystem().getName()+"/"+baseKnowledge.getComponent().getName()  + "/";
 
 			path += baseKnowledge.getNumError() + "/";
 			new File(basePath + path).mkdirs();
