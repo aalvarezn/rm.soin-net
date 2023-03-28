@@ -369,6 +369,8 @@ public class ErrorsManagementController extends BaseController {
 			errorReleaseReport.setDateNew(dateRange);
 			List<ReleaseError> releases = releaseErrorService.findAllList(errorId, dateRange, projectId, systemId);
 			List<ReleaseTrackingToError> releasesTotals = releaseService.listByAllSystemError(dateRange, systemId);
+			Integer totalReleases=releasesTotals.size();
+			Integer totalReleasesError=releases.size();
 			List<System> systems=new ArrayList<>();
 			if(projectId==0) {
 				 systems = systemService.list();
@@ -410,6 +412,7 @@ public class ErrorsManagementController extends BaseController {
 					errorSystemGraphList.add(errorTypeGraph);
 				}
 			}
+			
 			for (System systemOnly : systems) {
 				valueError = 0;
 				valueRequest = 0;
@@ -440,10 +443,10 @@ public class ErrorsManagementController extends BaseController {
 			listError.add(errorReleaseReport);
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listError);
 			Map<String, Object> parameters = new HashMap<>();
-			parameters.put("totalErrorSystem", "1");
-			parameters.put("totalErrorProjects", "1");
-			parameters.put("totalErrorSystem", "1");
-
+			parameters.put("totalReleases", totalReleases.toString());
+			parameters.put("percentageErrors", "1");
+			parameters.put("totalErrors", totalReleasesError.toString());
+			parameters.put("percentageReleases", "1");
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 
 			String reportName = "SalidasNoConformesReleases-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";

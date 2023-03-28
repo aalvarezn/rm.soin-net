@@ -12,6 +12,7 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
+import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
@@ -93,6 +94,12 @@ public interface ReleaseService {
 	ReleaseTinySummary findByIdTiny(int parseInt);
 
 	List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId);
+
+	ReleaseReport findByIdReleaseReport(Integer id);
+
+	List<ReleaseReport> listReleaseReport();
+
+	
 
 
 

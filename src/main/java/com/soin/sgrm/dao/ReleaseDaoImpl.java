@@ -29,6 +29,7 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
+import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
@@ -712,7 +713,8 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"))).add(Restrictions.eq("system.id", systemId));
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion")))
+				.add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla
 		if (sSearch != null && !((sSearch.trim()).equals("")))
@@ -762,58 +764,74 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		return release;
 	}
 
-  @Override
+	@Override
 	public ReleaseSummaryMin findByIdMin(Integer id) {
 		ReleaseSummaryMin release = (ReleaseSummaryMin) sessionFactory.getCurrentSession()
 				.createCriteria(ReleaseSummaryMin.class).add(Restrictions.eq("id", id)).uniqueResult();
 		return release;
 	}
 
-@Override
-public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
-	
-	ReleaseEditWithOutObjects release = (ReleaseEditWithOutObjects) sessionFactory.getCurrentSession()
-			.createCriteria(ReleaseEditWithOutObjects.class).add(Restrictions.eq("id", idRelease)).uniqueResult();
-	return release;
+	@Override
+	public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
 
-}
+		ReleaseEditWithOutObjects release = (ReleaseEditWithOutObjects) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseEditWithOutObjects.class).add(Restrictions.eq("id", idRelease)).uniqueResult();
+		return release;
 
-@Override
-public ReleaseTinySummary findByIdTiny(int id) {
-	ReleaseTinySummary release = (ReleaseTinySummary) sessionFactory.getCurrentSession()
-			.createCriteria(ReleaseTinySummary.class).add(Restrictions.eq("id", id)).uniqueResult();
-	return release;
-}
-@SuppressWarnings("unchecked")
-@Override
-public List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId) {
-	Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseTrackingToError.class);
-	crit.createAlias("release", "release");
-	crit.createAlias("release.system", "system");
-	String[] range = (dateRange != null) ? dateRange.split("-") : null;
-	if (range != null) {
-		if (range.length > 1) {
-			try {
-				Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
-				Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
-				end.setHours(23);
-				end.setMinutes(59);
-				end.setSeconds(59);
-				crit.add(Restrictions.ge("trackingDate", start));
-				crit.add(Restrictions.le("trackingDate", end));
-			} catch (ParseException e) {
-				e.printStackTrace();
+	}
+
+	@Override
+	public ReleaseTinySummary findByIdTiny(int id) {
+		ReleaseTinySummary release = (ReleaseTinySummary) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseTinySummary.class).add(Restrictions.eq("id", id)).uniqueResult();
+		return release;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseTrackingToError.class);
+		crit.createAlias("release", "release");
+		crit.createAlias("release.system", "system");
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					crit.add(Restrictions.ge("trackingDate", start));
+					crit.add(Restrictions.le("trackingDate", end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 			}
 		}
+
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		crit.add(Restrictions.eq("status", "Solicitado"));
+		crit.addOrder(Order.desc("trackingDate"));
+
+		return crit.list();
 	}
 
-
-	if (systemId != 0) {
-		crit.add(Restrictions.eq("system.id", systemId));
+	@Override
+	public ReleaseReport findByIdReleaseReport(Integer id) {
+		ReleaseReport release = (ReleaseReport) sessionFactory.getCurrentSession().createCriteria(ReleaseReport.class)
+				.add(Restrictions.eq("id", id)).uniqueResult();
+		return release;
 	}
-	crit.add(Restrictions.eq("status", "Solicitado"));
-	crit.addOrder(Order.desc("trackingDate"));
 
-	return crit.list();
-}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ReleaseReport> listReleaseReport() {
+
+		List<ReleaseReport> releases = (List<ReleaseReport>) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseReport.class).list();
+		return releases;
+	}
 }

@@ -50,7 +50,7 @@ $(function() {
 		maxDate : new Date()
 	});
 
-	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+
 
 	formChangeStatus.find('#statusId').change(function() {
 		formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
@@ -95,7 +95,7 @@ function loadTableRelease() {
 			.DataTable(
 					{
 						"columnDefs" : [ {
-							"targets" : [ 0 ],
+							"targets" : [ 1 ],
 							"visible" : false,
 							"searchable" : false
 						} ],
@@ -115,6 +115,12 @@ function loadTableRelease() {
 									{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()});
 						}, 
 						"aoColumns" : [
+							{
+								 className: 'details-control',
+						         orderable: false,
+						         data: null,
+						         defaultContent: ''
+							},
 							{
 								"mDataProp" : "id"
 							},
@@ -150,27 +156,22 @@ function loadTableRelease() {
 							{
 								mRender : function(data, type, row) {
 									var options = '<div class="iconLine"> ';
-
-									if(row.status.name != 'Anulado') {
-										options = options
-										+ '<a onclick="confirmCancelRelease('+row.id+')" title="Anular"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
-									}
-									options = options
-									+ '<a onclick="changeStatusRelease('+row.id+')" title="Cambiar Estado"><i class="material-icons gris" style="font-size: 25px;">offline_pin</i></a>';
-									options = options
-									+ '<a onclick="openChangeUserModal('
-									+ row.id
-									+ ')" title="Asignar"><i class="material-icons gris" style="font-size: 25px;">account_circle</i> </a>';
-									options = options
-									+ '<a onclick="openReleaseTrackingModal('
-									+ row.id
-									+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
 									options = options
 									+ '<a href="'
 									+ getCont()
-									+ 'release/summary-'
+									+ 'report/summaryReportRelease-'
 									+ row.id
-									+ '" title="Resumen"><i class="material-icons gris" style="font-size: 25px;">info</i></a>'
+									+ '" target="_blank" title="Reporte"><i class="material-icons gris" style="font-size: 25px;">report</i></a>';
+									options = options
+									+ '<a onclick="openReleaseTrackingModal('
+									+ row.id
+									+ ')"  title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
+									options = options
+									+ '<a href="'
+									+ getCont()
+									+ 'report/summaryRelease-'
+									+ row.id
+									+ '" target="_blank" title="Resumen"><i class="material-icons gris" style="font-size: 25px;">info</i></a>'
 									+ ' </div>';
 									return options;
 								}
@@ -180,6 +181,45 @@ function loadTableRelease() {
 							info : true
 					});
 }
+
+
+// Add event listener for opening and closing first level childdetails
+$('#dtReleases tbody').on('click', 'td.details-control', function () {
+	console.log("a");
+   var tr = $(this).closest('tr');
+   var row = table.row( tr );
+   var rowData = row.data();
+    
+
+   if ( row.child.isShown() ) {
+     // This row is already open - close it
+     row.child.hide();
+     tr.removeClass('shown');
+      
+     // Destroy the Child Datatable
+     $('#' + rowData.name.replace(' ', '-')).DataTable().destroy();
+   }
+   else {
+     // Open this row
+     row.child(format(rowData)).show();
+     var id = rowData.name.replace(' ', '-');
+        
+
+      $('#' + id).DataTable({
+        dom: "t",
+        data: [rowData],
+        columns: [
+          { data: "name", title: 'Name' },
+          { data: "position", title: 'Position' },
+          { data: "extn", title: 'Extension' },
+        ],
+        scrollY: '100px',
+        select: true,
+      });
+      
+      tr.addClass('shown');
+    }
+} );
 
 function confirmCancelRelease(index){
 	Swal.fire({
@@ -342,9 +382,13 @@ function openChangeUserModal(releaseId) {
 
 
 function openReleaseTrackingModal(releaseId) {
+	console.log(releaseId);
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
-	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
+	console.log(dtReleases);
+	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 1); // idRow
+	console.log(idRow[0]);
 	var rowData = releaseTable.row(idRow).data();
+	console.log(rowData);
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
 	loadTrackingRelease(rowData);
@@ -462,4 +506,8 @@ function getColorNode(status){
 		return 'rgb(0, 181, 212)';
 	break;
 	}
+}
+
+function exportPDF(){
+	 location.href=getCont()+'report/downloadReportGeneral';
 }

@@ -78,11 +78,9 @@
 
 	<section>
 		<!-- NodeModal -->
-<<<<<<< HEAD
+
 		<%@include file="../../wf/workFlow/nodeModalIncidence.jsp"%>
-=======
-		<%@include file="../../wf/workFlow/nodeModal.jsp"%>
->>>>>>> rc_gestion_incidencias
+
 		<!-- #END# NodeModal -->
 	</section>
 

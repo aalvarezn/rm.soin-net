@@ -190,6 +190,12 @@
 			</div>
 			<!-- #tableFilters# -->
 			<div class="row clearfix">
+								<button type="button" class="btn btn-default setIcon"
+						onclick="exportPDF()" title="Exportar"
+						style="background-color: #00294c !important; color: #fff; border: none !important; padding-left: 20px;">
+						<span>Exportar PDF</span><span style="margin-left: 25px;"><i
+							class="material-icons m-t--2">offline_pin</i></span>
+					</button>
 				<div id="tableSection"
 					class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="body">
@@ -198,12 +204,13 @@
 								class="table table-bordered table-striped table-hover dataTable">
 								<thead>
 									<tr>
+										<th></th>
 										<th>ID</th>
 										<th>Número release</th>
-										<th style="max-width: 330px;">Información</th>
+										<th style="max-width: 330px;">Descripcion</th>
 										<th>Solicitante</th>
-										<th>Responsable</th>
 										<th>Modificado</th>
+										<th>Estado</th>
 										<th>Instalado</th>
 										<th>Acciones</th>
 									</tr>
