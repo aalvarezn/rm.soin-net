@@ -144,77 +144,152 @@
 				</div>
 
 			</div>
-
-			<div class="row clearfix">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+			<c:choose>
+				<c:when test="${verifySos}">
 					<div class="row clearfix">
-						<div class="col-sm-12">
-							<h5 class="titulares">Usuarios Solicitados</h5>
-						</div>
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							<div class="table-responsive m-b-20">
-								<table
-									class="table tableIni table-bordered table-striped table-hover dataTable"
-									id="userTable">
-									<thead>
-										<tr>
-											<th>Nombre</th>
-											<th>Correo</th>
-											<th>Tipo</th>
-											<th>Permisos</th>
-											<th>Ambiente</th>
-											<th>Especificaci&oacute;n</th>
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+							<div class="row clearfix">
+								<div class="col-sm-12">
+									<h5 class="titulares">Usuarios Solicitados</h5>
+								</div>
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									<div class="table-responsive m-b-20">
+										<table
+											class="table tableIni table-bordered table-striped table-hover dataTable"
+											id="userTable">
+											<thead>
+												<tr>
+													<th>Nombre</th>
+													<th>Correo</th>
 
-										</tr>
-									</thead>
-									<tbody>
-										<c:forEach items="${listUsers}" var="user">
-											<tr>
-												<td>${user.name}</td>
-												<td>${user.email}</td>
-												<td>${user.type.code}</td>
-												<td>${user.permissions}</td>
-												<td>${user.ambient.name}</td>
-												<td>${user.espec}</td>
-											</tr>
-										</c:forEach>
-									</tbody>
-								</table>
+													<th>Tipo</th>
+													<th>Permisos</th>
+													<th>Ambiente</th>
+													<th>Especificaci&oacute;n</th>
+
+												</tr>
+											</thead>
+											<tbody>
+												<c:forEach items="${listUsers}" var="user">
+													<tr>
+														<td>${user.name}</td>
+														<td>${user.email}</td>
+
+														<td>${user.type.code}</td>
+														<td>${user.permissions}</td>
+														<td>${user.ambient.name}</td>
+														<td>${user.espec}</td>
+													</tr>
+												</c:forEach>
+											</tbody>
+										</table>
+									</div>
+								</div>
 							</div>
 						</div>
+
+						<c:forEach items="${userInfo.authorities}" var="authority">
+							<c:if test="${authority.name == 'Release Manager'}">
+								<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
+									<div class="m-b-20">
+										<c:if test="${request.status.name ne 'Anulado'}">
+											<button type="button" class="btn btn-default setIcon"
+												onclick="confirmCancelRequest(${request.id})" title="Anular"
+												style="background-color: #00294c !important; color: #fff; border: none !important;">
+												<span>ANULAR</span><span style="margin-left: 10px;"><i
+													class="material-icons m-t--2">highlight_off</i></span>
+											</button>
+										</c:if>
+										<button type="button" class="btn btn-default setIcon"
+											onclick="changeStatusRequest(${request.id}, '${request.numRequest}' )"
+											title="Borrador"
+											style="background-color: #00294c !important; color: #fff; border: none !important;">
+											<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
+												class="material-icons m-t--2">offline_pin</i></span>
+										</button>
+									</div>
+								</div>
+							</c:if>
+						</c:forEach>
 					</div>
-				</div>
+				</c:when>
+				<c:otherwise>
 
-				<c:forEach items="${userInfo.authorities}" var="authority">
-					<c:if test="${authority.name == 'Release Manager'}">
-						<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
-							<div class="m-b-20">
-								<c:if test="${request.status.name ne 'Anulado'}">
-									<button type="button" class="btn btn-default setIcon"
-										onclick="confirmCancelRequest(${request.id})" title="Anular"
-										style="background-color: #00294c !important; color: #fff; border: none !important;">
-										<span>ANULAR</span><span style="margin-left: 10px;"><i
-											class="material-icons m-t--2">highlight_off</i></span>
-									</button>
-								</c:if>
-								<button type="button" class="btn btn-default setIcon"
-									onclick="changeStatusRequest(${request.id}, '${request.numRequest}' )"
-									title="Borrador"
-									style="background-color: #00294c !important; color: #fff; border: none !important;">
-									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
-										class="material-icons m-t--2">offline_pin</i></span>
-								</button>
+					<div class="row clearfix">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+							<div class="row clearfix">
+								<div class="col-sm-12">
+									<h5 class="titulares">Usuarios Solicitados</h5>
+								</div>
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									<div class="table-responsive m-b-20">
+										<table
+											class="table tableIni table-bordered table-striped table-hover dataTable"
+											id="userTable">
+											<thead>
+												<tr>
+													<th>Nombre</th>
+													<th>Correo</th>
+													<th>Usuario git</th>
+													<th>Tipo</th>
+													<th>Permisos</th>
+													<th>Ambiente</th>
+													<th>Especificaci&oacute;n</th>
+
+												</tr>
+											</thead>
+											<tbody>
+												<c:forEach items="${listUsers}" var="user">
+													<tr>
+														<td>${user.name}</td>
+														<td>${user.email}</td>
+														<td>${user.gitUser}</td>
+														<td>${user.type.code}</td>
+														<td>${user.permissions}</td>
+														<td>${user.ambient.name}</td>
+														<td>${user.espec}</td>
+													</tr>
+												</c:forEach>
+											</tbody>
+										</table>
+									</div>
+								</div>
 							</div>
 						</div>
-					</c:if>
-				</c:forEach>
-			</div>
+
+						<c:forEach items="${userInfo.authorities}" var="authority">
+							<c:if test="${authority.name == 'Release Manager'}">
+								<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
+									<div class="m-b-20">
+										<c:if test="${request.status.name ne 'Anulado'}">
+											<button type="button" class="btn btn-default setIcon"
+												onclick="confirmCancelRequest(${request.id})" title="Anular"
+												style="background-color: #00294c !important; color: #fff; border: none !important;">
+												<span>ANULAR</span><span style="margin-left: 10px;"><i
+													class="material-icons m-t--2">highlight_off</i></span>
+											</button>
+										</c:if>
+										<button type="button" class="btn btn-default setIcon"
+											onclick="changeStatusRequest(${request.id}, '${request.numRequest}' )"
+											title="Borrador"
+											style="background-color: #00294c !important; color: #fff; border: none !important;">
+											<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
+												class="material-icons m-t--2">offline_pin</i></span>
+										</button>
+									</div>
+								</div>
+							</c:if>
+						</c:forEach>
+					</div>
+				</c:otherwise>
+			</c:choose>
 		</div>
 	</section>
 
 	<%@include file="../../plantilla/footer.jsp"%>
 
-	<script src="<c:url value='/static/js/newRequest/requestSummaryActions.js'/>"></script>
+	<script
+		src="<c:url value='/static/js/newRequest/requestSummaryActions.js'/>"></script>
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
