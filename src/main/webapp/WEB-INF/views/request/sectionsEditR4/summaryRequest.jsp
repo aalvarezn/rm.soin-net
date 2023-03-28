@@ -243,7 +243,7 @@
 													<tr>
 														<td>${user.name}</td>
 														<td>${user.email}</td>
-														<td>${user.gitUser}</td>
+														<td>${user.userGit}</td>
 														<td>${user.type.code}</td>
 														<td>${user.permissions}</td>
 														<td>${user.ambient.name}</td>
