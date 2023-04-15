@@ -3,7 +3,7 @@ var formChangeUser = $('#changeUserForm');
 var formChangeStatus = $('#changeStatusForm');
 var trackingReleaseForm = $('#trackingReleaseForm');
 $(function() {
-	activeItemMenu("managemetReleaseItem");
+	activeItemMenu("reportItem",true);
 	$('input[name="daterange"]').daterangepicker({
 		"autoUpdateInput": false,
 		"opens": 'left',
@@ -50,14 +50,14 @@ $(function() {
 		maxDate : new Date()
 	});
 
-	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+
 
 	formChangeStatus.find('#statusId').change(function() {
 		formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
 
 	loadTableRelease();
-
+	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 });
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
@@ -71,6 +71,10 @@ $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 });
 
 $('#tableFilters #systemId').change(function() {
+	releaseTable.ajax.reload();
+});
+
+$('#tableFilters #projectId').change(function() {
 	releaseTable.ajax.reload();
 });
 
@@ -108,10 +112,11 @@ function loadTableRelease() {
 						"iDisplayStart" : 0,
 						"processing" : true,
 						"serverSide" : true,
-						"sAjaxSource" : getCont() + "management/release/systemRelease",
+						"sAjaxSource" : getCont() + "report/listRelease",
 						"fnServerParams": function ( aoData ) {
 							aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 									{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
+									{"name": "projectId", "value": $('#tableFilters #projectId').children("option:selected").val()},
 									{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()});
 						}, 
 						"aoColumns" : [
@@ -142,6 +147,9 @@ function loadTableRelease() {
 								}
 							},
 							{
+								"mDataProp" : "system.proyect.code",
+							},
+							{
 								"mDataProp" : "status.name",
 							},
 							{
@@ -150,27 +158,22 @@ function loadTableRelease() {
 							{
 								mRender : function(data, type, row) {
 									var options = '<div class="iconLine"> ';
-
-									if(row.status.name != 'Anulado') {
-										options = options
-										+ '<a onclick="confirmCancelRelease('+row.id+')" title="Anular"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
-									}
-									options = options
-									+ '<a onclick="changeStatusRelease('+row.id+')" title="Cambiar Estado"><i class="material-icons gris" style="font-size: 25px;">offline_pin</i></a>';
-									options = options
-									+ '<a onclick="openChangeUserModal('
-									+ row.id
-									+ ')" title="Asignar"><i class="material-icons gris" style="font-size: 25px;">account_circle</i> </a>';
-									options = options
-									+ '<a onclick="openReleaseTrackingModal('
-									+ row.id
-									+ ')" title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
 									options = options
 									+ '<a href="'
 									+ getCont()
-									+ 'release/summary-'
+									+ 'report/summaryReportRelease-'
 									+ row.id
-									+ '" title="Resumen"><i class="material-icons gris" style="font-size: 25px;">info</i></a>'
+									+ '" target="_blank" title="Reporte"><i class="material-icons gris" style="font-size: 25px;">report</i></a>';
+									options = options
+									+ '<a onclick="openReleaseTrackingModal('
+									+ row.id
+									+ ')"  title="Rastreo"><i class="material-icons gris" style="font-size: 25px;">location_on</i> </a>';
+									options = options
+									+ '<a href="'
+									+ getCont()
+									+ 'report/summaryRelease-'
+									+ row.id
+									+ '" target="_blank" title="Resumen"><i class="material-icons gris" style="font-size: 25px;">info</i></a>'
 									+ ' </div>';
 									return options;
 								}
@@ -180,6 +183,8 @@ function loadTableRelease() {
 							info : true
 					});
 }
+
+
 
 function confirmCancelRelease(index){
 	Swal.fire({
@@ -199,6 +204,56 @@ function confirmCancelRelease(index){
 	});
 }
 
+function downLoadReport(){
+	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
+	$.ajax({
+		type : "GET",
+		cache : false,
+		contentType: "application/json; charset=utf-8",
+		async : false,
+		url : getCont() + "report/downloadreportrelease",
+		timeout : 60000,
+		data : {
+			dateRange :$('#tableFilters input[name="daterange"]').val(),
+			projectId: $('#tableFilters #projectId').children("option:selected").val(),
+			systemId: $('#tableFilters #systemId').children("option:selected").val()
+		},
+		success : function(response) {
+			console.log(response);
+			//console.log(atob(response.obj.file));
+			
+			var blob = new Blob([b64toBlob(response.obj.file,response.obj.ContentType)], {type: response.obj.ContentType});
+			var link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = response.obj.name;
+			link.click();   
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+
+
+}
+const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+	  const byteCharacters = atob(b64Data);
+	  const byteArrays = [];
+
+	  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+	    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+	    const byteNumbers = new Array(slice.length);
+	    for (let i = 0; i < slice.length; i++) {
+	      byteNumbers[i] = slice.charCodeAt(i);
+	    }
+
+	    const byteArray = new Uint8Array(byteNumbers);
+	    byteArrays.push(byteArray);
+	  }
+
+	  const blob = new Blob(byteArrays, {type: contentType});
+	  return blob;
+	}
 function cancelRelease(index) {
 	blockUI();
 	$.ajax({
@@ -342,9 +397,13 @@ function openChangeUserModal(releaseId) {
 
 
 function openReleaseTrackingModal(releaseId) {
+	console.log(releaseId);
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
-	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
+	console.log(dtReleases);
+	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 1); // idRow
+	console.log(idRow[0]);
 	var rowData = releaseTable.row(idRow).data();
+	console.log(rowData);
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
 	loadTrackingRelease(rowData);
@@ -462,4 +521,8 @@ function getColorNode(status){
 		return 'rgb(0, 181, 212)';
 	break;
 	}
+}
+
+function exportPDF(){
+	 location.href=getCont()+'report/downloadReportGeneral';
 }

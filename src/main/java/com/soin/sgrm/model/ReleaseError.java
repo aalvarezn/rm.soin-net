@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -48,6 +50,21 @@ public class ReleaseError implements Serializable {
 	@Column(name = "OBSERVACIONES")
 	private String observations;
 
+	@Transient 
+	private String errorName;
+	
+	@Transient 
+	private String releaseName;
+	
+	@Transient 
+	private String systemName;
+	
+	@Transient 
+	private String projectName;
+	
+	@Transient 
+	private String userName;
+	
 	public Long getId() {
 		return id;
 	}
@@ -91,7 +108,8 @@ public class ReleaseError implements Serializable {
 	public SystemInfo getSystem() {
 		return system;
 	}
-
+	
+	
 	public void setSystem(SystemInfo system) {
 		this.system = system;
 	}
@@ -102,6 +120,47 @@ public class ReleaseError implements Serializable {
 
 	public void setProject(Project project) {
 		this.project = project;
+	}
+
+	public String getErrorName() {
+		
+		if(getError()!=null) {
+			return getError().getName();
+		}else {
+			return "No hay un error relacionado";
+		}	
+	}
+
+	public String getReleaseName() {
+		if(getRelease()!=null) {
+			return getRelease().getReleaseNumber();
+		}else {
+			return "No hay un release relacionado";
+		}	
+	}
+
+	public String getSystemName() {
+		if(getSystem()!=null) {
+			return getSystem().getName();
+		}else {
+			return "No hay un sistema relacionado";
+		}	
+	}
+
+	public String getProjectName() {
+		if(getProject()!=null) {
+			return getProject().getCode();
+		}else {
+			return "No hay un proyecto relacionado";
+		}	
+	}
+
+	public String getUserName() {
+		if(getRelease()!=null) {
+			return getRelease().getUser().getFullName();
+		}else {
+			return "No hay un usuario relacionado";
+		}
 	}
 
 }

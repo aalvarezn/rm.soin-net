@@ -29,11 +29,15 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
+import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTrackingShow;
+import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.Constant;
@@ -606,6 +610,54 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		return crit;
 	}
+	
+	@SuppressWarnings({ "deprecation" })
+	public Criteria criteriaByReport(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
+			throws SQLException, ParseException {
+
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
+		crit.createAlias("system", "system");
+		crit.createAlias("system.proyect", "proyect");
+		crit.createAlias("status", "status");
+		crit.createAlias("user", "user");
+
+		if (filtred != null) {
+			crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
+		}
+
+		// Valores de busqueda en la tabla
+		if (sSearch != null && !((sSearch.trim()).equals("")))
+			crit.add(Restrictions.or(Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+
+		if (dateRange != null) {
+			if (dateRange.length > 1) {
+				Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
+				Date end = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[1]);
+				end.setHours(23);
+				end.setMinutes(59);
+				end.setSeconds(59);
+				crit.add(Restrictions.ge("createDate", start));
+				crit.add(Restrictions.le("createDate", end));
+			}
+		}
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		if (statusId != 0) {
+			crit.add(Restrictions.eq("status.id", statusId));
+		}
+		if (projectId != 0) {
+			crit.add(Restrictions.eq("proyect.id", projectId));
+		}
+		crit.addOrder(Order.desc("createDate"));
+
+		return crit;
+	}
 
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaBySystemsQA(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
@@ -711,7 +763,8 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"))).add(Restrictions.eq("system.id", systemId));
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion")))
+				.add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla
 		if (sSearch != null && !((sSearch.trim()).equals("")))
@@ -729,7 +782,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	}
 
 	@Override
-	public void updateStatusReleaseRFC(Release_RFC release, String operator) {
+	public void updateStatusReleaseRFC(Release_RFCFast release, String operator) {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		String sql = "";
@@ -761,27 +814,150 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		return release;
 	}
 
-  @Override
+	@Override
 	public ReleaseSummaryMin findByIdMin(Integer id) {
 		ReleaseSummaryMin release = (ReleaseSummaryMin) sessionFactory.getCurrentSession()
 				.createCriteria(ReleaseSummaryMin.class).add(Restrictions.eq("id", id)).uniqueResult();
 		return release;
 	}
 
-@Override
-public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
-	
-	ReleaseEditWithOutObjects release = (ReleaseEditWithOutObjects) sessionFactory.getCurrentSession()
-			.createCriteria(ReleaseEditWithOutObjects.class).add(Restrictions.eq("id", idRelease)).uniqueResult();
-	return release;
+	@Override
+	public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
 
-}
+		ReleaseEditWithOutObjects release = (ReleaseEditWithOutObjects) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseEditWithOutObjects.class).add(Restrictions.eq("id", idRelease)).uniqueResult();
+		return release;
 
-@Override
-public ReleaseTinySummary findByIdTiny(int id) {
-	ReleaseTinySummary release = (ReleaseTinySummary) sessionFactory.getCurrentSession()
-			.createCriteria(ReleaseTinySummary.class).add(Restrictions.eq("id", id)).uniqueResult();
-	return release;
-}
+	}
 
+	@Override
+	public ReleaseTinySummary findByIdTiny(int id) {
+		ReleaseTinySummary release = (ReleaseTinySummary) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseTinySummary.class).add(Restrictions.eq("id", id)).uniqueResult();
+		return release;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseTrackingToError.class);
+		crit.createAlias("release", "release");
+		crit.createAlias("release.system", "system");
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					crit.add(Restrictions.ge("trackingDate", start));
+					crit.add(Restrictions.le("trackingDate", end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		crit.add(Restrictions.eq("status", "Solicitado"));
+		crit.addOrder(Order.desc("trackingDate"));
+
+		return crit.list();
+	}
+
+	@Override
+	public ReleaseReport findByIdReleaseReport(Integer id) {
+		ReleaseReport release = (ReleaseReport) sessionFactory.getCurrentSession().createCriteria(ReleaseReport.class)
+				.add(Restrictions.eq("id", id)).uniqueResult();
+		return release;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ReleaseReport> listReleaseReport() {
+
+		List<ReleaseReport> releases = (List<ReleaseReport>) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseReport.class).list();
+		return releases;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength,
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId) throws SQLException, ParseException {
+		JsonSheet json = new JsonSheet();
+		Criteria crit = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId,projectId);
+
+		crit.setFirstResult(iDisplayStart);
+		crit.setMaxResults(iDisplayLength);
+
+		Criteria critCount = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId,projectId);
+
+		critCount.setProjection(Projections.rowCount());
+		Long count = (Long) critCount.uniqueResult();
+		int recordsTotal = count.intValue();
+
+		List<Releases_WithoutObj> aaData = crit.list();
+		json.setDraw(sEcho);
+		json.setRecordsTotal(recordsTotal);
+		json.setRecordsFiltered(recordsTotal);
+		json.setData(aaData);
+		return json;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ReleaseReport> listReleaseReportFilter(int systemId, int projectId, String dateRange) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseReport.class);
+		crit.createAlias("system", "system");
+		crit.createAlias("status", "status");
+		crit.createAlias("system.proyect", "proyect");
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					crit.add(Restrictions.ge("createDate", start));
+					crit.add(Restrictions.le("createDate", end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		if (projectId != 0) {
+			crit.add(Restrictions.eq("proyect.id", projectId));
+		}
+		
+		if (systemId != 0) {
+			crit.add(Restrictions.eq("system.id", systemId));
+		}
+		
+		
+		crit.addOrder(Order.desc("createDate"));
+
+		return crit.list();
+	}
+
+	@Override
+	public Release_RFCFast findRelease_RFCByIdFast(int id) {
+		Release_RFCFast release = (Release_RFCFast) sessionFactory.getCurrentSession().get(Release_RFCFast.class, id);
+		return release;
+	}
+
+	@Override
+	public ReleaseTrackingShow findReleaseTracking(int id) {
+		ReleaseTrackingShow release = (ReleaseTrackingShow) sessionFactory.getCurrentSession().get(ReleaseTrackingShow.class, id);
+		return release;
+	}
 }

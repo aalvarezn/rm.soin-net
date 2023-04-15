@@ -106,7 +106,7 @@
 				<!-- #CountSection -->
 				<!-- tableFilters -->
 				<div id="tableFilters" class="row clearfix m-t-20">
-					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 						<label>Rango de Fechas</label>
 						<div class="input-group">
 							<span class="input-group-addon"> <i class="material-icons">date_range</i>
@@ -117,27 +117,36 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-						<label>Sistemas</label>
+					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+						<label>Proyecto</label>
 						<div class="form-group m-b-0">
-							<select id="systemId" class="form-control show-tick selectpicker"
+							<select id="projectId"
+								class="form-control show-tick selectpicker"
 								data-live-search="true">
 								<option value="0">-- Todos --</option>
-								<c:forEach items="${systems}" var="system">
-									<option value="${system.id }">${system.name }</option>
+								<c:forEach items="${projects}" var="project">
+									<option value="${project.id }">${project.code}</option>
 								</c:forEach>
 							</select>
 						</div>
 					</div>
 					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+						<label>Sistemas</label>
+						<div class="form-group m-b-0">
+						<select id="systemId" disabled name="typeId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="0">-- Todos --</option>
+								</select>
+						</div>
+					</div>
+					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 						<label>Siges</label>
 						<div class="form-group m-b-0">
-							<select id="sigesId" class="form-control show-tick selectpicker"
+							<select id="sigesId" disabled class="form-control show-tick selectpicker"
 								data-live-search="true">
 								<option value="0">-- Todos --</option>
-								<c:forEach items="${siges}" var="sige">
-									<option value="${sige.id }">${sige.codeSiges}</option>
-								</c:forEach>
+	
 							</select>
 						</div>
 					</div>
@@ -145,7 +154,7 @@
 					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 						<label>Tipo de error</label>
 						<div class="form-group m-b-0">
-							<select id="errorId" class="form-control show-tick selectpicker"
+							<select id="errorId"  class="form-control show-tick selectpicker"
 								data-live-search="true">
 								<option value="0">-- Todos --</option>
 								<c:forEach items="${errors}" var="error">
@@ -159,6 +168,15 @@
 							<button title="Refrescar tabla con filtros!" type="button"
 								class="btn btn-primary setIcon" onclick="refreshTable()">
 								<span><i class="material-icons m-t--2 ">update</i></span>
+							</button>
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="button-demo flr">
+							<button type="button" class="btn btn-primary setIcon"
+								onclick="downLoadReport()">
+								<span>DESCARGAR PDF</span><span><i
+									class="material-icons m-t--2 ">update</i></span>
 							</button>
 						</div>
 					</div>

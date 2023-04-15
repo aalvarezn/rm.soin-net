@@ -137,4 +137,10 @@ public class SystemServiceImpl implements SystemService {
 		// TODO Auto-generated method stub
 		return dao.findByManagerIncidence(idUser);
 	}
+
+	@Override
+	public List<System> getSystemByProject(Integer projectId) {
+		// TODO Auto-generated method stub
+		 return dao.getSystemByProject(projectId);
+	}
 }
