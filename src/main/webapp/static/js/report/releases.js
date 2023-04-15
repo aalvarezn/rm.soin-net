@@ -3,7 +3,7 @@ var formChangeUser = $('#changeUserForm');
 var formChangeStatus = $('#changeStatusForm');
 var trackingReleaseForm = $('#trackingReleaseForm');
 $(function() {
-	activeItemMenu("managemetReleaseItem");
+	activeItemMenu("reportItem",true);
 	$('input[name="daterange"]').daterangepicker({
 		"autoUpdateInput": false,
 		"opens": 'left',
@@ -57,7 +57,7 @@ $(function() {
 	});
 
 	loadTableRelease();
-
+	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 });
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
@@ -71,6 +71,10 @@ $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 });
 
 $('#tableFilters #systemId').change(function() {
+	releaseTable.ajax.reload();
+});
+
+$('#tableFilters #projectId').change(function() {
 	releaseTable.ajax.reload();
 });
 
@@ -95,7 +99,7 @@ function loadTableRelease() {
 			.DataTable(
 					{
 						"columnDefs" : [ {
-							"targets" : [ 1 ],
+							"targets" : [ 0 ],
 							"visible" : false,
 							"searchable" : false
 						} ],
@@ -108,19 +112,14 @@ function loadTableRelease() {
 						"iDisplayStart" : 0,
 						"processing" : true,
 						"serverSide" : true,
-						"sAjaxSource" : getCont() + "management/release/systemRelease",
+						"sAjaxSource" : getCont() + "report/listRelease",
 						"fnServerParams": function ( aoData ) {
 							aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 									{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
+									{"name": "projectId", "value": $('#tableFilters #projectId').children("option:selected").val()},
 									{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()});
 						}, 
 						"aoColumns" : [
-							{
-								 className: 'details-control',
-						         orderable: false,
-						         data: null,
-						         defaultContent: ''
-							},
 							{
 								"mDataProp" : "id"
 							},
@@ -146,6 +145,9 @@ function loadTableRelease() {
 								mRender : function(data, type, row) {
 									return moment(row.createDate).format('DD/MM/YYYY h:mm:ss a');
 								}
+							},
+							{
+								"mDataProp" : "system.proyect.code",
 							},
 							{
 								"mDataProp" : "status.name",
@@ -183,43 +185,6 @@ function loadTableRelease() {
 }
 
 
-// Add event listener for opening and closing first level childdetails
-$('#dtReleases tbody').on('click', 'td.details-control', function () {
-	console.log("a");
-   var tr = $(this).closest('tr');
-   var row = table.row( tr );
-   var rowData = row.data();
-    
-
-   if ( row.child.isShown() ) {
-     // This row is already open - close it
-     row.child.hide();
-     tr.removeClass('shown');
-      
-     // Destroy the Child Datatable
-     $('#' + rowData.name.replace(' ', '-')).DataTable().destroy();
-   }
-   else {
-     // Open this row
-     row.child(format(rowData)).show();
-     var id = rowData.name.replace(' ', '-');
-        
-
-      $('#' + id).DataTable({
-        dom: "t",
-        data: [rowData],
-        columns: [
-          { data: "name", title: 'Name' },
-          { data: "position", title: 'Position' },
-          { data: "extn", title: 'Extension' },
-        ],
-        scrollY: '100px',
-        select: true,
-      });
-      
-      tr.addClass('shown');
-    }
-} );
 
 function confirmCancelRelease(index){
 	Swal.fire({
@@ -239,6 +204,56 @@ function confirmCancelRelease(index){
 	});
 }
 
+function downLoadReport(){
+	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
+	$.ajax({
+		type : "GET",
+		cache : false,
+		contentType: "application/json; charset=utf-8",
+		async : false,
+		url : getCont() + "report/downloadreportrelease",
+		timeout : 60000,
+		data : {
+			dateRange :$('#tableFilters input[name="daterange"]').val(),
+			projectId: $('#tableFilters #projectId').children("option:selected").val(),
+			systemId: $('#tableFilters #systemId').children("option:selected").val()
+		},
+		success : function(response) {
+			console.log(response);
+			//console.log(atob(response.obj.file));
+			
+			var blob = new Blob([b64toBlob(response.obj.file,response.obj.ContentType)], {type: response.obj.ContentType});
+			var link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = response.obj.name;
+			link.click();   
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+
+
+}
+const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+	  const byteCharacters = atob(b64Data);
+	  const byteArrays = [];
+
+	  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+	    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+	    const byteNumbers = new Array(slice.length);
+	    for (let i = 0; i < slice.length; i++) {
+	      byteNumbers[i] = slice.charCodeAt(i);
+	    }
+
+	    const byteArray = new Uint8Array(byteNumbers);
+	    byteArrays.push(byteArray);
+	  }
+
+	  const blob = new Blob(byteArrays, {type: contentType});
+	  return blob;
+	}
 function cancelRelease(index) {
 	blockUI();
 	$.ajax({

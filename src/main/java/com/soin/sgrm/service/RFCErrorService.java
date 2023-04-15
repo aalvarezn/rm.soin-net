@@ -12,4 +12,7 @@ public interface RFCErrorService extends BaseService<Long, RFCError>{
 
 	List<RFCError> findAllList(Long errorId, String dateRange, Long sigesId, int systemId);
 
+	JsonSheet<RFCError> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
+			Long errorId, String dateRange, Long sigesId, List<Integer> systemsId);
+
 }

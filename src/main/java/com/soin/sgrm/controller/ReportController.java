@@ -3,6 +3,8 @@ package com.soin.sgrm.controller;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
 
+import org.springframework.core.env.Environment;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,21 +37,29 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.DocTemplate;
+import com.soin.sgrm.model.ErrorRFCReport;
+import com.soin.sgrm.model.ErrorTypeGraph;
+import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.ImageTree;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCError;
 import com.soin.sgrm.model.RFCFile;
+import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.ReportFile;
+import com.soin.sgrm.model.ReportTest;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.service.DocTemplateService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.ReportFileService;
 import com.soin.sgrm.service.ReportService;
@@ -56,6 +67,9 @@ import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.utils.CommonUtils;
+import com.soin.sgrm.utils.Constant;
+import com.soin.sgrm.utils.JsonResponse;
+import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.MyLevel;
 
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -77,28 +91,30 @@ public class ReportController extends BaseController {
 	private ReleaseService releaseService;
 	@Autowired
 	private SystemService systemService;
-	
 	@Autowired
 	private SystemConfigurationService systemConfigurationService;
 	@Autowired
 	private DocTemplateService docsTemplateService;
-	
 	@Autowired
 	private ReportService reportService;
-	
 	@Autowired
 	private ReportFileService reportFileService;
-	
+	@Autowired
+	private ProjectService projectService;
+	@Autowired
+	private Environment env;
 	@RequestMapping(value = "/releases", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
 			String name = getUserLogin().getUsername();
 			List<System> systems = systemService.listProjects(getUserLogin().getId());
+			List<Project> projects = projectService.listAll();
 			loadCountsRelease(request, name);
 			model.addAttribute("system", new SystemUser());
 			model.addAttribute("systems", systems);
 			model.addAttribute("status", new Status());
+			model.addAttribute("projects", projects);
 			model.addAttribute("statuses", statusService.list());
 		} catch (Exception e) {
 			Sentry.capture(e, "releaseManagement");
@@ -109,6 +125,29 @@ public class ReportController extends BaseController {
 		return "/report/releases";
 	}
 
+	@RequestMapping(path = "/listRelease", method = RequestMethod.GET)
+	public @ResponseBody JsonSheet<?> getSystemRelease(HttpServletRequest request, Locale locale, Model model,
+			HttpSession session) {
+		try {
+			String range = request.getParameter("dateRange");
+			String[] dateRange = (range != null) ? range.split("-") : null;
+			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
+			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
+			Integer projectId = Integer.parseInt(request.getParameter("projectId"));
+
+			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
+			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
+					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
+					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			return releaseService.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch, Constant.FILTRED,
+					dateRange, systemId, statusId,projectId);
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
+		}
+	}
+	
 	public void loadCountsRelease(HttpServletRequest request, String name) {
 		Map<String, Integer> systemC = new HashMap<String, Integer>();
 		systemC.put("draft", releaseService.countByType(name, "Borrador", 3, null));
@@ -150,7 +189,7 @@ public class ReportController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return "redirect:/";
 		}
-		return "/report/summaryReportRelease";
+		return "/report/summaryReportRelease"; 
 	}
 	
 	@RequestMapping(value = "/summaryRelease-{status}", method = RequestMethod.GET)
@@ -189,6 +228,81 @@ public class ReportController extends BaseController {
 			return "redirect:/";
 		}
 		return "/report/summaryRelease";
+	}
+	
+	@RequestMapping(value = { "/downloadreportrelease" }, method = RequestMethod.GET)
+	public @ResponseBody JsonResponse downloadErrorRFC(HttpServletRequest request, Locale locale, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+
+			
+			int statusId;
+			int systemId;
+			int projectId;
+			
+			if (!request.getParameter("systemId").equals("") && request.getParameter("systemId") != null) {
+				systemId = Integer.parseInt(request.getParameter("systemId"));
+			} else {
+				systemId = 0;
+			}
+
+			if (!request.getParameter("projectId").equals("") && request.getParameter("projectId") != null) {
+				projectId = Integer.parseInt(request.getParameter("projectId"));
+			} else {
+				projectId = 0;
+			}
+			String dateRange = request.getParameter("dateRange");
+			ClassPathResource resource = new ClassPathResource(
+					"reports" + File.separator + "ReleaseReportGeneralNew" + ".jrxml");
+			InputStream inputStream = resource.getInputStream();
+			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
+			List<ReleaseReport> releases = releaseService.listReleaseReportFilter(systemId,projectId,dateRange);
+			System system = systemService.findSystemById(systemId);
+			Project project = projectService.findById(projectId);
+			ReportTest report=new ReportTest();
+			report.setSystem(system);
+			report.setProject(project);
+			report.setDateNew(dateRange);
+
+			Integer totalRFC = 0;
+			List<System> systems = systemService.list();
+
+			int valueError = 0;
+			int valueRequest = 0;
+
+
+			report.setReleaseDataSource(releases);
+			List<ReportTest> listReport = new ArrayList<>();
+			
+			listReport.add(report);
+			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listReport);
+			Map<String, Object> parameters = new HashMap<>();
+
+
+			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
+
+			String reportName = "ReleaseGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+			String basePath = env.getProperty("fileStore.path");
+			JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+			File file = new File(basePath + reportName);
+			byte[] encoded = org.apache.commons.net.util.Base64.encodeBase64(FileUtils.readFileToByteArray(file));
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			Map<String, String> dataNew = new HashMap<String, String>();
+			dataNew.put("file", new String(encoded, StandardCharsets.US_ASCII));
+			dataNew.put("ContentType", mimeType);
+			dataNew.put("name", reportName);
+			res.setObj(dataNew);
+			return res;
+		} catch (Exception e) {
+			Sentry.capture(e, "report");
+
+			e.printStackTrace();
+			return res;
+		}
+
 	}
 	
 	@RequestMapping(value = { "/downloadReportGeneral" }, method = RequestMethod.GET)

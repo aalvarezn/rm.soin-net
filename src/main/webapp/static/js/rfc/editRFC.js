@@ -422,6 +422,7 @@ function openRFCTrackingModal(idRFC,table) {
 	
 	var idRow = dtRFC.fnFindCellRowIndexes(idRFC, 0); // idRow
 	var rowData;
+	var tracking;
 		if(table==0){
 			rowData=$dtRFCs.row(idRow[0]).data();
 		}else{
@@ -430,8 +431,23 @@ function openRFCTrackingModal(idRFC,table) {
 	$trackingRFCForm.find('#idRelease').val(rowData.id);
 	$trackingRFCForm.find('#releaseNumber').text(rowData.releaseNumber);
 	
-	loadTrackingRFC(rowData);
-	$('#trackingReleaseModal').modal('show');
+	$.ajax({
+		type : "GET",
+		url : getCont() + "rfc/tracking/"+ rowData.id ,
+		timeout : 600000,
+		data : {},
+		success : function(response) {
+			tracking=response.obj;
+			loadTrackingRFC(tracking);
+			$('#trackingReleaseModal').modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+	console.log(tracking);
+	
+	
 }
 
 function openTreeModal(idRFC,table) {
@@ -456,6 +472,9 @@ var dtRFC ;
 		searchTree(rowData.releaseNumber);
 	$('#treeModal').modal('show');
 }
+
+
+
 function searchTree(releaseNumber) {
 	$.ajax({
 		type : "GET",
@@ -590,12 +609,14 @@ function openReference(properties) {
 		window.open(getCont() + "release/summary-" + properties.nodes[0], '_blank'); 
 	}
 }
-function loadTrackingRFC(rowData){
+function loadTrackingRFC(tracking){
+	
+	console.log(tracking);
 	$trackingRFCForm.find('tbody tr').remove();
-	if(rowData.tracking.length == 0){
+	if(tracking.tracking.length == 0){
 		$trackingRFCForm.find('tbody').append('<tr><td colspan="4" style="text-align: center;">No hay movimientos</td></tr>');
 	}
-	$.each(rowData.tracking, function(i, value) {
+	$.each(tracking.tracking, function(i, value) {
 		$trackingRFCForm.find('tbody').append('<tr style="padding: 10px 0px 0px 0px;" > <td><span style="background-color: '+getColorNode(value.status)+';" class="round-step"></span></td>	<td>'+value.status+'</td>	<td>'+moment(value.trackingDate).format('DD/MM/YYYY h:mm:ss a')+'</td>	<td>'+value.operator+'</td> <td>'+(value.motive && value.motive != null && value.motive != 'null' ? value.motive:'' )+'</td>	</tr>');
 	});
 }

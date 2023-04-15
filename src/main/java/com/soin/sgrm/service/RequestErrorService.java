@@ -12,4 +12,7 @@ public interface RequestErrorService extends BaseService<Long, RequestError>{
 
 	List<RequestError> findAllList(Long errorId, String dateRange, Long typePetitionId, int systemId);
 
+	JsonSheet<RequestError> findAll(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
+			Long errorId, String dateRange, Long typePetitionId, List<Integer> systemsId);
+
 }

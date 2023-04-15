@@ -44,6 +44,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
@@ -858,7 +859,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		if (email.getHtml().contains("{{releases}}")) {
 			temp = "<table border=1>";
 			temp += "<tr>" + "<th>Numero release</th>" + "<th>Detalle</th>" + "</tr>";
-			for (Release_RFC release : rfc.getReleases()) {
+			for (Release_RFCFast release : rfc.getReleases()) {
 				temp += "<tr>";
 
 				temp += "<td>" + release.getReleaseNumber() + "</td>";
@@ -884,10 +885,10 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			systemsInvolved.add(codeSiges.getSystem().getName());
 			String nameSystem = "";
 			boolean validate = true;
-			Set<Release_RFC> releases = rfc.getReleases();
+			Set<Release_RFCFast> releases = rfc.getReleases();
 			if (releases != null) {
 				if (releases.size() != 0) {
-					for (Release_RFC release : releases) {
+					for (Release_RFCFast release : releases) {
 						nameSystem = release.getSystem().getName();
 						for (String system : systemsInvolved) {
 							if (system.equals(nameSystem)) {

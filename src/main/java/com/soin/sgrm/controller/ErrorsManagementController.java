@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -28,12 +30,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.ibm.icu.text.DecimalFormat;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ErrorRFCReport;
 import com.soin.sgrm.model.ErrorReleaseReport;
@@ -44,11 +48,14 @@ import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.Errors_Requests;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFCError;
+import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseTrackingToError;
+import com.soin.sgrm.model.RequestBaseTrackingToError;
 import com.soin.sgrm.model.RequestError;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.System_Priority;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.response.JsonSheet;
@@ -62,6 +69,7 @@ import com.soin.sgrm.service.RFCErrorService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestErrorService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRFCService;
@@ -83,6 +91,7 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
+
 @Controller
 @RequestMapping("/management/error")
 public class ErrorsManagementController extends BaseController {
@@ -97,6 +106,9 @@ public class ErrorsManagementController extends BaseController {
 
 	@Autowired
 	ReleaseService releaseService;
+
+	@Autowired
+	RequestBaseService requestService;
 
 	@Autowired
 	SystemService systemService;
@@ -210,9 +222,11 @@ public class ErrorsManagementController extends BaseController {
 			List<System> systems = systemService.list();
 			List<Siges> siges = sigesService.findAll();
 			List<Errors_RFC> errors = errorRFCService.findAll();
+			List<Project> projects = projectService.listAll();
 			model.addAttribute("siges", siges);
 			model.addAttribute("errors", errors);
 			model.addAttribute("systems", systems);
+			model.addAttribute("projects", projects);
 		} catch (Exception e) {
 			Sentry.capture(e, "errors");
 			e.printStackTrace();
@@ -226,7 +240,6 @@ public class ErrorsManagementController extends BaseController {
 	public @ResponseBody JsonSheet listRFCError(HttpServletRequest request, Locale locale, Model model) {
 		JsonSheet<RFCError> rfcError = new JsonSheet<>();
 		try {
-
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
 			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
 			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
@@ -234,10 +247,17 @@ public class ErrorsManagementController extends BaseController {
 			Long errorId;
 			Long sigesId;
 			int systemId;
+			int projectId;
 			if (request.getParameter("errorId").equals("")) {
 				errorId = null;
 			} else {
 				errorId = (long) Integer.parseInt(request.getParameter("errorId"));
+			}
+
+			if (request.getParameter("projectId").equals("")) {
+				projectId = 0;
+			} else {
+				projectId = Integer.parseInt(request.getParameter("projectId"));
 			}
 
 			if (request.getParameter("systemId").equals("")) {
@@ -253,8 +273,29 @@ public class ErrorsManagementController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			rfcError = rfcErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId, dateRange,
-					sigesId, systemId);
+			if (systemId == 0) {
+
+				if (projectId == 0) {
+					rfcError = rfcErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
+							dateRange, sigesId, systemId);
+				} else {
+					List<System> systems = new ArrayList<>();
+
+					systems = systemService.getSystemByProject(projectId);
+					List<Integer>systemsId=new ArrayList<Integer>();
+					for(System system:systems) {
+						systemsId.add(system.getId());
+					}
+					rfcError = rfcErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
+							dateRange, sigesId, systemsId);
+
+				}
+
+			} else {
+				rfcError = rfcErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId, dateRange,
+						sigesId, systemId);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -271,6 +312,8 @@ public class ErrorsManagementController extends BaseController {
 			List<System> systems = systemService.list();
 			List<TypePetition> typePetitions = typePetitionService.findAll();
 			List<Errors_Requests> errors = errorRequestService.findAll();
+			List<Project> projects = projectService.listAll();
+			model.addAttribute("projects", projects);
 			model.addAttribute("typePetitions", typePetitions);
 			model.addAttribute("errors", errors);
 			model.addAttribute("systems", systems);
@@ -295,6 +338,7 @@ public class ErrorsManagementController extends BaseController {
 			Long errorId;
 			Long typePetitionId;
 			int systemId;
+			int projectId;
 			if (request.getParameter("errorId").equals("")) {
 				errorId = null;
 			} else {
@@ -306,6 +350,17 @@ public class ErrorsManagementController extends BaseController {
 			} else {
 				systemId = Integer.parseInt(request.getParameter("systemId"));
 			}
+			
+			if (request.getParameter("projectId").equals("")) {
+				projectId = 0;
+			} else {
+				projectId = Integer.parseInt(request.getParameter("projectId"));
+			}
+			if (request.getParameter("projectId").equals("")) {
+				projectId = 0;
+			} else {
+				projectId = Integer.parseInt(request.getParameter("projectId"));
+			}
 
 			if (request.getParameter("typePetitionId").equals("")) {
 				typePetitionId = null;
@@ -314,13 +369,69 @@ public class ErrorsManagementController extends BaseController {
 			}
 			String dateRange = request.getParameter("dateRange");
 
-			requestError = requestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
-					dateRange, typePetitionId, systemId);
+			
+			if (systemId == 0) {
+
+				if (projectId == 0) {
+					requestError = requestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
+							dateRange, typePetitionId, systemId);
+				} else {
+					List<System> systems = new ArrayList<>();
+
+					systems = systemService.getSystemByProject(projectId);
+					List<Integer>systemsId=new ArrayList<Integer>();
+					for(System system:systems) {
+						systemsId.add(system.getId());
+					}
+					requestError = requestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
+							dateRange, typePetitionId, systemsId);
+
+
+				}
+
+			} else {
+				requestError = requestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
+						dateRange, typePetitionId, systemId);
+			}
+
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return requestError;
+	}
+
+	@RequestMapping(value = { "/getSystem/{id}" }, method = RequestMethod.GET)
+	public @ResponseBody List<System> getSystem(@PathVariable Integer id, Locale locale, Model model) {
+		List<System> systems = new ArrayList<>();
+		try {
+			systems = systemService.getSystemByProject(id);
+
+		} catch (Exception e) {
+			Sentry.capture(e, "system");
+
+			e.printStackTrace();
+		}
+
+		return systems;
+	}
+
+	@RequestMapping(value = { "/getSiges/{id}" }, method = RequestMethod.GET)
+	public @ResponseBody List<Siges> getSiges(@PathVariable Integer id, Locale locale, Model model) {
+		List<Siges> siges = new ArrayList<>();
+		try {
+			siges = sigesService.listCodeSiges(id);
+
+		} catch (Exception e) {
+			Sentry.capture(e, "system");
+
+			e.printStackTrace();
+
+		}
+
+		return siges;
 	}
 
 	@RequestMapping(value = { "/downloaderrorrelease" }, method = RequestMethod.GET)
@@ -354,7 +465,7 @@ public class ErrorsManagementController extends BaseController {
 					"reports" + File.separator + "ErrorReleaseGeneral" + ".jrxml");
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
-			
+
 			System system = systemService.findSystemById(systemId);
 			Project project = projectService.findById(projectId);
 			Errors_Release typeError = errorReleaseService.findById(errorId);
@@ -369,16 +480,15 @@ public class ErrorsManagementController extends BaseController {
 			errorReleaseReport.setDateNew(dateRange);
 			List<ReleaseError> releases = releaseErrorService.findAllList(errorId, dateRange, projectId, systemId);
 			List<ReleaseTrackingToError> releasesTotals = releaseService.listByAllSystemError(dateRange, systemId);
-			Integer totalReleases=releasesTotals.size();
-			Integer totalReleasesError=releases.size();
-			List<System> systems=new ArrayList<>();
-			if(projectId==0) {
-				 systems = systemService.list();
-			}else {
-				 systems = systemService.getSystemByProject(projectId);
+			Integer totalReleases = 0;
+			Integer totalReleasesError = releases.size();
+			List<System> systems = new ArrayList<>();
+			if (projectId == 0) {
+				systems = systemService.list();
+			} else {
+				systems = systemService.getSystemByProject(projectId);
 			}
-			
-			
+
 			List<Project> projects = projectService.listAll();
 			List<Errors_Release> errors = errorReleaseService.findAll();
 			int valueError = 0;
@@ -412,7 +522,7 @@ public class ErrorsManagementController extends BaseController {
 					errorSystemGraphList.add(errorTypeGraph);
 				}
 			}
-			
+
 			for (System systemOnly : systems) {
 				valueError = 0;
 				valueRequest = 0;
@@ -427,6 +537,7 @@ public class ErrorsManagementController extends BaseController {
 					}
 				}
 				if (valueError != 0 || valueRequest != 0) {
+					totalReleases += valueRequest;
 					ErrorTypeGraph errorTypeGraph = new ErrorTypeGraph();
 					errorTypeGraph.setValue(valueError);
 					errorTypeGraph.setValueRequest(valueRequest);
@@ -438,15 +549,20 @@ public class ErrorsManagementController extends BaseController {
 			errorReleaseReport.setErrorTypeGraphSource(errorTypeGraphList);
 			errorReleaseReport.setSystemGraphSource(errorSystemGraphList);
 			errorReleaseReport.setProjectGraphSource(errorProjectGraphList);
+			errorReleaseReport.setProjectTableGraphSource(errorProjectGraphList);
 			errorReleaseReport.setErrordataSource(releases);
 			List<ErrorReleaseReport> listError = new ArrayList<>();
 			listError.add(errorReleaseReport);
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listError);
 			Map<String, Object> parameters = new HashMap<>();
+
+			Double percentageErrors = (((double) totalReleases - (double) totalReleasesError) / (double) totalReleases);
+			percentageErrors = percentageErrors * 100;
+			percentageErrors = 100 - percentageErrors;
+			percentageErrors = Math.round(percentageErrors * 100d) / 100d;
 			parameters.put("totalReleases", totalReleases.toString());
-			parameters.put("percentageErrors", "1");
+			parameters.put("percentageErrors", percentageErrors.toString());
 			parameters.put("totalErrors", totalReleasesError.toString());
-			parameters.put("percentageReleases", "1");
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 
 			String reportName = "SalidasNoConformesReleases-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
@@ -481,6 +597,7 @@ public class ErrorsManagementController extends BaseController {
 			Long errorId;
 			Long sigesId;
 			int systemId;
+			int projectId;
 			if (!request.getParameter("errorId").equals("") && request.getParameter("errorId") != null) {
 				errorId = (long) Integer.parseInt(request.getParameter("errorId"));
 			} else {
@@ -498,6 +615,11 @@ public class ErrorsManagementController extends BaseController {
 			} else {
 				sigesId = null;
 			}
+			if (!request.getParameter("projectId").equals("") && request.getParameter("projectId") != null) {
+				projectId = Integer.parseInt(request.getParameter("projectId"));
+			} else {
+				projectId = 0;
+			}
 			String dateRange = request.getParameter("dateRange");
 			ClassPathResource resource = new ClassPathResource(
 					"reports" + File.separator + "ErrorRFCGeneral" + ".jrxml");
@@ -510,17 +632,20 @@ public class ErrorsManagementController extends BaseController {
 			ErrorRFCReport errorRFCReport = new ErrorRFCReport();
 			List<ErrorTypeGraph> errorTypeGraphList = new ArrayList<ErrorTypeGraph>();
 			List<ErrorTypeGraph> errorSystemGraphList = new ArrayList<ErrorTypeGraph>();
-			List<ErrorTypeGraph> errorSigesGraphList = new ArrayList<ErrorTypeGraph>();
-
+			List<ErrorTypeGraph> errorSystemXErrorGraphList = new ArrayList<ErrorTypeGraph>();
+			List<RFCTrackingToError> rfcTotals = rfcService.listByAllSystemError(dateRange, systemId);
 			errorRFCReport.setSystem(system);
 			errorRFCReport.setSiges(siges);
 			errorRFCReport.setTypeError(typeError);
 			errorRFCReport.setDateNew(dateRange);
 			List<RFCError> rfcs = rfcErrorService.findAllList(errorId, dateRange, sigesId, systemId);
+			Integer totalRFC = 0;
+			Integer totalRFCError = rfcs.size();
 			List<System> systems = systemService.list();
 			List<Siges> sigesList = sigesService.findAll();
 			List<Errors_RFC> errors = errorRFCService.findAll();
 			int valueError = 0;
+			int valueRequest = 0;
 
 			for (Errors_RFC error : errors) {
 				valueError = 0;
@@ -552,28 +677,45 @@ public class ErrorsManagementController extends BaseController {
 				}
 			}
 
-			for (Siges sigesOnly : sigesList) {
+			for (System systemOnly : systems) {
 				valueError = 0;
+				valueRequest = 0;
+				for (RFCTrackingToError rfcErrorTracking : rfcTotals) {
+					if (rfcErrorTracking.getRfc().getSystem().getId() == systemOnly.getId()) {
+						valueRequest++;
+					}
+				}
 				for (RFCError rfcError : rfcs) {
-					if (rfcError.getSiges().getId() == sigesOnly.getId()) {
+					if (rfcError.getSystem().getId() == systemOnly.getId()) {
 						valueError++;
 					}
 				}
-				if (valueError != 0) {
+				if (valueError != 0 || valueRequest != 0) {
+					totalRFC += valueRequest;
 					ErrorTypeGraph errorTypeGraph = new ErrorTypeGraph();
 					errorTypeGraph.setValue(valueError);
-					errorTypeGraph.setLabel(sigesOnly.getCodeSiges());
-					errorSigesGraphList.add(errorTypeGraph);
+					errorTypeGraph.setValueRequest(valueRequest);
+					errorTypeGraph.setLabel(systemOnly.getName());
+					errorSystemXErrorGraphList.add(errorTypeGraph);
 				}
 			}
 			errorRFCReport.setErrorTypeGraphSource(errorTypeGraphList);
 			errorRFCReport.setSystemGraphSource(errorSystemGraphList);
-			errorRFCReport.setSigesGraphSource(errorSigesGraphList);
+			errorRFCReport.setSystemXGraphSource(errorSystemXErrorGraphList);
+			errorRFCReport.setSystemTableXGraphSource(errorSystemXErrorGraphList);
 			errorRFCReport.setErrordataSource(rfcs);
 			List<ErrorRFCReport> listError = new ArrayList<>();
 			listError.add(errorRFCReport);
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listError);
 			Map<String, Object> parameters = new HashMap<>();
+
+			Double percentageErrors = (((double) totalRFC - (double) totalRFCError) / (double) totalRFC);
+			percentageErrors = percentageErrors * 100;
+			percentageErrors = 100 - percentageErrors;
+			percentageErrors = Math.round(percentageErrors * 100d) / 100d;
+			parameters.put("totalRFC", totalRFC.toString());
+			parameters.put("percentageErrors", percentageErrors.toString());
+			parameters.put("totalErrors", totalRFCError.toString());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 
 			String reportName = "SalidasNoConformesRFC-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
@@ -608,6 +750,7 @@ public class ErrorsManagementController extends BaseController {
 			Long errorId;
 			Long typePetitionId;
 			int systemId;
+			int projectId;
 			if (!request.getParameter("errorId").equals("") && request.getParameter("errorId") != null) {
 				errorId = (long) Integer.parseInt(request.getParameter("errorId"));
 			} else {
@@ -625,6 +768,7 @@ public class ErrorsManagementController extends BaseController {
 			} else {
 				typePetitionId = null;
 			}
+
 			String dateRange = request.getParameter("dateRange");
 			ClassPathResource resource = new ClassPathResource(
 					"reports" + File.separator + "ErrorRequestGeneral" + ".jrxml");
@@ -638,7 +782,8 @@ public class ErrorsManagementController extends BaseController {
 			List<ErrorTypeGraph> errorTypeGraphList = new ArrayList<ErrorTypeGraph>();
 			List<ErrorTypeGraph> errorSystemGraphList = new ArrayList<ErrorTypeGraph>();
 			List<ErrorTypeGraph> errorTypePetitionGraphList = new ArrayList<ErrorTypeGraph>();
-
+			List<ErrorTypeGraph> errorSystemXErrorGraphList = new ArrayList<ErrorTypeGraph>();
+			List<RequestBaseTrackingToError> requestTotals = requestService.listByAllSystemError(dateRange, systemId);
 			errorRequestReport.setSystem(system);
 			errorRequestReport.setTypePetition(typePetition);
 			errorRequestReport.setTypeError(typeError);
@@ -647,8 +792,10 @@ public class ErrorsManagementController extends BaseController {
 			List<System> systems = systemService.list();
 			List<TypePetition> typePetitionList = typePetitionService.findAll();
 			List<Errors_Requests> errors = errorRequestService.findAll();
+			Integer totalRequest = 0;
+			Integer totalRequestError = requests.size();
 			int valueError = 0;
-
+			int valueRequest = 0;
 			for (Errors_Requests error : errors) {
 				valueError = 0;
 				for (RequestError requestError : requests) {
@@ -693,17 +840,49 @@ public class ErrorsManagementController extends BaseController {
 					errorTypePetitionGraphList.add(errorTypeGraph);
 				}
 			}
+			for (System systemOnly : systems) {
+				valueError = 0;
+				valueRequest = 0;
+				for (RequestBaseTrackingToError requestErrorTracking : requestTotals) {
+					if (requestErrorTracking.getRequest().getSystem().getId() == systemOnly.getId()) {
+						valueRequest++;
+					}
+				}
+				for (RequestError requestError : requests) {
+					if (requestError.getSystem().getId() == systemOnly.getId()) {
+						valueError++;
+					}
+				}
+				if (valueError != 0 || valueRequest != 0) {
+					totalRequest += valueRequest;
+					ErrorTypeGraph errorTypeGraph = new ErrorTypeGraph();
+					errorTypeGraph.setValue(valueError);
+					errorTypeGraph.setValueRequest(valueRequest);
+					errorTypeGraph.setLabel(systemOnly.getName());
+					errorSystemXErrorGraphList.add(errorTypeGraph);
+				}
+			}
 			errorRequestReport.setErrorTypeGraphSource(errorTypeGraphList);
 			errorRequestReport.setSystemGraphSource(errorSystemGraphList);
 			errorRequestReport.setTypePetitionGraphSource(errorTypePetitionGraphList);
+			errorRequestReport.setSystemXGraphSource(errorSystemXErrorGraphList);
+			errorRequestReport.setSystemTableXGraphSource(errorSystemXErrorGraphList);
+			
 			errorRequestReport.setErrordataSource(requests);
 			List<ErrorRequestReport> listError = new ArrayList<>();
 			listError.add(errorRequestReport);
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listError);
 			Map<String, Object> parameters = new HashMap<>();
+			Double percentageErrors = (((double) totalRequest - (double) totalRequestError) / (double) totalRequest);
+			percentageErrors = percentageErrors * 100;
+			percentageErrors = 100 - percentageErrors;
+			percentageErrors = Math.round(percentageErrors * 100d) / 100d;
+			parameters.put("totalRequest", totalRequest.toString());
+			parameters.put("percentageErrors", percentageErrors.toString());
+			parameters.put("totalErrors", totalRequestError.toString());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 
-			String reportName = "SalidasNoConformesRequest-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+			String reportName = "SalidasNoConformesSolicitudes-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
 			String basePath = env.getProperty("fileStore.path");
 			JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
 			File file = new File(basePath + reportName);
@@ -727,18 +906,18 @@ public class ErrorsManagementController extends BaseController {
 
 	}
 
-	public ByteArrayOutputStream exportFile(String type,JasperPrint jasperPrint) throws JRException {
-		ByteArrayOutputStream stream =new ByteArrayOutputStream();
-		if(type.equalsIgnoreCase("Excel")) {
-			JRXlsExporter exporter =new JRXlsExporter();
+	public ByteArrayOutputStream exportFile(String type, JasperPrint jasperPrint) throws JRException {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		if (type.equalsIgnoreCase("Excel")) {
+			JRXlsExporter exporter = new JRXlsExporter();
 			exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(stream));
-			SimpleXlsReportConfiguration configuration=new SimpleXlsReportConfiguration();
+			SimpleXlsReportConfiguration configuration = new SimpleXlsReportConfiguration();
 			configuration.setDetectCellType(true);
 			configuration.setCollapseRowSpan(true);
 			exporter.setConfiguration(configuration);
 			exporter.exportReport();
-		}else {
+		} else {
 			JasperExportManager.exportReportToPdfStream(jasperPrint, stream);
 		}
 		return stream;

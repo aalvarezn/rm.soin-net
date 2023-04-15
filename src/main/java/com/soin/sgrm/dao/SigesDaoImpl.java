@@ -18,4 +18,6 @@ public class SigesDaoImpl extends  AbstractDao<Long, Siges> implements SigesDao{
     		.list();
 	}
 
+
+
 }

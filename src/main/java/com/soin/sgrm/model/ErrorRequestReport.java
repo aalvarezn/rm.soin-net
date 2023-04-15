@@ -38,6 +38,12 @@ public class ErrorRequestReport {
 	
 	@Transient
 	private JRBeanCollectionDataSource systemGraphSource;
+	
+	@Transient
+	private JRBeanCollectionDataSource systemXGraphSource;
+
+	@Transient
+	private JRBeanCollectionDataSource systemTableXGraphSource;
 
 	public List<RequestError> getListErrorRelease() {
 		return listErrorRequest;
@@ -160,5 +166,23 @@ public class ErrorRequestReport {
 		this.errordataSource = errordataSource;
 	}
 
+	public JRBeanCollectionDataSource getSystemXGraphSource() {
+		return systemXGraphSource;
+	}
+
+	public void setSystemXGraphSource(List<ErrorTypeGraph>  systemXGraphSource) {
+		JRBeanCollectionDataSource systemXGraphSource1 = new JRBeanCollectionDataSource(systemXGraphSource, false);
+		this.systemXGraphSource = systemXGraphSource1;
+	}
+
+	public void setSystemTableXGraphSource(List<ErrorTypeGraph> errorSystemXErrorGraphList) {
+		JRBeanCollectionDataSource systemTableXGraphSource1 = new JRBeanCollectionDataSource(errorSystemXErrorGraphList, false);
+		this.systemTableXGraphSource = systemTableXGraphSource1;
+	}
+
+	public JRBeanCollectionDataSource getSystemTableXGraphSource() {
+		return systemTableXGraphSource;
+	}
+	
 	
 }

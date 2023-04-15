@@ -38,6 +38,9 @@ public class ErrorReleaseReport {
 	
 	@Transient
 	private JRBeanCollectionDataSource systemGraphSource;
+	
+	@Transient
+	private JRBeanCollectionDataSource projectTableGraphSource;
 
 	public List<ReleaseError> getListErrorRelease() {
 		return listErrorRelease;
@@ -159,6 +162,16 @@ public class ErrorReleaseReport {
 	public void setErrordataSource(JRBeanCollectionDataSource errordataSource) {
 		this.errordataSource = errordataSource;
 	}
+
+	public void setProjectTableGraphSource(List<ErrorTypeGraph> errorProjectGraphList) {
+		JRBeanCollectionDataSource projectTableGraphSource1 = new JRBeanCollectionDataSource(errorProjectGraphList, false);
+		this.projectTableGraphSource = projectTableGraphSource1;
+	}
+
+	public JRBeanCollectionDataSource getProjectTableGraphSource() {
+		return projectTableGraphSource;
+	}
+
 
 	
 }

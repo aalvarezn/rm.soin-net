@@ -34,10 +34,14 @@ public class ErrorRFCReport {
 	private JRBeanCollectionDataSource errorTypeGraphSource;
 	
 	@Transient
-	private JRBeanCollectionDataSource sigesGraphSource;
+	private JRBeanCollectionDataSource systemXGraphSource;
 	
 	@Transient
 	private JRBeanCollectionDataSource systemGraphSource;
+	
+	@Transient
+	private JRBeanCollectionDataSource systemTableXGraphSource;
+
 
 	public List<RFCError> getListErrorRelease() {
 		return listErrorRFC;
@@ -65,14 +69,6 @@ public class ErrorRFCReport {
 	
 	public JRBeanCollectionDataSource getErrorTypeGraphSource() {
 		return errorTypeGraphSource;
-	}
-	
-	public void setSigesGraphSource(List<ErrorTypeGraph> sigesGraphSource) {
-		JRBeanCollectionDataSource sigesGraphSource1 = new JRBeanCollectionDataSource(sigesGraphSource, false);
-		this.sigesGraphSource = sigesGraphSource1;
-	}
-	public JRBeanCollectionDataSource getSigesGraphSource() {
-		return sigesGraphSource;
 	}
 	
 	public void setSystemGraphSource(List<ErrorTypeGraph> systemGraphSource) {
@@ -160,5 +156,25 @@ public class ErrorRFCReport {
 		this.errordataSource = errordataSource;
 	}
 
+
+
+	public void setSystemXGraphSource(List<ErrorTypeGraph> sistemXGraphSource) {
+		JRBeanCollectionDataSource systemXGraphSource1 = new JRBeanCollectionDataSource(sistemXGraphSource, false);
+		this.systemXGraphSource = systemXGraphSource1;
+	}
+
+	public JRBeanCollectionDataSource getSystemXGraphSource() {
+		return systemXGraphSource;
+	}
+
+	public void setSystemTableXGraphSource(List<ErrorTypeGraph> systemXGraphList) {
+		JRBeanCollectionDataSource systemTableXGraphSource1 = new JRBeanCollectionDataSource(systemXGraphList, false);
+		this.systemTableXGraphSource = systemTableXGraphSource1 ;
+	}
+
+	public JRBeanCollectionDataSource getSystemTableXGraphSource() {
+		return systemTableXGraphSource;
+	}
+	
 	
 }

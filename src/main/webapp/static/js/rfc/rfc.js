@@ -383,8 +383,20 @@ function openRFCTrackingModal(idRFC) {
 	$trackingRFCForm.find('#idRFC').val(rowData.id);
 	$trackingRFCForm.find('#rfcNumber').text(rowData.numRequest);
 	
-	loadTrackingRFC(rowData);
-	$('#trackingRFCModal').modal('show');
+	$.ajax({
+		type : "GET",
+		url : getCont() + "rfc/trackingRFC/"+ rowData.id ,
+		timeout : 600000,
+		data : {},
+		success : function(response) {
+			tracking=response.obj;
+			loadTrackingRFC(tracking);
+			$('#trackingRFCModal').modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
 }
 
 function loadTrackingRFC(rowData){

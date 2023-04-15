@@ -31,6 +31,7 @@ import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.RFCTracking;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.SystemInfo;
@@ -143,7 +144,7 @@ public class WFRFC implements Serializable {
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "RFC_RELEASE", joinColumns = { @JoinColumn(name = "ID_RFC") }, inverseJoinColumns = {
 			@JoinColumn(name = "ID_RELEASE") })
-	private Set<Release_RFC> releases = new HashSet<>();
+	private Set<Release_RFCFast> releases = new HashSet<>();
 	
 	// Agregar Motivo
 	// Agregar Usuario que lo cambio
@@ -440,11 +441,11 @@ public class WFRFC implements Serializable {
 		this.user = rfc.getUser();
 	}
 
-	public Set<Release_RFC> getReleases() {
+	public Set<Release_RFCFast> getReleases() {
 		return releases;
 	}
 
-	public void setReleases(Set<Release_RFC> releases) {
+	public void setReleases(Set<Release_RFCFast> releases) {
 		this.releases = releases;
 	}
 	

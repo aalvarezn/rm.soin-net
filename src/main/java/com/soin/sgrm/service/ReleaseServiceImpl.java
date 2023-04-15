@@ -24,9 +24,11 @@ import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.UserInfo;
@@ -75,6 +77,14 @@ public class ReleaseServiceImpl implements ReleaseService {
 			throws SQLException, ParseException {
 		return dao.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
 				statusId);
+	}
+	
+	@Override
+	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId)
+			throws SQLException, ParseException {
+		return dao.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
+				statusId,projectId);
 	}
 
 	@Override
@@ -274,7 +284,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 	}
 
 	@Override
-	public void updateStatusReleaseRFC(Release_RFC release, String operator) throws Exception {
+	public void updateStatusReleaseRFC(Release_RFCFast release, String operator) throws Exception {
 		dao.updateStatusReleaseRFC(release, operator);
 	}
 
@@ -316,6 +326,22 @@ public class ReleaseServiceImpl implements ReleaseService {
 		
 		return dao.listReleaseReport();
 				
+	}
+
+	@Override
+	public List<ReleaseReport> listReleaseReportFilter(int systemId, int projectId, String dateRange) {
+		return  dao.listReleaseReportFilter(systemId,projectId,dateRange);
+	}
+
+	@Override
+	public Release_RFCFast findRelease_RFCByIdFast(int id) {
+		return dao.findRelease_RFCByIdFast(id);
+	}
+
+	@Override
+	public ReleaseTrackingShow findReleaseTracking(int id) {
+	
+		return dao.findReleaseTracking(id);
 	}
 
 }

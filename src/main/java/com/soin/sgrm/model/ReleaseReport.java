@@ -64,7 +64,7 @@ public class ReleaseReport implements Serializable {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SISTEMA_ID", nullable = true)
-	private SystemInfo system;
+	private System system;
 
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -179,11 +179,11 @@ public class ReleaseReport implements Serializable {
 		this.user = user;
 	}
 
-	public SystemInfo getSystem() {
+	public System getSystem() {
 		return system;
 	}
 
-	public void setSystem(SystemInfo system) {
+	public void setSystem(System system) {
 		this.system = system;
 	}
 
