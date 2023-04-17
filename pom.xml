@@ -28,6 +28,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tomcat.version>9.0.30</tomcat.version>
 	</properties>
+	<repositories>
+		<repository>
+			<id>jaspersoft-third-party</id>
+				<url>https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 
