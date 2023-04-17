@@ -38,7 +38,7 @@ public class ReportTest {
 
 
 	
-	public void setReleaseDataSource(List<ReleaseReport> releaseDataSource) {
+	public void setReleaseDataSource(List<ReleaseReportFast> releaseDataSource) {
 		JRBeanCollectionDataSource releaseDataSource1 = new JRBeanCollectionDataSource(releaseDataSource, false);
 		this.releaseDataSource = releaseDataSource1;
 	}

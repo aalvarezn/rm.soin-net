@@ -41,6 +41,8 @@ import com.soin.sgrm.model.ErrorRFCReport;
 import com.soin.sgrm.model.ErrorTypeGraph;
 import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.ImageTree;
+import com.soin.sgrm.model.Impact;
+import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.RFCError;
@@ -49,20 +51,26 @@ import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseReport;
+import com.soin.sgrm.model.ReleaseReportFast;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.ReportFile;
 import com.soin.sgrm.model.ReportTest;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.service.DocTemplateService;
+import com.soin.sgrm.service.ImpactService;
+import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.ReportFileService;
 import com.soin.sgrm.service.ReportService;
+import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
 import com.soin.sgrm.service.SystemService;
@@ -88,6 +96,12 @@ public class ReportController extends BaseController {
 	@Autowired
 	private StatusService statusService;
 	@Autowired
+	private StatusRFCService statusRFCService;
+	@Autowired
+	private PriorityService priorityService;
+	@Autowired
+	private ImpactService impactService;
+ 	@Autowired
 	private ReleaseService releaseService;
 	@Autowired
 	private SystemService systemService;
@@ -103,12 +117,14 @@ public class ReportController extends BaseController {
 	private ProjectService projectService;
 	@Autowired
 	private Environment env;
+	@Autowired
+	private RFCService rfcService;
 	@RequestMapping(value = "/releases", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
 			String name = getUserLogin().getUsername();
-			List<System> systems = systemService.listProjects(getUserLogin().getId());
+			List<System> systems = systemService.list();
 			List<Project> projects = projectService.listAll();
 			loadCountsRelease(request, name);
 			model.addAttribute("system", new SystemUser());
@@ -123,6 +139,29 @@ public class ReportController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return "/report/releases";
+	}
+	
+	@RequestMapping(value = "/rfc", method = RequestMethod.GET)
+	public String indexReport(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			Integer userLogin = getUserLogin().getId();
+			loadCountsRFC(request, userLogin);
+			List<System> systems = systemService.listProjects(getUserLogin().getId());
+			List<Priority> priorities = priorityService.list();
+			List<StatusRFC> statuses = statusRFCService.findAll();
+			List<Impact> impacts = impactService.list();
+			model.addAttribute("priorities", priorities);
+			model.addAttribute("impacts", impacts);
+			model.addAttribute("statuses", statuses);
+			model.addAttribute("systems", systems);
+		} catch (Exception e) {
+			Sentry.capture(e, "releaseManagement");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina inicial/systemas." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return "/report/rfc";
 	}
 
 	@RequestMapping(path = "/listRelease", method = RequestMethod.GET)
@@ -155,6 +194,55 @@ public class ReportController extends BaseController {
 		systemC.put("completed", releaseService.countByType(name, "Completado", 3, null));
 		systemC.put("all", (systemC.get("draft") + systemC.get("requested") + systemC.get("completed")));
 		request.setAttribute("systemC", systemC);
+	}
+	
+	@RequestMapping(path = "/listRFC", method = RequestMethod.GET)
+	public @ResponseBody JsonSheet<?> getListRfc(HttpServletRequest request, Locale locale, Model model,
+			HttpSession session) {
+		try {
+			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
+			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
+			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			Integer name = getUserLogin().getId();
+			String sSearch = request.getParameter("sSearch");
+			Long statusId;
+			int priorityId;
+			int systemId;
+			if (request.getParameter("statusId").equals("")) {
+				statusId = null;
+			} else {
+				statusId = (long) Integer.parseInt(request.getParameter("statusId"));
+			}
+			if (request.getParameter("priorityId").equals("")) {
+				priorityId = 0;
+			} else {
+				priorityId = Integer.parseInt(request.getParameter("priorityId"));
+			}
+
+			if (request.getParameter("systemId").equals("")) {
+				systemId = 0;
+			} else {
+				systemId = Integer.parseInt(request.getParameter("systemId"));
+			}
+			String dateRange = request.getParameter("dateRange");
+
+			return rfcService.findAllReportRFC(name, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId, dateRange,
+					priorityId, systemId);
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			return null;
+		}
+	}
+	
+	public void loadCountsRFC(HttpServletRequest request, Integer id) {
+		Map<String, Integer> userC = new HashMap<String, Integer>();
+		userC.put("draft", rfcService.countByType(id, "Borrador", 1, null));
+		userC.put("requested", rfcService.countByType(id, "Solicitado", 1, null));
+		userC.put("completed", rfcService.countByType(id, "Completado", 1, null));
+		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+		request.setAttribute("userC", userC);
+
 	}
 	
 	@RequestMapping(value = "/summaryReportRelease-{status}", method = RequestMethod.GET)
@@ -256,7 +344,9 @@ public class ReportController extends BaseController {
 					"reports" + File.separator + "ReleaseReportGeneralNew" + ".jrxml");
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
-			List<ReleaseReport> releases = releaseService.listReleaseReportFilter(systemId,projectId,dateRange);
+			List<ReleaseReportFast> releases = releaseService.listReleaseReportFilter(systemId,projectId,dateRange);
+			
+			ReleaseReportFast release= releases.get(1);
 			System system = systemService.findSystemById(systemId);
 			Project project = projectService.findById(projectId);
 			ReportTest report=new ReportTest();

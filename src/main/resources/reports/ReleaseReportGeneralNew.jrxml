@@ -10,33 +10,6 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
 	<subDataset name="releaseDataSet" uuid="30fa62fc-7055-4417-a498-88df6ae54ead">
 		<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="634"/>
 		<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="352"/>
@@ -103,13 +76,6 @@
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="-20" y="80" width="210" height="30" forecolor="#FFFFFF" uuid="c991b86c-d058-450f-8572-ba68d5106c1b"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="20" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Informacion General]]></text>
-			</staticText>
-			<staticText>
 				<reportElement x="740" y="60" width="50" height="30" forecolor="#FFFFFF" uuid="adc8fb14-657a-4f13-8ffe-f53bdca830ca"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
@@ -145,14 +111,21 @@
 				<textFieldExpression><![CDATA[$F{projectNameNew}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="100" width="90" height="30" forecolor="#FFFFFF" uuid="5d626841-7c74-4fde-ab7e-4b4c62162011"/>
+				<reportElement x="320" y="90" width="190" height="30" forecolor="#FFFFFF" uuid="5d626841-7c74-4fde-ab7e-4b4c62162011"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dateNew}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="-19" y="40" width="226" height="110" forecolor="#FFFFFF" uuid="275f5deb-19c0-4f0b-b72d-bffb91ca6363"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Información General:]]></text>
+			</staticText>
 			<componentElement>
-				<reportElement x="20" y="270" width="1000" height="200" uuid="35c12ebc-75c4-437f-addc-739fae910066">
+				<reportElement x="13" y="230" width="1015" height="200" uuid="addba8aa-a8d6-4a87-8065-0e59991eed88">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -160,237 +133,233 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="releaseDataSet" uuid="c339ed0a-13f7-4243-8934-495fb49d87c3">
+					<datasetRun subDataset="releaseDataSet" uuid="88e8baef-d36d-4de0-8aa4-29a77248eaa6">
+						<datasetParameter name="REPORT_DATA_SOURCE">
+							<datasetParameterExpression><![CDATA[$F{releaseDataSource}]]></datasetParameterExpression>
+						</datasetParameter>
 						<dataSourceExpression><![CDATA[$F{releaseDataSource}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="100" uuid="0495c5a9-c2e9-431f-b6c9-a9c02c442243">
+					<jr:column width="145" uuid="6602b2bc-7e55-4553-aaf3-6cf9b644d093">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<box padding="0">
+								<pen lineWidth="1.0" lineStyle="Solid"/>
+								<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="9c5fcee6-85c0-46e5-8e90-eb5812ad50b7"/>
-								<textElement textAlignment="Center">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="fba6e706-6a47-4a04-a84e-cd06264cbe29">
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Titillium Web" size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Release]]></text>
+								<text><![CDATA[Número Release]]></text>
 							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="5cd89c89-0e0a-4b7a-8863-c63db31ec1da"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
+						</jr:tableHeader>
+						<jr:detailCell height="60">
+							<textField>
+								<reportElement x="0" y="0" width="145" height="60" uuid="c44183e2-fa07-43c2-9356-6384ba55f123"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center">
+									<font fontName="Titillium Web"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{releaseNumber}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="100" uuid="939772b1-afb2-4880-9e0e-304e0a6e3eff">
+					<jr:column width="145" uuid="8069fa0f-01db-42ec-a16c-61e6fb402ceb">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="f592d721-e4c0-423f-94b6-1804e3eeb859"/>
-								<textElement textAlignment="Center">
-									<font fontName="Titillium Web" size="12" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Estado]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="4e1a8437-1b38-4d8e-9470-c6c1cf7de9fc"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{statusName}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="100" uuid="0ff8780b-2436-4623-b753-edd505307575">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="8ebc3661-e00d-4735-972c-8dd3f0497de3"/>
-								<textElement textAlignment="Center">
-									<font fontName="Titillium Web" size="12" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Impacto]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="e69f1bdc-c402-42cd-aaf6-cc556a3d882d"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{impactName}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="100" uuid="aa11d413-1c47-46a9-bffc-625ff9e2836f">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="a5264f73-0130-431d-843c-c7eb2f949266"/>
-								<textElement textAlignment="Center">
-									<font fontName="Titillium Web" size="12" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Usuario]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="8d0d58af-72b2-4207-b70a-bb4d923e3635"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="100" uuid="f1feee02-3b6a-45e7-9243-1cb794efad45">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="469bb260-7a99-438d-8fcc-cbbc9a28991e"/>
-								<textElement textAlignment="Center">
-									<font fontName="Titillium Web" size="12" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Descripcion]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="a231716d-5072-4503-9dd7-1d7adacbf58e"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="100" uuid="7e44615f-27c3-4198-9864-b5ec5b1eff65">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="0fd3b5ad-b079-472e-a98e-8c9124e48205"/>
-								<textElement textAlignment="Center">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="e472bdb0-b7c3-4e37-a296-adcaa57aeb2c">
+									<property name="com.jaspersoft.studio.unit.y" value="px"/>
+									<property name="com.jaspersoft.studio.unit.width" value="px"/>
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Titillium Web" size="12" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Sistema]]></text>
 							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="40b4bb03-e02b-4101-9923-4602eb9d4a28"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
+						</jr:tableHeader>
+						<jr:detailCell height="60">
+							<textField>
+								<reportElement x="0" y="0" width="145" height="60" uuid="068205f2-45c5-4a73-85c1-dcc167d1122c"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center">
+									<font fontName="Titillium Web" size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{systemName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="100" uuid="f90456b6-5675-4e0b-bc50-220d26900056">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+					<jr:column width="145" uuid="89708c7c-33a9-4d7c-9cbb-3ff59311eefb">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="b6a4e9db-d490-4408-a76d-c290e93f7627"/>
-								<textElement textAlignment="Center">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="7c780fde-f81a-4b16-8258-27696b19b023">
+									<property name="com.jaspersoft.studio.unit.width" value="px"/>
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Titillium Web" size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Prioridad]]></text>
+								<text><![CDATA[Descripcion]]></text>
 							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="b2be8fb1-96a0-47c3-882d-669bfe1f1c32"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
+						</jr:tableHeader>
+						<jr:detailCell height="60">
+							<textField>
+								<reportElement x="0" y="0" width="145" height="60" uuid="8691d0ff-f797-4a97-b1cb-971681695cb9"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center">
+									<font fontName="Titillium Web" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{priorityName}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="100" uuid="95a05d1b-98ef-46d6-b23d-f4b2b31369f7">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column8"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+					<jr:column width="145" uuid="84ce7783-0405-4c95-ad38-2c351d77942e">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="1786cdc2-1cd8-4b19-8ff8-f6e093f92c79"/>
-								<textElement textAlignment="Center">
-									<font fontName="Titillium Web" size="12" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Ultima fecha ]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="542d6a7b-e3b0-41e1-a1fe-8c2e6298fe77"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{createDate}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="100" uuid="33f25ff8-7a16-4340-8680-6fa4998e73d6">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column9"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="a529f9cb-667a-43fa-9ec4-12a8a7a16c06"/>
-								<textElement textAlignment="Center">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="8aa5fe8e-eaf2-4101-a6f5-6252c3854b99">
+									<property name="com.jaspersoft.studio.unit.width" value="px"/>
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Titillium Web" size="12" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Observaciones]]></text>
 							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="5ee01ad2-b569-456c-b9d9-d0f52664f903"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
+						</jr:tableHeader>
+						<jr:detailCell height="60">
+							<textField>
+								<reportElement x="0" y="0" width="145" height="60" uuid="bbf2ffa1-156b-40de-a320-56f46cc8e602"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center">
+									<font fontName="Titillium Web" size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{observations}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="100" uuid="5a3a619c-bcc7-4ef1-b864-4547c93d0dbb">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column10"/>
-						<jr:columnHeader style="Table_CH" height="30" rowSpan="1">
+					<jr:column width="145" uuid="7a70478f-c13c-4b2d-b9ab-98afff35d653">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="100" height="30" forecolor="#FFFCFC" backcolor="#012A4D" uuid="a0e76a6e-00c7-4f29-b169-f0e37a3d42d7"/>
-								<textElement textAlignment="Center">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="86b71767-d9a8-40d9-8b78-1e1f840ce99a">
+									<property name="com.jaspersoft.studio.unit.width" value="px"/>
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Titillium Web" size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Riesgo]]></text>
+								<text><![CDATA[Prioridad]]></text>
 							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="30">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="100" height="30" uuid="1c5595c7-702c-431e-8b67-28ead3dc502f"/>
-								<textElement textAlignment="Left" verticalAlignment="Top">
-									<font fontName="Titillium Web" size="10"/>
+						</jr:tableHeader>
+						<jr:detailCell height="60">
+							<textField>
+								<reportElement x="0" y="0" width="145" height="60" uuid="c94ce001-d83c-4eb9-89cf-4b7eff92791b"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center">
+									<font fontName="Titillium Web" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{riskName}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{priorityName}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="145" uuid="5709f753-c182-4eed-9ce7-a0dd82e599b0">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+						<jr:tableHeader height="30" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<staticText>
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="e84829af-2d39-445b-8c0f-1ed669ed8298">
+									<property name="com.jaspersoft.studio.unit.width" value="px"/>
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Titillium Web" size="12" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Fecha error]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell height="60">
+							<textField>
+								<reportElement x="0" y="0" width="145" height="60" uuid="2aef5731-d15a-4faa-87cd-52ff66e9786c"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center">
+									<font fontName="Titillium Web" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{createDate}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="145" uuid="9626e21b-1bc2-4af7-983a-5b5faa1a1ef2">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
+						<jr:tableHeader height="30" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<staticText>
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="0f91d602-5c54-4632-bc15-739776583989">
+									<property name="com.jaspersoft.studio.unit.width" value="px"/>
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Titillium Web" size="12" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Solicitante]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell height="60">
+							<textField>
+								<reportElement x="0" y="0" width="145" height="60" uuid="36b979fc-d7fb-4046-83e2-28b959b294d5"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center">
+									<font fontName="Titillium Web" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

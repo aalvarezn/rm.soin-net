@@ -1,6 +1,7 @@
 package com.soin.sgrm.service;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 
 import com.soin.sgrm.model.RFC;
@@ -28,5 +29,11 @@ public interface RFCService extends BaseService<Long, RFC>{
 	public List<RFCTrackingToError> listByAllSystemError(String dateRange, int systemId);
 
 	public RFCTrackingShow findRFCTracking(Long id);
+
+	public JsonSheet<?> findAllRFCReport(Integer name, Integer sEcho, Integer iDisplayStart,
+			Integer iDisplayLength, String sSearch, Long statusId, String dateRange, int priorityId, int systemId);
+
+	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRFC(Integer name, Integer sEcho, Integer iDisplayStart,
+			Integer iDisplayLength, String sSearch, Long statusId, String dateRange, int priorityId, int systemId) throws ParseException;
 
 }

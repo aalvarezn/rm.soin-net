@@ -285,4 +285,17 @@ public class RFCServiceImpl implements RFCService {
 		return dao.findRFCTracking(id);
 	}
 
+	@Override
+	public JsonSheet<?> findAllRFCReport(Integer name, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, Long statusId, String dateRange, int priorityId, int systemId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRFC(Integer name, Integer sEcho, Integer iDisplayStart,
+			Integer iDisplayLength, String sSearch, Long statusId, String dateRange, int priorityId, int systemId) throws ParseException {
+		return dao.findAllReportRFC( name, sEcho, iDisplayStart,iDisplayLength, sSearch,statusId, dateRange,priorityId,systemId);
+	}
+
 }
