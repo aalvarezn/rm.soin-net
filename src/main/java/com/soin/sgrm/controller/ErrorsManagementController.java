@@ -583,7 +583,7 @@ public class ErrorsManagementController extends BaseController {
 			return res;
 		} catch (Exception e) {
 			Sentry.capture(e, "report");
-
+			res.setException(e.getMessage());
 			e.printStackTrace();
 			return res;
 		}
