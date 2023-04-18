@@ -62,6 +62,7 @@
 	<parameter name="totalErrors" class="java.lang.String"/>
 	<parameter name="percentageErrors" class="java.lang.String"/>
 	<parameter name="percentageReleases" class="java.lang.String"/>
+	<parameter name="logo" class="java.io.InputStream"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -78,7 +79,7 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="110" splitType="Immediate">
+		<band height="115" splitType="Immediate">
 			<property name="com.jaspersoft.studio.layout"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
@@ -91,8 +92,13 @@
 				<text><![CDATA[Reporte Salidas no conformes Releases]]></text>
 			</staticText>
 			<image>
-				<reportElement x="930" y="5" width="110" height="80" uuid="da525213-6588-4c1a-b197-0c9df770b230"/>
-				<imageExpression><![CDATA["C:/Users/Soin/Documents/Repositorios/SGRM/src/main/webapp/static/images/logo.png"]]></imageExpression>
+				<reportElement x="930" y="5" width="110" height="80" uuid="4d5f8e66-1e2e-4a11-a950-2a700184d66c">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
 			</image>
 		</band>
 	</title>
@@ -209,9 +215,9 @@
 								<text><![CDATA[Número Release]]></text>
 							</staticText>
 						</jr:tableHeader>
-						<jr:detailCell height="30">
+						<jr:detailCell height="60">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="3212f6b2-403d-4a1f-9a7f-ff17bef9bfb6"/>
+								<reportElement x="0" y="0" width="145" height="60" uuid="3212f6b2-403d-4a1f-9a7f-ff17bef9bfb6"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -219,7 +225,7 @@
 									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 								</box>
 								<textElement textAlignment="Center">
-									<font fontName="Titillium Web" size="8"/>
+									<font fontName="Titillium Web"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{releaseName}]]></textFieldExpression>
 							</textField>
@@ -241,9 +247,9 @@
 								<text><![CDATA[Sistema]]></text>
 							</staticText>
 						</jr:tableHeader>
-						<jr:detailCell height="30">
+						<jr:detailCell height="60">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="f2b63089-3804-49cd-8c9e-e2bf171bee25"/>
+								<reportElement x="0" y="0" width="145" height="60" uuid="f2b63089-3804-49cd-8c9e-e2bf171bee25"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -272,9 +278,9 @@
 								<text><![CDATA[Proyecto]]></text>
 							</staticText>
 						</jr:tableHeader>
-						<jr:detailCell height="30">
+						<jr:detailCell height="60">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="c1d39b9f-0c0f-4900-832b-98b9e4b9b6ab"/>
+								<reportElement x="0" y="0" width="145" height="60" uuid="c1d39b9f-0c0f-4900-832b-98b9e4b9b6ab"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -303,9 +309,9 @@
 								<text><![CDATA[Tipo Error]]></text>
 							</staticText>
 						</jr:tableHeader>
-						<jr:detailCell height="30">
+						<jr:detailCell height="60">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="ed853b52-6cd6-4595-a154-fbf44b484ad2"/>
+								<reportElement x="0" y="0" width="145" height="60" uuid="ed853b52-6cd6-4595-a154-fbf44b484ad2"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -334,9 +340,9 @@
 								<text><![CDATA[Observaciones]]></text>
 							</staticText>
 						</jr:tableHeader>
-						<jr:detailCell height="30">
+						<jr:detailCell height="60">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="b1180f5f-e932-4f93-9044-bb219cd57853"/>
+								<reportElement x="0" y="0" width="145" height="60" uuid="b1180f5f-e932-4f93-9044-bb219cd57853"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -365,9 +371,9 @@
 								<text><![CDATA[Fecha error]]></text>
 							</staticText>
 						</jr:tableHeader>
-						<jr:detailCell height="30">
+						<jr:detailCell height="60">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="11b2a58a-6c94-42a6-9290-7be62784956e"/>
+								<reportElement x="0" y="0" width="145" height="60" uuid="11b2a58a-6c94-42a6-9290-7be62784956e"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -396,9 +402,9 @@
 								<text><![CDATA[Solicitante]]></text>
 							</staticText>
 						</jr:tableHeader>
-						<jr:detailCell height="30">
+						<jr:detailCell height="60">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="ee234a6e-1a16-4a45-89d8-02a6b9a2dd9c"/>
+								<reportElement x="0" y="0" width="145" height="60" uuid="ee234a6e-1a16-4a45-89d8-02a6b9a2dd9c"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>

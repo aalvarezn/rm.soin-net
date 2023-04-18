@@ -461,10 +461,9 @@ public class ErrorsManagementController extends BaseController {
 				projectId = 0;
 			}
 			String dateRange = request.getParameter("dateRange");
-			String pathTemplate = env.getProperty("fileStore.templatesreport");
-			
-			pathTemplate = pathTemplate+"ErrorReleaseGeneral" + ".jrxml";
-			InputStream inputStream = new FileInputStream(pathTemplate);
+			ClassPathResource resource = new ClassPathResource(
+					"reports" + File.separator + "ErrorReleaseGeneral" + ".jrxml");
+			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 
 			System system = systemService.findSystemById(systemId);
@@ -556,7 +555,9 @@ public class ErrorsManagementController extends BaseController {
 			listError.add(errorReleaseReport);
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listError);
 			Map<String, Object> parameters = new HashMap<>();
-
+			ClassPathResource images = new ClassPathResource(
+					"images" + File.separator + "logo" + ".png");
+			parameters.put("logo",images.getInputStream());
 			Double percentageErrors = (((double) totalReleases - (double) totalReleasesError) / (double) totalReleases);
 			percentageErrors = percentageErrors * 100;
 			percentageErrors = 100 - percentageErrors;
@@ -709,7 +710,9 @@ public class ErrorsManagementController extends BaseController {
 			listError.add(errorRFCReport);
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listError);
 			Map<String, Object> parameters = new HashMap<>();
-
+			ClassPathResource images = new ClassPathResource(
+					"images" + File.separator + "logo" + ".png");
+			parameters.put("logo",images.getInputStream());
 			Double percentageErrors = (((double) totalRFC - (double) totalRFCError) / (double) totalRFC);
 			percentageErrors = percentageErrors * 100;
 			percentageErrors = 100 - percentageErrors;
@@ -874,6 +877,9 @@ public class ErrorsManagementController extends BaseController {
 			listError.add(errorRequestReport);
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listError);
 			Map<String, Object> parameters = new HashMap<>();
+			ClassPathResource images = new ClassPathResource(
+					"images" + File.separator + "logo" + ".png");
+			parameters.put("logo",images.getInputStream());
 			Double percentageErrors = (((double) totalRequest - (double) totalRequestError) / (double) totalRequest);
 			percentageErrors = percentageErrors * 100;
 			percentageErrors = 100 - percentageErrors;
