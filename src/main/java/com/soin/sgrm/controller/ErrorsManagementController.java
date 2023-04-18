@@ -461,9 +461,10 @@ public class ErrorsManagementController extends BaseController {
 				projectId = 0;
 			}
 			String dateRange = request.getParameter("dateRange");
-			ClassPathResource resource = new ClassPathResource(
-					"reports" + File.separator + "ErrorReleaseGeneral" + ".jrxml");
-			InputStream inputStream = resource.getInputStream();
+			String pathTemplate = env.getProperty("fileStore.templatesreport");
+			
+			pathTemplate = pathTemplate+"ErrorReleaseGeneral" + ".jrxml";
+			InputStream inputStream = new FileInputStream(pathTemplate);
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 
 			System system = systemService.findSystemById(systemId);
