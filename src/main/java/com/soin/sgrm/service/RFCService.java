@@ -1,8 +1,11 @@
 package com.soin.sgrm.service;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCTrackingShow;
+import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.response.JsonSheet;
 
@@ -21,5 +24,9 @@ public interface RFCService extends BaseService<Long, RFC>{
 	Integer countByManager(Integer id, Long idRFC);
 
 	public RFC_WithoutRelease findRfcWithRelease(Long id);
+
+	public List<RFCTrackingToError> listByAllSystemError(String dateRange, int systemId);
+
+	public RFCTrackingShow findRFCTracking(Long id);
 
 }

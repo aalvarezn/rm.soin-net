@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.ReleaseErrorDao;
 import com.soin.sgrm.model.ReleaseError;
+import com.soin.sgrm.model.ReleaseTracking;
 import com.soin.sgrm.response.JsonSheet;
 
 @Transactional("transactionManager")
@@ -119,4 +120,57 @@ public class ReleaseErrorServiceImpl  implements ReleaseErrorService{
 	
 	}
 
+	@Override
+	public List<ReleaseError> findAllList(Long errorId, String dateRange, int projectId, int systemId) {
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+
+		alias.put("release", "release");
+		alias.put("release.user", "user");
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					columns.put("errorDate", Restrictions.between("errorDate", start, end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+
+		if (errorId == 0) {
+			errorId = null;
+		}
+		if (errorId != null) {
+			
+			columns.put("error", Restrictions.eq("error.id", errorId));
+		}
+
+		if (projectId != 0) {
+			alias.put("project", "project");
+			columns.put("project", Restrictions.eq("project.id", projectId));
+		}
+		if (systemId != 0) {
+			alias.put("system", "system");
+			columns.put("system", Restrictions.eq("system.id", systemId));
+
+		}
+		 
+
+		List<String> fetchs = new ArrayList<String>();
+		fetchs.add("system");
+		fetchs.add("error");
+		fetchs.add("release");
+		fetchs.add("project");
+		return  dao.findAll( columns, fetchs, alias,2);
+	}
+	
+	
 }

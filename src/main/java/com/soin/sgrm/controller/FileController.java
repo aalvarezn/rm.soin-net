@@ -51,6 +51,7 @@ import com.soin.sgrm.model.RFCFile;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseFile;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReportFile;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseFile;
@@ -67,6 +68,7 @@ import com.soin.sgrm.service.RFCFileService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseFileService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.ReportFileService;
 import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestFileService;
 import com.soin.sgrm.service.RequestService;
@@ -133,6 +135,9 @@ public class FileController extends BaseController {
 	
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	ReportFileService reportFileService;
 	
 	DocxVariables docxVariables = null;
 
@@ -1107,6 +1112,81 @@ public class FileController extends BaseController {
 				}
 				return json;
 				
+	}
+	
+	/**
+	 * @description: Adjunta el archivo al rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	@RequestMapping(value = "/singleUploadReport-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleUploadReport(@PathVariable Integer id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		
+		
+		// valida que se selecciono un archivo
+		if (file.getName().equals("") || file.isEmpty()) {
+			json.setStatus("fail");
+			json.setException("Archivo no seleccionado");
+			return json;
+		}
+		
+		// Direccion del archivo a guardar
+		String basePath = env.getProperty("fileStore.path");
+		String path = createPathReport(id, basePath);
+		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+		// Referencia del archivo
+		ReportFile reportFile = new ReportFile();
+		reportFile.setName(fileName);
+		reportFile.setPath(basePath + path + fileName);
+		reportFile.setIdRelease(id);
+		long time = System.currentTimeMillis();
+		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+		reportFile.setRevisionDate(revisionDate);
+		try {
+			// Se carga el archivo y se guarda la referencia
+			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+			reportFileService.saveReportFile(id, reportFile);
+			reportFile = reportFileService.findByKey("path", reportFile.getPath());
+			json.setStatus("success");
+			json.setObj(reportFile);
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
+			json.setStatus("exception");
+			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			json.setStatus("exception");
+			json.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			if (e instanceof MaxUploadSizeExceededException) {
+				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			}
+		}
+		return json;
+	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del report.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathReport(Integer id, String basePath) throws SQLException {
+		try {
+
+			String path = "Reportes/";
+			path += id + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
 	}
 
 }

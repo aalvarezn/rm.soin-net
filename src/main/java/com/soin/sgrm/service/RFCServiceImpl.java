@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.RFCDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCTrackingShow;
+import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
@@ -269,6 +271,18 @@ public class RFCServiceImpl implements RFCService {
 	public RFC_WithoutRelease findRfcWithRelease(Long id) {
 		
 		return dao.findRfcWithRelease(id);
+	}
+
+	@Override
+	public List<RFCTrackingToError> listByAllSystemError(String dateRange, int systemId) {
+
+				return dao.listByAllSystemError(dateRange, systemId);
+	}
+
+	@Override
+	public RFCTrackingShow findRFCTracking(Long id) {
+		
+		return dao.findRFCTracking(id);
 	}
 
 }

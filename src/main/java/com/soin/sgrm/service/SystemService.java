@@ -58,4 +58,6 @@ public interface SystemService {
 
 	List<System> findByManagerIncidence(Integer idUser);
 
+	List<System> getSystemByProject(Integer projectId);
+
 }

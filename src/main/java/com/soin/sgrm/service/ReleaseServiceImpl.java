@@ -18,13 +18,17 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
+import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTrackingShow;
+import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.UserInfo;
@@ -74,6 +78,15 @@ public class ReleaseServiceImpl implements ReleaseService {
 		return dao.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
 				statusId);
 	}
+	
+	@Override
+	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId)
+			throws SQLException, ParseException {
+		return dao.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
+				statusId,projectId);
+	}
+
 	@Override
 	public JsonSheet<?> listByAllSystemQA(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
@@ -256,45 +269,79 @@ public class ReleaseServiceImpl implements ReleaseService {
 	@Override
 	public JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			Integer systemId) throws SQLException, ParseException {
-		return dao.listReleasesBySystem( sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
+		return dao.listReleasesBySystem(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
 	}
 
 	@Override
 	public Release findReleaseById(Integer id) throws SQLException {
-		
+
 		return dao.findReleaseById(id);
 	}
-	
+
 	@Override
 	public Integer getDependency(int id) {
 		return dao.getDependency(id);
 	}
 
 	@Override
-	public void updateStatusReleaseRFC(Release_RFC release,String operator) throws Exception {
-		dao.updateStatusReleaseRFC(release,operator);
+	public void updateStatusReleaseRFC(Release_RFCFast release, String operator) throws Exception {
+		dao.updateStatusReleaseRFC(release, operator);
 	}
 
 	@Override
 	public Releases_WithoutObj findReleaseWithouObj(Integer id) throws SQLException {
-		
+
 		return dao.findReleaseWithouObj(id);
 	}
 
-  @Override
+	@Override
 	public ReleaseSummaryMin findByIdMin(Integer id) throws SQLException {
 		return dao.findByIdMin(id);
 	}
 
-@Override
-public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
-	
-	return dao.findEditByIdWithOutObjects(idRelease);
-}
+	@Override
+	public ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease) {
 
-@Override
-public ReleaseTinySummary findByIdTiny(int id) {
-	return dao.findByIdTiny(id);
-}
+		return dao.findEditByIdWithOutObjects(idRelease);
+	}
+
+	@Override
+	public ReleaseTinySummary findByIdTiny(int id) {
+		return dao.findByIdTiny(id);
+	}
+
+	@Override
+	public List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId) {
+		// TODO Auto-generated method stub
+		return dao.listByAllSystemError(dateRange, systemId);
+	}
+
+	@Override
+	public ReleaseReport findByIdReleaseReport(Integer id) {
+		return dao.findByIdReleaseReport(id);
+	}
+
+	@Override
+	public List<ReleaseReport> listReleaseReport() {
+		
+		return dao.listReleaseReport();
+				
+	}
+
+	@Override
+	public List<ReleaseReport> listReleaseReportFilter(int systemId, int projectId, String dateRange) {
+		return  dao.listReleaseReportFilter(systemId,projectId,dateRange);
+	}
+
+	@Override
+	public Release_RFCFast findRelease_RFCByIdFast(int id) {
+		return dao.findRelease_RFCByIdFast(id);
+	}
+
+	@Override
+	public ReleaseTrackingShow findReleaseTracking(int id) {
+	
+		return dao.findReleaseTracking(id);
+	}
 
 }

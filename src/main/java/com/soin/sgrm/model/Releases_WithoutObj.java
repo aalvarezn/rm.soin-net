@@ -41,7 +41,7 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SISTEMA_ID", nullable = true)
-	private SystemInfo system;
+	private System system;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ESTADO_ID", nullable = true)
@@ -51,6 +51,9 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHA_CREACION")
 	private Timestamp createDate;
+	
+	@Column(name = "REINTENTOS", nullable = true)
+	private Integer retries;
 
 	@OrderBy("trackingDate ASC")
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -70,6 +73,8 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 	@Transient
 	private Integer haveDependecy;
 	
+	
+	
 	public int getId() {
 		return id;
 	}
@@ -86,11 +91,11 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 		this.releaseNumber = releaseNumber;
 	}
 
-	public SystemInfo getSystem() {
+	public System getSystem() {
 		return system;
 	}
 
-	public void setSystem(SystemInfo system) {
+	public void setSystem(System system) {
 		this.system = system;
 	}
 
@@ -156,6 +161,14 @@ public class Releases_WithoutObj implements Serializable, Cloneable {
 
 	public void setHaveDependecy(Integer haveDependecy) {
 		this.haveDependecy = haveDependecy;
+	}
+
+	public Integer getRetries() {
+		return retries;
+	}
+
+	public void setRetries(Integer retries) {
+		this.retries = retries;
 	}
 	
 	

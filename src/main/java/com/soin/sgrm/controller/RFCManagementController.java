@@ -32,6 +32,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.RFCError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.User;
@@ -200,8 +201,8 @@ public class RFCManagementController extends BaseController {
 			boolean errorVer=false;
 			
 			if (status != null && status.getName().equals("Borrador")) {
-				Set<Release_RFC> releases = rfc.getReleases();
-				for (Release_RFC release : releases) {
+				Set<Release_RFCFast> releases = rfc.getReleases();
+				for (Release_RFCFast release : releases) {
 					release.setStatus(release.getStatusBefore());
 					release.setMotive("Devuelto al estado " + release.getStatus().getName());
 					releaseService.updateStatusReleaseRFC(release, user);
@@ -235,8 +236,8 @@ public class RFCManagementController extends BaseController {
 				rfc.setStatus(statusChange);
 
 				if (statusChange != null && statusChange.getName().equals("Borrador")) {
-					Set<Release_RFC> releases = rfc.getReleases();
-					for (Release_RFC release : releases) {
+					Set<Release_RFCFast> releases = rfc.getReleases();
+					for (Release_RFCFast release : releases) {
 						release.setStatus(release.getStatusBefore());
 						release.setMotive("Devuelto al estado " + release.getStatus().getName());
 						releaseService.updateStatusReleaseRFC(release, user);

@@ -124,12 +124,15 @@
 						<span>Mis Releases</span>
 				</a></li>
 				<!---- 	#Seccion de reportes ---->
-				<li class=""><a id="ambientItem" href="javascript:void(0);"
+				<li class=""><a id="reportItem" href="javascript:void(0);"
 					class="menu-toggle"> <span>Reportes</span>
 				</a>
 					<ul class="ml-menu">
 						<li><a href="<c:url value='/report/releases/'/>">Releases</a></li>
+						<li><a href="<c:url value='/report/rfc/'/>">RFC</a></li>
+						<li><a href="<c:url value='/report/request/'/>">Solicitudes</a></li>
 					</ul></li>
+					
 			</c:if>
 			<c:if test="${managerAccess}">
 				<li>

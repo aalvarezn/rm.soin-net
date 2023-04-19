@@ -52,6 +52,7 @@ $(document).ready(function() {
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 	initImpactFormValidation
 	activeItemMenu("errorItem",true);
+	dropDownChange();
 	// dropDownChange();
 	// $("#addRFCSection").hide();
 	// $fmRFC.find("#sId").selectpicker('val',"");
@@ -84,6 +85,9 @@ $('#tableFilters #systemId').change(function() {
 $('#tableFilters #errorId').change(function() {
 	$dtRFCs.ajax.reload();
 });
+$('#tableFilters #projectId').change(function() {
+	$dtRFCs.ajax.reload();
+});
 
 function initRFCTable() {
 	$dtRFCs = $('#dtRFCs').DataTable(
@@ -105,7 +109,8 @@ function initRFCTable() {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 								{"name": "typePetitionId", "value": $('#tableFilters #typePetitionId').children("option:selected").val()},
 								{"name": "errorId", "value": $('#tableFilters #errorId').children("option:selected").val()},
-								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
+								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
+								{"name": "projectId", "value": $('#tableFilters #projectId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
@@ -370,4 +375,175 @@ function initImpactFormValidation() {
 		unhighlight,
 		errorPlacement
 	});
+}
+
+const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+	  const byteCharacters = atob(b64Data);
+	  const byteArrays = [];
+
+	  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+	    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+	    const byteNumbers = new Array(slice.length);
+	    for (let i = 0; i < slice.length; i++) {
+	      byteNumbers[i] = slice.charCodeAt(i);
+	    }
+
+	    const byteArray = new Uint8Array(byteNumbers);
+	    byteArrays.push(byteArray);
+	  }
+
+	  const blob = new Blob(byteArrays, {type: contentType});
+	  return blob;
+	}
+	 
+function downLoadReport1(){
+	const params = new URLSearchParams();
+	params.set('dateRange', $('#tableFilters input[name="daterange"]').val());
+	params.set('projectId', $('#tableFilters #projectId').children("option:selected").val());
+	params.set('errorId', $('#tableFilters #errorId').children("option:selected").val());
+	params.set('systemId', $('#tableFilters #systemId').children("option:selected").val());
+	const target = getCont() + "management/error/downloaderrorrelease?" + params.toString();
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', target, true);
+	xhr.responseType = 'json';
+	xhr.onload = function(e) {
+		console.log(e);
+		if (this.status == 200) {
+			console.log(xhr.getAllResponseHeaders());
+			console.log(this.response);
+			var b64Data = this.response;
+			//var contentType = this.response.getResponseHeader("Content-Type"); //Obtenemos el tipo de los datos
+			//console.log(response.getResponseHeader("Content-Disposition"));
+			//var filename =  this.response.getResponseHeader("Content-Disposition");//Obtenemos el nombre del fichero a desgargar
+			//console.log( this.response);
+			//filename = filename.substring(filename.lastIndexOf("=") + 1) || "download"; 
+			 //var request = new XMLHttpRequest ();
+			 //request.open ('GET', document.location, false);
+			// console.log(request.getAllResponseHeaders().toLowerCase());
+			var blob = new Blob([this.response], { type: 'application/pdf'});
+			var link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = "report.pdf";
+			link.click();       
+		}
+	};
+	xhr.send();
+
+}
+
+function downLoadReport(){
+	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
+	$.ajax({
+		type : "GET",
+		cache : false,
+		contentType: "application/json; charset=utf-8",
+		async : false,
+		url : getCont() + "management/error/downloaderrorrequest",
+		timeout : 60000,
+		data : {
+			dateRange :$('#tableFilters input[name="daterange"]').val(),
+			typePetitionId: $('#tableFilters #typePetitionId').children("option:selected").val(),
+			errorId: $('#tableFilters #errorId').children("option:selected").val(),
+			systemId: $('#tableFilters #systemId').children("option:selected").val()
+		},
+		success : function(response) {
+			console.log(response);
+			//console.log(atob(response.obj.file));
+			
+			var blob = new Blob([b64toBlob(response.obj.file,response.obj.ContentType)], {type: response.obj.ContentType});
+			var link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = response.obj.name;
+			link.click();   
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+
+
+}
+
+
+function dropDownChange(){
+
+	$('#projectId').on('change', function(){
+		var projectId =$('#tableFilters #projectId').val();
+		console.log(projectId);
+		if(projectId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "management/error/getSystem/"+projectId,
+			success: function(result) {
+				console.log(result);
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].name + '</option>';
+					}
+					$('#systemId').html(s);
+					$('#systemId').prop('disabled', false);
+					$('#systemId').selectpicker('refresh');
+				}else{
+					resetDropPriorityMain();
+				}
+				
+				
+			}
+		});
+		
+		}else{
+			resetDropPriorityMain();
+			resetDropTypeMain();
+			resetDropStatusMain();
+		}
+		
+	});
+}
+function dropDownChange(){
+
+	$('#projectId').on('change', function(){
+		var projectId =$('#tableFilters #projectId').val();
+		console.log(projectId);
+		if(projectId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "management/error/getSystem/"+projectId,
+			success: function(result) {
+				console.log(result);
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].name + '</option>';
+					}
+					$('#systemId').html(s);
+					$('#systemId').prop('disabled', false);
+					$('#systemId').selectpicker('refresh');
+				}else{
+					resetDropPriorityMain();
+				}
+				
+				
+			}
+		});
+		
+		}else{
+			
+		}
+		
+	});
+}
+
+
+function resetDropPriorityMain(){
+	
+	var s = '';
+	s+='<option value="0">-- Todos --</option>';
+	$('#systemId').html(s);
+	$('#systemId').prop('disabled',true);
+	$('#systemId').selectpicker('refresh');
+	
 }

@@ -10,11 +10,15 @@ import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
+import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTrackingShow;
+import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.JsonSheet;
@@ -70,7 +74,7 @@ public interface ReleaseDao {
 
 	Integer getDependency(int id);
 
-	void updateStatusReleaseRFC(Release_RFC release,String operator);
+	void updateStatusReleaseRFC(Release_RFCFast release,String operator);
   
 	Releases_WithoutObj findReleaseWithouObj(Integer id);
 
@@ -81,6 +85,21 @@ public interface ReleaseDao {
 	ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease);
 
 	ReleaseTinySummary findByIdTiny(int id);
+
+	List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId);
+
+	ReleaseReport findByIdReleaseReport(Integer id);
+
+	List<ReleaseReport> listReleaseReport();
+
+	JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId) throws SQLException, ParseException;
+
+	List<ReleaseReport> listReleaseReportFilter(int systemId, int projectId, String dateRange);
+
+	Release_RFCFast findRelease_RFCByIdFast(int id);
+
+	ReleaseTrackingShow findReleaseTracking(int id);
 	
 
 }
