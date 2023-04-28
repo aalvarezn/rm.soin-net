@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.RFCDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCReport;
+import com.soin.sgrm.model.RFCReportComplete;
 import com.soin.sgrm.model.RFCTrackingShow;
 import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
@@ -285,17 +287,30 @@ public class RFCServiceImpl implements RFCService {
 		return dao.findRFCTracking(id);
 	}
 
+
 	@Override
-	public JsonSheet<?> findAllRFCReport(Integer name, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			String sSearch, Long statusId, String dateRange, int priorityId, int systemId) {
-		// TODO Auto-generated method stub
-		return null;
+	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRFC( Integer sEcho, Integer iDisplayStart,
+			Integer iDisplayLength, String sSearch, String dateRange, int systemId,Long sigesId) throws ParseException {
+		return dao.findAllReportRFC( sEcho, iDisplayStart,iDisplayLength, sSearch, dateRange,systemId,sigesId);
+	}
+
+
+
+	@Override
+	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRFC(Integer sEcho, Integer iDisplayStart,
+			Integer iDisplayLength, String sSearch, String dateRange, List<Integer> systemsId,Long sigesId) throws ParseException {
+		return dao.findAllReportRFC( sEcho, iDisplayStart,iDisplayLength, sSearch, dateRange,systemsId,sigesId);
 	}
 
 	@Override
-	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRFC(Integer name, Integer sEcho, Integer iDisplayStart,
-			Integer iDisplayLength, String sSearch, Long statusId, String dateRange, int priorityId, int systemId) throws ParseException {
-		return dao.findAllReportRFC( name, sEcho, iDisplayStart,iDisplayLength, sSearch,statusId, dateRange,priorityId,systemId);
+	public List<RFCReport> listRFCReportFilter(int projectId, int systemId, Long sigesId, String dateRange) throws ParseException {
+		
+		return dao.listRFCReportFilter(projectId, systemId, sigesId, dateRange);
+	}
+
+	@Override
+	public RFCReportComplete findByIdRFCReport(Long id) {
+		return dao.findByIdRFCReport(id);
 	}
 
 }

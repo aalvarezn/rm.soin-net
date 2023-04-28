@@ -61,6 +61,9 @@
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
+	<!-- Page downloading -->
+	<%@include file="../plantilla/downloading.jsp"%>
+	<!-- #END# downloading -->
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
@@ -133,7 +136,8 @@
 					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 						<label>Sistemas</label>
 						<div class="form-group m-b-0">
-							<select disabled id="systemId" class="form-control show-tick selectpicker"
+							<select disabled id="systemId"
+								class="form-control show-tick selectpicker"
 								data-live-search="true">
 								<option value="0">-- Todos --</option>
 							</select>
@@ -195,7 +199,7 @@
 									<thead>
 										<tr>
 											<th>ID</th>
-											<th>N&uacute;mero Release</th>
+											<th>N&uacute;mero Solicitud</th>
 											<th>Sistema</th>
 											<th>Proyecto</th>
 											<th>Tipo Error</th>

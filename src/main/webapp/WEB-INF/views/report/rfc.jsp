@@ -72,15 +72,13 @@
 		<div class="container-fluid">
 			<div class="row">
 
-				<!-- #addRFCSection#  -->
-				<%@include file="../rfc/addRFC.jsp"%>
 				<%@include file="../rfc/trackingRFCModal.jsp"%>
 				<!-- #addRFCSection#-->
 
 				<!-- #tableSection#-->
 				<div id="tableSection">
 					<div class="block-header">
-						<h2>RFC</h2>
+						<h2>Reporte RFC</h2>
 					</div>
 
 					<!-- Tab PANELS -->
@@ -160,47 +158,41 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+							<label>Proyecto</label>
+							<div class="form-group m-b-0">
+								<select id="projectId"
+									class="form-control show-tick selectpicker"
+									data-live-search="true">
+									<option value="0">-- Todos --</option>
+									<c:forEach items="${projects}" var="project">
+										<option value="${project.id }">${project.code}</option>
+									</c:forEach>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 							<label>Sistemas</label>
 							<div class="form-group m-b-0">
-								<select id="systemId"
+								<select id="systemId" disabled name="systemId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
-									<c:forEach items="${systems}" var="system">
-										<option value="${system.id }">${system.name }</option>
-									</c:forEach>
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-							<label>Prioridad</label>
+						<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+							<label>Siges</label>
 							<div class="form-group m-b-0">
-								<select id="priorityId"
+								<select id="sigesId" disabled name="sigesId"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="0">-- Todos --</option>
-									<c:forEach items="${priorities}" var="priority">
-										<option value="${priority.id }">${priority.name }</option>
-									</c:forEach>
+
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-							<label>Estado</label>
-							<div class="form-group m-b-0">
-								<select id="statusId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-									<c:forEach items="${statuses}" var="status">
-										<c:if test="${status.name ne 'Anulado'}">
-											<option value="${status.id }">${status.name }</option>
-										</c:if>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
+
 						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
 							<div class="button-demo-refresh" style="padding-top: 25px;">
 								<button title="Refrescar tabla con filtros!" type="button"
@@ -209,7 +201,15 @@
 								</button>
 							</div>
 						</div>
-
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="button-demo flr">
+								<button type="button" class="btn btn-primary setIcon"
+									onclick="downLoadReport()">
+									<span>DESCARGAR PDF</span><span><i
+										class="material-icons m-t--2 ">offline_pin</i></span>
+								</button>
+							</div>
+						</div>
 					</div>
 					<!-- #tableFilters# -->
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">

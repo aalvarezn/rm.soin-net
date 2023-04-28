@@ -61,6 +61,9 @@
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
+	<!-- Page downloading -->
+	<%@include file="../plantilla/downloading.jsp"%>
+	<!-- #END# downloading -->
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
@@ -133,20 +136,21 @@
 					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 						<label>Sistemas</label>
 						<div class="form-group m-b-0">
-						<select id="systemId" disabled name="typeId"
-									class="form-control show-tick selectpicker"
-									data-live-search="true">
-									<option value="0">-- Todos --</option>
-								</select>
+							<select id="systemId" disabled name="typeId"
+								class="form-control show-tick selectpicker"
+								data-live-search="true">
+								<option value="0">-- Todos --</option>
+							</select>
 						</div>
 					</div>
 					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 						<label>Siges</label>
 						<div class="form-group m-b-0">
-							<select id="sigesId" disabled class="form-control show-tick selectpicker"
+							<select id="sigesId" disabled
+								class="form-control show-tick selectpicker"
 								data-live-search="true">
 								<option value="0">-- Todos --</option>
-	
+
 							</select>
 						</div>
 					</div>
@@ -154,7 +158,7 @@
 					<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 						<label>Tipo de error</label>
 						<div class="form-group m-b-0">
-							<select id="errorId"  class="form-control show-tick selectpicker"
+							<select id="errorId" class="form-control show-tick selectpicker"
 								data-live-search="true">
 								<option value="0">-- Todos --</option>
 								<c:forEach items="${errors}" var="error">
@@ -192,7 +196,7 @@
 									<thead>
 										<tr>
 											<th>ID</th>
-											<th>N&uacute;mero Release</th>
+											<th>N&uacute;mero RFC</th>
 											<th>Sistema</th>
 											<th>Siges</th>
 											<th>Tipo Error</th>

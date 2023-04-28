@@ -58,8 +58,8 @@ public class ReportTest {
 		return rfcDataSource;
 	}
 	
-	public void setRequestDataSource(List<ErrorTypeGraph> requestDataSource) {
-		JRBeanCollectionDataSource requestDataSource1 = new JRBeanCollectionDataSource(requestDataSource, false);
+	public void setRequestDataSource(List<RequestReport> requests) {
+		JRBeanCollectionDataSource requestDataSource1 = new JRBeanCollectionDataSource(requests, false);
 		this.requestDataSource = requestDataSource1;
 	}
 	
@@ -139,6 +139,10 @@ public class ReportTest {
 			this.dateNew="Sin un rango de fecha establecido";
 		}
 	}
+
+
+
+
 
 	
 }

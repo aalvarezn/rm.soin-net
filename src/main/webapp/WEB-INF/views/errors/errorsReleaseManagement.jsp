@@ -61,6 +61,10 @@
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
+
+	<!-- Page downloading -->
+	<%@include file="../plantilla/downloading.jsp"%>
+	<!-- #END# downloading -->
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
@@ -78,6 +82,8 @@
 		<%@include file="../plantilla/leftbar.jsp"%>
 		<!-- #END# Left Sidebar -->
 	</section>
+
+
 
 	<section class="content m-t-80I">
 		<div class="container-fluid">
@@ -165,7 +171,6 @@
 					</div>
 				</div>
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-
 					<div class="button-demo flr">
 						<button type="button" class="btn btn-primary setIcon"
 							onclick="downLoadReport()">

@@ -57,6 +57,7 @@ $(document).ready(function() {
 	// $fmRFC.find("#sId").selectpicker('val',"");
 
 	initRFCTable();
+	
 	// initRFCFormValidation();
 });
 
@@ -72,6 +73,7 @@ $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 
 function refreshTable(){
 	$dtRFCs.ajax.reload();
+	
 }
 $('#tableFilters #projectId').change(function() {
 	$dtRFCs.ajax.reload();
@@ -271,13 +273,14 @@ function changeStatusRFC(idRFC) {
 	$('#changeStatusModal').modal('show');
 }
 
+
+
 function downLoadReport(){
-	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
 		cache : false,
 		contentType: "application/json; charset=utf-8",
-		async : false,
+		async : true,
 		url : getCont() + "management/error/downloaderrorrelease",
 		timeout : 60000,
 		data : {
@@ -286,23 +289,35 @@ function downLoadReport(){
 			errorId: $('#tableFilters #errorId').children("option:selected").val(),
 			systemId: $('#tableFilters #systemId').children("option:selected").val()
 		},
+	    beforeSend: function() {
+	    	showSpinner();
+	      },
 		success : function(response) {
 			console.log(response);
-			//console.log(atob(response.obj.file));
+			// console.log(atob(response.obj.file));
 			
 			var blob = new Blob([b64toBlob(response.obj.file,response.obj.ContentType)], {type: response.obj.ContentType});
 			var link = document.createElement('a');
 			link.href = window.URL.createObjectURL(blob);
 			link.download = response.obj.name;
 			link.click();   
+			//
 		},
+		   complete: function() {
+			      // ocultar el mensaje de descarga después de completar la
+					// solicitud
+			      hideSpinner();
+			    },
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
+			// hideSpinner();
 		}
 	});
 
 
 }
+
+
 const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
 	  const byteCharacters = atob(b64Data);
 	  const byteArrays = [];
@@ -339,13 +354,18 @@ function downLoadReport1(){
 			console.log(xhr.getAllResponseHeaders());
 			console.log(this.response);
 			var b64Data = this.response;
-			//var contentType = this.response.getResponseHeader("Content-Type"); //Obtenemos el tipo de los datos
-			//console.log(response.getResponseHeader("Content-Disposition"));
-			//var filename =  this.response.getResponseHeader("Content-Disposition");//Obtenemos el nombre del fichero a desgargar
-			//console.log( this.response);
-			//filename = filename.substring(filename.lastIndexOf("=") + 1) || "download"; 
-			 //var request = new XMLHttpRequest ();
-			 //request.open ('GET', document.location, false);
+			// var contentType =
+			// this.response.getResponseHeader("Content-Type"); //Obtenemos el
+			// tipo de los datos
+			// console.log(response.getResponseHeader("Content-Disposition"));
+			// var filename =
+			// this.response.getResponseHeader("Content-Disposition");//Obtenemos
+			// el nombre del fichero a desgargar
+			// console.log( this.response);
+			// filename = filename.substring(filename.lastIndexOf("=") + 1) ||
+			// "download";
+			 // var request = new XMLHttpRequest ();
+			 // request.open ('GET', document.location, false);
 			// console.log(request.getAllResponseHeaders().toLowerCase());
 			var blob = new Blob([this.response], { type: 'application/pdf'});
 			var link = document.createElement('a');
@@ -356,6 +376,16 @@ function downLoadReport1(){
 	};
 	xhr.send();
 
+}
+
+function showSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "flex";
+}
+
+function hideSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "none";
 }
 function downLoadReportExcel(){
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));

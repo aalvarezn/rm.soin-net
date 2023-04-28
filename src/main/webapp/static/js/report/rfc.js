@@ -57,10 +57,11 @@ $(function() {
 	dropDownChange();
 	$("#addRFCSection").hide();
 	$fmRFC.find("#sId").selectpicker('val',"");
-
+	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 	initRFCTable();
 	initRFCFormValidation();
-	console.log("hola prueba");
+	dropDownChange();
+	dropDownChangeSystem();
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -76,7 +77,7 @@ $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
 	$dtRFCs.ajax.reload();
 });
 
-$('#tableFilters #priorityId').change(function() {
+$('#tableFilters #projectId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
@@ -109,9 +110,9 @@ function initRFCTable() {
 					"sAjaxSource" : getCont() + "report/listRFC",
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
-								{"name": "priorityId", "value": $('#tableFilters #priorityId').children("option:selected").val()},
-								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
-								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
+								{"name": "sigesId", "value": $('#tableFilters #sigesId').children("option:selected").val()},
+								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
+								{"name": "projectId", "value": $('#tableFilters #projectId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
@@ -120,7 +121,7 @@ function initRFCTable() {
 						},
 						{
 						
-						"mDataProp" : "numRequest"
+						"mDataProp" : "rfcNumber"
 					},
 					{
 						
@@ -151,26 +152,12 @@ function initRFCTable() {
 					}, {
 						"mRender" : function(data, type, row, meta) {
 							var options = '<div class="iconLine">';
-							if (row.status.name == 'Borrador') {
-								
-									options = options
-									+ '<a onclick="editRFC('
-									+ row.id
-									+ ')" title="Editar"> <i class="material-icons gris">mode_edit</i></a>'
-									+ '<a onclick="confirmDeleteRFC('
-									+ row.id
-									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>'
-								
-							}
-							if($('#isDeveloper').val()){
-								options = options
-								+ '<a onclick="copyRFC('
-								+ row.index
-								+ ')" title="Copiar"><i class="material-icons gris">file_copy</i> </a>';
-							}
-
-							
-
+							options = options
+							+ '<a href="'
+							+ getCont()
+							+ 'report/summaryReportRFC-'
+							+ row.id
+							+ '" target="_blank" title="Reporte"><i class="material-icons gris" style="font-size: 25px;">report</i></a>';
 							options = options
 							+ '<a onclick="openRFCTrackingModal('
 							+ row.id
@@ -341,38 +328,6 @@ function initRFCFormValidation() {
 		errorPlacement
 	});
 }
-function dropDownChange(){
-
-	$('#sId').on('change', function(){
-		var sId =$fmRFC.find('#sId').val();
-		if(sId!=""){
-		$.ajax({
-			type: 'GET',
-			url: getCont() + "rfc/changeProject/"+sId,
-			success: function(result) {
-				if(result.length!=0){
-					var s = '';
-					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
-					for(var i = 0; i < result.length; i++) {
-						s += '<option value="' + result[i].codeSiges + '">' + result[i].codeSiges + '</option>';
-					}
-					$('#sigesId').html(s);
-					$('#sigesId').prop('disabled', false);
-					$('#createRFC').prop('disabled', false);
-					$('#sigesId').selectpicker('refresh');
-				}else{
-					resetDrop();
-				}
-				
-				
-			}
-		});
-		}else{
-			resetDrop();
-		}
-		
-	});
-}
 
 function openRFCTrackingModal(idRFC) {
 
@@ -432,17 +387,188 @@ function getColorNode(status){
 	}
 }
 
-function resetDrops(){
-	$fmRFC.find('#sId').selectpicker('val',  "");
-	resetDrop();
-}	
-function resetDrop(){
+
+
+function dropDownChange(){
+
+	$('#projectId').on('change', function(){
+		var projectId =$('#tableFilters #projectId').val();
+		console.log(projectId);
+		if(projectId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "management/error/getSystem/"+projectId,
+			success: function(result) {
+				console.log(result);
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].name + '</option>';
+					}
+					$('#systemId').html(s);
+					$('#systemId').prop('disabled', false);
+					$('#systemId').selectpicker('refresh');
+				}else{
+					resetDropPriorityMain();
+				}
+				
+				
+			}
+		});
+		
+		}else{
+			resetDropPriorityMain();
+			resetDropTypeMain();
+			resetDropStatusMain();
+		}
+		
+	});
+}
+function dropDownChange(){
+
+	$('#projectId').on('change', function(){
+		var projectId =$('#tableFilters #projectId').val();
+		console.log(projectId);
+		if(projectId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "management/error/getSystem/"+projectId,
+			success: function(result) {
+				console.log(result);
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].name + '</option>';
+					}
+					$('#systemId').html(s);
+					$('#systemId').prop('disabled', false);
+					$('#systemId').selectpicker('refresh');
+				}else{
+					resetDropPriorityMain();
+				}
+				
+				
+			}
+		});
+		
+		}else{
+			
+		}
+		
+	});
+}
+
+function dropDownChangeSystem(){
+
+	$('#systemId').on('change', function(){
+		var systemId =$('#tableFilters #systemId').val();
+		console.log(systemId);
+		if(systemId!=""){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "management/error/getSiges/"+systemId,
+			success: function(result) {
+				console.log(result);
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].codeSiges + '</option>';
+						console.log(s);
+					}
+					$('#sigesId').html(s);
+					$('#sigesId').prop('disabled', false);
+					$('#sigesId').selectpicker('refresh');
+				}else{
+					resetDropPrioritySecond();
+				}
+				
+				
+			}
+		});
+		
+		}else{
+			resetDropPrioritySecond();
+		}
+		
+	});
+}
+
+function resetDropPrioritySecond(){
 	var s = '';
-	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	s+='<option value="0">-- Todos --</option>';
 	$('#sigesId').html(s);
 	$('#sigesId').prop('disabled',true);
-	$('#createRFC').prop('disabled',true);
 	$('#sigesId').selectpicker('refresh');
 	
 }
+function resetDropPriorityMain(){
+	
+	var s = '';
+	s+='<option value="0">-- Todos --</option>';
+	$('#systemId').html(s);
+	$('#systemId').prop('disabled',true);
+	$('#systemId').selectpicker('refresh');
+	
+	var x = '';
+	x+='<option value="0">-- Todos --</option>';
+	$('#sigesId').html(x);
+	$('#sigesId').prop('disabled',true);
+	$('#sigesId').selectpicker('refresh');
+}
+
+function downLoadReport(){
+	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
+	$.ajax({
+		type : "GET",
+		cache : false,
+		contentType: "application/json; charset=utf-8",
+		async : false,
+		url : getCont() + "report/downloadreportrfc",
+		timeout : 60000,
+		data : {
+			dateRange :$('#tableFilters input[name="daterange"]').val(),
+			projectId: $('#tableFilters #projectId').children("option:selected").val(),
+			systemId: $('#tableFilters #systemId').children("option:selected").val(),
+			sigesId: $('#tableFilters #sigesId').children("option:selected").val()
+		},
+		success : function(response) {
+			console.log(response);
+			//console.log(atob(response.obj.file));
+			
+			var blob = new Blob([b64toBlob(response.obj.file,response.obj.ContentType)], {type: response.obj.ContentType});
+			var link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = response.obj.name;
+			link.click();   
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+
+
+}
+const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+	  const byteCharacters = atob(b64Data);
+	  const byteArrays = [];
+
+	  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+	    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+	    const byteNumbers = new Array(slice.length);
+	    for (let i = 0; i < slice.length; i++) {
+	      byteNumbers[i] = slice.charCodeAt(i);
+	    }
+
+	    const byteArray = new Uint8Array(byteNumbers);
+	    byteArrays.push(byteArray);
+	  }
+
+	  const blob = new Blob(byteArrays, {type: contentType});
+	  return blob;
+	}
+
 

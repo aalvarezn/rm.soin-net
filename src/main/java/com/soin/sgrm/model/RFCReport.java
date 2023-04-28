@@ -31,25 +31,7 @@ public class RFCReport implements Serializable {
 	private String codeProyect;
 
 	@Column(name = "NUM_SOLICITUD")
-	private String numRequest;
-
-	@Column(name = "RAZON_CAMBIO")
-	private String reasonChange;
-
-	@Column(name = "EFECTO")
-	private String effect;
-
-	@Column(name = "DETALLE_IMPLEMEN")
-	private String detail;
-
-	@Column(name = "MOTIVO")
-	private String motive;
-
-	@Column(name = "OPERADOR")
-	private String operator;
-
-	@Column(name = "SCHEMADB")
-	private String schemaDB;
+	private String rfcNumber;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_PRIORIDAD", nullable = true)
@@ -86,23 +68,17 @@ public class RFCReport implements Serializable {
 	// Agregar Motivo
 	// Agregar Usuario que lo cambio
 	@Transient
-	private String[] strReleases;
-
-	@Transient
-	private int impactId;
-
-	@Transient
-	private int priorityId;
-
-	@Transient
-	private Integer systemId;
+	private String systemName;
 	
 	@Transient
-	private Long typeChangeId;
+	private String statusName;
 
 	@Transient
-	private String releasesList;
-
+	private String priorityName;
+	
+	@Transient
+	private String impactName;
+	
 	public Long getId() {
 		return id;
 	}
@@ -119,38 +95,59 @@ public class RFCReport implements Serializable {
 		this.codeProyect = codeProyect;
 	}
 
-	public String getNumRequest() {
-		return numRequest;
+	
+	public String getUserName() {
+		
+		if(getUser()!=null) {
+			return getUser().getFullName();
+		}else {
+			return "No hay un usuario seleccionado";
+		}
+		
+	}
+	
+	public String getStatusName() {
+		 
+		if(getStatus()!=null) {
+			return getStatus().getName();
+		}else {
+			return "No hay un estado seleccionado";
+		}
 	}
 
-	public void setNumRequest(String numRequest) {
-		this.numRequest = numRequest;
+	public String getImpactName() {
+			if(getImpact()!=null) {
+			return getImpact().getName();
+		}else {
+			return "No hay un impacto seleccionado";
+		}
 	}
 
-	public String getReasonChange() {
-		return reasonChange;
+	public String getPriorityName() {
+	
+		if(getPriority()!=null) {
+			return getPriority().getName();
+		}else {
+			return "No hay una prioridad seleccionada ";
+		}
 	}
 
-	public void setReasonChange(String reasonChange) {
-		this.reasonChange = reasonChange;
+	public String getSystemName() {
+		
+		if(getSystem()!=null) {
+			return getSystem().getName();
+		}else {
+			return "No hay un sistema seleccionado";
+		}
+	}
+	
+	public String getRfcNumber() {
+		return rfcNumber;
 	}
 
-	public String getEffect() {
-		return effect;
+	public void setRfcNumber(String rfcNumber) {
+		this.rfcNumber = rfcNumber;
 	}
-
-	public void setEffect(String effect) {
-		this.effect = effect;
-	}
-
-	public String getDetail() {
-		return detail;
-	}
-
-	public void setDetail(String detail) {
-		this.detail = detail;
-	}
-
 
 	public Priority getPriority() {
 		return priority;
@@ -201,71 +198,6 @@ public class RFCReport implements Serializable {
 	}
 
 
-	public String[] getStrReleases() {
-		return strReleases;
-	}
-
-	public void setStrReleases(String[] strReleases) {
-		this.strReleases = strReleases;
-	}
-
-	public int getImpactId() {
-		return impactId;
-	}
-
-	public void setImpactId(int impactId) {
-		this.impactId = impactId;
-	}
-
-	public int getPriorityId() {
-		return priorityId;
-	}
-
-	public void setPriorityId(int priorityId) {
-		this.priorityId = priorityId;
-	}
-
-	public Long getTypeChangeId() {
-		return typeChangeId;
-	}
-
-	public void setTypeChangeId(Long typeChangeId) {
-		this.typeChangeId = typeChangeId;
-	}
-
-	public String getReleasesList() {
-		return releasesList;
-	}
-
-	public void setReleasesList(String releasesList) {
-		this.releasesList = releasesList;
-	}
-
-	public String getMotive() {
-		return motive;
-	}
-
-	public void setMotive(String motive) {
-		this.motive = motive;
-	}
-
-	public String getOperator() {
-		return operator;
-	}
-
-	public void setOperator(String operator) {
-		this.operator = operator;
-	}
-
-
-	public String getSchemaDB() {
-		return schemaDB;
-	}
-
-	public void setSchemaDB(String schemaDB) {
-		this.schemaDB = schemaDB;
-	}
-
 	public Siges getSiges() {
 		return siges;
 	}
@@ -283,12 +215,6 @@ public class RFCReport implements Serializable {
 		this.system = system;
 	}
 
-	public Integer getSystemId() {
-		return systemId;
-	}
 
-	public void setSystemId(Integer systemId) {
-		this.systemId = systemId;
-	}
 
 }
