@@ -190,13 +190,19 @@
 
 
 			</div>
+			<button type="button" class="btn btn-default setIcon"
+				onclick="exportPDF(	 '${request.id}' )" title="Exportar"
+				style="background-color: #00294c !important; color: #fff; border: none !important; padding-left: 20px;">
+				<span>Exportar PDF</span><span style="margin-left: 25px;"><i
+					class="material-icons m-t--2">offline_pin</i></span>
+			</button>
 		</div>
 	</section>
 
 	<%@include file="../../../plantilla/footer.jsp"%>
 
 	<script
-		src="<c:url value='/static/js/newRequest/requestSummaryActions.js'/>"></script>
+		src="<c:url value='/static/js/report/requestSummaryActions.js'/>"></script>
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>

@@ -1118,78 +1118,79 @@ public class ReportController extends BaseController {
 	
 	@RequestMapping(value = { "/downloadRequest/{id}" }, method = RequestMethod.GET)
 	public  @ResponseBody JsonResponse downloadReportRequest(HttpServletResponse response,@PathVariable Long id, Locale locale, Model model) {
-		RFCReportComplete rfc = null;
+		RequestReport request = null;
 		JsonResponse res = new JsonResponse();
 		try {
-			rfc= rfcService.findByIdRFCReport(id);
+		
 	
-				ClassPathResource resource = new ClassPathResource("reports" + File.separator + "RFCReport" + ".jrxml");
+				ClassPathResource resource = new ClassPathResource("reports" + File.separator + "RequestReport" + ".jrxml");
 				InputStream inputStream = resource.getInputStream();
 				// Compile the Jasper report from .jrxml to .japser
 				// InputStream jasperReport = reportManager.export(fileName);
 				JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
-				List<RFCReportComplete> rfcs = new ArrayList<>();
-				List<ReleaseObjectClean> listObjects = new ArrayList<ReleaseObjectClean>();
-				Set<Release_RFCFast> releases = rfc.getReleases();
-				List<String> systemsImplicated = new ArrayList<String>();
-				Siges codeSiges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
-				rfc.setSigesName(codeSiges.getCodeSiges());
-				systemsImplicated.add(codeSiges.getSystem().getName());
+				List<RequestReport> requests = new ArrayList<>();
+				
+
 				String nameSystem = "";
 				boolean validate = true;
 				Integer totalObjects = 0;
-				List<ReportBlank> listReleases= new ArrayList<ReportBlank>();
-				List<ReportBlank> listObject= new ArrayList<ReportBlank>();
-				if (releases != null) {
-					if (releases.size() != 0) {
-						for (Release_RFCFast release : releases) {
-							nameSystem = release.getSystem().getName();
-							if (release.getObjects() != null) {
-								totalObjects += release.getObjects().size();
-								ReportBlank releaseBlank= new ReportBlank();
-								releaseBlank.setField1(release.getReleaseNumber());
-								releaseBlank.setField2(release.getDescription());
-								releaseBlank.setField3(""+release.getObjects().size());
-								listReleases.add(releaseBlank);
-								Set<ReleaseObjectClean> objects = release.getObjects();
-								for (ReleaseObjectClean object : objects) {
-									object.setNumRelease(release.getReleaseNumber());
-									ReportBlank objectBlank= new ReportBlank();
-									objectBlank.setField1(release.getReleaseNumber());
-									objectBlank.setField2(object.getName());
-									objectBlank.setField3(object.getDescription());
-									
-									listObject.add(objectBlank);
-									
-									listObjects.add(object);
-								}
-							}
+				request = requestBaseService.findByReport(id);
+				// Add parameters
+				Map<String, Object> parameters = new HashMap<>();
+			
 
-							for (String system : systemsImplicated) {
-								if (system.equals(nameSystem)) {
-									validate = false;
-								}
-							}
-							if (validate) {
-								systemsImplicated.add(nameSystem);
-							}
-							validate = true;
-						}
-					}
+				
 
+
+				if (request.getTypePetition().getCode().equals("RM-P1-R2")) {
+					
+					RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(request.getId());
+					request.setTypePetitionNum(2);
+					parameters.put("ambient",requestR2.getAmbient());
+					parameters.put("typeChange","");
+					parameters.put("changeService","");
+					parameters.put("justify","");
+					parameters.put("typeService",requestR2.getTypeService());
+					parameters.put("hierarchy",requestR2.getHierarchy());
+					parameters.put("requeriments",requestR2.getRequeriments());
+					
 				}
+				
+				if (request.getTypePetition().getCode().equals("RM-P1-R4")) {
+					
+					List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(request.getId());
+					request.setTypePetitionNum(4);
+					request.setR4DataSource(listUser);
+					parameters.put("ambient","");
+					parameters.put("typeChange","");
+					parameters.put("changeService","");
+					parameters.put("justify","");
+					parameters.put("typeService","");
+					parameters.put("hierarchy","");
+					parameters.put("requeriments","");
+				}
+				if (request.getTypePetition().getCode().equals("RM-P1-R5")) {
+					
+					RequestRM_P1_R5 requestR5 = requestServiceRm5.requestRm5(request.getId());
+					request.setTypePetitionNum(5);
+					parameters.put("ambient","");
+					parameters.put("typeChange",requestR5.getTypeChange());
+					parameters.put("changeService",requestR5.getChangeService());
+					parameters.put("justify",requestR5.getJustify());
+					parameters.put("typeService","");
+					parameters.put("hierarchy","");
+					parameters.put("requeriments","");
+				}
+	
 
-				rfc.setReleasesDataSource(listReleases);
-				rfc.setObjectsDataSource(listObject);
-				rfcs.add(rfc);
+				requests.add(request);
 			
 
 				// Get your data source
-				JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(rfcs);
+				JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(requests);
 				
 
-				// Add parameters
-				Map<String, Object> parameters = new HashMap<>();
+				
 
 	
 				
@@ -1197,7 +1198,7 @@ public class ReportController extends BaseController {
 				// Export the report to a PDF file
 				//JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + "/Emp-Rpt.pdf");
 				response.setContentType("application/pdf");
-				String reportName= "REPORTE-"+rfc.getRfcNumber()+".pdf";
+				String reportName= "REPORTE-"+request.getNumRequest()+".pdf";
 		
 				Map<String, String> dataNew = new HashMap<String, String>();
 

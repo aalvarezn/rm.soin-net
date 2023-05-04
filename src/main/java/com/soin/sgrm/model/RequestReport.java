@@ -2,7 +2,9 @@ package com.soin.sgrm.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -24,6 +26,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @Entity
 @Table(name = "SOLICITUD")
@@ -68,6 +72,16 @@ public class RequestReport implements Serializable {
 	@JoinColumn(name = "ID_ESTADO", nullable = false)
 	private StatusRequest status;
 	
+	@OrderBy("trackingDate ASC")
+	@Fetch(value = FetchMode.SUBSELECT)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "rfc")
+	private Set<RequestBaseTracking> tracking = new HashSet<RequestBaseTracking>();
+	@Transient 
+	private JRBeanCollectionDataSource trackingDataSource;
+	
+	@Transient 
+	private JRBeanCollectionDataSource r4DataSource;
+	
 
 	@Transient
 	private Long typePetitionId;
@@ -77,6 +91,9 @@ public class RequestReport implements Serializable {
 
 	@Transient
 	private String codeOpportunity;
+	
+	@Transient
+	private Integer typePetitionNum;
 
 	@Transient
 	private String systemName;
@@ -233,4 +250,59 @@ public class RequestReport implements Serializable {
 		}
 	}
 
+	public Integer getTypePetitionNum() {
+		return typePetitionNum;
+	}
+
+	public void setTypePetitionNum(Integer typePetitionNum) {
+		this.typePetitionNum = typePetitionNum;
+	}
+
+	public JRBeanCollectionDataSource getTrackingDataSource() {
+		
+			List<RequestBaseTracking> listTracking=new ArrayList<>();
+			
+			Set<RequestBaseTracking> tracking =getTracking(); 
+			if(tracking.size()>0) {
+			for(RequestBaseTracking trackinRequest: tracking) {
+					listTracking.add(trackinRequest);
+			}
+			}else {
+				RequestBaseTracking withOutTracking=new RequestBaseTracking();
+					withOutTracking.setStatus("Sin tracking previo");
+					withOutTracking.setOperator("Sin tracking previo");
+					withOutTracking.setMotive("Sin tracking previo");
+					withOutTracking.setTrackingDate(null);
+					withOutTracking.setStatus("Sin tracking previo");
+					listTracking.add(withOutTracking);
+				
+			}
+				JRBeanCollectionDataSource trackingDataSource = new JRBeanCollectionDataSource(listTracking,false);
+		       return trackingDataSource;
+		   
+	}
+
+	public void setTrackingDataSource(JRBeanCollectionDataSource trackingDataSource) {
+		this.trackingDataSource = trackingDataSource;
+	}
+
+	public JRBeanCollectionDataSource getR4DataSource() {
+		return r4DataSource;
+	}
+
+	public void setR4DataSource(List<?> userList) {
+		JRBeanCollectionDataSource r4DataSource = new JRBeanCollectionDataSource(userList, false);
+		this.r4DataSource = r4DataSource;
+
+	}
+
+	public Set<RequestBaseTracking> getTracking() {
+		return tracking;
+	}
+
+	public void setTracking(Set<RequestBaseTracking> tracking) {
+		this.tracking = tracking;
+	}
+	
+	
 }

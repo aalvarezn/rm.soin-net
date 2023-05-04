@@ -181,79 +181,19 @@
 					</div>
 				</div>
 			</div>
-
-
-			<div class="row clearfix">
-				<div class="col-sm-12">
-					<h5 class="titulares">Archivos adjuntos</h5>
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-20">
-					<div class="clearfix">
-						<div class="body table-responsive">
-							<table
-								class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
-								<thead>
-									<tr>
-										<th class="col-md-8 col-lg-8 col-xs-8 col-sm-8">Nombre</th>
-										<th class="col-md-4 col-lg-4 col-xs-4 col-sm-4">Fecha de
-											carga</th>
-										<th class="col-md-1 col-lg-1 col-xs-12 col-sm-12">Acciones</th>
-									</tr>
-								</thead>
-								<tbody>
-
-									<c:forEach items="${request.files}" var="fileRequest">
-										<tr id="${fileRequest.id}">
-											<td>${fileRequest.name}</td>
-											<td><fmt:formatDate value="${fileRequest.revisionDate}"
-													type="both" /></td>
-											<td class="iconLineC"><a
-												href="<c:url value='/file/singleDownloadRequest-${fileRequest.id }'/>"
-												download class=""> <i class="material-icons col-cyan"
-													style="font-size: 30px;">cloud_download</i>
-											</a></td>
-										</tr>
-									</c:forEach>
-
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-
-				</div>
-
-				<c:forEach items="${userInfo.authorities}" var="authority">
-					<c:if test="${authority.name == 'Release Manager'}">
-						<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-20">
-							<div class="m-b-20">
-								<c:if test="${request.status.name ne 'Anulado'}">
-									<button type="button" class="btn btn-default setIcon"
-										onclick="confirmCancelRequest(${request.id})" title="Anular"
-										style="background-color: #00294c !important; color: #fff; border: none !important;">
-										<span>ANULAR</span><span style="margin-left: 10px;"><i
-											class="material-icons m-t--2">highlight_off</i></span>
-									</button>
-								</c:if>
-								<button type="button" class="btn btn-default setIcon"
-									onclick="changeStatusRequest(${request.id}, '${request.numRequest}' )"
-									title="Borrador"
-									style="background-color: #00294c !important; color: #fff; border: none !important;">
-									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
-										class="material-icons m-t--2">offline_pin</i></span>
-								</button>
-							</div>
-						</div>
-					</c:if>
-				</c:forEach>
-			</div>
+			<button type="button" class="btn btn-default setIcon"
+				onclick="exportPDF(	 '${request.id}' )" title="Exportar"
+				style="background-color: #00294c !important; color: #fff; border: none !important; padding-left: 20px;">
+				<span>Exportar PDF</span><span style="margin-left: 25px;"><i
+					class="material-icons m-t--2">offline_pin</i></span>
+			</button>
 		</div>
 	</section>
 
 	<%@include file="../../../plantilla/footer.jsp"%>
 
 	<script
-		src="<c:url value='/static/js/newRequest/requestSummaryActions.js'/>"></script>
+		src="<c:url value='/static/js/report/requestSummaryActions.js'/>"></script>
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>

@@ -65,17 +65,14 @@
 		<![CDATA[]]>
 	</queryString>
 	<field name="numRequest" class="java.lang.String"/>
-	<field name="description" class="java.lang.String"/>
-	<field name="observations" class="java.lang.String"/>
 	<field name="requestDate" class="java.sql.Timestamp"/>
-	<field name="trackingdataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<field name="trackingDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<field name="userName" class="java.lang.String"/>
 	<field name="statusName" class="java.lang.String"/>
 	<field name="systemName" class="java.lang.String"/>
 	<field name="typePetitionName" class="java.lang.String"/>
-	<field name="priorityName" class="java.lang.String"/>
-	<field name="impactName" class="java.lang.String"/>
 	<field name="typePetitionNum" class="java.lang.Integer"/>
+	<field name="r4DataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -102,11 +99,11 @@
 		</band>
 	</title>
 	<detail>
-		<band height="739" splitType="Stretch">
+		<band height="747" splitType="Stretch">
 			<property name="com.jaspersoft.studio.layout"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<componentElement>
-				<reportElement x="27" y="610" width="497" height="60" uuid="a9aee03b-c2af-491b-82d4-3b48cc7830b6">
+				<reportElement x="29" y="640" width="497" height="60" uuid="a9aee03b-c2af-491b-82d4-3b48cc7830b6">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -116,7 +113,7 @@
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="Blank">
 					<datasetRun subDataset="trackingDataSet" uuid="96b29933-3531-465f-8d13-6262053a5db7">
 						<datasetParameter name="REPORT_DATA_SOURCE">
-							<datasetParameterExpression><![CDATA[$F{trackingdataSource}]]></datasetParameterExpression>
+							<datasetParameterExpression><![CDATA[$F{trackingDataSource}]]></datasetParameterExpression>
 						</datasetParameter>
 						<dataSourceExpression><![CDATA[$P{REPORT_CONNECTION}]]></dataSourceExpression>
 					</datasetRun>
@@ -337,13 +334,13 @@
 				<text><![CDATA[Tipo de solicitud]]></text>
 			</staticText>
 			<rectangle>
-				<reportElement x="-22" y="550" width="599" height="50" backcolor="#012A4D" uuid="86c448d5-6648-40b7-a51f-149f420e413c"/>
+				<reportElement x="-20" y="580" width="599" height="50" backcolor="#012A4D" uuid="86c448d5-6648-40b7-a51f-149f420e413c"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid" lineColor="#012A4D"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="-114" y="560" width="367" height="30" forecolor="#FFFFFF" uuid="551f17e9-36bb-4d1a-b195-27b30204723d"/>
+				<reportElement x="-112" y="590" width="367" height="30" forecolor="#FFFFFF" uuid="551f17e9-36bb-4d1a-b195-27b30204723d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="14" isBold="true"/>
 				</textElement>
@@ -393,7 +390,7 @@
 				<text><![CDATA[Solicitud de cambios en el servicio ]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement x="-16" y="460" width="587" height="60" uuid="f81dbf87-ef27-443e-a3ef-59db3770135a">
+				<reportElement x="-16" y="450" width="587" height="60" uuid="f81dbf87-ef27-443e-a3ef-59db3770135a">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -402,11 +399,11 @@
 					<printWhenExpression><![CDATA[$F{typePetitionNum}==4]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="Blank">
-					<datasetRun subDataset="r4DataSet" uuid="71f492b6-d4ab-4636-80fd-a780f23a6761">
+					<datasetRun subDataset="r4DataSet" uuid="1261fe5a-81fd-4aec-86c0-f495c1b81194">
 						<datasetParameter name="REPORT_DATA_SOURCE">
-							<datasetParameterExpression><![CDATA[$F{trackingdataSource}]]></datasetParameterExpression>
+							<datasetParameterExpression><![CDATA[$F{trackingDataSource}]]></datasetParameterExpression>
 						</datasetParameter>
-						<dataSourceExpression><![CDATA[$P{REPORT_CONNECTION}]]></dataSourceExpression>
+						<dataSourceExpression><![CDATA[$F{r4DataSource}]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="80" uuid="538b5e23-9576-4f9a-8fe4-662719e75142">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -522,7 +519,7 @@
 				</jr:table>
 			</componentElement>
 			<staticText>
-				<reportElement x="-11" y="400" width="233" height="30" forecolor="#FFFFFF" uuid="c7747459-5d51-4819-a67b-229879f6a2c2">
+				<reportElement x="-28" y="400" width="168" height="30" forecolor="#FFFFFF" uuid="c7747459-5d51-4819-a67b-229879f6a2c2">
 					<printWhenExpression><![CDATA[$F{typePetitionNum}==4]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -531,7 +528,7 @@
 				<text><![CDATA[Usuarios Solicitados]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="-11" y="400" width="233" height="30" forecolor="#FFFFFF" uuid="238c5143-e508-464a-8913-1443466c878f">
+				<reportElement x="-10" y="400" width="200" height="30" forecolor="#FFFFFF" uuid="238c5143-e508-464a-8913-1443466c878f">
 					<printWhenExpression><![CDATA[$F{typePetitionNum}==2]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -540,46 +537,130 @@
 				<text><![CDATA[Solicitud de nuevos servicios]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="40" y="460" width="100" height="30" uuid="0675ddef-65c0-4941-9b91-3e357a7eb709">
-					<printWhenExpression><![CDATA[$F{typePetitionNum}!=4]]></printWhenExpression>
+				<reportElement x="50" y="470" width="170" height="30" uuid="0675ddef-65c0-4941-9b91-3e357a7eb709">
+					<printWhenExpression><![CDATA[$F{typePetitionNum}!=2]]></printWhenExpression>
 				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{ambient}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="220" y="460" width="100" height="30" uuid="54560cd7-327d-4f6a-a5f2-c5451c8e077b">
+				<reportElement x="50" y="470" width="170" height="30" uuid="54560cd7-327d-4f6a-a5f2-c5451c8e077b">
 					<printWhenExpression><![CDATA[$F{typePetitionNum}==5]]></printWhenExpression>
 				</reportElement>
+				<textElement>
+					<font fontName="Titillium Web"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{changeService}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="460" width="100" height="30" uuid="d719bd35-6178-492a-b52b-12012ffe5c7e">
+				<reportElement x="355" y="470" width="170" height="30" uuid="d719bd35-6178-492a-b52b-12012ffe5c7e">
 					<printWhenExpression><![CDATA[$F{typePetitionNum}==5]]></printWhenExpression>
 				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{justify}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="222" y="460" width="100" height="30" uuid="72ce4f52-ae6f-4409-85b8-a3081563d5b7">
+				<reportElement x="355" y="540" width="170" height="30" uuid="72ce4f52-ae6f-4409-85b8-a3081563d5b7">
 					<printWhenExpression><![CDATA[$F{typePetitionNum}==2]]></printWhenExpression>
 				</reportElement>
+				<textElement>
+					<font fontName="Titillium Web"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{typeService}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="370" y="460" width="100" height="30" uuid="d59df052-449b-420f-8977-0f0038e32674">
+				<reportElement x="405" y="240" width="150" height="30" uuid="d59df052-449b-420f-8977-0f0038e32674">
 					<printWhenExpression><![CDATA[$F{typePetitionNum}==2]]></printWhenExpression>
 				</reportElement>
+				<textElement>
+					<font fontName="Titillium Web"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{hierarchy}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="40" y="510" width="100" height="30" uuid="9241e809-ab8e-49c4-a351-530f9b1c7b5a">
+				<reportElement x="50" y="540" width="170" height="30" uuid="9241e809-ab8e-49c4-a351-530f9b1c7b5a">
 					<printWhenExpression><![CDATA[$F{typePetitionNum}==2]]></printWhenExpression>
 				</reportElement>
+				<textElement>
+					<font fontName="Titillium Web"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{requeriments}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="40" y="510" width="100" height="30" uuid="f5cd7a5f-8ad6-4e67-a12b-33ce684b4006">
+				<reportElement x="50" y="540" width="170" height="30" uuid="f5cd7a5f-8ad6-4e67-a12b-33ce684b4006">
 					<printWhenExpression><![CDATA[$F{typePetitionNum}==5]]></printWhenExpression>
 				</reportElement>
+				<textElement>
+					<font fontName="Titillium Web"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$P{typeChange}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="440" width="170" height="30" uuid="3eccb740-2a2d-4643-ac19-1dfd42015cbb">
+					<printWhenExpression><![CDATA[$F{typePetitionNum}!=2]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Ambiente]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="440" width="170" height="30" uuid="4458d37d-cfef-4966-bf6a-3c28438dcb28">
+					<printWhenExpression><![CDATA[$F{typePetitionNum}!=5]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Cambio servicio]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="355" y="440" width="170" height="30" uuid="992c05ad-d5b8-44e8-96c7-9056bac0eb10">
+					<printWhenExpression><![CDATA[$F{typePetitionNum}!=5]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Justificacion]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="510" width="170" height="30" uuid="3e0104db-514a-47aa-9362-86cb5015fc10">
+					<printWhenExpression><![CDATA[$F{typePetitionNum}!=2]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Requerimientos]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="510" width="170" height="30" uuid="d326062a-1dbb-4d9c-bed3-f824571edf6e">
+					<printWhenExpression><![CDATA[$F{typePetitionNum}!=5]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Tipo de cambio]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="405" y="210" width="150" height="30" uuid="eaa887cf-e5c8-4b98-8cdb-d3c771b91a84">
+					<printWhenExpression><![CDATA[$F{typePetitionNum}!=2]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Herarquia]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="356" y="510" width="170" height="30" uuid="4cd57e1b-818e-49b2-9135-135ae7de109a">
+					<printWhenExpression><![CDATA[$F{typePetitionNum}!=5]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[Tipo de servicio]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
