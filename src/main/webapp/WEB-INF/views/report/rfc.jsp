@@ -54,7 +54,8 @@
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
-
+	<!-- Page downloading -->
+	<%@include file="../plantilla/downloading.jsp"%>
 	<!-- Overlay For Sidebars -->
 	<div class="overlay"></div>
 	<!-- #END# Overlay For Sidebars -->

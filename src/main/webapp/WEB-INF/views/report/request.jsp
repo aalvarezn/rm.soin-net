@@ -63,6 +63,8 @@
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
+		<!-- Page downloading -->
+	<%@include file="../plantilla/downloading.jsp"%>
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->

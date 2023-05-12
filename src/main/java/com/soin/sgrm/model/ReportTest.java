@@ -33,9 +33,8 @@ public class ReportTest {
 	
 	@Transient
 	private JRBeanCollectionDataSource requestDataSource;
-	
-
-
+	@Transient
+	private JRBeanCollectionDataSource countDataSource;
 
 	
 	public void setReleaseDataSource(List<ReleaseReportFast> releaseDataSource) {
@@ -63,6 +62,17 @@ public class ReportTest {
 		this.requestDataSource = requestDataSource1;
 	}
 	
+	
+	
+	public JRBeanCollectionDataSource getCountDataSource() {
+		return countDataSource;
+	}
+
+	public void setCountDataSource(List<?> count) {
+		JRBeanCollectionDataSource countDataSource = new JRBeanCollectionDataSource(count, false);
+		this.countDataSource = countDataSource;
+	}
+
 	public JRBeanCollectionDataSource getRequestDataSource() {
 		return requestDataSource;
 	}

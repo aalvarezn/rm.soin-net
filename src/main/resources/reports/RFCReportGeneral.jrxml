@@ -24,6 +24,13 @@
 		<field name="priorityName" class="java.lang.String"/>
 		<field name="impactName" class="java.lang.String"/>
 	</subDataset>
+	<subDataset name="countDataSet" uuid="39d54167-0576-4951-98a2-0d74fb57e1ab">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="label" class="java.lang.String"/>
+		<field name="value1" class="java.lang.Integer"/>
+	</subDataset>
 	<parameter name="ds" class="net.sf.jasperreports.engine.data.JsonData"/>
 	<parameter name="rfcDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<parameter name="statusTracking" class="java.lang.String"/>
@@ -35,6 +42,7 @@
 	<field name="systemNameNew" class="java.lang.String"/>
 	<field name="projectNameNew" class="java.lang.String"/>
 	<field name="dateNew" class="java.lang.String"/>
+	<field name="countDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -368,6 +376,38 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
+			<pie3DChart>
+				<chart evaluationTime="Report">
+					<reportElement positionType="Float" x="320" y="430" width="320" height="230" uuid="dba1b618-bc09-4223-9ef3-0d40fadf1f7c"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset resetType="Report">
+						<datasetRun subDataset="countDataSet" uuid="6e435837-735b-4eb4-81fb-b7dcf27bf12b">
+							<dataSourceExpression><![CDATA[$F{countDataSource}]]></dataSourceExpression>
+						</datasetRun>
+					</dataset>
+					<keyExpression><![CDATA[$F{label}]]></keyExpression>
+					<valueExpression><![CDATA[$F{value1}]]></valueExpression>
+					<labelExpression><![CDATA[$F{value1}.toString()]]></labelExpression>
+				</pieDataset>
+				<pie3DPlot>
+					<plot/>
+					<itemLabel/>
+				</pie3DPlot>
+			</pie3DChart>
+			<rectangle>
+				<reportElement positionType="Float" x="320" y="670" width="320" height="50" backcolor="#012A4D" uuid="27098dc0-5084-4762-8028-fcf97025fd1a"/>
+			</rectangle>
+			<staticText>
+				<reportElement positionType="Float" x="320" y="670" width="320" height="50" forecolor="#FFFFFF" uuid="ded4ff4d-ed5e-452a-b7be-72834acf6c5a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cantidad de RFC completados por sistema]]></text>
+			</staticText>
 		</band>
 	</detail>
 </jasperReport>

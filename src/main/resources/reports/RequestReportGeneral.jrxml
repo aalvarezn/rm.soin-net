@@ -24,6 +24,13 @@
 		<field name="codeProyectName" class="java.lang.String"/>
 		<field name="typePetitionName" class="java.lang.String"/>
 	</subDataset>
+	<subDataset name="countDataSet" uuid="5f7f895c-d904-4709-9f92-b03c74f9fccd">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="label" class="java.lang.String"/>
+		<field name="value1" class="java.lang.Integer"/>
+	</subDataset>
 	<parameter name="ds" class="net.sf.jasperreports.engine.data.JsonData"/>
 	<parameter name="requestDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<parameter name="statusTracking" class="java.lang.String"/>
@@ -35,6 +42,7 @@
 	<field name="systemNameNew" class="java.lang.String"/>
 	<field name="projectNameNew" class="java.lang.String"/>
 	<field name="dateNew" class="java.lang.String"/>
+	<field name="countDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -47,7 +55,7 @@
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="35" isBold="true"/>
+					<font fontName="Titillium Web" size="35" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Reporte Solicitudes]]></text>
 			</staticText>
@@ -121,7 +129,7 @@
 				<textFieldExpression><![CDATA[$F{dateNew}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="-19" y="40" width="226" height="110" forecolor="#FFFFFF" uuid="275f5deb-19c0-4f0b-b72d-bffb91ca6363"/>
+				<reportElement x="-20" y="55" width="226" height="110" forecolor="#FFFFFF" uuid="275f5deb-19c0-4f0b-b72d-bffb91ca6363"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="20" isBold="true"/>
 				</textElement>
@@ -368,6 +376,38 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
+			<pie3DChart>
+				<chart evaluationTime="Report">
+					<reportElement x="320" y="430" width="320" height="230" uuid="4f077f97-fd74-4c61-b884-c18657fc0621"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset resetType="Report">
+						<datasetRun subDataset="countDataSet" uuid="4ac82d29-7b04-4f34-9273-90d2287d617d">
+							<dataSourceExpression><![CDATA[$F{countDataSource}]]></dataSourceExpression>
+						</datasetRun>
+					</dataset>
+					<keyExpression><![CDATA[$F{label}]]></keyExpression>
+					<valueExpression><![CDATA[$F{value1}]]></valueExpression>
+					<labelExpression><![CDATA[$F{value1}.toString()]]></labelExpression>
+				</pieDataset>
+				<pie3DPlot>
+					<plot/>
+					<itemLabel/>
+				</pie3DPlot>
+			</pie3DChart>
+			<rectangle>
+				<reportElement x="320" y="670" width="320" height="50" backcolor="#012A4D" uuid="67d3d0af-b243-48ee-a4d7-0125626bc54f"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="320" y="670" width="320" height="50" forecolor="#FFFFFF" uuid="9e68d7c2-4b39-46e6-a895-d1ce1f9cb62d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cantidad de Solicitudes completadas por sistema]]></text>
+			</staticText>
 		</band>
 	</detail>
 </jasperReport>

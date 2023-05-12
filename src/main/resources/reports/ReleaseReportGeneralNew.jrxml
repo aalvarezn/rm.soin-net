@@ -27,9 +27,17 @@
 		<field name="priorityName" class="java.lang.String"/>
 		<field name="impactName" class="java.lang.String"/>
 	</subDataset>
+	<subDataset name="countDataSet" uuid="bb08f9f2-cd27-441d-8b22-6069e9a49fa1">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="label" class="java.lang.String"/>
+		<field name="value1" class="java.lang.Integer"/>
+	</subDataset>
 	<parameter name="ds" class="net.sf.jasperreports.engine.data.JsonData"/>
 	<parameter name="releaseDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<parameter name="statusTracking" class="java.lang.String"/>
+	<parameter name="logo" class="java.io.InputStream"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -37,6 +45,7 @@
 	<field name="systemNameNew" class="java.lang.String"/>
 	<field name="projectNameNew" class="java.lang.String"/>
 	<field name="dateNew" class="java.lang.String"/>
+	<field name="countDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -57,13 +66,18 @@
 				<reportElement x="0" y="91" width="100" height="1" uuid="f653b67f-7814-43e9-920d-67decbb14762"/>
 			</break>
 			<image>
-				<reportElement x="930" y="-8" width="103" height="87" uuid="da525213-6588-4c1a-b197-0c9df770b230"/>
-				<imageExpression><![CDATA["C:/Users/Soin/Documents/Repositorios/SGRM/src/main/webapp/static/images/logo.png"]]></imageExpression>
+				<reportElement x="930" y="5" width="110" height="80" uuid="b654ae6a-2993-4ad8-95df-fe6b9c1a2d5b">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
 			</image>
 		</band>
 	</title>
 	<detail>
-		<band height="802" splitType="Stretch">
+		<band height="813" splitType="Stretch">
 			<property name="com.jaspersoft.studio.layout"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<rectangle>
@@ -365,6 +379,38 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
+			<pie3DChart>
+				<chart evaluationTime="Report">
+					<reportElement positionType="Float" x="335" y="470" width="320" height="230" isPrintWhenDetailOverflows="true" uuid="3121c02e-804d-427f-bc27-b47511b87c0b"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset resetType="Report">
+						<datasetRun subDataset="countDataSet" uuid="8e38d281-80c6-4bcc-8831-f2dbe3834fb6">
+							<dataSourceExpression><![CDATA[$F{countDataSource}]]></dataSourceExpression>
+						</datasetRun>
+					</dataset>
+					<keyExpression><![CDATA[$F{label}]]></keyExpression>
+					<valueExpression><![CDATA[$F{value1}]]></valueExpression>
+					<labelExpression><![CDATA[$F{value1}.toString()]]></labelExpression>
+				</pieDataset>
+				<pie3DPlot>
+					<plot/>
+					<itemLabel/>
+				</pie3DPlot>
+			</pie3DChart>
+			<rectangle>
+				<reportElement positionType="Float" x="335" y="710" width="320" height="50" backcolor="#012A4D" uuid="2b2b7cb0-0872-41c9-8d21-5d98801bc81d"/>
+			</rectangle>
+			<staticText>
+				<reportElement positionType="Float" x="335" y="710" width="320" height="50" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="7f1deb84-b024-4294-8fb3-013bd0516bef"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cantidad Releases por sistemas en Certificacion ]]></text>
+			</staticText>
 		</band>
 	</detail>
 </jasperReport>

@@ -525,7 +525,7 @@ function downLoadReport(){
 		type : "GET",
 		cache : false,
 		contentType: "application/json; charset=utf-8",
-		async : false,
+		async : true,
 		url : getCont() + "report/downloadreportrfc",
 		timeout : 60000,
 		data : {
@@ -534,6 +534,9 @@ function downLoadReport(){
 			systemId: $('#tableFilters #systemId').children("option:selected").val(),
 			sigesId: $('#tableFilters #sigesId').children("option:selected").val()
 		},
+	    beforeSend: function() {
+	    	showSpinner();
+	      },
 		success : function(response) {
 			console.log(response);
 			//console.log(atob(response.obj.file));
@@ -546,7 +549,13 @@ function downLoadReport(){
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
-		}
+			  hideSpinner();
+		},
+		   complete: function() {
+			      // ocultar el mensaje de descarga después de completar la
+					// solicitud
+			      hideSpinner();
+			    },
 	});
 
 
@@ -571,4 +580,12 @@ const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
 	  return blob;
 	}
 
+function showSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "flex";
+}
 
+function hideSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "none";
+}

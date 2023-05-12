@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.CountReport;
 import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.ErrorRFCReport;
 import com.soin.sgrm.model.ErrorTypeGraph;
@@ -686,7 +687,25 @@ public class ReportController extends BaseController {
 
 			int valueError = 0;
 			int valueRequest = 0;
-
+			List<CountReport> countReportRFC=new ArrayList<>();
+			for(System systemOnly: systems) {
+				CountReport countReport=new CountReport();
+				valueRequest=0;
+				for(RequestReport requestOnly : requests) {
+					if(requestOnly.getStatus().getName()=="Completado") {
+						if(requestOnly.getSystem().getId()==systemOnly.getId()) {
+							valueRequest++;
+						}
+					}
+				}
+				if(valueRequest>0) {
+					countReport.setLabel(systemOnly.getCode());
+					countReport.setValue1(valueRequest);
+					countReportRFC.add(countReport);
+				}
+				
+			}
+			report.setCountDataSource(countReportRFC);
 
 			report.setRequestDataSource(requests);
 			List<ReportTest> listReport = new ArrayList<>();
@@ -774,9 +793,26 @@ public class ReportController extends BaseController {
 			List<System> systems = systemService.list();
 
 			int valueError = 0;
-			int valueRequest = 0;
-
-
+			int valueRFC = 0;
+			List<CountReport> countReportRFC=new ArrayList<>();
+			for(System systemOnly: systems) {
+				CountReport countReport=new CountReport();
+				valueRFC=0;
+				for(RFCReport rfcOnly : rfcs) {
+					if(rfcOnly.getStatus().getName()=="Completado") {
+						if(rfcOnly.getSystem().getId()==systemOnly.getId()) {
+							valueRFC++;
+						}
+					}
+				}
+				if(valueRFC>0) {
+					countReport.setLabel(systemOnly.getCode());
+					countReport.setValue1(valueRFC);
+					countReportRFC.add(countReport);
+				}
+				
+			}
+			report.setCountDataSource(countReportRFC);
 			report.setRfcDataSource(rfcs);
 			List<ReportTest> listReport = new ArrayList<>();
 			
@@ -842,6 +878,7 @@ public class ReportController extends BaseController {
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 			List<ReleaseReportFast> releases = releaseService.listReleaseReportFilter(systemId,projectId,dateRange);
 			
+			
 			ReleaseReportFast release= releases.get(1);
 			System system = systemService.findSystemById(systemId);
 			Project project = projectService.findById(projectId);
@@ -853,13 +890,31 @@ public class ReportController extends BaseController {
 			Integer totalRFC = 0;
 			List<System> systems = systemService.list();
 
-			int valueError = 0;
-			int valueRequest = 0;
+			
+			int valueRelease= 0;
 
-
+			
 			report.setReleaseDataSource(releases);
 			List<ReportTest> listReport = new ArrayList<>();
-			
+			List<CountReport> countReportRelease=new ArrayList<>();
+			for(System systemOnly: systems) {
+				CountReport countReport=new CountReport();
+				valueRelease=0;
+				for(ReleaseReportFast releaseOnly : releases) {
+					if(releaseOnly.getStatus().getName().equals("Produccion")) {
+						if(releaseOnly.getSystem().getId()==systemOnly.getId()) {
+							valueRelease++;
+						}
+					}
+				}
+				if(valueRelease>0) {
+					countReport.setLabel(systemOnly.getCode());
+					countReport.setValue1(valueRelease);
+					countReportRelease.add(countReport);
+				}
+				
+			}
+			report.setCountDataSource(countReportRelease);
 			listReport.add(report);
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listReport);
 			Map<String, Object> parameters = new HashMap<>();

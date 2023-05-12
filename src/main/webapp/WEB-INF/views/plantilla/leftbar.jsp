@@ -147,6 +147,8 @@
 					<ul class="ml-menu">
 						<li><a href="<c:url value='/manager/wf/release/'/>">Releases</a></li>
 						<li><a href="<c:url value='/manager/wf/rfc/'/>">RFC</a></li>
+						<li><a href="<c:url value='/manager/wf/tpo/'/>">TPOs</a></li>
+						
 					</ul></li>
 
 			</c:if>

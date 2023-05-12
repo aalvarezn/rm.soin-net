@@ -148,12 +148,13 @@ function saveChangeStatusModal(){
 			motive: $formChangeStatus.find('#motive').val(),
 			sendEmail:switchStatus,
 			senders:$formChangeStatus.find('#senders').val()
-		},
+		}
 		success : function(response) {
 			responseStatusRFC(response);
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
+			
 		}
 	});
 }
@@ -306,6 +307,9 @@ function downLoadReport(numRFC){
 		data : {
 			
 		},
+	    beforeSend: function() {
+	    	showSpinner();
+	      },
 		success : function(response) {
 			console.log(response);
 			//console.log(atob(response.obj.file));
@@ -318,7 +322,13 @@ function downLoadReport(numRFC){
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
-		}
+			hideSpinner();
+		},
+		   complete: function() {
+			      // ocultar el mensaje de descarga después de completar la
+					// solicitud
+			      hideSpinner();
+			    },
 	});
 
 
@@ -342,3 +352,13 @@ const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
 	  const blob = new Blob(byteArrays, {type: contentType});
 	  return blob;
 	}
+
+function showSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "flex";
+}
+
+function hideSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "none";
+}

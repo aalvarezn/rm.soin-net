@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.RequestDao;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
+import com.soin.sgrm.utils.JsonSheet;
 
 @Transactional("transactionManager")
 @Service("RequestService")
@@ -70,12 +71,14 @@ public class RequestServiceImpl implements RequestService {
 
 	@Override
 	public Request listByTypeAndCodeSoin(TypeRequest type, String code_soin) {
-		return dao.listByTypeAndCodeSoin(type,code_soin);
+		return dao.listByTypeAndCodeSoin(type, code_soin);
 	}
 
 	@Override
 	public Request findByNameCode(String tpo) {
 		return dao.findByNameCode(tpo);
 	}
+
+
 
 }

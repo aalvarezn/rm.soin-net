@@ -211,14 +211,16 @@ function downLoadReport(){
 		type : "GET",
 		cache : false,
 		contentType: "application/json; charset=utf-8",
-		async : false,
+		async : true,
 		url : getCont() + "report/downloadreportrelease",
-		timeout : 60000,
 		data : {
 			dateRange :$('#tableFilters input[name="daterange"]').val(),
 			projectId: $('#tableFilters #projectId').children("option:selected").val(),
 			systemId: $('#tableFilters #systemId').children("option:selected").val()
-		},
+		},	    
+		beforeSend: function() {
+	    	showSpinner();
+	      },
 		success : function(response) {
 			console.log(response);
 			//console.log(atob(response.obj.file));
@@ -229,8 +231,15 @@ function downLoadReport(){
 			link.download = response.obj.name;
 			link.click();   
 		},
+		
+		   complete: function() {
+			      // ocultar el mensaje de descarga después de completar la
+					// solicitud
+			      hideSpinner();
+			    },
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
+			  hideSpinner();
 		}
 	});
 
@@ -544,4 +553,14 @@ function getColorNode(status){
 
 function exportPDF(){
 	 location.href=getCont()+'report/downloadReportGeneral';
+}
+
+function showSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "flex";
+}
+
+function hideSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "none";
 }

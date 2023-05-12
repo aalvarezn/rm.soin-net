@@ -433,7 +433,7 @@ function downLoadReport(){
 		type : "GET",
 		cache : false,
 		contentType: "application/json; charset=utf-8",
-		async : false,
+		async : true,
 		url : getCont() + "report/downloadreportrequest",
 		timeout : 60000,
 		data : {
@@ -442,6 +442,9 @@ function downLoadReport(){
 			systemId: $('#tableFilters #systemId').children("option:selected").val(),
 			typePetitionId: $('#tableFilters #typePetitionId').children("option:selected").val(),
 		},
+	    beforeSend: function() {
+	    	showSpinner();
+	      },
 		success : function(response) {
 			console.log(response);
 			//console.log(atob(respo   nse.obj.file));
@@ -454,7 +457,14 @@ function downLoadReport(){
 		},
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
+			 hideSpinner();
 		}
+		,
+		   complete: function() {
+			      // ocultar el mensaje de descarga después de completar la
+					// solicitud
+			      hideSpinner();
+			    },
 	});
 
 
