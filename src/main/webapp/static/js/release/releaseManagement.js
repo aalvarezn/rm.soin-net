@@ -262,7 +262,14 @@ function changeStatusRelease(releaseId) {
 	var rowData = releaseTable.row(idRow).data();
 	formChangeStatus[0].reset();
 	formChangeStatus.find('#motive').val('');
-	$('.tagInitMail#senders').importTags(rowData.system.emailTemplate[0].cc ? rowData.system.emailTemplate[0].cc : "" );
+	
+	console.log(rowData);
+	if(rowData.system.emailTemplate.size>0){
+		$('.tagInitMail#senders').importTags(rowData.system.emailTemplate[0].cc ? rowData.system.emailTemplate[0].cc : "" );
+	}else{
+		$('.tagInitMail#senders').importTags( "" );
+	}
+	
 	formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	formChangeStatus.find('#idRelease').val(rowData.id);
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
