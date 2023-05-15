@@ -149,7 +149,8 @@ public class ReleaseManagementController extends BaseController {
 			@RequestParam(value = "motive", required = true) String motive,
 			@RequestParam(value = "idError", required = false) Long idError,
 			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
-			@RequestParam(value = "senders", required = false) String senders) {
+			@RequestParam(value = "senders", required = false) String senders,
+			@RequestParam(value = "note", required = false) String note) {
 		JsonResponse res = new JsonResponse();
 		try {
 			ReleaseEdit release = releaseService.findEditById(idRelease);
@@ -217,7 +218,7 @@ public class ReleaseManagementController extends BaseController {
 							emailService.sendMailNotifyChangeStatus(release.getReleaseNumber(), " del Release",
 									statusName, release.getOperator(),
 									CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
-									userLogin, senders, emailNotify, release.getMotive());
+									userLogin, senders, emailNotify, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "release");
 						}
@@ -234,7 +235,7 @@ public class ReleaseManagementController extends BaseController {
 							emailService.sendMailNotifyChangeStatusError(typeError, release.getReleaseNumber(),
 									" del Release", statusName, release.getOperator(),
 									CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
-									userLogin, senders, emailNotify, release.getMotive());
+									userLogin, senders, emailNotify, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "release");
 						}

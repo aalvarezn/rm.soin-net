@@ -104,6 +104,7 @@ function changeStatusRFC(releaseId, rfcNumRequest,cc) {
 	$formChangeStatus[0].reset();
 	// $formChangeStatus.validate().resetForm();
 	$formChangeStatus.find('#idRFC').val(releaseId);
+	$formChangeStatus.find('#note').val("");
 	$('.tagInitMail#senders').importTags(cc ? cc : "" );
 	$formChangeStatus.find('#rfcNumRequest').val(rfcNumRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
@@ -147,7 +148,8 @@ function saveChangeStatusModal(){
 			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
 			motive: $formChangeStatus.find('#motive').val(),
 			sendEmail:switchStatus,
-			senders:$formChangeStatus.find('#senders').val()
+			senders:$formChangeStatus.find('#senders').val(),
+			note:$formChangeStatus.find('#note').val()
 		},
 		success : function(response) {
 			responseStatusRFC(response);

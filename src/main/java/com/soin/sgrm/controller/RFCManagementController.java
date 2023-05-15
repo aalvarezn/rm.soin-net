@@ -190,7 +190,8 @@ public class RFCManagementController extends BaseController {
 			@RequestParam(value = "motive", required = true) String motive,
 			@RequestParam(value = "idError", required = false) Long idError,
 			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
-			@RequestParam(value = "senders", required = false) String senders) {
+			@RequestParam(value = "senders", required = false) String senders,
+			@RequestParam(value = "note", required = false) String note) {
 		JsonResponse res = new JsonResponse();
 		try {
 			RFC rfc = rfcService.findById(idRFC);
@@ -270,7 +271,7 @@ public class RFCManagementController extends BaseController {
 				String statusName=status.getName();
 				Thread newThread = new Thread(() -> {
 					try {
-						emailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,rfc.getMotive());
+						emailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 					} catch (Exception e) {
 						Sentry.capture(e, "rfc");
 					}
@@ -284,7 +285,7 @@ public class RFCManagementController extends BaseController {
 					String typeError=error.getName();
 					Thread newThread = new Thread(() -> {
 						try {
-							emailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,rfc.getMotive());
+							emailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "rfc");
 						}
