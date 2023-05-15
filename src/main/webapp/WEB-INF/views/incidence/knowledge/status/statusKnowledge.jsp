@@ -77,7 +77,7 @@
 	<%@include file="../../../plantilla/scriptSection.jsp"%>
 	<!-- #END# Script Section -->
 	<script
-		src="<c:url value='/static/js/incidence/statusKnowledge.js'/>"></script>
+		src="<c:url value='/static/js/baseKnowledge/statusKnowledge.js'/>"></script>
 	
 
 </body>

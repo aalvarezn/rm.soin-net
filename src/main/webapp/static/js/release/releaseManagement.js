@@ -2,6 +2,7 @@ var releaseTable = $('#dtReleases').DataTable();
 var formChangeUser = $('#changeUserForm');
 var formChangeStatus = $('#changeStatusForm');
 var trackingReleaseForm = $('#trackingReleaseForm');
+var switchStatus=false;
 $(function() {
 	activeItemMenu("managemetReleaseItem");
 	$('input[name="daterange"]').daterangepicker({
@@ -58,6 +59,10 @@ $(function() {
 
 	loadTableRelease();
 	dropDownChange();
+	showSendEmail();
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
 });
 
 function refreshTable(){
@@ -257,6 +262,7 @@ function changeStatusRelease(releaseId) {
 	var rowData = releaseTable.row(idRow).data();
 	formChangeStatus[0].reset();
 	formChangeStatus.find('#motive').val('');
+	$('.tagInitMail#senders').importTags(rowData.system.emailTemplate[0].cc ? rowData.system.emailTemplate[0].cc : "" );
 	formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	formChangeStatus.find('#idRelease').val(rowData.id);
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
@@ -265,10 +271,25 @@ function changeStatusRelease(releaseId) {
 	formChangeStatus.find('.form-line').removeClass('error');
 	formChangeStatus.find('.form-line').removeClass('focused');
 	$('#divError').attr( "hidden",true);
+	$('#divEmail').attr( "hidden",true);
 	formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
 	$('#changeStatusModal').modal('show');
 }
-
+function showSendEmail(){
+	$('#sendMail').change(function() {
+		// this will contain a reference to the checkbox
+		if (this.checked) {
+			
+			 switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+			$('#divEmail').attr( "hidden",false);
+		} else {
+			$('#divEmail').attr( "hidden",true);
+			switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+		}
+		});
+}
 function saveChangeStatusModal(){
 	if (!validStatusRelease())
 		return false;
@@ -282,7 +303,10 @@ function saveChangeStatusModal(){
 			idStatus: formChangeStatus.find('#statusId').children("option:selected").val(),
 			idError: formChangeStatus.find('#errorId').children("option:selected").val(),
 			dateChange: formChangeStatus.find('#dateChange').val(),
-			motive: formChangeStatus.find('#motive').val()
+			motive: formChangeStatus.find('#motive').val(),
+			sendEmail:switchStatus,
+			senders:formChangeStatus.find('#senders').val(),
+			
 		},
 		success : function(response) {
 			responseStatusRelease(response);
@@ -323,16 +347,7 @@ function validStatusRelease() {
 	formChangeStatus.find('.fieldError').removeClass('activeError');
 	formChangeStatus.find('.form-line').removeClass('error');
 	formChangeStatus.find('.form-line').removeClass('focused');
-	$.each(formChangeStatus.find('input[required]'), function( index, input ) {
-		if($.trim(input.value) == ""){
-			
-			formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
-			formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
-			formChangeStatus.find('#'+input.id+"").parent().attr("class",
-			"form-line error focused");
-			valid = false;
-		}
-	});
+
 	$.each(formChangeStatus.find('select[required]'), function( index, select ) {
 	
 		if($.trim(select.value).length == 0 || select.value == ""){
@@ -359,7 +374,26 @@ function validStatusRelease() {
 			valid = false;
 		}
 	});
-
+	$.each(formChangeStatus.find('input[required]'), function( index, input ) {
+		if($.trim(input.value) === ""){
+			console.log(input.id);
+			if(input.id==="senders"){
+				if(switchStatus){
+				formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+					formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+					formChangeStatus.find('#'+input.id+"").parent().attr("class",
+					"form-line error focused");
+					valid = false;
+				}
+			}else{
+			formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+			}
+		}
+	});
 	return valid;
 }
 

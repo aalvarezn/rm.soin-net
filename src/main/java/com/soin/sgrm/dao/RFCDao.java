@@ -1,6 +1,10 @@
 package com.soin.sgrm.dao;
 
+import java.util.List;
+
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCTrackingShow;
+import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 
 public interface RFCDao extends BaseDao<Long, RFC>{
@@ -13,4 +17,8 @@ public interface RFCDao extends BaseDao<Long, RFC>{
 	Integer countByManager(Integer id, Long idRFC);
 
 	public RFC_WithoutRelease findRfcWithRelease(Long id);
+
+	public List<RFCTrackingToError> listByAllSystemError(String dateRange, int systemId);
+
+	public RFCTrackingShow findRFCTracking(Long id);
 }

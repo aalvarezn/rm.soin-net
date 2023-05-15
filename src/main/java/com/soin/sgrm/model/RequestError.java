@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -48,6 +50,20 @@ public class RequestError implements Serializable {
 	@Column(name = "OBSERVACIONES")
 	private String observations;
 
+	@Transient 
+	private String errorName;
+	
+	@Transient 
+	private String requestName;
+	
+	@Transient 
+	private String systemName;
+	
+	@Transient 
+	private String typePetitionName;
+	
+	@Transient 
+	private String userName;
 	public Long getId() {
 		return id;
 	}
@@ -103,6 +119,45 @@ public class RequestError implements Serializable {
 	public void setError(Errors_Requests error) {
 		this.error = error;
 	}
-	
+	public String getErrorName() {
+		
+		if(getError()!=null) {
+			return getError().getName();
+		}else {
+			return "No hay un error relacionado";
+		}	
+	}
+
+	public String getRequestName() {
+		if(getRequest()!=null) {
+			return getRequest().getNumRequest();
+		}else {
+			return "No hay una solicitud relacionado";
+		}	
+	}
+
+	public String getSystemName() {
+		if(getSystem()!=null) {
+			return getSystem().getName();
+		}else {
+			return "No hay un sistema relacionado";
+		}	
+	}
+
+	public String getTypePetitionName() {
+		if(getTypePetition()!=null) {
+			return getTypePetition().getCode();
+		}else {
+			return "No hay un tipo relacionado";
+		}	
+	}
+
+	public String getUserName() {
+		if(getRequest()!=null) {
+			return getRequest().getUser().getFullName();
+		}else {
+			return "No hay un usuario relacionado";
+		}
+	}
 
 }

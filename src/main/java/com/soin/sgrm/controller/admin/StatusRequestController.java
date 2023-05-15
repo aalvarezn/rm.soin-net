@@ -17,71 +17,71 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.StatusRFC;
+import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.StatusRFCService;
+import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
-@RequestMapping("/admin/statusRFC")
+@RequestMapping("/admin/statusRequest")
 public class StatusRequestController extends BaseController {
 	public static final Logger logger = Logger.getLogger(StatusRequestController.class);
 
 	@Autowired
-	StatusRFCService statusRFCService;
+	StatusRequestService statusRequestService;
 	
 	
 	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
-		return "/admin/statusRFC/statusRFC";
+		return "/admin/statusRequest/statusRequest";
 	}
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<StatusRFC> statusRFCs = new JsonSheet<>();
+		JsonSheet<StatusRequest> statusRequests = new JsonSheet<>();
 		try {
-			statusRFCs.setData(statusRFCService.findAll());
+			statusRequests.setData(statusRequestService.findAll());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return statusRFCs;
+		return statusRequests;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody StatusRFC addStatusRFC) {
+	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody StatusRequest addStatusRequest) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
 
-			statusRFCService.save(addStatusRFC);
+			statusRequestService.save(addStatusRequest);
 
-			res.setMessage("Status RFC agregado!");
+			res.setMessage("Estado Solicitado agregado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "statusRFC");
+			Sentry.capture(e, "statusRequest");
 			res.setStatus("exception");
-			res.setMessage("Error al agregar Status RFC!");
+			res.setMessage("Error al agregar Status Request!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody StatusRFC uptStatusRFC) {
+	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody StatusRequest uptStatusRequest) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			statusRFCService.update(uptStatusRFC);
+			statusRequestService.update(uptStatusRequest);
 
-			res.setMessage("Status RFC modificado!");
+			res.setMessage("Estado solicitud modificado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "statusRFC");
+			Sentry.capture(e, "statusRequest");
 			res.setStatus("exception");
-			res.setMessage("Error al modificar Status RFC!");
+			res.setMessage("Error al modificar Estado  de la Solicitud!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -92,12 +92,12 @@ public class StatusRequestController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			statusRFCService.delete(id);
-			res.setMessage("Status RFC eliminado!");
+			statusRequestService.delete(id);
+			res.setMessage("Estado solicitado eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
 			res.setStatus("exception");
-			res.setMessage("Error al eliminar el Status RFC!");
+			res.setMessage("Error al eliminar el estado de solicitud!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;

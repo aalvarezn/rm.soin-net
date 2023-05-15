@@ -163,7 +163,19 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+					<label>Proyecto</label>
+					<div class="form-group m-b-0">
+						<select id="projectId" class="form-control show-tick selectpicker"
+							data-live-search="true">
+							<option value="0">-- Todos --</option>
+							<c:forEach items="${projects}" var="project">
+								<option value="${project.id }">${project.code }</option>
+							</c:forEach>
+						</select>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
 					<label>Sistema</label>
 					<div class="form-group m-b-0">
 						<select id="systemId" class="form-control show-tick selectpicker"
@@ -175,7 +187,7 @@
 						</select>
 					</div>
 				</div>
-				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-212">
 					<label>Estado</label>
 					<div class="form-group m-b-0">
 						<select id="statusId" class="form-control show-tick selectpicker"
@@ -187,9 +199,28 @@
 						</select>
 					</div>
 				</div>
+				<div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+					<div class="button-demo-refresh" style="padding-top: 25px;">
+						<button title="Refrescar tabla con filtros!" type="button"
+							class="btn btn-primary setIcon" onclick="refreshTable()">
+							<span><i class="material-icons m-t--2 ">update</i></span>
+						</button>
+					</div>
+				</div>
 			</div>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="button-demo flr">
+					<button type="button" class="btn btn-primary setIcon"
+						onclick="downLoadReport()">
+						<span>DESCARGAR PDF</span><span><i
+							class="material-icons m-t--2 ">offline_pin</i></span>
+					</button>
+				</div>
+			</div>
+
 			<!-- #tableFilters# -->
 			<div class="row clearfix">
+
 				<div id="tableSection"
 					class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="body">
@@ -198,12 +229,14 @@
 								class="table table-bordered table-striped table-hover dataTable">
 								<thead>
 									<tr>
+
 										<th>ID</th>
 										<th>Número release</th>
-										<th style="max-width: 330px;">Información</th>
+										<th style="max-width: 330px;">Descripcion</th>
 										<th>Solicitante</th>
-										<th>Responsable</th>
 										<th>Modificado</th>
+										<th>Proyecto</th>
+										<th>Estado</th>
 										<th>Instalado</th>
 										<th>Acciones</th>
 									</tr>

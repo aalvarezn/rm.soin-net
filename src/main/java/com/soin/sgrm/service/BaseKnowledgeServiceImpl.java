@@ -6,8 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
@@ -20,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.BaseKnowledgeDao;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.BaseKnowledge;
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.MyLevel;
@@ -34,7 +38,12 @@ public class BaseKnowledgeServiceImpl implements BaseKnowledgeService {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	SystemService systemService;
 
+	@Autowired
+	AttentionGroupService attentionGroupService;
 	public static final Logger logger = Logger.getLogger(BaseKnowledgeServiceImpl.class);
 
 	@Override
@@ -232,6 +241,91 @@ public class BaseKnowledgeServiceImpl implements BaseKnowledgeService {
 			columns.put("status", Restrictions.eq("status.id", sStatus));
 		} 
 
+	
+		if (component != null) {
+			columns.put("component", Restrictions.eq("component.id", component));
+
+		} 
+
+		List<String> fetchs = new ArrayList<String>();
+		//fetchs.add("releases");
+		fetchs.add("files");
+		fetchs.add("tracking");
+		fetchs.add("user");
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
+	}
+
+	@Override
+	public JsonSheet<BaseKnowledge> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, Long sStatus, String dateRange, Long component,Integer systemId, Integer userLogin,boolean isRm) {
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+
+		alias.put("status", "status");
+		
+
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					columns.put("requestDate", Restrictions.between("requestDate", start, end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		Criterion qSrch = null;
+		if (sSearch != null && sSearch.length() > 0) {
+			alias.put("user", "user");
+			qSrch = Restrictions.or(
+
+					Restrictions.like("numError", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase()
+
+			);
+		}
+		if (sStatus == 0) {
+			sStatus = null;
+		}
+
+		if(component!=null) {
+		if (component == 0) {
+			component = null;
+		}
+		}
+		if (sStatus != null) {
+
+			columns.put("status", Restrictions.eq("status.id", sStatus));
+		} 
+		
+		if(systemId!=0) {
+			columns.put("system", Restrictions.eq("system.id", systemId));
+		}else {
+			if(!isRm) {
+				List<AttentionGroup> attentionGroups= attentionGroupService.findGroupByUserId(userLogin);
+				List<Long> listAttentionGroupId=new ArrayList<Long>();
+				for(AttentionGroup attentionGroup: attentionGroups) {
+					listAttentionGroupId.add(attentionGroup.getId());
+				}
+				List<System> systemList=systemService.findByGroupIncidence(listAttentionGroupId);
+				Set<System> systemWithRepeat = new LinkedHashSet<>(systemList);
+				systemList.clear();
+				systemList.addAll(systemWithRepeat);
+				List<Integer> systemIds=new ArrayList<Integer>();
+				for(System system: systemList) {
+					systemIds.add(system.getId());
+				}
+				columns.put("system", Restrictions.in("system.id", systemIds));
+			}
+		}
 	
 		if (component != null) {
 			columns.put("component", Restrictions.eq("component.id", component));

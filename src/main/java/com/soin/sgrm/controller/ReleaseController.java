@@ -35,6 +35,7 @@ import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
+import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
@@ -315,6 +316,8 @@ public class ReleaseController extends BaseController {
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
 			model.addAttribute("errors", errorService.findAll());
+			
+			model.addAttribute("cc", release.getSystem().getEmailTemplate().iterator().next().getCc());
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
@@ -1017,5 +1020,25 @@ public class ReleaseController extends BaseController {
 				}
 		}
 		return getCC;
+	}
+	
+	@RequestMapping(value = "/getRelease-{id}", method = RequestMethod.GET)
+	public @ResponseBody ReleaseReport getRelease(@PathVariable Integer id, HttpServletRequest request, Locale locale, Model model,
+			HttpSession session, RedirectAttributes redirectAttributes) {
+		ReleaseReport release = new ReleaseReport();
+
+		try {
+
+			release = releaseService.findByIdReleaseReport(id);
+		
+			return release;
+
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			redirectAttributes.addFlashAttribute("data", e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+
+		return release;
 	}
 }

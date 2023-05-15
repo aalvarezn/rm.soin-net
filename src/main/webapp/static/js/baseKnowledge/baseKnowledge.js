@@ -53,7 +53,7 @@ $(function() {
 	});
 	//$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
-	activeItemMenu("incidenceManagementItem",true);
+	activeItemMenu("knowledgeManagementItem",true);
 	//dropDownChange();
 	$("#addRFCSection").hide();
 	$fmRFC.find("#sId").selectpicker('val',"");
@@ -61,6 +61,9 @@ $(function() {
 	initRFCTable();
 	initRFCFormValidation();
 	initStatusFormValidation();
+	dropDownChangeMain();
+	dropDownChangeSecond();
+	resetDropPrioritySecond();
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -81,6 +84,9 @@ $('#tableFilters #componentId').change(function() {
 });
 
 $('#tableFilters #statusId').change(function() {
+	$dtRFCs.ajax.reload();
+});
+$('#tableFilters #systemId').change(function() {
 	$dtRFCs.ajax.reload();
 });
 
@@ -107,7 +113,8 @@ function initRFCTable() {
 					"fnServerParams" : function(aoData) {
 						aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 								{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()},
-								{"name": "componentId", "value": $('#tableFilters #componentId').children("option:selected").val()}
+								{"name": "componentId", "value": $('#tableFilters #componentId').children("option:selected").val()},
+								{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()}
 						);
 					},
 					"aoColumns" : [
@@ -117,6 +124,9 @@ function initRFCTable() {
 						{
 						
 						"mDataProp" : "numError"
+					},{
+						
+						"mDataProp" : "system.name"
 					},
 					{
 						
@@ -384,6 +394,8 @@ function deleteRFC(element) {
 }
 
 function createRFC() {
+	console.log($fmRFC.find('#sId').val());
+	console.log($fmRFC.find('#cId').val());
 	if (!$fmRFC.valid())
 		return;
 	Swal.fire({
@@ -400,7 +412,8 @@ function createRFC() {
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					componentId : $fmRFC.find('#cId').val()
+					componentId : $fmRFC.find('#cId').val(),
+					systemId : $fmRFC.find('#sId').val(),
 				}),
 				success : function(response) {
 					unblockUI();
@@ -428,6 +441,9 @@ function initRFCFormValidation() {
 			
 			'cId':{
 				required : true
+			},
+			'sId':{
+				required : true
 			}
 			
 		},
@@ -435,12 +451,128 @@ function initRFCFormValidation() {
 			
 			'cId' : {
 				required : "Ingrese un valor"
+			},'sId':{
+				required : "Ingrese un valor"
 			}
 		},
 		highlight,
 		unhighlight,
 		errorPlacement
 	});
+}
+
+function dropDownChangeMain(){
+	$('#systemId').on('change', function(){
+		var systemId =$('#tableFilters #systemId').val();
+		console.log(systemId);
+		if(systemId!=0){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "baseKnowledge/getComponent/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Todos --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].name + '</option>';
+					}
+					$('#componentId').html(s);
+					$('#componentId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#componentId').selectpicker('refresh');
+				}else{
+					resetDropPriorityMain();
+				}
+				
+				
+			}
+		});
+		
+		}else{
+			resetDropComponent();
+		}
+		
+	});
+}
+function dropDownChangeSecond(){
+	$('#sId').on('change', function(){
+		var systemId =$('#sId').val();
+		console.log(systemId);
+		if(systemId!=0){
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "baseKnowledge/getComponent/"+systemId,
+			success: function(result) {
+				if(result.length!=0){
+					var s = '';
+					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+					for(var i = 0; i < result.length; i++) {
+						s += '<option value="' + result[i].id + '">' + result[i].name + '</option>';
+					}
+					$('#cId').html(s);
+					$('#cId').prop('disabled', false);
+					$('#createRFC').prop('disabled', false);
+					$('#cId').selectpicker('refresh');
+				}else{
+					resetDropPriorityMain();
+				}
+				
+				
+			}
+		});
+		
+		}else{
+			resetDropComponentSecond();
+		}
+		
+	});
+}
+function resetDrops(){
+	$fmRFC.find('#systemId').selectpicker('val',  "");
+	resetDropPriority();
+	resetDropComponent();
+}	
+function resetDropsMain(){
+	$fmRFC.find('#systemId').selectpicker('val',  "");
+	resetDropComponent();
+}	
+function resetDropComponent(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#componentId').html(s);
+	$('#componentId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#componentId').selectpicker('refresh');
+	
+}
+
+function resetDropComponentSecond(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#cId').html(s);
+	$('#cId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#cId').selectpicker('refresh');
+	
+}
+function resetDropPriorityMain(){
+	var s = '';
+	s+='<option value="">-- Todos --</option>';
+	$('#componentId').html(s);
+	$('#componentId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#componentId').selectpicker('refresh');
+	
+}
+
+function resetDropPrioritySecond(){
+	var s = '';
+	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+	$('#cId').html(s);
+	$('#cId').prop('disabled',true);
+	$('#createRFC').prop('disabled',true);
+	$('#cId').selectpicker('refresh');
+	
 }
 /*
 function dropDownChange(){

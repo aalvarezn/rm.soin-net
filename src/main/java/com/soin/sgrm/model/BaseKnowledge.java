@@ -62,7 +62,9 @@ public class BaseKnowledge implements Serializable {
 	@Column(name = "OPERADOR")
 	private String operator;
 
-
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "SISTEMA_ID", nullable = true)
+	private SystemInfo system;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ID_COMPONENTE", nullable = true)
@@ -99,6 +101,10 @@ public class BaseKnowledge implements Serializable {
 	
 	@Transient
 	private Long statusId;
+	
+	@Transient
+	private Integer systemId;
+	
 	@Transient
 	private Long publicateValidate;
 
@@ -245,6 +251,22 @@ public class BaseKnowledge implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public SystemInfo getSystem() {
+		return system;
+	}
+
+	public void setSystem(SystemInfo system) {
+		this.system = system;
+	}
+
+	public Integer getSystemId() {
+		return systemId;
+	}
+
+	public void setSystemId(Integer systemId) {
+		this.systemId = systemId;
 	}
 	
 	

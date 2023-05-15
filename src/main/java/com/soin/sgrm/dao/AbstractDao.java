@@ -3,6 +3,7 @@ package com.soin.sgrm.dao;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -118,6 +119,9 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 		}if(veri==2) {
 			criteria.addOrder(Order.desc("errorDate"));
 		}
+		if(veri==3) {
+			criteria.addOrder(Order.desc("updateDate"));
+		}
 		else {
 			criteria.addOrder(Order.desc("id"));
 		}
@@ -164,6 +168,50 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 		return sheet;
 	}
 
+	@SuppressWarnings({ "unused", "unchecked" })
+	public List<T> findAll(Map<String, Object> columns, List<String> fetchs, Map<String, String> alias,
+			Integer veri) {
+
+		List<T> sheet = new ArrayList<T>();
+		
+		Criteria criteria = createEntityCriteria();
+
+		if(veri==1) {
+			criteria.addOrder(Order.desc("requestDate"));
+		}if(veri==2) {
+			criteria.addOrder(Order.desc("errorDate"));
+		}
+		else {
+			criteria.addOrder(Order.desc("id"));
+		}
+
+		if (alias != null)
+			for (Map.Entry<String, String> aliasName : alias.entrySet())
+				criteria.createAlias(aliasName.getKey(), (String) aliasName.getValue());
+
+		for (Map.Entry<String, Object> column : columns.entrySet())
+			criteria = addFilters(criteria, columns);
+
+		Criteria criteriaCount = createEntityCriteria();
+		if (alias != null)
+			for (Map.Entry<String, String> aliasName : alias.entrySet())
+				criteriaCount.createAlias(aliasName.getKey(), (String) aliasName.getValue());
+		for (Map.Entry<String, Object> column : columns.entrySet())
+			criteriaCount = addFilters(criteriaCount, columns);
+
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		if (fetchs != null)
+			for (String itemModel : fetchs)
+				criteria.setFetchMode(itemModel, FetchMode.SELECT);
+
+		criteriaCount.setProjection(Projections.countDistinct("id"));
+
+		List<T> list = (List<T>) criteria.list();
+		sheet=list;
+		Long count = (Long) criteriaCount.uniqueResult();
+		int recordsTotal = count.intValue();
+		return sheet;
+	}
 	@SuppressWarnings("unchecked")
 	public Criteria addFilters(Criteria criteria, Map<String, Object> columns) {
 		if (columns == null)

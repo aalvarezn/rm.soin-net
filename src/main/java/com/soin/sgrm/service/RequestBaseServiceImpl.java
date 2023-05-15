@@ -22,6 +22,7 @@ import com.soin.sgrm.dao.RequestBaseDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestBaseTrackingToError;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.CommonUtils;
@@ -269,5 +270,10 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 	public Integer countByType(Integer id, String type, int query, Object[] object) {
 		
 		return dao.countByType(id, type, query, object);
+	}
+	@Override
+	public List<RequestBaseTrackingToError> listByAllSystemError(String dateRange, int systemId) {
+		
+		return dao.listByAllSystemError( dateRange,  systemId);
 	}
 }

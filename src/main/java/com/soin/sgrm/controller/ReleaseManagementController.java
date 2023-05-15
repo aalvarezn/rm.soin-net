@@ -23,13 +23,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemUser;
+import com.soin.sgrm.security.UserLogin;
+import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ErrorReleaseService;
+import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
@@ -62,6 +66,12 @@ public class ReleaseManagementController extends BaseController {
 
 	@Autowired
 	private ProjectService projectService;
+
+	@Autowired
+	ParameterService parameterService;
+
+	@Autowired
+	EmailTemplateService emailService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -137,18 +147,24 @@ public class ReleaseManagementController extends BaseController {
 			@RequestParam(value = "idStatus", required = true) Integer idStatus,
 			@RequestParam(value = "dateChange", required = false) String dateChange,
 			@RequestParam(value = "motive", required = true) String motive,
-			@RequestParam(value = "idError", required = false) Long idError) {
+			@RequestParam(value = "idError", required = false) Long idError,
+			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
+			@RequestParam(value = "senders", required = false) String senders) {
 		JsonResponse res = new JsonResponse();
 		try {
 			ReleaseEdit release = releaseService.findEditById(idRelease);
 			Status status = statusService.findById(idStatus);
+			UserLogin userLogin = getUserLogin();
+			Errors_Release error = new Errors_Release();
+			Boolean errorVer = false;
 			if (status != null && status.getName().equals("Borrador")) {
 				if (release.getStatus().getId() != status.getId())
 					release.setRetries(release.getRetries() + 1);
 			} else if (status != null && status.getName().equals("Error")) {
-				Errors_Release error = errorService.findById(idError);
+				error = errorService.findById(idError);
 				ReleaseError releaseError = new ReleaseError();
 				releaseError.setSystem(release.getSystem());
+				errorVer = true;
 				releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
 				releaseError.setError(error);
 				Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
@@ -181,16 +197,52 @@ public class ReleaseManagementController extends BaseController {
 				java.util.Date fechaNueva = (java.util.Date) format.parse(time1Minute.toString());
 				format = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
 				String time1MinuteFormat = format.format(fechaNueva);
-				dateChange=time1MinuteFormat;
+				dateChange = time1MinuteFormat;
 			}
 
-			
 			release.setStatus(status);
 			release.setOperator(getUserLogin().getFullName());
 			release.setDateChange(dateChange);
 			release.setMotive(motive);
 			releaseService.updateStatusRelease(release);
 			res.setStatus("success");
+			if (sendEmail) {
+
+				if (!errorVer) {
+					Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					String statusName = status.getName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotifyChangeStatus(release.getReleaseNumber(), " del Release",
+									statusName, release.getOperator(),
+									CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
+									userLogin, senders, emailNotify, release.getMotive());
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+
+					});
+					newThread.start();
+				} else {
+					Integer idTemplate = Integer.parseInt(parameterService.findByCode(31).getParamValue());
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					String statusName = status.getName();
+					String typeError = error.getName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotifyChangeStatusError(typeError, release.getReleaseNumber(),
+									" del Release", statusName, release.getOperator(),
+									CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
+									userLogin, senders, emailNotify, release.getMotive());
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+
+					});
+					newThread.start();
+				}
+			}
 
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "releaseManagement");

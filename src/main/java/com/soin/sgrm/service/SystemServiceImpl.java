@@ -121,4 +121,26 @@ public class SystemServiceImpl implements SystemService {
 	public SystemInfo findSystemInfoById(Integer id) {
 		return dao.findById(id);
 	}
+
+	@Override
+	public List<System> findByGroupIncidence(List<Long> listAttentionGroupId) {
+		return dao.findByGroupIncidence(listAttentionGroupId);
+	}
+
+	@Override
+	public List<System> findByUserIncidence(Integer userLogin) {
+		return dao.findByUserIncidence(userLogin);
+	}
+
+	@Override
+	public List<System> findByManagerIncidence(Integer idUser) {
+		// TODO Auto-generated method stub
+		return dao.findByManagerIncidence(idUser);
+	}
+
+	@Override
+	public List<System> getSystemByProject(Integer projectId) {
+		// TODO Auto-generated method stub
+		 return dao.getSystemByProject(projectId);
+	}
 }

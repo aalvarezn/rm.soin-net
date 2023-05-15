@@ -47,6 +47,10 @@
 
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+	<!-- TagInput Js -->
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 </head>
 
 <body class="theme-grey">
@@ -427,7 +431,7 @@
 									</button>
 								</c:if>
 								<button type="button" class="btn btn-default setIcon"
-									onclick="changeStatusRFC(${rfc.id}, '${rfc.numRequest}' )"
+									onclick="changeStatusRFC(${rfc.id}, '${rfc.numRequest}','${rfc.siges.emailTemplate.cc}' )"
 									title="Borrador"
 									style="background-color: #00294c !important; color: #fff; border: none !important;">
 									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
@@ -447,7 +451,8 @@
 	<!-- Validate Core Js -->
 	<script
 		src="<c:url value='/static/plugins/jquery-validation/jquery.validate.js'/>"></script>
-
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 
 </body>
 </html>

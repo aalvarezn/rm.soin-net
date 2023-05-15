@@ -8,4 +8,5 @@ public interface TypePetitionService extends BaseService<Long,TypePetition> {
 
 	List<TypePetition> listTypePetition();
 
+
 }

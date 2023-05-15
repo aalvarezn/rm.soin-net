@@ -3,7 +3,7 @@ var $dtRFCs;
 var $formChangeStatus = $('#changeStatusForm');
 var $formChangeUser = $('#changeUserForm');
 var $trackingRFCForm = $('#trackingRFCForm');
-
+var switchStatus=false;
 $(document).ready(function() {
 	$('input[name="daterange"]').daterangepicker({
 		"autoUpdateInput": false,
@@ -53,9 +53,12 @@ $(document).ready(function() {
 	// initImpactFormValidation
 	activeItemMenu("managerRFCItem");
 	dropDownChange();
+	showSendEmail();
 	// $("#addRFCSection").hide();
 	// $fmRFC.find("#sId").selectpicker('val',"");
-
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
 	initRFCTable();
 	// initRFCFormValidation();
 });
@@ -168,9 +171,21 @@ function openRFCTrackingModal(idRFC) {
 	var rowData = $dtRFCs.row(idRow[0]).data();
 	$trackingRFCForm.find('#idRFC').val(rowData.id);
 	$trackingRFCForm.find('#rfcNumber').text(rowData.numRequest);
-	
-	loadTrackingRFC(rowData);
-	$('#trackingRFCModal').modal('show');
+	$.ajax({
+		type : "GET",
+		url : getCont() + "rfc/trackingRFC/"+ rowData.id ,
+		timeout : 600000,
+		data : {},
+		success : function(response) {
+			tracking=response.obj;
+			loadTrackingRFC(tracking);
+			$('#trackingRFCModal').modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+
 }
 
 function loadTrackingRFC(rowData){
@@ -269,6 +284,12 @@ function changeStatusRFC(idRFC) {
 	var rowData = $dtRFCs.row(idRow[0]).data();
 	$formChangeStatus[0].reset();
 	// $formChangeStatus.validate().resetForm();
+	console.log(rowData);
+	console.log(rowData.siges);
+	console.log(rowData.siges.emailTemplate);
+	//$formChangeStatus.find('#senders').val(rowData.siges.emailTemplate.cc);
+	$('.tagInitMail#senders').importTags(rowData.siges.emailTemplate.cc);
+	
 	$formChangeStatus.find('#idRFC').val(idRFC);
 	$formChangeStatus.find('#rfcNumRequest').val(rowData.numRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
@@ -278,9 +299,25 @@ function changeStatusRFC(idRFC) {
 	$formChangeStatus.find('.form-line').removeClass('error');
 	$formChangeStatus.find('.form-line').removeClass('focused');
 	$('#divError').attr( "hidden",true);
+	$('#divEmail').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
 }
 
+function showSendEmail(){
+	$('#sendMail').change(function() {
+		// this will contain a reference to the checkbox
+		if (this.checked) {
+			
+			 switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+			$('#divEmail').attr( "hidden",false);
+		} else {
+			$('#divEmail').attr( "hidden",true);
+			switchStatus= $(this).is(':checked');
+			 console.log(switchStatus);
+		}
+		});
+}
 function saveChangeStatusModal(){
 	console.log(validStatusRFC());
 	if (!validStatusRFC())
@@ -295,7 +332,10 @@ function saveChangeStatusModal(){
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
 			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
-			motive: $formChangeStatus.find('#motive').val()
+			motive: $formChangeStatus.find('#motive').val(),
+			sendEmail:switchStatus,
+			senders:$formChangeStatus.find('#senders').val(),
+			
 		},
 		success : function(response) {
 			responseStatusRFC(response);
@@ -353,16 +393,7 @@ function validStatusRFC() {
 	$formChangeStatus.find('.fieldError').removeClass('activeError');
 	$formChangeStatus.find('.form-line').removeClass('error');
 	$formChangeStatus.find('.form-line').removeClass('focused');
-	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
-		if($.trim(input.value) == ""){
-			console.log(input.id);
-			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
-			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
-			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
-			"form-line error focused");
-			valid = false;
-		}
-	});
+	
 	$.each($formChangeStatus.find('select[required]'), function( index, select ) {
 		if($.trim(select.value).length === 0 || select.value === ""){
 			
@@ -374,6 +405,8 @@ function validStatusRFC() {
 				$formChangeStatus.find('#'+select.id+"_error").addClass('activeError');
 				valid = false;
 			}
+			
+
 		
 		}
 	});
@@ -387,7 +420,26 @@ function validStatusRFC() {
 			valid = false;
 		}
 	});
-
+	$.each($formChangeStatus.find('input[required]'), function( index, input ) {
+		if($.trim(input.value) === ""){
+			console.log(input.id);
+			if(input.id==="senders"){
+				if(switchStatus){
+					$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+					$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+					$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+					"form-line error focused");
+					valid = false;
+				}
+			}else{
+			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+			"form-line error focused");
+			valid = false;
+			}
+		}
+	});
 	return valid;
 }
 

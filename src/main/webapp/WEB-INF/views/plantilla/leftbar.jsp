@@ -46,8 +46,9 @@
 							<li><a href="<c:url value='/management/error/rfc'/>">RFC</a></li>
 							<li><a href="<c:url value='/management/error/request'/>">Solicitudes</a></li>
 						</ul></li>
-					<li class=""><a id="managemetWorkFlowItem" href="javascript:void(0);"
-						class="menu-toggle"> <span>Gesti&oacute;n Tr&aacute;mites</span>
+					<li class=""><a id="managemetWorkFlowItem"
+						href="javascript:void(0);" class="menu-toggle"> <span>Gesti&oacute;n
+								Tr&aacute;mites</span>
 					</a>
 						<ul class="ml-menu">
 							<li><a href="<c:url value='/management/wf/release/'/>">Releases</a></li>
@@ -73,12 +74,15 @@
 				<c:if test="${authority.name == 'Gestor Incidencias'}">
 					<c:set var="managerIncidenceAccess" value="true"></c:set>
 				</c:if>
+				<c:if test="${authority.name == 'Gestor Basecono'or authority.name == 'Release Manager'}">
+					<c:set var="managerKnowledgeAccess" value="true"></c:set>
+				</c:if>
 			</c:forEach>
-			<c:if test="${managerIncidenceAccess}">
+			<c:if test="${managerKnowledgeAccess}">
 				<!---- 	#Seccion de incidencias ---->
-				<li class=""><a id="incidenceManagementItem"
-					href="javascript:void(0);" class="menu-toggle"> <span>Gestión
-							Tickets</span>
+				<li class=""><a id="knowledgeManagementItem"
+					href="javascript:void(0);" class="menu-toggle"> <span>Gesti&oacute;n
+							base conocimientos</span>
 				</a>
 					<ul class="ml-menu">
 						<li><a id="incidenceManagementItem"
@@ -88,6 +92,24 @@
 								base conocimiento</a></li>
 						<li><a href="<c:url value='/baseKnowledge/'/>">Base
 								conocimiento</a></li>
+					</ul></li>
+
+			</c:if>
+			
+			<c:if test="${managerIncidenceAccess}">
+				<!---- 	#Seccion de incidencias ---->
+				<li class=""><a id="incidenceManagementItem"
+					href="javascript:void(0);" class="menu-toggle"> <span>Gesti&oacute;n
+							Tickets</span>
+				</a>
+					<ul class="ml-menu">
+						<li><a href="<c:url value='/incidenceManagement/'/>">
+								Tickets</a></li>
+						<li><a href="<c:url value='/systemPriority/'/>">Prioridad
+								Ticket</a></li>
+						<li><a href="<c:url value='/systemTypeIn/'/>">Tipo Ticket</a></li>
+						<li><a href="<c:url value='/systemStatusIn/'/>">Estado
+								Ticket</a></li>
 					</ul></li>
 
 			</c:if>
@@ -102,12 +124,15 @@
 						<span>Mis Releases</span>
 				</a></li>
 				<!---- 	#Seccion de reportes ---->
-				<li class=""><a id="ambientItem" href="javascript:void(0);"
+				<li class=""><a id="reportItem" href="javascript:void(0);"
 					class="menu-toggle"> <span>Reportes</span>
 				</a>
 					<ul class="ml-menu">
 						<li><a href="<c:url value='/report/releases/'/>">Releases</a></li>
+						<li><a href="<c:url value='/report/rfc/'/>">RFC</a></li>
+						<li><a href="<c:url value='/report/request/'/>">Solicitudes</a></li>
 					</ul></li>
+					
 			</c:if>
 			<c:if test="${managerAccess}">
 				<li>
@@ -130,7 +155,11 @@
 						<span>Mis Solicitudes</span>
 				</a></li>
 			</c:if>
-
+			<c:if test="${incidenceAccess}">
+				<li><a id="incidenceItem" href="<c:url value='/incidence/'/> ">
+						<span>Mis tickets</span>
+				</a></li>
+			</c:if>
 
 			<li><a id="profileItem" href="<c:url value='/profile/'/> ">
 					<span>Perfil de usuario</span>

@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -24,7 +26,7 @@ public class RFCError implements Serializable {
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private Long id;
-	
+
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHA_ERROR")
 	private Timestamp errorDate;
@@ -48,6 +50,21 @@ public class RFCError implements Serializable {
 	@Column(name = "OBSERVACIONES")
 	private String observations;
 
+	@Transient 
+	private String errorName;
+	
+	@Transient 
+	private String rfcName;
+	
+	@Transient 
+	private String systemName;
+	
+	@Transient 
+	private String sigesName;
+	
+	@Transient 
+	private String userName;
+	
 	public Long getId() {
 		return id;
 	}
@@ -104,4 +121,44 @@ public class RFCError implements Serializable {
 		this.siges = siges;
 	}
 
+	public String getErrorName() {
+		
+		if(getError()!=null) {
+			return getError().getName();
+		}else {
+			return "No hay un error relacionado";
+		}	
+	}
+
+	public String getRfcName() {
+		if(getRfc()!=null) {
+			return getRfc().getNumRequest();
+		}else {
+			return "No hay un RFC relacionado";
+		}	
+	}
+
+	public String getSystemName() {
+		if(getSystem()!=null) {
+			return getSystem().getName();
+		}else {
+			return "No hay un sistema relacionado";
+		}	
+	}
+
+	public String getSigesName() {
+		if(getSiges()!=null) {
+			return getSiges().getCodeSiges();
+		}else {
+			return "No hay un proyecto siges relacionado";
+		}	
+	}
+
+	public String getUserName() {
+		if(getRfc()!=null) {
+			return getRfc().getUser().getFullName();
+		}else {
+			return "No hay un usuario relacionado";
+		}
+	}
 }
