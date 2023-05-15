@@ -116,6 +116,9 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
 @Controller
 @RequestMapping("/report")
@@ -150,29 +153,29 @@ public class ReportController extends BaseController {
 	@Autowired
 	private RFCService rfcService;
 	@Autowired
-	RequestBaseR1Service requestBaseR1Service;
+	private RequestBaseR1Service requestBaseR1Service;
 	@Autowired
-	TypePetitionService typePetitionService;
+	private TypePetitionService typePetitionService;
 	@Autowired
-	SigesService sigesService;
+	private SigesService sigesService;
 	@Autowired
-	TypeChangeService typeChangeService;
+	private TypeChangeService typeChangeService;
 	@Autowired
-	RequestBaseService requestBaseService;
+	private RequestBaseService requestBaseService;
 	@Autowired
-	RequestRM_P1_R1Service requestServiceRm1;
+	private RequestRM_P1_R1Service requestServiceRm1;
 	@Autowired
-	RequestRM_P1_R2Service requestServiceRm2;
+	private RequestRM_P1_R2Service requestServiceRm2;
 	@Autowired
-	RequestRM_P1_R3Service requestServiceRm3;
+	private RequestRM_P1_R3Service requestServiceRm3;
 	@Autowired
-	RequestRM_P1_R4Service requestServiceRm4;
+	private RequestRM_P1_R4Service requestServiceRm4;
 	@Autowired
-	RequestRM_P1_R5Service requestServiceRm5;
+	private RequestRM_P1_R5Service requestServiceRm5;
 	@Autowired
-	StatusRequestService statusRequestService;
+	private StatusRequestService statusRequestService;
 	@Autowired
-	AmbientService ambientService;
+	private AmbientService ambientService;
 	
 	
 	@RequestMapping(value = "/releases", method = RequestMethod.GET)
@@ -933,6 +936,11 @@ public class ReportController extends BaseController {
 			if (mimeType == null) {
 				mimeType = "application/octet-stream";
 			}
+			
+	        JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput("reporte.xlsx"));
+            exporter.exportReport();
 			Map<String, String> dataNew = new HashMap<String, String>();
 			dataNew.put("file", new String(encoded, StandardCharsets.US_ASCII));
 			dataNew.put("ContentType", mimeType);
