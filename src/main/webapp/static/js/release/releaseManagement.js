@@ -264,10 +264,12 @@ function changeStatusRelease(releaseId) {
 	formChangeStatus.find('#motive').val('');
 	
 	console.log(rowData);
-	if(rowData.system.emailTemplate.size>0){
-		$('.tagInitMail#senders').importTags(rowData.system.emailTemplate[0].cc ? rowData.system.emailTemplate[0].cc : "" );
-	}else{
+	if(rowData.system.emailTemplate.length===0){
 		$('.tagInitMail#senders').importTags( "" );
+	}else{
+		console.log(rowData.system.emailTemplate[0].cc);
+		$('.tagInitMail#senders').importTags(rowData.system.emailTemplate[0].cc ? rowData.system.emailTemplate[0].cc : "" );
+		
 	}
 	
 	formChangeStatus.find('.selectpicker').selectpicker('refresh');
