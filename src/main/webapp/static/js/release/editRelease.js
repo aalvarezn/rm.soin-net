@@ -553,7 +553,7 @@ function requestRelease() {
 															.val()
 		},
 		success : function(response) {
-			console.log(response);
+			
 			responseAjaxRequestRelease(response);
 		},
 		error: function(x, t, m) {
@@ -738,12 +738,10 @@ function resetErrors() {
 function showReleaseErrors(errors) {
 	resetErrors();// Eliminamos las etiquetas de errores previas
 	var error = errors;
-	console.log(errors);
 	for (var i = 0; i < error.length; i++) {
 		// Se modifica el texto de la advertencia y se agrega la de activeError
 		$releaseEditForm.find(" #" + error[i].key + "_error").text(
 				error[i].message);
-		console.log(" #" + error[i].key + "_error");
 		$releaseEditForm.find(" #" + error[i].key + "_error").css("visibility",
 		"visible");
 		$releaseEditForm.find(" #" + error[i].key + "_error").attr("class",
@@ -813,6 +811,10 @@ function synchronizeObjects() {
 		data : {},
 		success : function(response) {
 			responseAjaxSynchronize(response);
+			$.each(response.obj.dependencies, function(key, value) {
+				modifyDependency(value.to_release);
+			});
+			reloadPreview();
 			$dtObjects.ajax.reload();
 			countObjects();
 		},
@@ -824,13 +826,13 @@ function synchronizeObjects() {
 function countObjects(){
 
 	var sId =$('#generateReleaseForm #release_id').val();
-	console.log(sId);
+
 	$.ajax({
 		type: 'GET',
 		url: getCont() + "release/countObjects/"+sId,
 		success: function(result) {
 			$('#countObject').text(result);
-			console.log(result);
+		
 			}
 			
 			
@@ -874,7 +876,7 @@ function sendPartialRelease() {
 	var modifiedComponents = listLi('listComponents');
 	var actions = listRowsId('environmentActionTable');
 	var objectItemConfiguration = listItemObjects();
-	console.log($releaseEditForm.find('#senders').val());
+
 	changeSaveButton(true);
 	var cont = getCont();
 	$
@@ -997,7 +999,7 @@ function changeSaveButton(save){
 }
 
 function initTableObjectRelease() {
-	console.log($('#release_id').val());
+
 	$dtObjects = $('#tableTest4').DataTable(
 			{
 
@@ -1033,7 +1035,7 @@ function initTableObjectRelease() {
 						},
 						{
 							render : function(data, type, row, meta) {
-								console.log(row);
+								
 								var options = '<div class="iconLineC">';
 								options += '<a onclick="deleteconfigurationItemsRow('
 									+ row.objects.id
