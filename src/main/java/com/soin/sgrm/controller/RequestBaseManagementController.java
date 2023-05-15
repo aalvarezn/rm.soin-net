@@ -176,7 +176,8 @@ public class RequestBaseManagementController extends BaseController {
 			@RequestParam(value = "motive", required = true) String motive,
 			@RequestParam(value = "idError", required = false) Long idError,
 			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
-			@RequestParam(value = "senders", required = false) String senders
+			@RequestParam(value = "senders", required = false) String senders,
+			@RequestParam(value = "note", required = false) String note
 			) {
 		JsonResponse res = new JsonResponse();
 		try {
@@ -265,7 +266,7 @@ public class RequestBaseManagementController extends BaseController {
 							emailService.sendMailNotifyChangeStatus(requestBaseNew.getNumRequest(), " de la Solicitud "+requestBaseNew.getTypePetition().getCode(),
 									statusName, requestBaseNew.getOperator(),
 									requestBaseNew.getRequestDate(),
-									userLogin, senders, emailNotify, requestBaseNew.getMotive());
+									userLogin, senders, emailNotify, requestBaseNew.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "request");
 						}
@@ -282,7 +283,7 @@ public class RequestBaseManagementController extends BaseController {
 							emailService.sendMailNotifyChangeStatusError(typeError, requestBaseNew.getNumRequest(),
 									" de la Solicitud "+requestBaseNew.getTypePetition().getCode(), statusName, requestBaseNew.getOperator(),
 									requestBaseNew.getRequestDate(),
-									userLogin, senders, emailNotify, requestBaseNew.getMotive());
+									userLogin, senders, emailNotify, requestBaseNew.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "release");
 						}

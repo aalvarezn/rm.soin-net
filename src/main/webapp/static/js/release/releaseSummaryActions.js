@@ -117,6 +117,7 @@ function changeStatusRelease(releaseId, releaseNumber,cc) {
 	$formChangeStatus[0].reset();
 	$formChangeStatus.find('#motive').val('');
 	$('.tagInitMail#senders').importTags(cc ? cc : "" );
+	$formChangeStatus.find('#note').val("")
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	$formChangeStatus.find('#idRelease').val(releaseId);
 	$formChangeStatus.find('#releaseNumber').val(releaseNumber);
@@ -160,6 +161,7 @@ function saveChangeStatusModal(){
 			motive: $formChangeStatus.find('#motive').val(),
 			sendEmail:switchStatus,
 			senders:$formChangeStatus.find('#senders').val(),
+			note:$formChangeStatus.find('#note').val()
 		},
 		success : function(response) {
 			responseStatusRelease(response);

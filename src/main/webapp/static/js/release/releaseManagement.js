@@ -273,6 +273,7 @@ function changeStatusRelease(releaseId) {
 	}
 	
 	formChangeStatus.find('.selectpicker').selectpicker('refresh');
+	formChangeStatus.find('#note').val("");
 	formChangeStatus.find('#idRelease').val(rowData.id);
 	formChangeStatus.find('#releaseNumber').val(rowData.releaseNumber);
 	formChangeStatus.find(".fieldError").css("visibility", "hidden");
@@ -315,6 +316,7 @@ function saveChangeStatusModal(){
 			motive: formChangeStatus.find('#motive').val(),
 			sendEmail:switchStatus,
 			senders:formChangeStatus.find('#senders').val(),
+			note:formChangeStatus.find('#note').val()
 			
 		},
 		success : function(response) {

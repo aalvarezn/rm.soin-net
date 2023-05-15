@@ -2001,7 +2001,8 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	}
 	@Override
 	public void sendMailNotifyChangeStatus(String numRequest, String type, String name, String operator,
-			Timestamp requestDate, UserLogin user,String senders, EmailTemplate email,String motive) {
+			Timestamp requestDate, UserLogin user, String senders, EmailTemplate email, String motive,
+			String note, String title) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -2034,6 +2035,15 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
 						(user != null ?user.getFullName(): "")));
+			}
+			if (email.getHtml().contains("{{note}}")) {
+				email.setHtml(email.getHtml().replace("{{note}}",
+						(note != "" ?note: "NA")));
+			}
+			
+			if (email.getHtml().contains("{{title}}")) {
+				email.setHtml(email.getHtml().replace("{{title}}",
+						(title != "" ?title: "NA")));
 			}
 
 
@@ -2083,7 +2093,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	@Override
 	public void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
 			String operator, Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate email,
-			String motive) {
+			String motive, String note, String title) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
