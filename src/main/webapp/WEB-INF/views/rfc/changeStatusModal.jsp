@@ -113,7 +113,7 @@
 										<textarea rows="2" cols="" id="note" name="note"
 											class="form-control"
 											placeholder="Ingrese una nota adicional al correo..."
-											style="height: 67px;" maxlength="50"></textarea>
+											style="height: 67px;" maxlength="200"></textarea>
 									</div>
 
 								</div>
