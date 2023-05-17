@@ -2078,7 +2078,13 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			// Se notifica el usuario que lo solicito
 			mimeMessage.addRecipient(Message.RecipientType.CC,
 					new InternetAddress(user.getEmail()));
-
+			if(email.getCc()!=null) {
+				mimeMessage.addRecipient(Message.RecipientType.CC,
+						new InternetAddress(email.getCc()));
+			}
+		
+			mimeMessage.addRecipient(Message.RecipientType.TO,
+					new InternetAddress(email.getTo()));
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
@@ -2142,6 +2148,17 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{motive}}")) {
 				email.setHtml(email.getHtml().replace("{{motive}}", (motive != null ? motive : "")));
 			}
+			
+			if (email.getHtml().contains("{{note}}")) {
+				email.setHtml(email.getHtml().replace("{{note}}",
+						(note != "" ?note: "NA")));
+			}
+			
+			if (email.getHtml().contains("{{title}}")) {
+				email.setHtml(email.getHtml().replace("{{title}}",
+						(title != "" ?title: "NA")));
+			}
+
 
 			String body = email.getHtml();
 			body = Constant.getCharacterEmail(body);
@@ -2157,13 +2174,22 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (!verify) {
 				senders = senders + "," + userLogin.getEmail();
 			}
+			
 			for (String ccUser : senders.split(",")) {
+				
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 
 			}
 			// Se notifica el usuario que lo solicito
 			mimeMessage.addRecipient(Message.RecipientType.CC,
 					new InternetAddress(userLogin.getEmail()));
+			
+			if(email.getCc()!=null) {
+				mimeMessage.addRecipient(Message.RecipientType.CC,
+						new InternetAddress(email.getCc()));
+			}
+			mimeMessage.addRecipient(Message.RecipientType.TO,
+					new InternetAddress(email.getTo()));
 
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
