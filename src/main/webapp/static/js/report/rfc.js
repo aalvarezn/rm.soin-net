@@ -520,6 +520,8 @@ function resetDropPriorityMain(){
 }
 
 function downLoadReport(){
+	const typeDocumentExcel=1;
+	const typeDocumentPDF =2;
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
@@ -532,7 +534,8 @@ function downLoadReport(){
 			dateRange :$('#tableFilters input[name="daterange"]').val(),
 			projectId: $('#tableFilters #projectId').children("option:selected").val(),
 			systemId: $('#tableFilters #systemId').children("option:selected").val(),
-			sigesId: $('#tableFilters #sigesId').children("option:selected").val()
+			sigesId: $('#tableFilters #sigesId').children("option:selected").val(),
+			typeDocument:typeDocumentExcel,
 		},
 	    beforeSend: function() {
 	    	showSpinner();

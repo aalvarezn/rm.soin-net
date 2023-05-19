@@ -2,6 +2,7 @@ package com.soin.sgrm.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -22,11 +23,13 @@ import javax.xml.bind.DatatypeConverter;
 import org.springframework.core.env.Environment;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.metamodel.relational.Exportable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -119,6 +122,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
+import net.sf.jasperreports.export.XlsxReportConfiguration;
 
 @Controller
 @RequestMapping("/report")
@@ -756,7 +762,7 @@ public class ReportController extends BaseController {
 			Long sigesId;
 			int systemId;
 			int projectId;
-
+			int typeDocument;
 
 			if (request.getParameter("projectId").equals("")) {
 				projectId = 0;
@@ -775,16 +781,30 @@ public class ReportController extends BaseController {
 			} else {
 				sigesId = (long) Integer.parseInt(request.getParameter("sigesId"));
 			}
+			
+			if (request.getParameter("typeDocument").equals("")) {
+				typeDocument = 0;
+			} else {
+				typeDocument =  Integer.parseInt(request.getParameter("typeDocument"));
+			}
 		
 			
 			String dateRange = request.getParameter("dateRange");
-			ClassPathResource resource = new ClassPathResource(
-					"reports" + File.separator + "RFCReportGeneral" + ".jrxml");
+			ClassPathResource resource=null;
+			if(typeDocument==2) {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "RFCReportGeneral" + ".jrxml");
+			
+			}else {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "RFCReportGeneral" + ".jrxml");
+			}
+			
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 			List<RFCReport> rfcs = rfcService.listRFCReportFilter(projectId,systemId,sigesId,dateRange);
 			
-			RFCReport rfc= rfcs.get(1);
+		
 			System system = systemService.findSystemById(systemId);
 			Project project = projectService.findById(projectId);
 			ReportTest report=new ReportTest();
@@ -802,7 +822,7 @@ public class ReportController extends BaseController {
 				CountReport countReport=new CountReport();
 				valueRFC=0;
 				for(RFCReport rfcOnly : rfcs) {
-					if(rfcOnly.getStatus().getName()=="Completado") {
+					if(rfcOnly.getStatus().getName().equals("Completado")) {
 						if(rfcOnly.getSystem().getId()==systemOnly.getId()) {
 							valueRFC++;
 						}
@@ -828,9 +848,29 @@ public class ReportController extends BaseController {
 			parameters.put("logo",images.getInputStream());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 
-			String reportName = "RFCGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+			String reportName = "";
 			String basePath = env.getProperty("fileStore.path");
-			JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+			
+			if(typeDocument==2) {
+				reportName= "RFCGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+				JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+				
+			}else {
+				reportName="RFCGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".xlsx";
+				JRXlsxExporter exporter = new JRXlsxExporter();
+		        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+
+		        SimpleXlsxReportConfiguration configuration=new SimpleXlsxReportConfiguration();
+		        configuration.setDetectCellType(true);
+		        configuration.setCollapseRowSpan(true);
+		        configuration.setIgnoreCellBorder(true);
+		        configuration.setWhitePageBackground(true);
+		        configuration.setRemoveEmptySpaceBetweenColumns(true);
+		        exporter.setConfiguration(configuration);
+		        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream( basePath + reportName)));	
+		        exporter.exportReport();
+			}
+			
 			File file = new File(basePath + reportName);
 			byte[] encoded = org.apache.commons.net.util.Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
