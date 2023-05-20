@@ -34,6 +34,12 @@ import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestError;
+import com.soin.sgrm.model.RequestRM_P1_R1;
+import com.soin.sgrm.model.RequestRM_P1_R2;
+import com.soin.sgrm.model.RequestRM_P1_R3;
+import com.soin.sgrm.model.RequestRM_P1_R4;
+import com.soin.sgrm.model.RequestRM_P1_R5;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.model.System;
@@ -94,13 +100,12 @@ public class RequestBaseManagementController extends BaseController {
 
 	@Autowired
 	ParameterService parameterService;
-	
+
 	@Autowired
 	ErrorRequestService errorService;
-	
+
 	@Autowired
 	RequestErrorService requestErrorService;
-	
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -177,14 +182,13 @@ public class RequestBaseManagementController extends BaseController {
 			@RequestParam(value = "idError", required = false) Long idError,
 			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
 			@RequestParam(value = "senders", required = false) String senders,
-			@RequestParam(value = "note", required = false) String note
-			) {
+			@RequestParam(value = "note", required = false) String note) {
 		JsonResponse res = new JsonResponse();
 		try {
 			RequestBaseR1 requestBase = requestBaseService.findByR1(idRequest);
 			StatusRequest status = statusService.findById(idStatus);
 			String user = getUserLogin().getFullName();
-			Errors_Requests error=new Errors_Requests();
+			Errors_Requests error = new Errors_Requests();
 			Boolean errorVer = false;
 			UserLogin userLogin = getUserLogin();
 			requestBase.setStatus(status);
@@ -211,7 +215,7 @@ public class RequestBaseManagementController extends BaseController {
 			if (!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
 				requestBaseNew.setSiges(requestBaseService.findById(idRequest).getSiges());
 			}
-			
+
 			if (status != null && status.getName().equals("Error")) {
 				error = errorService.findById(idError);
 				RequestError requestError = new RequestError();
@@ -228,11 +232,10 @@ public class RequestBaseManagementController extends BaseController {
 				requestBaseNew.setMotive(motive);
 				requestBaseNew.setRequestDate(dateFormat);
 				requestBaseService.update(requestBaseNew);
-			
-				StatusRequest statusChange = statusService.findByKey("name","Borrador");
+
+				StatusRequest statusChange = statusService.findByKey("name", "Borrador");
 				requestBaseNew.setStatus(statusChange);
 
-	
 				status = statusChange;
 				motive = "Paso a borrador por " + error.getName();
 				dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
@@ -244,7 +247,7 @@ public class RequestBaseManagementController extends BaseController {
 				java.util.Date fechaNueva = (java.util.Date) format.parse(time1Minute.toString());
 				format = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
 				String time1MinuteFormat = format.format(fechaNueva);
-				dateChange=time1MinuteFormat;
+				dateChange = time1MinuteFormat;
 				Timestamp dateFormat2 = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
 				requestBaseNew.setStatus(status);
 				requestBaseNew.setOperator(getUserLogin().getFullName());
@@ -254,19 +257,29 @@ public class RequestBaseManagementController extends BaseController {
 
 			requestBaseService.update(requestBaseNew);
 			res.setStatus("success");
-			
+
 			if (sendEmail) {
 
 				if (!errorVer) {
 					Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
 					EmailTemplate emailNotify = emailService.findById(idTemplate);
 					String statusName = status.getName();
+					EmailTemplate email = new EmailTemplate();
+					TypePetition typePettion = requestBase.getTypePetition();
+
+					if (typePettion.getEmailTemplate() != null) {
+						email = typePettion.getEmailTemplate();
+
+					}
+
+					String subject = getSubject(email, requestBaseNew);
 					Thread newThread = new Thread(() -> {
 						try {
-							emailService.sendMailNotifyChangeStatus(requestBaseNew.getNumRequest(), " de la Solicitud "+requestBaseNew.getTypePetition().getCode(),
-									statusName, requestBaseNew.getOperator(),
-									requestBaseNew.getRequestDate(),
-									userLogin, senders, emailNotify, requestBaseNew.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+							emailService.sendMailNotifyChangeStatus(requestBaseNew.getNumRequest(),
+									" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
+									requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin, senders,
+									emailNotify, subject, requestBaseNew.getMotive(), note,
+									"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "request");
 						}
@@ -278,12 +291,22 @@ public class RequestBaseManagementController extends BaseController {
 					EmailTemplate emailNotify = emailService.findById(idTemplate);
 					String statusName = status.getName();
 					String typeError = error.getName();
+					EmailTemplate email = new EmailTemplate();
+					TypePetition typePettion = requestBase.getTypePetition();
+
+					if (typePettion.getEmailTemplate() != null) {
+						email = typePettion.getEmailTemplate();
+
+					}
+
+					String subject = getSubject(email, requestBaseNew);
 					Thread newThread = new Thread(() -> {
 						try {
 							emailService.sendMailNotifyChangeStatusError(typeError, requestBaseNew.getNumRequest(),
-									" de la Solicitud "+requestBaseNew.getTypePetition().getCode(), statusName, requestBaseNew.getOperator(),
-									requestBaseNew.getRequestDate(),
-									userLogin, senders, emailNotify, requestBaseNew.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+									" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
+									requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin, senders,
+									emailNotify, subject, requestBaseNew.getMotive(), note,
+									"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "release");
 						}
@@ -360,4 +383,115 @@ public class RequestBaseManagementController extends BaseController {
 		request.setAttribute("rfcC", rfcC);
 
 	}
+
+	public String getSubject(EmailTemplate email, RequestBase request) {
+		String temp = "";
+		if (request.getTypePetition().getCode().equals("RM-P1-R4")) {
+
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{requestNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+
+			if (email.getSubject().contains("{{systemMain}}")) {
+				temp = "";
+				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+				temp += codeSiges.getSystem().getName();
+
+				email.setSubject(
+						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+			}
+
+		} else if (request.getTypePetition().getCode().equals("RM-P1-R5")) {
+
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{requestNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+
+			if (email.getSubject().contains("{{systemMain}}")) {
+				temp = "";
+				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+				temp += codeSiges.getSystem().getName();
+
+				email.setSubject(
+						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+			}
+		} else if (request.getTypePetition().getCode().equals("RM-P1-R2")) {
+
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{requestNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+
+			if (email.getSubject().contains("{{systemMain}}")) {
+				temp = "";
+				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+				temp += codeSiges.getSystem().getName();
+
+				email.setSubject(
+						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+			}
+		} else if (request.getTypePetition().getCode().equals("RM-P1-R3")) {
+
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{requestNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{requestNumber}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+			if (email.getSubject().contains("{{systemMain}}")) {
+				temp = "";
+				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+
+				temp += codeSiges.getSystem().getName();
+
+				email.setSubject(
+						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+			}
+		} else if (request.getTypePetition().getCode().equals("RM-P1-R1")) {
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{codeOpor}}")) {
+				email.setSubject(email.getSubject().replace("{{codeOpor}}",
+						(request.getNumRequest() != null ? request.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{projectCode}}")) {
+				String projectCode = request.getSystemInfo().getName() != null ? request.getSystemInfo().getName() : "";
+				projectCode = projectCode.replace("\n", "<br>");
+				email.setSubject(email.getSubject().replace("{{projectCode}}", projectCode));
+			}
+		}
+
+		return email.getSubject();
+	}
+
 }

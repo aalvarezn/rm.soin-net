@@ -2001,16 +2001,16 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	}
 	@Override
 	public void sendMailNotifyChangeStatus(String numRequest, String type, String name, String operator,
-			Timestamp requestDate, UserLogin user, String senders, EmailTemplate email, String motive,
+			Timestamp requestDate, UserLogin user, String senders, EmailTemplate email,String subject, String motive,
 			String note, String title) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 			// ------------------Seccion del asunto del correo -------------------------- //
 			// Se agrega el nombre del sistema
-			if (email.getSubject().contains("{{number}}")) {
-				email.setSubject(email.getSubject().replace("{{number}}",
-						(numRequest != null ? numRequest : "")));
+			if (email.getSubject().contains("{{subject}}")) {
+				email.setSubject(email.getSubject().replace("{{subject}}",
+						(subject != null ? subject : "")));
 			}
 			if (email.getHtml().contains("{{number}}")) {
 				email.setHtml(email.getHtml().replace("{{number}}",
@@ -2098,15 +2098,15 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Override
 	public void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
-			String operator, Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate email,
+			String operator, Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate email,String subject,
 			String motive, String note, String title) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 			// ------------------Seccion del asunto del correo -------------------------- //
-			if (email.getSubject().contains("{{number}}")) {
-				email.setSubject(email.getSubject().replace("{{number}}",
-						(numRequest != null ? numRequest : "")));
+			if (email.getSubject().contains("{{subject}}")) {
+				email.setSubject(email.getSubject().replace("{{subject}}",
+						(subject != null ? subject : "")));
 			}
 			
 			if (email.getHtml().contains("{{number}}")) {
