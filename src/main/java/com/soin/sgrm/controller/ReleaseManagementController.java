@@ -25,9 +25,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_Release;
+import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.Releases_WithoutObj;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.security.UserLogin;
@@ -37,6 +39,7 @@ import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.utils.CommonUtils;
@@ -68,11 +71,14 @@ public class ReleaseManagementController extends BaseController {
 	private ProjectService projectService;
 
 	@Autowired
-	ParameterService parameterService;
+	private ParameterService parameterService;
 
 	@Autowired
-	EmailTemplateService emailService;
-
+	private EmailTemplateService emailService;
+	
+	@Autowired
+	private RequestService requestService;
+ 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -210,15 +216,23 @@ public class ReleaseManagementController extends BaseController {
 			if (sendEmail) {
 
 				if (!errorVer) {
+					 
 					Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
 					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					EmailTemplate email=new EmailTemplate();
+					if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+						 email = release.getSystem().getEmailTemplate().iterator().next();
+					}
+					String subject =getSubject(email,release);
+					
 					String statusName = status.getName();
+					
 					Thread newThread = new Thread(() -> {
 						try {
 							emailService.sendMailNotifyChangeStatus(release.getReleaseNumber(), " del Release",
 									statusName, release.getOperator(),
 									CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
-									userLogin, senders, emailNotify, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+									userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "release");
 						}
@@ -229,13 +243,19 @@ public class ReleaseManagementController extends BaseController {
 					Integer idTemplate = Integer.parseInt(parameterService.findByCode(31).getParamValue());
 					EmailTemplate emailNotify = emailService.findById(idTemplate);
 					String statusName = status.getName();
+					EmailTemplate email=new EmailTemplate();
+					if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+						 email = release.getSystem().getEmailTemplate().iterator().next();
+					}
+					String subject =getSubject(email,release);
+					
 					String typeError = error.getName();
 					Thread newThread = new Thread(() -> {
 						try {
 							emailService.sendMailNotifyChangeStatusError(typeError, release.getReleaseNumber(),
 									" del Release", statusName, release.getOperator(),
 									CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
-									userLogin, senders, emailNotify, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+									userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "release");
 						}
@@ -266,5 +286,38 @@ public class ReleaseManagementController extends BaseController {
 		systemC.put("all", (systemC.get("draft") + systemC.get("requested") + systemC.get("completed")));
 		request.setAttribute("systemC", systemC);
 	}
+	public String getSubject(EmailTemplate emailNotify,ReleaseEdit release) {
+		
+	
+		String tpo = "";
+		String releaseNumber = release.getReleaseNumber();
+		String[] parts = releaseNumber.split("\\.");
+		for (String part : parts) {
+			if (part.contains("TPO")) {
+				String[] partsTPO = part.split("TPO");
+				String[] partsNumber = part.split(partsTPO[1]);
+				tpo = partsNumber[0] + "-" + partsTPO[1];
+			}
+		}
+
+		Request requestNew = new Request();
+		if (tpo != "") {
+			requestNew = requestService.findByNameCode(tpo);
+		}
+		/* ------ Subject ------ */
+		if (emailNotify.getSubject().contains("{{tpoNumber}}")) {
+			emailNotify.setSubject(emailNotify.getSubject().replace("{{tpoNumber}}", (tpo != "" ? tpo : "")));
+		}
+		if (emailNotify.getSubject().contains("{{releaseNumber}}")) {
+			emailNotify.setSubject(emailNotify.getSubject().replace("{{releaseNumber}}",
+					(release.getReleaseNumber() != null ? release.getReleaseNumber() : "")));
+		}
+		if (emailNotify.getSubject().contains("{{version}}")) {
+			emailNotify.setSubject(emailNotify.getSubject().replace("{{version}}",
+					(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
+		}
+		return emailNotify.getSubject();
+	}
+	
 
 }
