@@ -2075,9 +2075,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 
 			}
-			// Se notifica el usuario que lo solicito
-			mimeMessage.addRecipient(Message.RecipientType.CC,
-					new InternetAddress(user.getEmail()));
+
 			if(email.getCc()!=null) {
 				mimeMessage.addRecipient(Message.RecipientType.CC,
 						new InternetAddress(email.getCc()));
@@ -2180,10 +2178,6 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 
 			}
-			// Se notifica el usuario que lo solicito
-			mimeMessage.addRecipient(Message.RecipientType.CC,
-					new InternetAddress(userLogin.getEmail()));
-			
 			if(email.getCc()!=null) {
 				mimeMessage.addRecipient(Message.RecipientType.CC,
 						new InternetAddress(email.getCc()));
