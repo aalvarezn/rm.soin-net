@@ -10,21 +10,21 @@
 	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-	<subDataset name="rfcDataSet" uuid="30fa62fc-7055-4417-a498-88df6ae54ead">
+	<subDataset name="requestDataSet" uuid="30fa62fc-7055-4417-a498-88df6ae54ead">
 		<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="634"/>
 		<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="352"/>
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
-		<field name="rfcNumber" class="java.lang.String"/>
+		<field name="numRequest" class="java.lang.String"/>
 		<field name="requestDate" class="java.sql.Timestamp"/>
 		<field name="userName" class="java.lang.String"/>
 		<field name="statusName" class="java.lang.String"/>
 		<field name="systemName" class="java.lang.String"/>
-		<field name="priorityName" class="java.lang.String"/>
-		<field name="impactName" class="java.lang.String"/>
+		<field name="codeProyectName" class="java.lang.String"/>
+		<field name="typePetitionName" class="java.lang.String"/>
 	</subDataset>
-	<subDataset name="countDataSet" uuid="39d54167-0576-4951-98a2-0d74fb57e1ab">
+	<subDataset name="countDataSet" uuid="5f7f895c-d904-4709-9f92-b03c74f9fccd">
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
@@ -32,13 +32,13 @@
 		<field name="value1" class="java.lang.Integer"/>
 	</subDataset>
 	<parameter name="ds" class="net.sf.jasperreports.engine.data.JsonData"/>
-	<parameter name="rfcDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="requestDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<parameter name="statusTracking" class="java.lang.String"/>
 	<parameter name="logo" class="java.io.InputStream"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="rfcDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<field name="requestDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<field name="systemNameNew" class="java.lang.String"/>
 	<field name="projectNameNew" class="java.lang.String"/>
 	<field name="dateNew" class="java.lang.String"/>
@@ -47,20 +47,20 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="72" splitType="Stretch">
+		<band height="93" splitType="Stretch">
 			<property name="com.jaspersoft.studio.layout"/>
 			<staticText>
-				<reportElement mode="Transparent" x="-19" y="-20" width="1078" height="90" forecolor="#012A4D" backcolor="#FFFFFF" uuid="dbc8c21f-4ab5-40fd-8e8c-6d3d265aa2a4">
+				<reportElement mode="Transparent" x="-19" y="-20" width="1078" height="100" forecolor="#012A4D" backcolor="#FFFFFF" uuid="dbc8c21f-4ab5-40fd-8e8c-6d3d265aa2a4">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="35" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Reporte RFC]]></text>
+				<text><![CDATA[Reporte Solicitudes]]></text>
 			</staticText>
 			<image>
-				<reportElement x="930" y="-15" width="110" height="80" uuid="62f3a7c0-773f-40af-a7ef-9ff277c0e094">
+				<reportElement x="930" y="-10" width="110" height="80" uuid="62f3a7c0-773f-40af-a7ef-9ff277c0e094">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -71,64 +71,64 @@
 		</band>
 	</title>
 	<columnHeader>
-		<band height="114">
+		<band height="134">
+			<textField>
+				<reportElement mode="Transparent" x="710" y="69" width="110" height="30" forecolor="#012A4D" uuid="821d31b6-a6c6-40d9-a80c-a3bf79b2e5bd"/>
+				<textElement textAlignment="Center">
+					<font fontName="Titillium Web" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{systemNameNew}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="235" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
-				<reportElement mode="Transparent" x="779" y="44" width="50" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="adc8fb14-657a-4f13-8ffe-f53bdca830ca"/>
+				<reportElement x="740" y="-95" width="50" height="30" forecolor="#012A4D" uuid="adc8fb14-657a-4f13-8ffe-f53bdca830ca"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Sistema]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="609" y="44" width="50" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="ea7ab3fb-5b02-4980-9bcc-178b30c98474"/>
+				<reportElement x="570" y="-95" width="50" height="30" forecolor="#012A4D" uuid="ea7ab3fb-5b02-4980-9bcc-178b30c98474"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Proyecto]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="409" y="44" width="90" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="82a6f6a0-bd91-4da4-95c3-3e6b5185a675"/>
+				<reportElement x="370" y="-95" width="90" height="30" forecolor="#012A4D" uuid="82a6f6a0-bd91-4da4-95c3-3e6b5185a675"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Rango de fechas]]></text>
 			</staticText>
 			<textField>
-				<reportElement mode="Transparent" x="750" y="70" width="110" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="821d31b6-a6c6-40d9-a80c-a3bf79b2e5bd"/>
-				<textElement textAlignment="Center">
-					<font fontName="Titillium Web" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{systemNameNew}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement mode="Transparent" x="579" y="74" width="110" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="437a8b91-e238-4a84-974c-5b536dfb8f61"/>
+				<reportElement x="540" y="-65" width="110" height="30" forecolor="#012A4D" uuid="437a8b91-e238-4a84-974c-5b536dfb8f61"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{projectNameNew}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="359" y="74" width="190" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="5d626841-7c74-4fde-ab7e-4b4c62162011"/>
+				<reportElement x="320" y="-65" width="190" height="30" forecolor="#012A4D" uuid="5d626841-7c74-4fde-ab7e-4b4c62162011"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dateNew}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Transparent" x="20" y="44" width="226" height="60" forecolor="#012A4D" backcolor="#FFFFFF" uuid="275f5deb-19c0-4f0b-b72d-bffb91ca6363"/>
+				<reportElement x="-20" y="-95" width="226" height="60" forecolor="#012A4D" uuid="275f5deb-19c0-4f0b-b72d-bffb91ca6363"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Información General:]]></text>
 			</staticText>
-		</band>
-	</columnHeader>
-	<detail>
-		<band height="308" splitType="Stretch">
-			<property name="com.jaspersoft.studio.layout"/>
-			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<componentElement>
-				<reportElement x="20" y="50" width="1015" height="200" uuid="addba8aa-a8d6-4a87-8065-0e59991eed88">
+				<reportElement x="15" y="20" width="1015" height="200" uuid="addba8aa-a8d6-4a87-8065-0e59991eed88">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -136,11 +136,11 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="rfcDataSet" uuid="fef29a65-bda7-40a7-bdef-7da4812ac904">
+					<datasetRun subDataset="requestDataSet" uuid="dc754851-4cef-478d-aa19-f24fc1f4f09b">
 						<datasetParameter name="REPORT_DATA_SOURCE">
-							<datasetParameterExpression><![CDATA[$F{rfcDataSource}]]></datasetParameterExpression>
+							<datasetParameterExpression><![CDATA[$F{requestDataSource}]]></datasetParameterExpression>
 						</datasetParameter>
-						<dataSourceExpression><![CDATA[$F{rfcDataSource}]]></dataSourceExpression>
+						<dataSourceExpression><![CDATA[$F{requestDataSource}]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="145" uuid="6602b2bc-7e55-4553-aaf3-6cf9b644d093">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -160,7 +160,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Titillium Web" size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Número RFC]]></text>
+								<text><![CDATA[Número Solicitud]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:detailCell height="60">
@@ -175,7 +175,7 @@
 								<textElement textAlignment="Center">
 									<font fontName="Titillium Web"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{rfcNumber}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{numRequest}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -254,7 +254,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Titillium Web" size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Prioridad]]></text>
+								<text><![CDATA[Codigo Proyecto]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:detailCell height="60">
@@ -269,7 +269,7 @@
 								<textElement textAlignment="Center">
 									<font fontName="Titillium Web" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{priorityName}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{codeProyectName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -285,7 +285,7 @@
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="Titillium Web" size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Impacto]]></text>
+								<text><![CDATA[Tipo solicitud]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:detailCell height="60">
@@ -300,7 +300,7 @@
 								<textElement textAlignment="Center">
 									<font fontName="Titillium Web" size="8"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{impactName}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{typePetitionName}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -371,17 +371,17 @@
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="346">
+		<band height="367">
 			<pie3DChart>
 				<chart evaluationTime="Report">
-					<reportElement positionType="Float" x="360" y="30" width="320" height="230" uuid="39d4ce2b-3432-4084-b023-093959d53dce"/>
+					<reportElement positionType="Float" x="380" y="40" width="320" height="230" uuid="f34759eb-d7e1-49c7-a601-efabf96ac8be"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
 				</chart>
 				<pieDataset>
 					<dataset resetType="Report">
-						<datasetRun subDataset="countDataSet" uuid="abc9e332-c6aa-4124-b429-3bfa75074595">
+						<datasetRun subDataset="countDataSet" uuid="52c0ce57-aee9-4860-ab96-014598c3e034">
 							<dataSourceExpression><![CDATA[$F{countDataSource}]]></dataSourceExpression>
 						</datasetRun>
 					</dataset>
@@ -395,13 +395,13 @@
 				</pie3DPlot>
 			</pie3DChart>
 			<frame>
-				<reportElement mode="Opaque" x="360" y="270" width="320" height="50" backcolor="#012A4D" uuid="0eb5d4f9-2827-47eb-bd1d-5d15ada0394a"/>
+				<reportElement mode="Opaque" x="380" y="280" width="320" height="50" backcolor="#012A4D" uuid="0f51f1a6-487f-4b86-9b1a-bbe26ffb9aef"/>
 				<staticText>
-					<reportElement positionType="Float" x="0" y="0" width="320" height="50" forecolor="#FFFFFF" uuid="ff0fe807-cc77-49ef-8116-08b59ba7079a"/>
+					<reportElement positionType="Float" x="0" y="0" width="320" height="50" forecolor="#FFFFFF" uuid="9d0fbf72-d95d-4ef0-ac63-5c26aec2331e"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Titillium Web" size="12" isBold="true"/>
 					</textElement>
-					<text><![CDATA[Cantidad de RFC completados por sistema]]></text>
+					<text><![CDATA[Cantidad de Solicitudes completadas por sistema]]></text>
 				</staticText>
 			</frame>
 		</band>
