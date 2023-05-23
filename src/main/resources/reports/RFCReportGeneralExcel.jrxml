@@ -73,21 +73,21 @@
 	<columnHeader>
 		<band height="114">
 			<staticText>
-				<reportElement mode="Transparent" x="779" y="44" width="50" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="adc8fb14-657a-4f13-8ffe-f53bdca830ca"/>
+				<reportElement mode="Transparent" x="770" y="30" width="50" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="adc8fb14-657a-4f13-8ffe-f53bdca830ca"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Sistema]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="609" y="44" width="50" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="ea7ab3fb-5b02-4980-9bcc-178b30c98474"/>
+				<reportElement mode="Transparent" x="610" y="30" width="50" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="ea7ab3fb-5b02-4980-9bcc-178b30c98474"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Proyecto]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Transparent" x="409" y="44" width="90" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="82a6f6a0-bd91-4da4-95c3-3e6b5185a675"/>
+				<reportElement mode="Transparent" x="410" y="30" width="90" height="30" forecolor="#012A4D" backcolor="#FFFFFF" uuid="82a6f6a0-bd91-4da4-95c3-3e6b5185a675"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>

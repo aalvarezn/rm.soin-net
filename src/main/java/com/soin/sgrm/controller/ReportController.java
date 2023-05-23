@@ -797,7 +797,7 @@ public class ReportController extends BaseController {
 			
 			}else {
 				 resource = new ClassPathResource(
-							"reports" + File.separator + "RFCReportGeneral" + ".jrxml");
+							"reports" + File.separator + "RFCReportGeneralExcel" + ".jrxml");
 			}
 			
 			InputStream inputStream = resource.getInputStream();
@@ -902,7 +902,7 @@ public class ReportController extends BaseController {
 			int statusId;
 			int systemId;
 			int projectId;
-			
+			int typeDocument;
 			if (!request.getParameter("systemId").equals("") && request.getParameter("systemId") != null) {
 				systemId = Integer.parseInt(request.getParameter("systemId"));
 			} else {
@@ -914,9 +914,22 @@ public class ReportController extends BaseController {
 			} else {
 				projectId = 0;
 			}
+			if (request.getParameter("typeDocument").equals("")) {
+				typeDocument = 0;
+			} else {
+				typeDocument =  Integer.parseInt(request.getParameter("typeDocument"));
+			}
 			String dateRange = request.getParameter("dateRange");
-			ClassPathResource resource = new ClassPathResource(
-					"reports" + File.separator + "ReleaseReportGeneralNew" + ".jrxml");
+			ClassPathResource resource = null;
+			if(typeDocument==2) {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "ReleaseReportGeneralNew" + ".jrxml");
+			
+			}else {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "ReleaseReportGeneralNewExcel" + ".jrxml");
+			}
+					
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 			List<ReleaseReportFast> releases = releaseService.listReleaseReportFilter(systemId,projectId,dateRange);
@@ -969,6 +982,8 @@ public class ReportController extends BaseController {
 
 			String reportName = "ReleaseGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
 			String basePath = env.getProperty("fileStore.path");
+			
+			
 			JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
 			File file = new File(basePath + reportName);
 			byte[] encoded = org.apache.commons.net.util.Base64.encodeBase64(FileUtils.readFileToByteArray(file));
