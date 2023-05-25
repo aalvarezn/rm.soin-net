@@ -1,5 +1,6 @@
 package com.soin.sgrm.controller;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -463,7 +464,8 @@ public class ReleaseComponentsController extends BaseController {
 						obj.setTypeObject(type.getId());
 						obj.setItemConfiguration(configurationItem.getId());
 						obj.setModuleId(release.getModule_id());
-						obj.setRevision_Date(CommonUtils.getSqlDate(CommonUtils.getSystemDate().toLowerCase()));
+						Date pruebaFecha=CommonUtils.getSqlDateNew(CommonUtils.getSystemDate().toLowerCase());
+						obj.setRevision_Date(pruebaFecha);
 						obj.setIsSql((configurationItem.getName().equalsIgnoreCase("Base Datos")) ? 1 : 0);
 						objects.add(obj);
 					}

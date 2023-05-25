@@ -46,6 +46,29 @@ public class CommonUtils {
 			throw new Exception("Formato de Fecha Inválida.");
 		}
 	}
+	
+	public static java.sql.Date getSqlDateNew(String dateString) throws Exception{
+        String inputPattern = "yyyy-MM-dd HH:mm:ss.SSS";
+        String outputPattern = "yyyy-MM-dd 00:00:00.000";
+
+        SimpleDateFormat inputFormat = new SimpleDateFormat(inputPattern);
+        SimpleDateFormat outputFormat = new SimpleDateFormat(outputPattern);
+
+        try {
+            java.util.Date utilDate = inputFormat.parse(dateString);
+
+            String formattedDateString = outputFormat.format(utilDate);
+            java.util.Date formattedUtilDate = outputFormat.parse(formattedDateString);
+
+            java.sql.Date sqlDate = new java.sql.Date(formattedUtilDate.getTime());
+            
+            return sqlDate;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+		return null;
+
+	}
 
 	public static java.sql.Date getSqlDate() {
 		long time = System.currentTimeMillis();
