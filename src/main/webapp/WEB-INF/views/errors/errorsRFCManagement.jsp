@@ -178,40 +178,46 @@
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 						<div class="button-demo flr">
 							<button type="button" class="btn btn-primary setIcon"
-								onclick="downLoadReport()">
-								<span>DESCARGAR PDF</span><span><i
-									class="material-icons m-t--2 ">update</i></span>
+								onclick="downLoadReport(1)">
+								<span>DESCARGAR EXCEL</span><span><i
+									class="material-icons m-t--2 ">offline_pin</i></span>
 							</button>
+							<div class="button-demo flr">
+								<button type="button" class="btn btn-primary setIcon"
+									onclick="downLoadReport()">
+									<span>DESCARGAR PDF</span><span><i
+										class="material-icons m-t--2 ">update</i></span>
+								</button>
+							</div>
 						</div>
 					</div>
-				</div>
-				<!-- #tableFilters# -->
-				<div class="row clearfix">
-					<div id="tableSection"
-						class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						<div class="body">
-							<div class="body table-responsive">
-								<table id="dtRFCs"
-									class="table table-bordered table-striped table-hover dataTable">
-									<thead>
-										<tr>
-											<th>ID</th>
-											<th>N&uacute;mero RFC</th>
-											<th>Sistema</th>
-											<th>Siges</th>
-											<th>Tipo Error</th>
-											<th>Observaciones</th>
-											<th>Fecha error</th>
-											<th>Solicitante</th>
-										</tr>
-									</thead>
-								</table>
+					<!-- #tableFilters# -->
+					<div class="row clearfix">
+						<div id="tableSection"
+							class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="body">
+								<div class="body table-responsive">
+									<table id="dtRFCs"
+										class="table table-bordered table-striped table-hover dataTable">
+										<thead>
+											<tr>
+												<th>ID</th>
+												<th>N&uacute;mero RFC</th>
+												<th>Sistema</th>
+												<th>Siges</th>
+												<th>Tipo Error</th>
+												<th>Observaciones</th>
+												<th>Fecha error</th>
+												<th>Solicitante</th>
+											</tr>
+										</thead>
+									</table>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 	</section>
 
 	<%@include file="../plantilla/footer.jsp"%>

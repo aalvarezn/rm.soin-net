@@ -66,6 +66,7 @@ import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.ReportBlank;
 import com.soin.sgrm.model.ReportFile;
+import com.soin.sgrm.model.ReportGhap;
 import com.soin.sgrm.model.ReportTest;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestRM_P1_R1;
@@ -655,7 +656,7 @@ public class ReportController extends BaseController {
 			Long typePetitionId;
 			int systemId;
 			int projectId;
-
+			int typeDocument;
 
 			if (request.getParameter("projectId").equals("")) {
 				projectId = 0;
@@ -674,16 +675,28 @@ public class ReportController extends BaseController {
 			} else {
 				typePetitionId = (long) Integer.parseInt(request.getParameter("typePetitionId"));
 			}
-		
+			if (request.getParameter("typeDocument").equals("")) {
+				typeDocument = 0;
+			} else {
+				typeDocument =  Integer.parseInt(request.getParameter("typeDocument"));
+			}
 			
 			String dateRange = request.getParameter("dateRange");
-			ClassPathResource resource = new ClassPathResource(
-					"reports" + File.separator + "RequestReportGeneral" + ".jrxml");
+			ClassPathResource resource=null;
+			if(typeDocument==2) {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "RequestReportGeneral" + ".jrxml");
+			
+			}else {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "RequestReportGeneralExcel" + ".jrxml");
+			}
+
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 			List<RequestReport> requests = requestBaseR1Service.listRequestReportFilter(projectId,systemId,typePetitionId,dateRange);
 			
-			RequestReport requestNew= requests.get(1);
+
 			System system = systemService.findSystemById(systemId);
 			Project project = projectService.findById(projectId);
 			ReportTest report=new ReportTest();
@@ -727,10 +740,30 @@ public class ReportController extends BaseController {
 					"images" + File.separator + "logo" + ".png");
 			parameters.put("logo",images.getInputStream());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
-
-			String reportName = "SolicitudGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+			String reportName = "";
 			String basePath = env.getProperty("fileStore.path");
-			JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+			if(typeDocument==2) {
+				reportName= "SolicitudGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+				JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+				
+			}else {
+				reportName="SolicitudGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".xlsx";
+				JRXlsxExporter exporter = new JRXlsxExporter();
+		        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+
+		        SimpleXlsxReportConfiguration configuration=new SimpleXlsxReportConfiguration();
+		        configuration.setDetectCellType(true);
+		        configuration.setCollapseRowSpan(true);
+		        configuration.setIgnoreCellBorder(true);
+		        configuration.setWhitePageBackground(true);
+		        configuration.setRemoveEmptySpaceBetweenColumns(true);
+		        exporter.setConfiguration(configuration);
+		        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream( basePath + reportName)));	
+		        exporter.exportReport();
+			}
+			
+		
+			
 			File file = new File(basePath + reportName);
 			byte[] encoded = org.apache.commons.net.util.Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
@@ -927,34 +960,42 @@ public class ReportController extends BaseController {
 			
 			}else {
 				 resource = new ClassPathResource(
-							"reports" + File.separator + "ReleaseReportGeneralNewExcel" + ".jrxml");
+							"reports" + File.separator + "ReleaseReportGeneralExcel" + ".jrxml");
 			}
 					
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 			List<ReleaseReportFast> releases = releaseService.listReleaseReportFilter(systemId,projectId,dateRange);
 			
-			
-			ReleaseReportFast release= releases.get(1);
+			List<ReportGhap> reportList = new ArrayList<ReportGhap>();
+		
 			System system = systemService.findSystemById(systemId);
 			Project project = projectService.findById(projectId);
 			ReportTest report=new ReportTest();
 			report.setSystem(system);
 			report.setProject(project);
 			report.setDateNew(dateRange);
-
+			List<System> systems = new ArrayList<System>();
 			Integer totalRFC = 0;
-			List<System> systems = systemService.list();
-
+			if(system!=null) {
+				systems.add(system);
+			}else {
+				systems = systemService.list();
+			}
+			
+			List<Status> statuses=statusService.listWithOutAnul();
 			
 			int valueRelease= 0;
-
+			int count =0;
+			int valueRequest=0;
 			
 			report.setReleaseDataSource(releases);
 			List<ReportTest> listReport = new ArrayList<>();
 			List<CountReport> countReportRelease=new ArrayList<>();
 			for(System systemOnly: systems) {
 				CountReport countReport=new CountReport();
+			
+				
 				valueRelease=0;
 				for(ReleaseReportFast releaseOnly : releases) {
 					if(releaseOnly.getStatus().getName().equals("Produccion")) {
@@ -962,29 +1003,78 @@ public class ReportController extends BaseController {
 							valueRelease++;
 						}
 					}
+					if(releaseOnly.getStatus().getName().equals("Solicitado")) {
+						if(releaseOnly.getSystem().getId()==systemOnly.getId()) {
+							valueRequest++;
+						}
+					}
+
+				}
+				
+				for(Status status: statuses) {
+					ReportGhap statusCountReport=new ReportGhap();
+					count=0;
+					for(ReleaseReportFast releaseOnly : releases) {
+						if(releaseOnly.getStatus().getId()==status.getId()) {
+							if(releaseOnly.getSystem().getId()==systemOnly.getId()) {
+								count++;
+							}
+						}
+
+					}
+					if(count>0) {
+						statusCountReport.setLabel(systemOnly.getName());
+						statusCountReport.setLabelStatus(status.getName());
+						statusCountReport.setValue(count);
+						reportList.add(statusCountReport);
+						
+					}
 				}
 				if(valueRelease>0) {
 					countReport.setLabel(systemOnly.getCode());
 					countReport.setValue1(valueRelease);
 					countReportRelease.add(countReport);
+					
 				}
+		
 				
 			}
+			
 			report.setCountDataSource(countReportRelease);
+			report.setListCountDataSource(reportList);
 			listReport.add(report);
 			JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(listReport);
 			Map<String, Object> parameters = new HashMap<>();
 			ClassPathResource images = new ClassPathResource(
 					"images" + File.separator + "logo" + ".png");
 			parameters.put("logo",images.getInputStream());
-
+			parameters.put("totalRequest",valueRequest);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
-
-			String reportName = "ReleaseGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+			String reportName = "";
 			String basePath = env.getProperty("fileStore.path");
 			
+			if(typeDocument==2) {
+				reportName= "ReleaseGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+				JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+				
+			}else {
+				reportName="ReleaseGeneral-" + CommonUtils.getSystemDate("yyyyMMdd") + ".xlsx";
+				JRXlsxExporter exporter = new JRXlsxExporter();
+		        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+
+		        SimpleXlsxReportConfiguration configuration=new SimpleXlsxReportConfiguration();
+		        configuration.setDetectCellType(true);
+		        configuration.setCollapseRowSpan(true);
+		        configuration.setIgnoreCellBorder(true);
+		        configuration.setWhitePageBackground(true);
+		        configuration.setRemoveEmptySpaceBetweenColumns(true);
+		        exporter.setConfiguration(configuration);
+		        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream( basePath + reportName)));	
+		        exporter.exportReport();
+			}
+		
 			
-			JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+		
 			File file = new File(basePath + reportName);
 			byte[] encoded = org.apache.commons.net.util.Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 			String mimeType = URLConnection.guessContentTypeFromName(file.getName());

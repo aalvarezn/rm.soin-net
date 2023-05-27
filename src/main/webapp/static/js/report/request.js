@@ -427,7 +427,7 @@ function validStatusRequest() {
 
 	return valid;
 }
-function downLoadReport(){
+function downLoadReport(typeDocument){
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
@@ -441,6 +441,7 @@ function downLoadReport(){
 			projectId: $('#tableFilters #projectId').children("option:selected").val(),
 			systemId: $('#tableFilters #systemId').children("option:selected").val(),
 			typePetitionId: $('#tableFilters #typePetitionId').children("option:selected").val(),
+			typeDocument:typeDocument
 		},
 	    beforeSend: function() {
 	    	showSpinner();
@@ -550,4 +551,15 @@ function resetDropPriorityMain(){
 	$('#systemId').selectpicker('refresh');
 	
 }
+
+function showSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "flex";
+}
+
+function hideSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "none";
+}
+
 

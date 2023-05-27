@@ -567,7 +567,7 @@ function resetDropPriorityMain(){
 	$('#sigesId').selectpicker('refresh');
 }
 
-function downLoadReport(){
+function downLoadReport(typeDocument){
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
@@ -581,7 +581,8 @@ function downLoadReport(){
 			sigesId: $('#tableFilters #sigesId').children("option:selected").val(),
 			errorId: $('#tableFilters #errorId').children("option:selected").val(),
 			systemId: $('#tableFilters #systemId').children("option:selected").val(),
-			projectId: $('#tableFilters #projectId').children("option:selected").val()
+			projectId: $('#tableFilters #projectId').children("option:selected").val(),
+			typeDocument:typeDocument
 		}, beforeSend: function() {
 	    	showSpinner();
 	      },

@@ -53,7 +53,7 @@ $(function() {
 	});
 	//$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
-	activeItemMenu("RFCItem");
+	activeItemMenu("reportItem",true);
 	dropDownChange();
 	$("#addRFCSection").hide();
 	$fmRFC.find("#sId").selectpicker('val',"");
@@ -519,9 +519,7 @@ function resetDropPriorityMain(){
 	$('#sigesId').selectpicker('refresh');
 }
 
-function downLoadReport(){
-	const typeDocumentExcel=1;
-	const typeDocumentPDF =2;
+function downLoadReport(typeDocument){
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
@@ -535,7 +533,7 @@ function downLoadReport(){
 			projectId: $('#tableFilters #projectId').children("option:selected").val(),
 			systemId: $('#tableFilters #systemId').children("option:selected").val(),
 			sigesId: $('#tableFilters #sigesId').children("option:selected").val(),
-			typeDocument:typeDocumentExcel,
+			typeDocument:typeDocument,
 		},
 	    beforeSend: function() {
 	    	showSpinner();

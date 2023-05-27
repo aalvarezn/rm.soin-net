@@ -205,7 +205,7 @@ function confirmCancelRelease(index){
 	});
 }
 
-function downLoadReport(){
+function downLoadReport(typeDocument){
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
@@ -216,7 +216,8 @@ function downLoadReport(){
 		data : {
 			dateRange :$('#tableFilters input[name="daterange"]').val(),
 			projectId: $('#tableFilters #projectId').children("option:selected").val(),
-			systemId: $('#tableFilters #systemId').children("option:selected").val()
+			systemId: $('#tableFilters #systemId').children("option:selected").val(),
+			typeDocument:typeDocument
 		},	    
 		beforeSend: function() {
 	    	showSpinner();

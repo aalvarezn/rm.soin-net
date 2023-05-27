@@ -432,7 +432,7 @@ function downLoadReport1(){
 
 }
 
-function downLoadReport(){
+function downLoadReport(typeDocument){
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
@@ -445,7 +445,8 @@ function downLoadReport(){
 			dateRange :$('#tableFilters input[name="daterange"]').val(),
 			typePetitionId: $('#tableFilters #typePetitionId').children("option:selected").val(),
 			errorId: $('#tableFilters #errorId').children("option:selected").val(),
-			systemId: $('#tableFilters #systemId').children("option:selected").val()
+			systemId: $('#tableFilters #systemId').children("option:selected").val(),
+			typeDocument:typeDocument
 		},
 	    beforeSend: function() {
 	    	showSpinner();

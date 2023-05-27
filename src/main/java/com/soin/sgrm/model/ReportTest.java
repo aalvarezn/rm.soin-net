@@ -35,6 +35,9 @@ public class ReportTest {
 	private JRBeanCollectionDataSource requestDataSource;
 	@Transient
 	private JRBeanCollectionDataSource countDataSource;
+	@Transient
+	private JRBeanCollectionDataSource listCountDataSource;
+
 
 	
 	public void setReleaseDataSource(List<ReleaseReportFast> releaseDataSource) {
@@ -150,9 +153,16 @@ public class ReportTest {
 		}
 	}
 
+	public void setListCountDataSource(List<ReportGhap> reportList) {
+		JRBeanCollectionDataSource listCountDataSource = new JRBeanCollectionDataSource(reportList, false);
+		this.listCountDataSource = listCountDataSource;
+	}
 
+	public JRBeanCollectionDataSource getListCountDataSource() {
+		return listCountDataSource;
+	}
 
-
-
+	
+	
 	
 }

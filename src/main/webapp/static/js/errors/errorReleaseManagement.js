@@ -275,7 +275,7 @@ function changeStatusRFC(idRFC) {
 
 
 
-function downLoadReport(){
+function downLoadReport(typeDocument){
 	$.ajax({
 		type : "GET",
 		cache : false,
@@ -287,7 +287,8 @@ function downLoadReport(){
 			dateRange :$('#tableFilters input[name="daterange"]').val(),
 			projectId: $('#tableFilters #projectId').children("option:selected").val(),
 			errorId: $('#tableFilters #errorId').children("option:selected").val(),
-			systemId: $('#tableFilters #systemId').children("option:selected").val()
+			systemId: $('#tableFilters #systemId').children("option:selected").val(),
+			typeDocument:typeDocument
 		},
 	    beforeSend: function() {
 	    	showSpinner();

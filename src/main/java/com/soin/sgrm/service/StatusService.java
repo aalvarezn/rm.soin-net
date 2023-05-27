@@ -18,4 +18,6 @@ public interface StatusService {
 
 	void delete(Integer id);
 
+	List<Status> listWithOutAnul();
+
 }
