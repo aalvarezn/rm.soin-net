@@ -2001,15 +2001,16 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	}
 	@Override
 	public void sendMailNotifyChangeStatus(String numRequest, String type, String name, String operator,
-			Timestamp requestDate, UserLogin user,String senders, EmailTemplate email,String motive) {
+			Timestamp requestDate, UserLogin user, String senders, EmailTemplate email,String subject, String motive,
+			String note, String title) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 			// ------------------Seccion del asunto del correo -------------------------- //
 			// Se agrega el nombre del sistema
-			if (email.getSubject().contains("{{number}}")) {
-				email.setSubject(email.getSubject().replace("{{number}}",
-						(numRequest != null ? numRequest : "")));
+			if (email.getSubject().contains("{{subject}}")) {
+				email.setSubject(email.getSubject().replace("{{subject}}",
+						(subject != null ? subject : "")));
 			}
 			if (email.getHtml().contains("{{number}}")) {
 				email.setHtml(email.getHtml().replace("{{number}}",
@@ -2034,6 +2035,15 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
 						(user != null ?user.getFullName(): "")));
+			}
+			if (email.getHtml().contains("{{note}}")) {
+				email.setHtml(email.getHtml().replace("{{note}}",
+						(note != "" ?note: "NA")));
+			}
+			
+			if (email.getHtml().contains("{{title}}")) {
+				email.setHtml(email.getHtml().replace("{{title}}",
+						(title != "" ?title: "NA")));
 			}
 
 
@@ -2065,10 +2075,14 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 
 			}
-			// Se notifica el usuario que lo solicito
-			mimeMessage.addRecipient(Message.RecipientType.CC,
-					new InternetAddress(user.getEmail()));
 
+			if(email.getCc()!=null) {
+				mimeMessage.addRecipient(Message.RecipientType.CC,
+						new InternetAddress(email.getCc()));
+			}
+		
+			mimeMessage.addRecipient(Message.RecipientType.TO,
+					new InternetAddress(email.getTo()));
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
@@ -2082,15 +2096,15 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 
 	@Override
 	public void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
-			String operator, Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate email,
-			String motive) {
+			String operator, Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate email,String subject,
+			String motive, String note, String title) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 			// ------------------Seccion del asunto del correo -------------------------- //
-			if (email.getSubject().contains("{{number}}")) {
-				email.setSubject(email.getSubject().replace("{{number}}",
-						(numRequest != null ? numRequest : "")));
+			if (email.getSubject().contains("{{subject}}")) {
+				email.setSubject(email.getSubject().replace("{{subject}}",
+						(subject != null ? subject : "")));
 			}
 			
 			if (email.getHtml().contains("{{number}}")) {
@@ -2132,6 +2146,17 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (email.getHtml().contains("{{motive}}")) {
 				email.setHtml(email.getHtml().replace("{{motive}}", (motive != null ? motive : "")));
 			}
+			
+			if (email.getHtml().contains("{{note}}")) {
+				email.setHtml(email.getHtml().replace("{{note}}",
+						(note != "" ?note: "NA")));
+			}
+			
+			if (email.getHtml().contains("{{title}}")) {
+				email.setHtml(email.getHtml().replace("{{title}}",
+						(title != "" ?title: "NA")));
+			}
+
 
 			String body = email.getHtml();
 			body = Constant.getCharacterEmail(body);
@@ -2147,13 +2172,18 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			if (!verify) {
 				senders = senders + "," + userLogin.getEmail();
 			}
+			
 			for (String ccUser : senders.split(",")) {
+				
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 
 			}
-			// Se notifica el usuario que lo solicito
-			mimeMessage.addRecipient(Message.RecipientType.CC,
-					new InternetAddress(userLogin.getEmail()));
+			if(email.getCc()!=null) {
+				mimeMessage.addRecipient(Message.RecipientType.CC,
+						new InternetAddress(email.getCc()));
+			}
+			mimeMessage.addRecipient(Message.RecipientType.TO,
+					new InternetAddress(email.getTo()));
 
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {

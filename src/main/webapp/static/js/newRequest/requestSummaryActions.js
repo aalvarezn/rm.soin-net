@@ -127,6 +127,7 @@ function changeStatusRequest(requestId, requestNumRequest,cc) {
 	$formChangeStatus.find('#idRequest').val(requestId);
 	$('.tagInitMail#senders').importTags(cc ? cc : "" );
 	$formChangeStatus.find('#requestNumRequest').val(requestNumRequest);
+    $formChangeStatus.find('#note').val("");
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'));
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
@@ -157,6 +158,7 @@ function saveChangeStatusModal(){
 			motive: $formChangeStatus.find('#motive').val(),
 			sendEmail:switchStatus,
 			senders:$formChangeStatus.find('#senders').val(),
+			note:$formChangeStatus.find('#note').val()
 		},
 		success : function(response) {
 			responseStatusRequest(response);

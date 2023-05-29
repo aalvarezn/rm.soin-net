@@ -284,12 +284,10 @@ function changeStatusRFC(idRFC) {
 	var rowData = $dtRFCs.row(idRow[0]).data();
 	$formChangeStatus[0].reset();
 	// $formChangeStatus.validate().resetForm();
-	console.log(rowData);
-	console.log(rowData.siges);
-	console.log(rowData.siges.emailTemplate);
+
 	//$formChangeStatus.find('#senders').val(rowData.siges.emailTemplate.cc);
 	$('.tagInitMail#senders').importTags(rowData.siges.emailTemplate.cc);
-	
+	$formChangeStatus.find('#note').val("");
 	$formChangeStatus.find('#idRFC').val(idRFC);
 	$formChangeStatus.find('#rfcNumRequest').val(rowData.numRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
@@ -335,6 +333,7 @@ function saveChangeStatusModal(){
 			motive: $formChangeStatus.find('#motive').val(),
 			sendEmail:switchStatus,
 			senders:$formChangeStatus.find('#senders').val(),
+			note:$formChangeStatus.find('#note').val()
 			
 		},
 		success : function(response) {
