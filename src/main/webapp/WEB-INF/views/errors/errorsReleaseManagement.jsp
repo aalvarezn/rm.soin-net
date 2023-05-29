@@ -61,6 +61,10 @@
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
+
+	<!-- Page downloading -->
+	<%@include file="../plantilla/downloading.jsp"%>
+	<!-- #END# downloading -->
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
@@ -78,6 +82,8 @@
 		<%@include file="../plantilla/leftbar.jsp"%>
 		<!-- #END# Left Sidebar -->
 	</section>
+
+
 
 	<section class="content m-t-80I">
 		<div class="container-fluid">
@@ -165,10 +171,16 @@
 					</div>
 				</div>
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-
 					<div class="button-demo flr">
 						<button type="button" class="btn btn-primary setIcon"
-							onclick="downLoadReport()">
+							onclick="downLoadReport(1)">
+							<span>DESCARGAR EXCEL</span><span><i
+								class="material-icons m-t--2 ">offline_pin</i></span>
+						</button>
+					</div>
+					<div class="button-demo flr">
+						<button type="button" class="btn btn-primary setIcon"
+							onclick="downLoadReport(2)">
 							<span>DESCARGAR PDF</span><span><i
 								class="material-icons m-t--2 ">update</i></span>
 						</button>

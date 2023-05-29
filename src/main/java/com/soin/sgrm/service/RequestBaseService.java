@@ -6,6 +6,7 @@ import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestBaseTrackingToError;
+import com.soin.sgrm.model.RequestReport;
 import com.soin.sgrm.response.JsonSheet;
 
 public interface RequestBaseService extends BaseService<Long, RequestBase>{
@@ -24,5 +25,7 @@ public interface RequestBaseService extends BaseService<Long, RequestBase>{
 	RequestBaseR1 findByR1(Long id);
 
 	List<RequestBaseTrackingToError> listByAllSystemError(String dateRange, int systemId);
+
+	RequestReport findByReport(Long id);
 
 }

@@ -64,7 +64,8 @@
 	<!-- Page Loader -->
 	<%@include file="../plantilla/pageLoader.jsp"%>
 	<!-- #END# Page Loader -->
-
+	<!-- Page downloading -->
+	<%@include file="../plantilla/downloading.jsp"%>
 	<!-- Overlay For Sidebars -->
 	<div class="overlay"></div>
 	<!-- #END# Overlay For Sidebars -->
@@ -211,7 +212,14 @@
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				<div class="button-demo flr">
 					<button type="button" class="btn btn-primary setIcon"
-						onclick="downLoadReport()">
+						onclick="downLoadReport(1)">
+						<span>DESCARGAR EXCEL</span><span><i
+							class="material-icons m-t--2 ">offline_pin</i></span>
+					</button>
+				</div>
+				<div class="button-demo flr">
+					<button type="button" class="btn btn-primary setIcon"
+						onclick="downLoadReport(2)">
 						<span>DESCARGAR PDF</span><span><i
 							class="material-icons m-t--2 ">offline_pin</i></span>
 					</button>

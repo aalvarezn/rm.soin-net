@@ -31,8 +31,11 @@ import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.RFCError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
+import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
+import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.User;
@@ -190,7 +193,8 @@ public class RFCManagementController extends BaseController {
 			@RequestParam(value = "motive", required = true) String motive,
 			@RequestParam(value = "idError", required = false) Long idError,
 			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
-			@RequestParam(value = "senders", required = false) String senders) {
+			@RequestParam(value = "senders", required = false) String senders,
+			@RequestParam(value = "note", required = false) String note) {
 		JsonResponse res = new JsonResponse();
 		try {
 			RFC rfc = rfcService.findById(idRFC);
@@ -268,9 +272,11 @@ public class RFCManagementController extends BaseController {
 				Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
 				EmailTemplate emailNotify = emailService.findById(idTemplate);
 				String statusName=status.getName();
+				
+				String subject=getSubject(rfc.getSiges().getEmailTemplate(),rfc);
 				Thread newThread = new Thread(() -> {
 					try {
-						emailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,rfc.getMotive());
+						emailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 					} catch (Exception e) {
 						Sentry.capture(e, "rfc");
 					}
@@ -282,9 +288,10 @@ public class RFCManagementController extends BaseController {
 					EmailTemplate emailNotify = emailService.findById(idTemplate);
 					String statusName=status.getName();
 					String typeError=error.getName();
+					String subject=getSubject(rfc.getSiges().getEmailTemplate(),rfc);
 					Thread newThread = new Thread(() -> {
 						try {
-							emailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,rfc.getMotive());
+							emailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
 						} catch (Exception e) {
 							Sentry.capture(e, "rfc");
 						}
@@ -342,5 +349,46 @@ public class RFCManagementController extends BaseController {
 		request.setAttribute("rfcC", rfcC);
 
 	}
+	
+	public String getSubject(EmailTemplate email,RFC rfc) {
+		
+		
+		String temp = "";
+		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{rfcNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{rfcNumber}}",
+					(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
+		}
+
+		if (email.getSubject().contains("{{priority}}")) {
+			email.setSubject(email.getSubject().replace("{{priority}}",
+					(rfc.getPriority().getName() != null ? rfc.getPriority().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{impact}}")) {
+			email.setSubject(email.getSubject().replace("{{impact}}",
+					(rfc.getImpact().getName() != null ? rfc.getImpact().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{typeChange}}")) {
+			email.setSubject(email.getSubject().replace("{{typeChange}}",
+					(rfc.getTypeChange().getName() != null ? rfc.getTypeChange().getName() : "")));
+		}
+
+		if (email.getHtml().contains("{{message}}")) {
+			email.setHtml(email.getHtml().replace("{{message}}", (rfc.getMessage() != null ? rfc.getMessage() : "NA")));
+		}
+
+		if (email.getSubject().contains("{{systemMain}}")) {
+			temp = "";
+			Siges codeSiges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
+
+			temp += codeSiges.getSystem().getName();
+
+			email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+		}
+		return email.getSubject();
+	}
+	
 
 }

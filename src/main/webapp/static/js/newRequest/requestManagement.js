@@ -284,6 +284,7 @@ function changeStatusRequest(idRequest) {
 	console.log(rowData.typePetition.emailTemplate.cc ? rowData.typePetition.emailTemplate.cc : "" );
 	$('.tagInitMail#senders').importTags(rowData.typePetition.emailTemplate.cc ? rowData.typePetition.emailTemplate.cc : "" );
 	$formChangeStatus.find('#idRequest').val(idRequest);
+	$formChangeStatus.find('#note').val("");
 	$formChangeStatus.find('#requestNumRequest').val(rowData.numRequest);
 	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
@@ -344,6 +345,7 @@ function saveChangeStatusModal(){
 			motive: $formChangeStatus.find('#motive').val(),
 			sendEmail:switchStatus,
 			senders:$formChangeStatus.find('#senders').val(),
+			note:$formChangeStatus.find('#note').val()
 		},
 		success : function(response) {
 			responseStatusRequest(response);

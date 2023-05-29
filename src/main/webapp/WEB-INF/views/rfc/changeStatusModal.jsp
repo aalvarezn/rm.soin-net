@@ -92,18 +92,31 @@
 								</div>
 							</div>
 						</div>
-						<div id="divEmail" hidden
-							class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
-							style="margin-top: 5%">
-							<label for="email_address">Correos a enviar</label>
-							<div class="form-group m-b-0i">
-								<div class="form-line">
-									<input type="text" id="senders" name="senders" required="required"
-									 class="form-control tagInitMail"
-										placeholder="">
+						<div id="divEmail" hidden>
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
+								style="margin-top: 5%">
+								<label for="email_address">Correos a enviar</label>
+								<div class="form-group m-b-0i">
+									<div class="form-line">
+										<input type="text" id="senders" name="senders"
+											required="required" class="form-control tagInitMail"
+											placeholder="">
+									</div>
+									<label id="senders_error" class="error fieldError" for="name"
+										style="visibility: hidden;">Campo Requerido.</label>
 								</div>
-								<label id="senders_error" class="error fieldError" for="name"
-									style="visibility: hidden;">Campo Requerido.</label>
+							</div>
+							<div class="col-lg-12 col-md-12 col-sm-6 col-xs-6">
+								<label for="email_address">Nota</label>
+								<div class="form-group m-b-0i">
+									<div class="form-line">
+										<textarea rows="2" cols="" id="note" name="note"
+											class="form-control"
+											placeholder="Ingrese una nota adicional al correo..."
+											style="height: 67px;" maxlength="200"></textarea>
+									</div>
+
+								</div>
 							</div>
 						</div>
 					</form>

@@ -844,10 +844,19 @@ public class RequestBaseController extends BaseController {
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("request", requestEdit);
+				Project project=projectService.findById(requestEdit.getSystemInfo().getProyectId());
+				boolean verifySos=false;
+				if(project.getCode().equals("Sostenibilidad")) {
+					verifySos=true;
+				}else {
+					verifySos=false;
+				}
+				
 				List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(requestEdit.getId());
 				model.addAttribute("listUsers", listUser);
 				model.addAttribute("statuses", statusService.findAll());
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+				model.addAttribute("verifySos",verifySos);
 				return "/request/sectionsEditR4/summaryRequest";
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {

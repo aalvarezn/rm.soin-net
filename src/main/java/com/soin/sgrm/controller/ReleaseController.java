@@ -316,8 +316,13 @@ public class ReleaseController extends BaseController {
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
 			model.addAttribute("errors", errorService.findAll());
-			
-			model.addAttribute("cc", release.getSystem().getEmailTemplate().iterator().next().getCc());
+			Set<EmailTemplate>emailTemplate =release.getSystem().getEmailTemplate();
+			if(!emailTemplate.isEmpty()) {
+				model.addAttribute("cc", release.getSystem().getEmailTemplate().iterator().next().getCc());
+			}else {
+				model.addAttribute("cc","");
+			}
+
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
