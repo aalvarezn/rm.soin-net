@@ -2,7 +2,9 @@ package com.soin.sgrm.controller.wf;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -22,17 +24,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.Errors_Release;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFCError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.StatusRFC;
+import com.soin.sgrm.model.System;
 //import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.SystemUser;
+import com.soin.sgrm.model.TypeRequest;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
@@ -50,12 +56,15 @@ import com.soin.sgrm.service.RFCErrorService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestNewService;
+import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusRFCService;
 //import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.TypeRequestService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.service.wf.WFIncidenceService;
 import com.soin.sgrm.service.wf.WFRFCService;
@@ -114,9 +123,7 @@ public class WorkFlowManagementController extends BaseController {
 	private SigesService sigesService;
 	@Autowired
 	private ProjectService projectService;
-	
-	
-	
+
 	@RequestMapping(value = "/release/", method = RequestMethod.GET)
 	public String indexRelease(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -135,6 +142,7 @@ public class WorkFlowManagementController extends BaseController {
 		return "/wf/workFlow/workFlowManagementRelease";
 
 	}
+
 	
 	@RequestMapping(value = "/rfc/", method = RequestMethod.GET)
 	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session,

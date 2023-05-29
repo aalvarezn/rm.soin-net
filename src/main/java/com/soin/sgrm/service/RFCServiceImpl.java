@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.RFCDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCReport;
+import com.soin.sgrm.model.RFCReportComplete;
 import com.soin.sgrm.model.RFCTrackingShow;
 import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
@@ -283,6 +285,32 @@ public class RFCServiceImpl implements RFCService {
 	public RFCTrackingShow findRFCTracking(Long id) {
 		
 		return dao.findRFCTracking(id);
+	}
+
+
+	@Override
+	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRFC( Integer sEcho, Integer iDisplayStart,
+			Integer iDisplayLength, String sSearch, String dateRange, int systemId,Long sigesId) throws ParseException {
+		return dao.findAllReportRFC( sEcho, iDisplayStart,iDisplayLength, sSearch, dateRange,systemId,sigesId);
+	}
+
+
+
+	@Override
+	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRFC(Integer sEcho, Integer iDisplayStart,
+			Integer iDisplayLength, String sSearch, String dateRange, List<Integer> systemsId,Long sigesId) throws ParseException {
+		return dao.findAllReportRFC( sEcho, iDisplayStart,iDisplayLength, sSearch, dateRange,systemsId,sigesId);
+	}
+
+	@Override
+	public List<RFCReport> listRFCReportFilter(int projectId, int systemId, Long sigesId, String dateRange) throws ParseException {
+		
+		return dao.listRFCReportFilter(projectId, systemId, sigesId, dateRange);
+	}
+
+	@Override
+	public RFCReportComplete findByIdRFCReport(Long id) {
+		return dao.findByIdRFCReport(id);
 	}
 
 }

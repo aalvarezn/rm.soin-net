@@ -79,11 +79,11 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="115" splitType="Immediate">
+		<band height="257" splitType="Immediate">
 			<property name="com.jaspersoft.studio.layout"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
-				<reportElement mode="Opaque" x="-20" y="-20" width="1080" height="130" forecolor="#FFFFFF" backcolor="#012A4D" uuid="dbc8c21f-4ab5-40fd-8e8c-6d3d265aa2a4">
+				<reportElement mode="Opaque" x="-20" y="-20" width="1080" height="120" forecolor="#FFFFFF" backcolor="#012A4D" uuid="dbc8c21f-4ab5-40fd-8e8c-6d3d265aa2a4">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -100,87 +100,83 @@
 				</reportElement>
 				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
 			</image>
-		</band>
-	</title>
-	<pageHeader>
-		<band height="140">
 			<rectangle>
-				<reportElement x="-21" y="30" width="1082" height="100" backcolor="#012A4D" uuid="4a3bb5cb-ca0a-47c3-87d6-0ae9181c7d12"/>
+				<reportElement x="-20" y="142" width="1082" height="100" isPrintWhenDetailOverflows="true" backcolor="#012A4D" uuid="4a3bb5cb-ca0a-47c3-87d6-0ae9181c7d12"/>
 				<graphicElement>
 					<pen lineStyle="Solid" lineColor="#012A4D"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="-20" y="20" width="226" height="110" forecolor="#FFFFFF" uuid="c991b86c-d058-450f-8572-ba68d5106c1b"/>
+				<reportElement x="-19" y="132" width="226" height="110" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="c991b86c-d058-450f-8572-ba68d5106c1b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Información General:]]></text>
 			</staticText>
 			<textField>
-				<reportElement mode="Transparent" x="310" y="80" width="110" height="30" forecolor="#FFFFFF" uuid="ab8011ef-20c5-4986-a43a-60173ef5208a"/>
+				<reportElement mode="Transparent" x="311" y="192" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="ab8011ef-20c5-4986-a43a-60173ef5208a"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{systemNameNew}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="520" y="80" width="110" height="30" forecolor="#FFFFFF" uuid="db1d4c62-6a86-4a21-9541-616b9d34e138"/>
+				<reportElement x="521" y="192" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="db1d4c62-6a86-4a21-9541-616b9d34e138"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{projectNameNew}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="690" y="80" width="110" height="30" forecolor="#FFFFFF" uuid="2a279070-1468-4111-b48d-0eefc396339f"/>
+				<reportElement x="691" y="192" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="2a279070-1468-4111-b48d-0eefc396339f"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{typeErrorNameNew}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="870" y="80" width="150" height="30" forecolor="#FFFFFF" uuid="ac984ceb-8cae-409e-8ecc-22c652c6a080"/>
+				<reportElement x="871" y="192" width="150" height="30" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="ac984ceb-8cae-409e-8ecc-22c652c6a080"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dateNew}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="310" y="50" width="110" height="30" forecolor="#FFFFFF" uuid="6b7c2d78-cae4-4a2c-afff-60443ab22a24"/>
+				<reportElement x="311" y="162" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="6b7c2d78-cae4-4a2c-afff-60443ab22a24"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Sistema]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="520" y="50" width="110" height="30" forecolor="#FFFFFF" uuid="5ebf3f83-c182-4f17-ae77-6818a5d927cc"/>
+				<reportElement x="521" y="162" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="5ebf3f83-c182-4f17-ae77-6818a5d927cc"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Proyecto]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="690" y="50" width="110" height="30" forecolor="#FFFFFF" uuid="1d5bd895-ec9b-447d-a2be-1dd6d99db458"/>
+				<reportElement x="691" y="162" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="1d5bd895-ec9b-447d-a2be-1dd6d99db458"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Tipo Error]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="870" y="50" width="150" height="30" forecolor="#FFFFFF" uuid="8aee3955-2d22-45d9-b3a3-49d8cd02b419"/>
+				<reportElement x="871" y="162" width="150" height="30" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" uuid="8aee3955-2d22-45d9-b3a3-49d8cd02b419"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Rango de fechas]]></text>
 			</staticText>
 		</band>
-	</pageHeader>
+	</title>
 	<detail>
 		<band height="280" splitType="Stretch">
 			<property name="com.jaspersoft.studio.layout"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<componentElement>
-				<reportElement x="3" y="40" width="1015" height="200" uuid="252b9069-6fb6-4f42-8bac-f6c17e0f8579">
+				<reportElement x="14" y="10" width="1015" height="200" uuid="252b9069-6fb6-4f42-8bac-f6c17e0f8579">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -525,7 +521,7 @@
 					</categorySeries>
 				</categoryDataset>
 				<barPlot isShowTickLabels="true">
-					<plot orientation="Horizontal">
+					<plot>
 						<seriesColor seriesOrder="0" color="#3908FF"/>
 						<seriesColor seriesOrder="1" color="#FF083D"/>
 						<seriesColor seriesOrder="2" color="#4CFA07"/>
