@@ -68,6 +68,7 @@
 	<parameter name="totalRequest" class="java.lang.String"/>
 	<parameter name="percentageErrors" class="java.lang.String"/>
 	<parameter name="totalErrors" class="java.lang.String"/>
+	<parameter name="logo" class="java.io.InputStream"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -98,8 +99,13 @@
 				<text><![CDATA[Reporte Salidas no conformes Solicitudes]]></text>
 			</staticText>
 			<image>
-				<reportElement x="930" y="5" width="110" height="80" uuid="da525213-6588-4c1a-b197-0c9df770b230"/>
-				<imageExpression><![CDATA["C:/Users/Soin/Documents/Repositorios/SGRM/src/main/webapp/static/images/logo.png"]]></imageExpression>
+				<reportElement x="930" y="5" width="110" height="80" uuid="2ebe7493-4aab-453a-ac89-9bbad1dd2192">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
 			</image>
 		</band>
 	</title>
@@ -696,7 +702,7 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="systemTableXGraphDataSet" uuid="a325215e-1774-4831-b794-2c09e1757141">
+					<datasetRun subDataset="systemTableXGraphDataSet" uuid="bb5bd815-fbad-4cb0-984d-c1c1598af98e">
 						<datasetParameter name="REPORT_DATA_SOURCE">
 							<datasetParameterExpression><![CDATA[$F{errordataSource}]]></datasetParameterExpression>
 						</datasetParameter>

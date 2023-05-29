@@ -666,7 +666,7 @@
 				</textField>
 			</frame>
 			<componentElement>
-				<reportElement x="221" y="411" width="600" height="200" uuid="d4bf5ccc-b1d1-49ff-9562-bbb09d13b03a">
+				<reportElement x="230" y="440" width="600" height="200" uuid="d4bf5ccc-b1d1-49ff-9562-bbb09d13b03a">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -807,15 +807,18 @@
 				</textElement>
 				<text><![CDATA[      Resumen general ]]></text>
 			</staticText>
-			<image>
-				<reportElement x="935" y="530" width="110" height="80" uuid="5baaff49-52b6-43c0-bd1d-c17ec7efb2a7">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
-			</image>
+			<frame>
+				<reportElement x="-20" y="350" width="1080" height="80" uuid="a45b1e0f-cfda-4191-8f6c-f62055aa93f4"/>
+				<image>
+					<reportElement x="950" y="0" width="110" height="80" uuid="4e15f296-d0d2-4617-9b05-59d8f36704fe">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<imageExpression><![CDATA[$P{logo}]]></imageExpression>
+				</image>
+			</frame>
 		</band>
 	</summary>
 </jasperReport>

@@ -608,7 +608,7 @@
 		</band>
 	</detail>
 	<summary>
-		<band height="538">
+		<band height="585">
 			<frame>
 				<reportElement mode="Opaque" x="343" y="150" width="179" height="50" backcolor="#012A4D" uuid="219d623e-899e-4905-ac0f-8a588c25cd6a"/>
 				<box>
@@ -716,7 +716,7 @@
 				</textField>
 			</frame>
 			<componentElement>
-				<reportElement x="222" y="340" width="600" height="160" uuid="5a5f4b93-8085-4728-82ef-8b15c393e335">
+				<reportElement x="220" y="400" width="600" height="160" uuid="5a5f4b93-8085-4728-82ef-8b15c393e335">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -850,15 +850,18 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
-			<image>
-				<reportElement positionType="Float" x="930" y="440" width="110" height="80" uuid="01a88168-3a1e-4201-b7f9-eaaa1828a851">
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
-			</image>
+			<frame>
+				<reportElement x="-20" y="310" width="1080" height="80" uuid="4dec07dc-018d-42ec-8c4c-d8a16c71079a"/>
+				<image>
+					<reportElement positionType="Float" x="960" y="0" width="110" height="80" uuid="d0222fad-183b-4dc6-9052-15197cfb8cd9">
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<imageExpression><![CDATA[$P{logo}]]></imageExpression>
+				</image>
+			</frame>
 		</band>
 	</summary>
 </jasperReport>

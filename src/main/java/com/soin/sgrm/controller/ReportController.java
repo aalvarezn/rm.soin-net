@@ -700,6 +700,7 @@ public class ReportController extends BaseController {
 			System system = systemService.findSystemById(systemId);
 			Project project = projectService.findById(projectId);
 			ReportTest report=new ReportTest();
+			List<StatusRequest> statuses=statusRequestService.findWithFilter();
 			report.setSystem(system);
 			report.setProject(project);
 			report.setDateNew(dateRange);
@@ -709,6 +710,9 @@ public class ReportController extends BaseController {
 
 			int valueError = 0;
 			int valueRequest = 0;
+			int totalRequest = 0;
+			int count=0;
+			List<ReportGhap> reportList = new ArrayList<ReportGhap>();
 			List<CountReport> countReportRFC=new ArrayList<>();
 			for(System systemOnly: systems) {
 				CountReport countReport=new CountReport();
@@ -719,16 +723,45 @@ public class ReportController extends BaseController {
 							valueRequest++;
 						}
 					}
+					if(requestOnly.getStatus().getName()=="Completado") {
+						if(requestOnly.getSystem().getId()==systemOnly.getId()) {
+							totalRequest++;
+						}
+					}
 				}
+				
+				
+				
 				if(valueRequest>0) {
 					countReport.setLabel(systemOnly.getCode());
 					countReport.setValue1(valueRequest);
 					countReportRFC.add(countReport);
 				}
 				
+				for(StatusRequest status: statuses) {
+					ReportGhap statusCountReport=new ReportGhap();
+					count=0;
+					for(RequestReport rfcOnly : requests) {
+						if(rfcOnly.getStatus().getId()==status.getId()) {
+							if(rfcOnly.getSystem().getId()==systemOnly.getId()) {
+								count++;
+							}
+						}
+
+					}
+					if(count>0) {
+						statusCountReport.setLabel(systemOnly.getName());
+						statusCountReport.setLabelStatus(status.getName());
+						statusCountReport.setValue(count);
+						reportList.add(statusCountReport);
+						
+					}
+				}
+
+				
 			}
 			report.setCountDataSource(countReportRFC);
-
+			report.setListCountDataSource(reportList);
 			report.setRequestDataSource(requests);
 			List<ReportTest> listReport = new ArrayList<>();
 			
@@ -739,6 +772,7 @@ public class ReportController extends BaseController {
 			ClassPathResource images = new ClassPathResource(
 					"images" + File.separator + "logo" + ".png");
 			parameters.put("logo",images.getInputStream());
+			parameters.put("totalRequest",totalRequest);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 			String reportName = "";
 			String basePath = env.getProperty("fileStore.path");
@@ -841,33 +875,66 @@ public class ReportController extends BaseController {
 			System system = systemService.findSystemById(systemId);
 			Project project = projectService.findById(projectId);
 			ReportTest report=new ReportTest();
+			List<StatusRFC> statuses=statusRFCService.findWithFilter();
 			report.setSystem(system);
 			report.setProject(project);
 			report.setDateNew(dateRange);
 
-			Integer totalRFC = 0;
+			
+			int valueRequest=0;
 			List<System> systems = systemService.list();
 
-			int valueError = 0;
+			
 			int valueRFC = 0;
+			int count=0;
+			List<ReportGhap> reportList = new ArrayList<ReportGhap>();
 			List<CountReport> countReportRFC=new ArrayList<>();
 			for(System systemOnly: systems) {
 				CountReport countReport=new CountReport();
 				valueRFC=0;
+				
 				for(RFCReport rfcOnly : rfcs) {
 					if(rfcOnly.getStatus().getName().equals("Completado")) {
 						if(rfcOnly.getSystem().getId()==systemOnly.getId()) {
 							valueRFC++;
 						}
 					}
+					if(rfcOnly.getStatus().getName().equals("Solicitado")) {
+						if(rfcOnly.getSystem().getId()==systemOnly.getId()) {
+							valueRequest++;
+						}
+					}
 				}
+		
 				if(valueRFC>0) {
 					countReport.setLabel(systemOnly.getCode());
 					countReport.setValue1(valueRFC);
 					countReportRFC.add(countReport);
 				}
+				for(StatusRFC status: statuses) {
+					ReportGhap statusCountReport=new ReportGhap();
+					count=0;
+					for(RFCReport rfcOnly : rfcs) {
+						if(rfcOnly.getStatus().getId()==status.getId()) {
+							if(rfcOnly.getSystem().getId()==systemOnly.getId()) {
+								count++;
+							}
+						}
+
+					}
+					if(count>0) {
+						statusCountReport.setLabel(systemOnly.getName());
+						statusCountReport.setLabelStatus(status.getName());
+						statusCountReport.setValue(count);
+						reportList.add(statusCountReport);
+						
+					}
+				}
+
+				
 				
 			}
+			report.setListCountDataSource(reportList);
 			report.setCountDataSource(countReportRFC);
 			report.setRfcDataSource(rfcs);
 			List<ReportTest> listReport = new ArrayList<>();
@@ -879,6 +946,7 @@ public class ReportController extends BaseController {
 			ClassPathResource images = new ClassPathResource(
 					"images" + File.separator + "logo" + ".png");
 			parameters.put("logo",images.getInputStream());
+			parameters.put("totalRequest",valueRequest);
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 
 			String reportName = "";
