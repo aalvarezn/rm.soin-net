@@ -380,44 +380,7 @@
 				</c:if>
 			</div>
 			<div class="row clearfix">
-				<div class="col-sm-12">
-					<h5 class="titulares">Archivos adjuntos</h5>
-				</div>
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-20">
-					<div class="clearfix">
-						<div class="body table-responsive">
-							<table
-								class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
-								<thead>
-									<tr>
-										<th class="col-md-8 col-lg-8 col-xs-8 col-sm-8">Nombre</th>
-										<th class="col-md-4 col-lg-4 col-xs-4 col-sm-4">Fecha de
-											carga</th>
-										<th class="col-md-1 col-lg-1 col-xs-12 col-sm-12">Acciones</th>
-									</tr>
-								</thead>
-								<tbody>
 
-									<c:forEach items="${rfc.files}" var="fileRFC">
-										<tr id="${fileRFC.id}">
-											<td>${fileRFC.name}</td>
-											<td><fmt:formatDate value="${fileRFC.revisionDate}"
-													type="both" /></td>
-											<td><a
-												href="<c:url value='/file/singleDownloadRFC-${fileRFC.id }'/>"
-												download class=""> <i class="material-icons col-cyan"
-													style="font-size: 30px;">cloud_download</i>
-											</a></td>
-										</tr>
-									</c:forEach>
-
-								</tbody>
-							</table>
-						</div>
-					</div>
-
-
-				</div>
 				<button type="button" class="btn btn-default setIcon"
 					onclick="downLoadReport( '${rfc.id}' )" title="Exportar"
 					style="background-color: #00294c !important; color: #fff; border: none !important; padding-left: 20px;">

@@ -131,33 +131,7 @@ function showSendEmail(){
 		}
 		});
 }
-function saveChangeStatusModal(){
 
-	if (!validStatusRFC())
-		return false;
-	blockUI();
-	$.ajax({
-		type : "GET",
-		url : getCont() + "management/rfc/statusRFC",
-		timeout : 60000,
-		data : {
-			idRFC : $formChangeStatus.find('#idRFC').val(),
-			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
-			dateChange: $formChangeStatus.find('#dateChange').val(),
-			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
-			motive: $formChangeStatus.find('#motive').val(),
-			sendEmail:switchStatus,
-			senders:$formChangeStatus.find('#senders').val()
-		}
-		success : function(response) {
-			responseStatusRFC(response);
-		},
-		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
-			
-		}
-	});
-}
 
 function responseStatusRFC(response) {
 	switch (response.status) {
@@ -296,7 +270,7 @@ function initImpactFormValidation() {
 }
 
 function downLoadReport(numRFC){
-	
+	console.log(numRFC);
 	$.ajax({
 		type : "GET",
 		cache : false,

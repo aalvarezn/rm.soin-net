@@ -1246,7 +1246,9 @@ public class ReportController extends BaseController {
 
 		
 				parameters.put("treeImage", targetStream);
-				
+				ClassPathResource images = new ClassPathResource(
+						"images" + File.separator + "logo" + ".png");
+				parameters.put("logo",images.getInputStream());
 			
 
 				// Fill the report
