@@ -121,7 +121,7 @@
 			<property name="com.jaspersoft.studio.layout"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<componentElement>
-				<reportElement x="29" y="1020" width="497" height="60" uuid="a9aee03b-c2af-491b-82d4-3b48cc7830b6">
+				<reportElement positionType="Float" x="29" y="1020" width="497" height="60" uuid="a9aee03b-c2af-491b-82d4-3b48cc7830b6">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -439,13 +439,13 @@
 				<textFieldExpression><![CDATA[$F{statusName}]]></textFieldExpression>
 			</textField>
 			<rectangle>
-				<reportElement x="-22" y="940" width="599" height="50" backcolor="#012A4D" uuid="86c448d5-6648-40b7-a51f-149f420e413c"/>
+				<reportElement positionType="Float" x="-22" y="940" width="599" height="50" backcolor="#012A4D" uuid="86c448d5-6648-40b7-a51f-149f420e413c"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid" lineColor="#012A4D"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="-114" y="950" width="367" height="30" forecolor="#FFFFFF" uuid="551f17e9-36bb-4d1a-b195-27b30204723d"/>
+				<reportElement positionType="Float" x="-114" y="950" width="367" height="30" forecolor="#FFFFFF" uuid="551f17e9-36bb-4d1a-b195-27b30204723d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="14" isBold="true"/>
 				</textElement>
@@ -485,8 +485,7 @@
 				<textElement>
 					<font fontName="Titillium Web" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy hh:mm a").format($F{requestDate})
-]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy hh:mm a").format($F{requestDate})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="223" y="409" width="240" height="30" uuid="f5c7c11c-8460-429a-bcd5-1f254af7fa74"/>
@@ -496,20 +495,20 @@
 				<textFieldExpression><![CDATA[$F{priorityName}]]></textFieldExpression>
 			</textField>
 			<rectangle>
-				<reportElement x="-19" y="570" width="595" height="50" backcolor="#012A4D" uuid="e041cfb2-a30b-400c-8f5f-dcf77aaf9e08"/>
+				<reportElement positionType="Float" x="-19" y="570" width="595" height="50" backcolor="#012A4D" uuid="e041cfb2-a30b-400c-8f5f-dcf77aaf9e08"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="-10" y="580" width="300" height="30" forecolor="#FFFFFF" uuid="f664a553-ec74-402c-92b8-d206b26a3baf"/>
+				<reportElement positionType="Float" x="-10" y="580" width="300" height="30" forecolor="#FFFFFF" uuid="f664a553-ec74-402c-92b8-d206b26a3baf"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Releases y cantidad de objetos a instalar]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement x="23" y="670" width="510" height="60" uuid="9c8e62c0-ab99-4f47-840b-939d9b002f21">
+				<reportElement positionType="Float" x="23" y="670" width="510" height="60" uuid="9c8e62c0-ab99-4f47-840b-939d9b002f21">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -595,20 +594,20 @@
 				</jr:table>
 			</componentElement>
 			<rectangle>
-				<reportElement x="-20" y="770" width="595" height="50" backcolor="#012A4D" uuid="9ae23b6f-60e2-4139-b3c7-3aafb2496d1c"/>
+				<reportElement positionType="Float" x="-20" y="770" width="595" height="50" backcolor="#012A4D" uuid="9ae23b6f-60e2-4139-b3c7-3aafb2496d1c"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="-11" y="780" width="162" height="30" forecolor="#FFFFFF" uuid="44b7d3a4-215e-4f4d-b825-472765d101c8"/>
+				<reportElement positionType="Float" x="-11" y="780" width="162" height="30" forecolor="#FFFFFF" uuid="44b7d3a4-215e-4f4d-b825-472765d101c8"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Objetos a instalar]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement x="20" y="840" width="510" height="60" uuid="427830f2-f47d-40af-a4c7-acc8f3cf78a1">
+				<reportElement positionType="Float" x="20" y="840" width="510" height="60" uuid="427830f2-f47d-40af-a4c7-acc8f3cf78a1">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>

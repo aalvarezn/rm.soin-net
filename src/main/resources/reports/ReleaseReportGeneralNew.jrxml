@@ -522,7 +522,7 @@
 				</jr:table>
 			</componentElement>
 			<frame>
-				<reportElement mode="Opaque" x="346" y="630" width="179" height="50" backcolor="#012A4D" uuid="5f024cee-b683-4f27-8fa8-5153e73fb330"/>
+				<reportElement positionType="Float" mode="Opaque" x="346" y="630" width="179" height="50" backcolor="#012A4D" uuid="5f024cee-b683-4f27-8fa8-5153e73fb330"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -530,7 +530,7 @@
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<staticText>
-					<reportElement x="0" y="0" width="179" height="50" forecolor="#FFFFFF" uuid="3c806861-6938-41e2-b31d-5db31affe8b3"/>
+					<reportElement positionType="Float" x="0" y="0" width="179" height="50" forecolor="#FFFFFF" uuid="3c806861-6938-41e2-b31d-5db31affe8b3"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Titillium Web" size="12" isBold="true"/>
 					</textElement>
@@ -538,7 +538,7 @@
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement mode="Opaque" x="526" y="630" width="180" height="50" backcolor="#012A4D" uuid="3e015ddf-f88c-49b9-b665-99a121d38be3"/>
+				<reportElement positionType="Float" mode="Opaque" x="526" y="630" width="180" height="50" backcolor="#012A4D" uuid="3e015ddf-f88c-49b9-b665-99a121d38be3"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -546,7 +546,7 @@
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textField>
-					<reportElement x="0" y="0" width="180" height="50" forecolor="#FFFFFF" uuid="50717bc5-581f-4a43-bebe-59b8777b35f1"/>
+					<reportElement positionType="Float" x="0" y="0" width="180" height="50" forecolor="#FFFFFF" uuid="50717bc5-581f-4a43-bebe-59b8777b35f1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Titillium Web" size="12" isBold="true"/>
 					</textElement>
@@ -554,7 +554,7 @@
 				</textField>
 			</frame>
 			<staticText>
-				<reportElement mode="Opaque" x="-20" y="540" width="1080" height="79" forecolor="#FFFFFF" backcolor="#012A4D" uuid="25159101-5ade-41be-b669-9b83778644bc"/>
+				<reportElement positionType="Float" mode="Opaque" x="-20" y="540" width="1080" height="79" forecolor="#FFFFFF" backcolor="#012A4D" uuid="25159101-5ade-41be-b669-9b83778644bc"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="20" isBold="true"/>
 				</textElement>
