@@ -60,7 +60,19 @@
 <link
 	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
 	rel="stylesheet" type="text/css">
+
+<style>
+@media ( max-width : 1864px) {
+	#requestDateEstimate+.bootstrap-datetimepicker-widget {
+		
+		position: relative;
+		/* Estilos personalizados para el calendario */
+		bottom: calc(100% + 2px) !important;
+	}
+}
+</style>
 </head>
+
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
 	<!-- Page Loader -->

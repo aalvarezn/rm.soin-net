@@ -47,6 +47,8 @@
 
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link rel="stylesheet" type="text/css"
+	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
 </head>
 
 <body class="theme-grey">
@@ -84,7 +86,7 @@
 			</div>
 			<div class="block-header">
 				<p class="font-20">
-				<input type="hidden" id="release_id" value="${release.id}">
+					<input type="hidden" id="release_id" value="${release.id}">
 					<span class="col-blue-grey">RESUMEN RELEASE</span> <span
 						class="flr font-bold col-cyan ">${release.releaseNumber}</span>
 				</p>
@@ -830,7 +832,7 @@
 				</div>
 			</c:if>
 
-			
+
 			<c:if test="${systemConfiguration.configurationItems}">
 				<div class="row clearfix">
 					<div class="col-sm-12">
@@ -1030,5 +1032,4 @@
 	<%@include file="../plantilla/footer.jsp"%>
 	<script
 		src="<c:url value='/static/js/release/releaseSummaryActions.js'/>"></script>
-	<script
-		src="<c:url value='/static/js/release/tableObjects.js'/>"></script>
+	<script src="<c:url value='/static/js/release/tableObjects.js'/>"></script>

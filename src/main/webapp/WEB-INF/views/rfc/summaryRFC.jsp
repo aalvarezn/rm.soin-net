@@ -47,10 +47,12 @@
 
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-	<!-- TagInput Js -->
+<!-- TagInput Js -->
 <link
 	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
 	rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css"
+	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
 </head>
 
 <body class="theme-grey">
