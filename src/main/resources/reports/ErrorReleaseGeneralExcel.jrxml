@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="1080" pageHeight="1900" columnWidth="1040" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="07baeb14-424d-4b2d-9f94-ec6f1c3415bb">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="1080" pageHeight="300000" columnWidth="1040" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="07baeb14-424d-4b2d-9f94-ec6f1c3415bb">
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<subDataset name="errorDataSet" uuid="f986e163-932e-41c9-bf60-e4a230479342">
 		<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="634"/>
 		<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="352"/>
@@ -72,11 +81,8 @@
 	<group name="ColumHeadTest" isStartNewPage="true" keepTogether="true"/>
 	<group name="Detail" isStartNewPage="true" keepTogether="true"/>
 	<group name="SummaryGroup" isStartNewPage="true"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
 	<detail>
-		<band height="1495">
+		<band height="1597">
 			<componentElement>
 				<reportElement x="-20" y="0" width="1015" height="200" uuid="818585e2-0a54-42a8-8365-782995d0dc48">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -319,7 +325,7 @@
 				</jr:table>
 			</componentElement>
 			<frame>
-				<reportElement mode="Opaque" x="324" y="337" width="179" height="50" backcolor="#012A4D" uuid="7d066d3e-dc9d-4138-9f7f-64b6037f6e36"/>
+				<reportElement positionType="Float" mode="Opaque" x="324" y="337" width="179" height="50" backcolor="#012A4D" uuid="7d066d3e-dc9d-4138-9f7f-64b6037f6e36"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -327,7 +333,7 @@
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<staticText>
-					<reportElement x="0" y="0" width="179" height="50" forecolor="#FFFFFF" uuid="c3c7e2cb-ed60-4935-a885-aa71f80e0252"/>
+					<reportElement positionType="Float" x="0" y="0" width="179" height="50" forecolor="#FFFFFF" uuid="c3c7e2cb-ed60-4935-a885-aa71f80e0252"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Titillium Web" size="12" isBold="true"/>
 					</textElement>
@@ -335,7 +341,7 @@
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement mode="Opaque" x="324" y="387" width="179" height="50" backcolor="#012A4D" uuid="1072c5f3-1ff1-41ec-bf82-28bab52f1c07"/>
+				<reportElement positionType="Float" mode="Opaque" x="324" y="387" width="179" height="50" backcolor="#012A4D" uuid="1072c5f3-1ff1-41ec-bf82-28bab52f1c07"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -343,7 +349,7 @@
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<staticText>
-					<reportElement x="0" y="0" width="179" height="50" forecolor="#FFFFFF" uuid="6908cdb8-04b4-4f23-8557-024c4053ffb3"/>
+					<reportElement positionType="Float" x="0" y="0" width="179" height="50" forecolor="#FFFFFF" uuid="6908cdb8-04b4-4f23-8557-024c4053ffb3"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Titillium Web" size="12" isBold="true"/>
 					</textElement>
@@ -351,7 +357,7 @@
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement mode="Opaque" x="324" y="437" width="179" height="50" backcolor="#012A4D" uuid="7ed8f976-5b57-4646-94f1-3ba7f20fac85"/>
+				<reportElement positionType="Float" mode="Opaque" x="324" y="437" width="179" height="50" backcolor="#012A4D" uuid="7ed8f976-5b57-4646-94f1-3ba7f20fac85"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -359,7 +365,7 @@
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<staticText>
-					<reportElement x="0" y="0" width="179" height="50" forecolor="#FFFFFF" uuid="06e00145-152a-4982-9dfc-07d278190f37"/>
+					<reportElement positionType="Float" x="0" y="0" width="179" height="50" forecolor="#FFFFFF" uuid="06e00145-152a-4982-9dfc-07d278190f37"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Titillium Web" size="12" isBold="true"/>
 					</textElement>
@@ -367,7 +373,7 @@
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement mode="Opaque" x="504" y="337" width="180" height="50" backcolor="#012A4D" uuid="80f776dd-2ec7-4239-acd3-34321d8e4688"/>
+				<reportElement positionType="Float" mode="Opaque" x="504" y="337" width="180" height="50" backcolor="#012A4D" uuid="80f776dd-2ec7-4239-acd3-34321d8e4688"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -375,7 +381,7 @@
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textField>
-					<reportElement x="0" y="0" width="180" height="50" forecolor="#FFFFFF" uuid="dfe69320-410e-44bb-b38e-acfa6d2bd74e"/>
+					<reportElement positionType="Float" x="0" y="0" width="180" height="50" forecolor="#FFFFFF" uuid="dfe69320-410e-44bb-b38e-acfa6d2bd74e"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Titillium Web" size="12" isBold="true"/>
 					</textElement>
@@ -383,7 +389,7 @@
 				</textField>
 			</frame>
 			<frame>
-				<reportElement mode="Opaque" x="504" y="437" width="180" height="50" backcolor="#012A4D" uuid="1fe2893f-2d32-4997-8c88-c16d873d742b"/>
+				<reportElement positionType="Float" mode="Opaque" x="504" y="437" width="180" height="50" backcolor="#012A4D" uuid="1fe2893f-2d32-4997-8c88-c16d873d742b"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -391,7 +397,7 @@
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textField>
-					<reportElement x="0" y="0" width="180" height="50" forecolor="#FFFFFF" uuid="39c46437-e4ca-4529-8ba1-4701594f99f7"/>
+					<reportElement positionType="Float" x="0" y="0" width="180" height="50" forecolor="#FFFFFF" uuid="39c46437-e4ca-4529-8ba1-4701594f99f7"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Titillium Web" size="12" isBold="true"/>
 					</textElement>
@@ -399,7 +405,7 @@
 				</textField>
 			</frame>
 			<frame>
-				<reportElement mode="Opaque" x="503" y="387" width="180" height="50" backcolor="#012A4D" uuid="4eca1a4f-b457-425b-bb3b-9063bd9b41fe"/>
+				<reportElement positionType="Float" mode="Opaque" x="503" y="387" width="180" height="50" backcolor="#012A4D" uuid="4eca1a4f-b457-425b-bb3b-9063bd9b41fe"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -407,7 +413,7 @@
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textField>
-					<reportElement x="0" y="0" width="180" height="50" forecolor="#FFFFFF" uuid="33fb5efb-a64c-4a8c-b08b-4d667965025f"/>
+					<reportElement positionType="Float" x="0" y="0" width="180" height="50" forecolor="#FFFFFF" uuid="33fb5efb-a64c-4a8c-b08b-4d667965025f"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Titillium Web" size="12" isBold="true"/>
 					</textElement>
@@ -415,7 +421,7 @@
 				</textField>
 			</frame>
 			<componentElement>
-				<reportElement x="107" y="580" width="800" height="100" uuid="98848ffe-897d-4fa5-9c73-9c5b903e4a30">
+				<reportElement positionType="Float" x="107" y="580" width="800" height="100" uuid="98848ffe-897d-4fa5-9c73-9c5b903e4a30">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -569,9 +575,9 @@
 				</jr:table>
 			</componentElement>
 			<frame>
-				<reportElement x="-21" y="490" width="1080" height="80" uuid="1c866e37-924b-4c8a-9084-80e81dbac2e2"/>
+				<reportElement positionType="Float" x="-21" y="490" width="1080" height="80" uuid="1c866e37-924b-4c8a-9084-80e81dbac2e2"/>
 				<image>
-					<reportElement x="950" y="0" width="110" height="80" uuid="072883c2-8879-405b-a542-38bf852e8c28">
+					<reportElement positionType="Float" x="950" y="0" width="110" height="80" uuid="072883c2-8879-405b-a542-38bf852e8c28">
 						<property name="com.jaspersoft.studio.unit.x" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -581,63 +587,63 @@
 				</image>
 			</frame>
 			<textField>
-				<reportElement mode="Transparent" x="319" y="260" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="aeb14fbd-00bd-4e3c-b3e7-b1b1055fadc5"/>
+				<reportElement positionType="Float" mode="Transparent" x="319" y="260" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="aeb14fbd-00bd-4e3c-b3e7-b1b1055fadc5"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{systemNameNew}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="-11" y="230" width="226" height="60" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="e930693a-97fc-477c-8757-233b2dc31cab"/>
+				<reportElement positionType="Float" x="-11" y="230" width="226" height="60" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="e930693a-97fc-477c-8757-233b2dc31cab"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Información General:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="319" y="230" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="3db7697b-4068-44b4-b0a1-104ce71d686b"/>
+				<reportElement positionType="Float" x="319" y="230" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="3db7697b-4068-44b4-b0a1-104ce71d686b"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Sistema]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="529" y="230" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="eb56ae1d-b0e8-40ef-ba10-cbd3009ad0a4"/>
+				<reportElement positionType="Float" x="529" y="230" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="eb56ae1d-b0e8-40ef-ba10-cbd3009ad0a4"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Proyecto]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="529" y="260" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="9b093eb4-60ff-402b-a836-dbc7b909c5cc"/>
+				<reportElement positionType="Float" x="529" y="260" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="9b093eb4-60ff-402b-a836-dbc7b909c5cc"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{projectNameNew}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="699" y="230" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="e3239581-2fad-4deb-8246-7e2cc6d1b52f"/>
+				<reportElement positionType="Float" x="699" y="230" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="e3239581-2fad-4deb-8246-7e2cc6d1b52f"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Tipo Error]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="699" y="260" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="2edb7c73-db12-4758-abf1-93548ae37bfd"/>
+				<reportElement positionType="Float" x="699" y="260" width="110" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="2edb7c73-db12-4758-abf1-93548ae37bfd"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{typeErrorNameNew}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="879" y="260" width="150" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="a6768807-87cb-4bc0-8ec4-c3ede16a669b"/>
+				<reportElement positionType="Float" x="879" y="260" width="150" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="a6768807-87cb-4bc0-8ec4-c3ede16a669b"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dateNew}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="879" y="230" width="150" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="f3d6d13c-f099-4408-9b1c-bd3c56d1c99b"/>
+				<reportElement positionType="Float" x="879" y="230" width="150" height="30" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="f3d6d13c-f099-4408-9b1c-bd3c56d1c99b"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
@@ -645,7 +651,7 @@
 			</staticText>
 			<barChart>
 				<chart evaluationTime="Report">
-					<reportElement positionType="Float" x="0" y="774" width="1015" height="240" uuid="1a91b5fd-efdb-494a-9af8-173be2751ce9"/>
+					<reportElement positionType="Float" x="-20" y="870" width="1015" height="240" uuid="1a91b5fd-efdb-494a-9af8-173be2751ce9"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -685,7 +691,7 @@
 				</barPlot>
 			</barChart>
 			<frame>
-				<reportElement positionType="Float" mode="Opaque" x="312" y="1028" width="410" height="60" backcolor="#012A4D" uuid="de61f7e2-8b9f-4b39-92bd-8eefb4a9a130"/>
+				<reportElement positionType="Float" mode="Opaque" x="292" y="1124" width="410" height="60" backcolor="#012A4D" uuid="de61f7e2-8b9f-4b39-92bd-8eefb4a9a130"/>
 				<staticText>
 					<reportElement positionType="Float" x="0" y="0" width="410" height="60" forecolor="#FFFFFF" uuid="00e00cc5-a5ab-453d-a8a1-8e11326ee160"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -695,7 +701,7 @@
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" mode="Opaque" x="150" y="1393" width="320" height="70" backcolor="#012A4D" uuid="8dd73377-b23e-4b43-8fd6-78de68e2ce77"/>
+				<reportElement positionType="Float" mode="Opaque" x="130" y="1489" width="320" height="70" backcolor="#012A4D" uuid="8dd73377-b23e-4b43-8fd6-78de68e2ce77"/>
 				<staticText>
 					<reportElement positionType="Float" x="-1" y="5" width="320" height="60" forecolor="#FFFFFF" backcolor="#012A4D" uuid="309b1168-806b-4236-8d8e-5a8b656ca413"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -705,7 +711,7 @@
 				</staticText>
 			</frame>
 			<frame>
-				<reportElement positionType="Float" mode="Opaque" x="541" y="1388" width="320" height="70" backcolor="#012A4D" uuid="3d6c141c-01e2-480f-9165-11e3df821c24"/>
+				<reportElement positionType="Float" mode="Opaque" x="521" y="1484" width="320" height="70" backcolor="#012A4D" uuid="3d6c141c-01e2-480f-9165-11e3df821c24"/>
 				<staticText>
 					<reportElement positionType="Float" x="-1" y="0" width="320" height="70" forecolor="#FFFFFF" uuid="2af14a42-4b09-451e-b81c-edd2703860d1"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -716,7 +722,7 @@
 			</frame>
 			<pieChart>
 				<chart evaluationTime="Report">
-					<reportElement positionType="Float" x="151" y="1182" width="318" height="200" uuid="c9eb963d-719f-492b-9b50-f15bb50f577a"/>
+					<reportElement positionType="Float" x="131" y="1278" width="318" height="200" uuid="c9eb963d-719f-492b-9b50-f15bb50f577a"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -738,7 +744,7 @@
 			</pieChart>
 			<pieChart>
 				<chart evaluationTime="Report">
-					<reportElement positionType="Float" x="541" y="1182" width="320" height="200" uuid="83429c7f-2754-4201-9785-62dc72089899"/>
+					<reportElement positionType="Float" x="521" y="1278" width="320" height="200" uuid="83429c7f-2754-4201-9785-62dc72089899"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -758,11 +764,18 @@
 					<itemLabel/>
 				</piePlot>
 			</pieChart>
+			<staticText>
+				<reportElement positionType="Float" x="20" y="750" width="226" height="60" isPrintWhenDetailOverflows="true" forecolor="#012A4D" uuid="82a4c2f9-3de8-4b1a-9425-0b60c7ea1b5d"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Graficos:]]></text>
+			</staticText>
 			<break>
-				<reportElement x="0" y="210" width="97" height="1" uuid="40301b4a-0fb1-45bc-bfd6-09a1d3d3d7bc"/>
+				<reportElement x="0" y="222" width="100" height="1" uuid="c21355b9-3660-4971-a861-c00d00e261b5"/>
 			</break>
 			<break>
-				<reportElement x="0" y="727" width="100" height="1" uuid="d4823581-701c-491f-b014-fcb1f282a4cd"/>
+				<reportElement x="0" y="745" width="100" height="1" uuid="2b02b16e-83dc-4440-a292-1fe81303616e"/>
 			</break>
 		</band>
 	</detail>

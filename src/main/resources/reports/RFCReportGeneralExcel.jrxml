@@ -45,7 +45,7 @@
 	<parameter name="statusTracking" class="java.lang.String"/>
 	<parameter name="logo" class="java.io.InputStream"/>
 	<parameter name="totalRequest" class="java.lang.Integer"/>
-	<parameter name="pendents" class="java.lang.String"/>
+	<parameter name="pendents" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>

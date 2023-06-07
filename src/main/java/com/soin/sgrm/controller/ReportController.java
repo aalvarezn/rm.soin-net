@@ -692,7 +692,7 @@ public class ReportController extends BaseController {
 				resource = new ClassPathResource("reports" + File.separator + "RequestReportGeneral" + ".jrxml");
 
 			} else {
-				resource = new ClassPathResource("reports" + File.separator + "RequestReportGeneralExcel" + ".jrxml");
+				resource = new ClassPathResource("reports" + File.separator + "RequestReportGeneralExcel1" + ".jrxml");
 			}
 
 			InputStream inputStream = resource.getInputStream();
@@ -803,6 +803,7 @@ public class ReportController extends BaseController {
 		        configuration.setWhitePageBackground(true);
 		        configuration.setRemoveEmptySpaceBetweenColumns(true);
 		        configuration.setOnePagePerSheet(true);
+		        
 		        configuration.setSheetNames(new String[] { "Hoja1", "Hoja2", "Hoja3" });
 				exporter.setConfiguration(configuration);
 				exporter.setExporterOutput(
@@ -872,7 +873,7 @@ public class ReportController extends BaseController {
 				resource = new ClassPathResource("reports" + File.separator + "RFCReportGeneral" + ".jrxml");
 
 			} else {
-				resource = new ClassPathResource("reports" + File.separator + "RFCReportGeneralExcel" + ".jrxml");
+				resource = new ClassPathResource("reports" + File.separator + "RFCReportGeneralExcel1" + ".jrxml");
 			}
 
 			InputStream inputStream = resource.getInputStream();

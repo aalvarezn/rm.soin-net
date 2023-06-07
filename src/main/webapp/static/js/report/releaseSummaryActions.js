@@ -234,12 +234,12 @@ function draw(objs) {
 	var options = {
 			interaction: {
 				navigationButtons: false,
-				keyboard: false,
+				keyboard: true,
 				dragNodes:false,
-				dragView:false,
+				dragView:true,
 				hideNodesOnDrag:false,
 				hideEdgesOnZoom:true,
-				zoomView:false,
+				zoomView:true,
 			},
 			nodes: {
 				shape: "box",
