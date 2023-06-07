@@ -380,8 +380,8 @@
 					<button type="button" class="btn btn-default setIcon"
 						onclick="exportPDF(	 '${release.releaseNumber}' )" title="Exportar"
 						style="background-color: #00294c !important; color: #fff; border: none !important; padding-left: 20px;">
-						<span>Exportar PDF</span><span style="margin-left: 25px;"><i
-							class="material-icons m-t--2">offline_pin</i></span>
+						<span>Exportar PDF</span><span style="margin-left: 5px;"><i
+							class="fas fa-file-pdf text-danger m-t--2"></i></span>
 					</button>
 				</div>
 

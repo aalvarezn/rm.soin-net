@@ -217,15 +217,15 @@
 					<div class="button-demo flr">
 						<button type="button" class="btn btn-primary setIcon"
 							onclick="downLoadReport(1)">
-							<span>DESCARGAR EXCEL</span><span><i
-								class="material-icons m-t--2 ">offline_pin</i></span>
+							<span>DESCARGAR EXCEL </span><span style="margin-left: 5px;"><i
+								class="fas fa-file-excel text-success "></i></span>
 						</button>
 					</div>
 					<div class="button-demo flr">
 						<button type="button" class="btn btn-primary setIcon"
 							onclick="downLoadReport(2)">
-							<span>DESCARGAR PDF</span><span><i
-								class="material-icons m-t--2 ">offline_pin</i></span>
+							<span>DESCARGAR PDF</span><span style="margin-left: 5px;"><i
+								class="fas fa-file-pdf text-danger"></i></span>
 						</button>
 					</div>
 				</div>

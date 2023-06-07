@@ -433,6 +433,7 @@ function downLoadReport1(){
 }
 
 function downLoadReport(typeDocument){
+	console.log(typeDocument);
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
