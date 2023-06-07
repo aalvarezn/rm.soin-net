@@ -187,7 +187,7 @@
 						</div>
 						<div class="button-demo flr">
 							<button type="button" class="btn btn-primary setIcon"
-								onclick="downLoadReport()">
+								onclick="downLoadReport(2)">
 								<span>DESCARGAR PDF</span><span><i
 									class="material-icons m-t--2 ">update</i></span>
 							</button>

@@ -270,7 +270,7 @@ public class ErrorsManagementController extends BaseController {
 			}
 
 			if (request.getParameter("sigesId").equals("")) {
-				sigesId = null;
+				sigesId = (long) 0;
 			} else {
 				sigesId = (long) Integer.parseInt(request.getParameter("sigesId"));
 			}
@@ -559,6 +559,11 @@ public class ErrorsManagementController extends BaseController {
 				if (valueError != 0 || valueRequest != 0) {
 					totalReleases += valueRequest;
 					ErrorTypeGraph errorTypeGraph = new ErrorTypeGraph();
+					Double percentageErrors = (((double) valueRequest - (double) valueError) / (double) valueRequest);
+					percentageErrors = percentageErrors * 100;
+					percentageErrors = 100 - percentageErrors;
+					percentageErrors = Math.round(percentageErrors * 100d) / 100d;
+					errorTypeGraph.setLabel2(percentageErrors.toString()+"%");
 					errorTypeGraph.setValue(valueError);
 					errorTypeGraph.setValueRequest(valueRequest);
 					errorTypeGraph.setLabel(systemOnly.getName());
@@ -583,7 +588,7 @@ public class ErrorsManagementController extends BaseController {
 			percentageErrors = 100 - percentageErrors;
 			percentageErrors = Math.round(percentageErrors * 100d) / 100d;
 			parameters.put("totalReleases", totalReleases.toString());
-			parameters.put("percentageErrors", percentageErrors.toString());
+			parameters.put("percentageErrors", percentageErrors.toString()+"%");
 			parameters.put("totalErrors", totalReleasesError.toString());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 			String reportName = "";
@@ -599,13 +604,17 @@ public class ErrorsManagementController extends BaseController {
 
 		        SimpleXlsxReportConfiguration configuration=new SimpleXlsxReportConfiguration();
 		        configuration.setDetectCellType(true);
+		       
 		        configuration.setCollapseRowSpan(true);
 		        configuration.setIgnoreCellBorder(true);
 		        configuration.setWhitePageBackground(true);
 		        configuration.setRemoveEmptySpaceBetweenColumns(true);
+		        configuration.setOnePagePerSheet(true);
+		        configuration.setSheetNames(new String[] { "Hoja1", "Hoja2", "Hoja3" });
 		        exporter.setConfiguration(configuration);
 		        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream( basePath + reportName)));	
 		        exporter.exportReport();
+
 			}
 
 			File file = new File(basePath + reportName);
@@ -654,7 +663,7 @@ public class ErrorsManagementController extends BaseController {
 			if (!request.getParameter("sigesId").equals("") && request.getParameter("sigesId") != null) {
 				sigesId = (long) Integer.parseInt(request.getParameter("sigesId"));
 			} else {
-				sigesId = null;
+				sigesId = (long) 0;
 			}
 			if (!request.getParameter("projectId").equals("") && request.getParameter("projectId") != null) {
 				projectId = Integer.parseInt(request.getParameter("projectId"));
@@ -748,6 +757,11 @@ public class ErrorsManagementController extends BaseController {
 				if (valueError != 0 || valueRequest != 0) {
 					totalRFC += valueRequest;
 					ErrorTypeGraph errorTypeGraph = new ErrorTypeGraph();
+					Double percentageErrors = (((double) valueRequest - (double) valueError) / (double) valueRequest);
+					percentageErrors = percentageErrors * 100;
+					percentageErrors = 100 - percentageErrors;
+					percentageErrors = Math.round(percentageErrors * 100d) / 100d;
+					errorTypeGraph.setLabel2(percentageErrors.toString()+"%");
 					errorTypeGraph.setValue(valueError);
 					errorTypeGraph.setValueRequest(valueRequest);
 					errorTypeGraph.setLabel(systemOnly.getName());
@@ -771,7 +785,7 @@ public class ErrorsManagementController extends BaseController {
 			percentageErrors = 100 - percentageErrors;
 			percentageErrors = Math.round(percentageErrors * 100d) / 100d;
 			parameters.put("totalRFC", totalRFC.toString());
-			parameters.put("percentageErrors", percentageErrors.toString());
+			parameters.put("percentageErrors", percentageErrors.toString()+"%");
 			parameters.put("totalErrors", totalRFCError.toString());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 			String reportName = "";
@@ -787,10 +801,14 @@ public class ErrorsManagementController extends BaseController {
 
 		        SimpleXlsxReportConfiguration configuration=new SimpleXlsxReportConfiguration();
 		        configuration.setDetectCellType(true);
+			       
 		        configuration.setCollapseRowSpan(true);
 		        configuration.setIgnoreCellBorder(true);
 		        configuration.setWhitePageBackground(true);
 		        configuration.setRemoveEmptySpaceBetweenColumns(true);
+		     
+		        configuration.setOnePagePerSheet(true);
+		        configuration.setSheetNames(new String[] { "Hoja1", "Hoja2", "Hoja3" });
 		        exporter.setConfiguration(configuration);
 		        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream( basePath + reportName)));	
 		        exporter.exportReport();
@@ -945,6 +963,11 @@ public class ErrorsManagementController extends BaseController {
 				if (valueError != 0 || valueRequest != 0) {
 					totalRequest += valueRequest;
 					ErrorTypeGraph errorTypeGraph = new ErrorTypeGraph();
+					Double percentageErrors = (((double) valueRequest - (double) valueError) / (double) valueRequest);
+					percentageErrors = percentageErrors * 100;
+					percentageErrors = 100 - percentageErrors;
+					percentageErrors = Math.round(percentageErrors * 100d) / 100d;
+					errorTypeGraph.setLabel2(percentageErrors.toString()+"%");
 					errorTypeGraph.setValue(valueError);
 					errorTypeGraph.setValueRequest(valueRequest);
 					errorTypeGraph.setLabel(systemOnly.getName());
@@ -970,7 +993,7 @@ public class ErrorsManagementController extends BaseController {
 			percentageErrors = 100 - percentageErrors;
 			percentageErrors = Math.round(percentageErrors * 100d) / 100d;
 			parameters.put("totalRequest", totalRequest.toString());
-			parameters.put("percentageErrors", percentageErrors.toString());
+			parameters.put("percentageErrors", percentageErrors.toString()+"%");
 			parameters.put("totalErrors", totalRequestError.toString());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
 			String reportName = "";
@@ -986,11 +1009,16 @@ public class ErrorsManagementController extends BaseController {
 
 		        SimpleXlsxReportConfiguration configuration=new SimpleXlsxReportConfiguration();
 		        configuration.setDetectCellType(true);
+			       
 		        configuration.setCollapseRowSpan(true);
 		        configuration.setIgnoreCellBorder(true);
 		        configuration.setWhitePageBackground(true);
 		        configuration.setRemoveEmptySpaceBetweenColumns(true);
+		     
+		        configuration.setOnePagePerSheet(true);
+		        configuration.setSheetNames(new String[] { "Hoja1", "Hoja2", "Hoja3" });
 		        exporter.setConfiguration(configuration);
+		       
 		        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream( basePath + reportName)));	
 		        exporter.exportReport();
 			}
