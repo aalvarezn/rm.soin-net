@@ -60,6 +60,9 @@ $(document).ready(function() {
 		 placeholder: 'Ingrese los correos'
 	 });
 	initRFCTable();
+	$formChangeStatus.find('#statusId').change(function() {
+		$formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
+	});
 	// initRFCFormValidation();
 });
 

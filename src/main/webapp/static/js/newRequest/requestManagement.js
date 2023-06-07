@@ -44,13 +44,20 @@ $(document).ready(function() {
 		}
 	});
 	// Datetimepicker plugin
-	$('.datetimepicker').datetimepicker({
+	$('#dateChange').datetimepicker({
 		locale: 'es',
 		format: 'DD/MM/YYYY hh:mm a',
 		maxDate : new Date()
 	});
+	
+	// Datetimepicker plugin
+	$('#requestDateEstimate').datetimepicker({
+		locale: 'es',
+		format: 'DD/MM/YYYY hh:mm a',
+		minDate : new Date()
+	});
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
-	//initImpactFormValidation
+	// initImpactFormValidation
 	activeItemMenu("managerRequestItem");
 	// dropDownChange();
 	// $("#addRFCSection").hide();
@@ -61,6 +68,9 @@ $(document).ready(function() {
 	 $('.tagInitMail').tagsInput({
 		 placeholder: 'Ingrese los correos'
 	 });
+		$formChangeStatus.find('#statusId').change(function() {
+			$formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
+		});
 	// initRFCFormValidation();
 });
 
@@ -286,7 +296,8 @@ function changeStatusRequest(idRequest) {
 	$formChangeStatus.find('#idRequest').val(idRequest);
 	$formChangeStatus.find('#note').val("");
 	$formChangeStatus.find('#requestNumRequest').val(rowData.numRequest);
-	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
+	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'));
+	$formChangeStatus.find('#requestDateEstimate').val(moment().format('DD/MM/YYYY hh:mm a'));
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');
 	$formChangeStatus.find("#statusId_error").css("visibility", "hidden");
 	$formChangeStatus.find(".fieldError").css("visibility", "hidden");
@@ -294,7 +305,9 @@ function changeStatusRequest(idRequest) {
 	$formChangeStatus.find('.form-line').removeClass('error');
 	$formChangeStatus.find('.form-line').removeClass('focused');
 	$('#divError').attr( "hidden",true);
+	$('#divDateEstimate').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
+	
 }
 
 function dropDownChange(){
@@ -302,10 +315,15 @@ function dropDownChange(){
 	$('#statusId').on('change', function(){
 		
 		var status =$("#statusId").find("option:selected").text();
-		console.log(status);
+
 		if(status==="Error"){
 			$('#divError').attr( "hidden",false);
-		}else{
+		}else if(status==="En proceso"){
+			$('#divDateEstimate').attr( "hidden",false);
+			$('#divError').attr( "hidden",true);
+		}
+		else{
+			$('#divDateEstimate').attr( "hidden",true);
 			$('#divError').attr( "hidden",true);
 		}
 		
@@ -342,6 +360,7 @@ function saveChangeStatusModal(){
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
 			idError: $formChangeStatus.find('#errorId').children("option:selected").val(),
 			dateChange: $formChangeStatus.find('#dateChange').val(),
+			requestDateEstimate: $formChangeStatus.find('#requestDateEstimate').val(),
 			motive: $formChangeStatus.find('#motive').val(),
 			sendEmail:switchStatus,
 			senders:$formChangeStatus.find('#senders').val(),
@@ -424,7 +443,16 @@ function validStatusRequest() {
 					"form-line error focused");
 					valid = false;
 				}
-			}else{
+			}else if(input.id==="requestDateEstimate"){
+				var statusSelected =$("#statusId").find("option:selected").text();
+				if(statusSelected==="En proceso"){
+					$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
+					$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
+					$formChangeStatus.find('#'+input.id+"").parent().attr("class",
+					"form-line error focused");
+					valid = false;
+				}
+				}else{
 			$formChangeStatus.find('#'+input.id+"_error").css("visibility","visible");
 			$formChangeStatus.find('#'+input.id+"_error").addClass('activeError');
 			$formChangeStatus.find('#'+input.id+"").parent().attr("class",
