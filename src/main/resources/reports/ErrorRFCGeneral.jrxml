@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="1080" pageHeight="1500" columnWidth="1040" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="07baeb14-424d-4b2d-9f94-ec6f1c3415bb">
-	<property name="com.jaspersoft.studio.unit." value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="1080" pageHeight="2000" columnWidth="1040" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="07baeb14-424d-4b2d-9f94-ec6f1c3415bb">
 	<subDataset name="errorDataSet" uuid="f986e163-932e-41c9-bf60-e4a230479342">
 		<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="634"/>
 		<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="352"/>
@@ -53,6 +44,7 @@
 		<field name="label" class="java.lang.String"/>
 		<field name="value" class="java.lang.Integer"/>
 		<field name="valueRequest" class="java.lang.Integer"/>
+		<field name="label2" class="java.lang.String"/>
 	</subDataset>
 	<parameter name="ds" class="net.sf.jasperreports.engine.data.JsonData"/>
 	<parameter name="releaseDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
@@ -101,85 +93,79 @@
 			</image>
 		</band>
 	</title>
-	<pageHeader>
-		<band height="140">
+	<detail>
+		<band height="1727">
 			<rectangle>
-				<reportElement x="-21" y="30" width="1082" height="100" backcolor="#012A4D" uuid="4a3bb5cb-ca0a-47c3-87d6-0ae9181c7d12"/>
+				<reportElement x="-20" y="1320" width="1082" height="100" backcolor="#012A4D" uuid="5aa620cc-5377-4bbf-864b-35fb7e984c90"/>
 				<graphicElement>
 					<pen lineStyle="Solid" lineColor="#012A4D"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="-20" y="20" width="226" height="110" forecolor="#FFFFFF" uuid="c991b86c-d058-450f-8572-ba68d5106c1b"/>
+				<reportElement x="-19" y="1310" width="226" height="110" forecolor="#FFFFFF" uuid="23a03340-5622-4125-8634-71724987ceff"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="20" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Información General:]]></text>
 			</staticText>
 			<textField>
-				<reportElement mode="Transparent" x="310" y="80" width="110" height="30" forecolor="#FFFFFF" uuid="ab8011ef-20c5-4986-a43a-60173ef5208a"/>
+				<reportElement positionType="Float" mode="Transparent" x="311" y="1370" width="110" height="30" forecolor="#FFFFFF" uuid="5c823977-501c-46ed-bf97-1ab95e068e24"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{systemNameNew}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="520" y="80" width="110" height="30" forecolor="#FFFFFF" uuid="db1d4c62-6a86-4a21-9541-616b9d34e138"/>
+				<reportElement positionType="Float" x="521" y="1370" width="110" height="30" forecolor="#FFFFFF" uuid="5a1e479c-85d3-4ab5-b080-75d31f4d1972"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sigesNameNew}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="690" y="80" width="110" height="30" forecolor="#FFFFFF" uuid="2a279070-1468-4111-b48d-0eefc396339f"/>
+				<reportElement positionType="Float" x="691" y="1370" width="110" height="30" forecolor="#FFFFFF" uuid="652c5718-3e63-480c-a1da-51acf72ec965"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{typeErrorNameNew}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="870" y="80" width="150" height="30" forecolor="#FFFFFF" uuid="ac984ceb-8cae-409e-8ecc-22c652c6a080"/>
+				<reportElement positionType="Float" x="871" y="1370" width="150" height="30" forecolor="#FFFFFF" uuid="adddb868-6b39-4c3a-a60d-fcf0e3f8c380"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{dateNew}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="310" y="50" width="110" height="30" forecolor="#FFFFFF" uuid="6b7c2d78-cae4-4a2c-afff-60443ab22a24"/>
+				<reportElement positionType="Float" x="311" y="1340" width="110" height="30" forecolor="#FFFFFF" uuid="8c38fed8-8d84-48ff-94e2-64d96c72814a"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Sistema]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="520" y="50" width="110" height="30" forecolor="#FFFFFF" uuid="5ebf3f83-c182-4f17-ae77-6818a5d927cc"/>
+				<reportElement positionType="Float" x="521" y="1340" width="110" height="30" forecolor="#FFFFFF" uuid="6cf7a75c-9190-4abe-9445-b15fdffaa943"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Codigo Siges]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="690" y="50" width="110" height="30" forecolor="#FFFFFF" uuid="1d5bd895-ec9b-447d-a2be-1dd6d99db458"/>
+				<reportElement positionType="Float" x="691" y="1340" width="110" height="30" forecolor="#FFFFFF" uuid="30f2c369-ca36-4a16-bde0-1155756b3861"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Tipo Error]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="870" y="50" width="150" height="30" forecolor="#FFFFFF" uuid="8aee3955-2d22-45d9-b3a3-49d8cd02b419"/>
+				<reportElement positionType="Float" x="871" y="1340" width="150" height="30" forecolor="#FFFFFF" uuid="1edfa081-2d67-4080-adb1-5bfc900ddc5a"/>
 				<textElement textAlignment="Center">
 					<font fontName="Titillium Web" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Rango de fechas]]></text>
 			</staticText>
-		</band>
-	</pageHeader>
-	<detail>
-		<band height="280" splitType="Stretch">
-			<property name="com.jaspersoft.studio.layout"/>
-			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<componentElement>
-				<reportElement x="30" y="30" width="1015" height="200" uuid="252b9069-6fb6-4f42-8bac-f6c17e0f8579">
+				<reportElement x="21" y="1440" width="1015" height="170" uuid="e98c5714-4f69-4ea0-8570-12da5d60b690">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -187,13 +173,13 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="errorDataSet" uuid="42732385-23d8-4175-aaf3-a14e3ecdbb18">
+					<datasetRun subDataset="errorDataSet" uuid="8b74615c-854f-4bd9-b481-d1a75760805a">
 						<datasetParameter name="REPORT_DATA_SOURCE">
 							<datasetParameterExpression><![CDATA[$F{errordataSource}]]></datasetParameterExpression>
 						</datasetParameter>
 						<dataSourceExpression><![CDATA[$F{errordataSource}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="145" uuid="3e9217e6-8d38-4c87-bf53-96d23af24e7a">
+					<jr:column width="145" uuid="964566a9-e2bc-4ba0-a39e-1c0c41becb8e">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -205,7 +191,7 @@
 								<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="091730bc-ae0c-42c0-a3e7-d17049a25466">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="cbd4089d-1f02-4e4f-a59a-22d6c9ffab8f">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
 								<box>
@@ -222,7 +208,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="3212f6b2-403d-4a1f-9a7f-ff17bef9bfb6"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="64197cb4-8001-45bc-a3f8-37e908f1fc9b"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -236,12 +222,12 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145" uuid="4b009af5-489f-4c94-8900-161a336a5892">
+					<jr:column width="145" uuid="bd263e15-0ff4-4141-93a2-9eda8e740350">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="39e7bfea-0aad-48c2-a0d5-44a34ab6f7f7">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="511d2cc1-4ccf-47cb-bcea-55ee6414ffc7">
 									<property name="com.jaspersoft.studio.unit.y" value="px"/>
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -260,7 +246,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="f2b63089-3804-49cd-8c9e-e2bf171bee25"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="701b4867-f499-4364-a452-74838d5910e8"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -274,12 +260,12 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145" uuid="949631c1-cedd-4334-855c-00f9778ce57b">
+					<jr:column width="145" uuid="b0b4b140-ff22-4fc3-9666-b1eb75ae0360">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="f53a3799-4318-4069-a713-4dd093c895f3">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="18c9f7c5-cf4b-496a-b0f7-2070183af955">
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
@@ -297,7 +283,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="c1d39b9f-0c0f-4900-832b-98b9e4b9b6ab"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="1a7de0a0-580b-4515-b212-9c5536139a17"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -311,12 +297,12 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145" uuid="6ba96ec5-1fe8-47ee-a56c-854d5c2a017f">
+					<jr:column width="145" uuid="74511cc1-c06a-4538-b70e-ec1f64e8d9d4">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="1f0a7895-f053-4e1e-8ac6-13ae0f6c009d">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="27e691a9-6d23-4159-82b2-b8659fc01f92">
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
@@ -334,7 +320,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="ed853b52-6cd6-4595-a154-fbf44b484ad2"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="cdeeab6b-d187-4038-b26c-4489df391511"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -348,12 +334,12 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145" uuid="d65fe6e6-6a68-44fc-aacc-f1bb06ab7f24">
+					<jr:column width="145" uuid="58210a7f-31c0-42a7-b7ed-f111722036e6">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="5ab5d6d6-57c8-49ad-9acf-f2de887a6b8a">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="68857b95-557d-437e-b8e9-d9c8baa512d0">
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
@@ -371,7 +357,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="b1180f5f-e932-4f93-9044-bb219cd57853"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="2e2a4ac6-a68d-449e-93db-3e55b57aeca1"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -385,12 +371,12 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145" uuid="d3af7a78-949d-4fb0-85a6-21dd4f0f8f45">
+					<jr:column width="145" uuid="1d18549f-90b0-4073-92ad-6ecbbd5655c2">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="8dd5ce18-cce4-43ef-9035-a14a3ed14cda">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="74b8c985-db4d-45af-8ec0-aae41ddef79c">
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
@@ -408,7 +394,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="11b2a58a-6c94-42a6-9290-7be62784956e"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="acacc470-5470-4ce3-aa36-38b930f3fcb0"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -422,12 +408,12 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="145" uuid="cc326f41-ad86-45c8-9882-b72d08923ffd">
+					<jr:column width="145" uuid="94ea4b23-07e6-4d69-9420-218a6c88543e">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="e03f2f13-a947-412a-a03a-a399cd723047">
+								<reportElement mode="Opaque" x="0" y="0" width="145" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="72b1e99e-5c67-4072-8bcd-9b941131c0a9">
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
@@ -445,7 +431,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="145" height="30" uuid="ee234a6e-1a16-4a45-89d8-02a6b9a2dd9c"/>
+								<reportElement x="0" y="0" width="145" height="30" uuid="185af4bb-1f77-4708-b9df-803721519edb"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -461,79 +447,104 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
-		</band>
-	</detail>
-	<summary>
-		<band height="1392">
-			<pie3DChart>
-				<chart evaluationTime="Report">
-					<reportElement x="140" y="350" width="320" height="230" uuid="bdaff86c-ceda-4847-8752-6335d28e4cc1"/>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<pieDataset>
-					<dataset resetType="Report">
-						<datasetRun subDataset="errorTypeGraphDataSet" uuid="cafcb466-4b25-4377-ba16-668e0a8a1ef5">
-							<dataSourceExpression><![CDATA[$F{errorTypeGraphSource}]]></dataSourceExpression>
-						</datasetRun>
-					</dataset>
-					<keyExpression><![CDATA[$F{label}]]></keyExpression>
-					<valueExpression><![CDATA[$F{value}]]></valueExpression>
-					<labelExpression><![CDATA[$F{value}.toString()]]></labelExpression>
-				</pieDataset>
-				<pie3DPlot>
-					<plot/>
-					<itemLabel/>
-				</pie3DPlot>
-			</pie3DChart>
-			<pie3DChart>
-				<chart evaluationTime="Report">
-					<reportElement x="580" y="350" width="320" height="230" uuid="efbad5d9-3773-4b6a-90e8-586048f01869"/>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<pieDataset>
-					<dataset resetType="Report">
-						<datasetRun subDataset="errorSystemGraphDataSet" uuid="3ad5e774-a148-4904-b7de-eacf78765705">
-							<dataSourceExpression><![CDATA[$F{systemGraphSource}]]></dataSourceExpression>
-						</datasetRun>
-					</dataset>
-					<keyExpression><![CDATA[$F{label}]]></keyExpression>
-					<valueExpression><![CDATA[$F{value}]]></valueExpression>
-					<labelExpression><![CDATA[$F{value}.toString()]]></labelExpression>
-				</pieDataset>
-				<pie3DPlot>
-					<plot/>
-					<itemLabel/>
-				</pie3DPlot>
-			</pie3DChart>
 			<rectangle>
-				<reportElement x="140" y="590" width="320" height="50" backcolor="#012A4D" uuid="9d4b4393-0176-4eae-a255-65fb62d572c2"/>
-			</rectangle>
-			<rectangle>
-				<reportElement x="580" y="590" width="320" height="50" backcolor="#012A4D" uuid="773e434d-7533-43ad-8dd8-408362382186"/>
+				<reportElement positionType="Float" x="342" y="161" width="180" height="50" backcolor="#012A4D" uuid="a00839e3-fbee-45a3-be78-b4275b2251fa"/>
 			</rectangle>
 			<staticText>
-				<reportElement x="140" y="590" width="320" height="50" forecolor="#FFFFFF" uuid="3b5d1d7e-440a-4fcc-9c26-99069700a046"/>
+				<reportElement positionType="Float" x="342" y="161" width="179" height="50" forecolor="#FFFFFF" uuid="0958fb33-9a39-41fc-af01-318cd3914323"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total de RFC liberados]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement positionType="Float" x="342" y="211" width="180" height="50" backcolor="#012A4D" uuid="d36f9a4e-30a2-4371-8235-1a2730e9994d"/>
+			</rectangle>
+			<staticText>
+				<reportElement positionType="Float" x="342" y="211" width="179" height="50" forecolor="#FFFFFF" uuid="10bb98b4-b24f-4636-b53e-cdeb2287f1ec"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total de RFC con errores]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement positionType="Float" x="522" y="161" width="180" height="50" backcolor="#012A4D" uuid="1953aae7-d594-42eb-a35a-a5dff53afceb"/>
+			</rectangle>
+			<rectangle>
+				<reportElement positionType="Float" x="522" y="211" width="180" height="50" backcolor="#012A4D" uuid="2b754473-87b3-4509-b698-313b2a915516"/>
+			</rectangle>
+			<rectangle>
+				<reportElement positionType="Float" x="522" y="261" width="180" height="50" backcolor="#012A4D" uuid="67b1bec2-2dad-4e3c-878b-d987f8d7c8d4"/>
+			</rectangle>
+			<rectangle>
+				<reportElement positionType="Float" x="342" y="261" width="180" height="50" backcolor="#012A4D" uuid="3dc1cad0-0485-468d-b5be-929dc1175cde"/>
+			</rectangle>
+			<staticText>
+				<reportElement positionType="Float" x="342" y="261" width="179" height="50" forecolor="#FFFFFF" uuid="a3fb88b5-b42f-47e2-ab4b-525863045ee5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Porcentaje de errores]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="Float" x="527" y="166" width="180" height="50" forecolor="#FFFFFF" uuid="d6c3a86b-3987-4447-a241-575d1a774914"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalRFC}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="527" y="266" width="180" height="50" forecolor="#FFFFFF" uuid="c267341e-8fd9-4bf5-87b4-80801550c633"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{percentageErrors}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="527" y="216" width="180" height="50" forecolor="#FFFFFF" uuid="15a43ffb-fd8d-4a50-aaaa-8c3e352de127"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalErrors}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="-20" y="20" width="1082" height="100" backcolor="#012A4D" uuid="26f1435d-63ba-4aae-b79b-2be66eaea718"/>
+				<graphicElement>
+					<pen lineStyle="Solid" lineColor="#012A4D"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="-29" y="31" width="226" height="79" forecolor="#FFFFFF" uuid="c5db555d-32c3-4511-86f2-c19f27fb672c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Titillium Web" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Resumen general ]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement positionType="Float" x="143" y="1180" width="320" height="50" backcolor="#012A4D" uuid="7bcf0550-15db-43a9-a1b9-2293ef3c8c4a"/>
+			</rectangle>
+			<rectangle>
+				<reportElement positionType="Float" x="583" y="1180" width="320" height="50" backcolor="#012A4D" uuid="bd2bc13b-7dd6-480e-81e7-196f566791fa"/>
+			</rectangle>
+			<staticText>
+				<reportElement positionType="Float" x="143" y="1180" width="320" height="50" forecolor="#FFFFFF" uuid="98d12c50-9a89-4f37-bf1b-dd7fdd8820e8"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Tipos de errores en los RFC]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="580" y="590" width="320" height="50" forecolor="#FFFFFF" uuid="faf18da1-3918-4e2c-9251-73e87d5b3c8d"/>
+				<reportElement positionType="Float" x="583" y="1180" width="319" height="50" forecolor="#FFFFFF" uuid="54fd8acc-3b80-48a8-8f65-8c8b28015b5c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Sistemas donde hubieron errores]]></text>
 			</staticText>
 			<rectangle>
-				<reportElement x="364" y="250" width="320" height="50" backcolor="#012A4D" uuid="8080af2f-9323-4001-b325-ddbb7eb9657e"/>
+				<reportElement positionType="Float" x="367" y="840" width="320" height="50" backcolor="#012A4D" uuid="e41780fb-dafc-44c0-af54-1425f4bc10ac"/>
 			</rectangle>
 			<staticText>
-				<reportElement x="364" y="250" width="320" height="50" forecolor="#FFFFFF" uuid="027887c7-b886-49af-aa0e-f048d10d522c"/>
+				<reportElement positionType="Float" x="371" y="840" width="316" height="50" forecolor="#FFFFFF" uuid="6f49ed39-3fdd-4a94-a6ee-27f5e664cf75"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="12" isBold="true"/>
 				</textElement>
@@ -541,14 +552,14 @@
 			</staticText>
 			<barChart>
 				<chart evaluationTime="Report">
-					<reportElement x="7" y="-10" width="1015" height="240" uuid="f8aee22b-dd07-4cdf-9226-c8901c371b48"/>
+					<reportElement x="10" y="580" width="1015" height="240" uuid="d62aaaba-f0d7-4252-833a-87baf322af84"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
 				</chart>
 				<categoryDataset>
 					<dataset resetType="Report">
-						<datasetRun subDataset="errorSystemXGraphDataSet" uuid="b04d24e6-13c0-4181-b7ba-6f8af17b61f0">
+						<datasetRun subDataset="errorSystemXGraphDataSet" uuid="4dd8a203-4312-4edb-b2a2-c9cd812252c2">
 							<dataSourceExpression><![CDATA[$F{systemXGraphSource}]]></dataSourceExpression>
 						</datasetRun>
 					</dataset>
@@ -580,81 +591,52 @@
 					</valueAxisFormat>
 				</barPlot>
 			</barChart>
-			<rectangle>
-				<reportElement x="341" y="860" width="180" height="50" backcolor="#012A4D" uuid="b4b2ec30-ec35-4c70-a1af-77c2b7936836"/>
-			</rectangle>
-			<staticText>
-				<reportElement x="341" y="860" width="179" height="50" forecolor="#FFFFFF" uuid="cdb89368-a598-4d0d-b48a-3730842464d4"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Titillium Web" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Total de RFC liberados]]></text>
-			</staticText>
-			<rectangle>
-				<reportElement x="341" y="910" width="180" height="50" backcolor="#012A4D" uuid="e9530870-a64f-4c5f-bbec-19d233f117de"/>
-			</rectangle>
-			<staticText>
-				<reportElement x="341" y="910" width="179" height="50" forecolor="#FFFFFF" uuid="333753eb-4a5d-4715-b032-e0fde413c32a"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Titillium Web" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Total de RFC con errores]]></text>
-			</staticText>
-			<rectangle>
-				<reportElement x="521" y="860" width="180" height="50" backcolor="#012A4D" uuid="e073783f-90d5-48fe-9314-4b77dc037ddf"/>
-			</rectangle>
-			<rectangle>
-				<reportElement x="521" y="910" width="180" height="50" backcolor="#012A4D" uuid="f5b17592-c73e-451d-92ff-e1e5d5a99b91"/>
-			</rectangle>
-			<rectangle>
-				<reportElement x="521" y="960" width="180" height="50" backcolor="#012A4D" uuid="d1f57a85-a52e-4014-87dc-a4f636534488"/>
-			</rectangle>
-			<rectangle>
-				<reportElement x="341" y="960" width="180" height="50" backcolor="#012A4D" uuid="b49e65ce-9407-4c6f-88da-3b50fd710941"/>
-			</rectangle>
-			<staticText>
-				<reportElement x="341" y="960" width="179" height="50" forecolor="#FFFFFF" uuid="51efcc4f-0098-45a6-99f8-10c5f4883d0e"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Titillium Web" size="12" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Porcentaje de errores]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="521" y="860" width="180" height="50" forecolor="#FFFFFF" uuid="43d498c1-bdd8-40d0-bb38-33a63b96c9ae"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Titillium Web" size="12" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{totalRFC}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="521" y="960" width="180" height="50" forecolor="#FFFFFF" uuid="f4ff38e1-a8e7-4d4b-a4be-5ddec0f80071"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Titillium Web" size="12" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{percentageErrors}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="521" y="910" width="180" height="50" forecolor="#FFFFFF" uuid="710ee210-edde-4d34-a886-73d9938f59f6"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Titillium Web" size="12" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{totalErrors}]]></textFieldExpression>
-			</textField>
-			<rectangle>
-				<reportElement x="-21" y="719" width="1082" height="100" backcolor="#012A4D" uuid="3dd9dd82-4f73-4040-b027-75e5ec685b49"/>
-				<graphicElement>
-					<pen lineStyle="Solid" lineColor="#012A4D"/>
-				</graphicElement>
-			</rectangle>
-			<staticText>
-				<reportElement x="401" y="730" width="226" height="79" forecolor="#FFFFFF" uuid="ef5707d5-e044-4e0d-b044-7a3065e57560"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Titillium Web" size="20" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Resumen general ]]></text>
-			</staticText>
+			<pieChart>
+				<chart evaluationTime="Report">
+					<reportElement x="143" y="940" width="320" height="240" uuid="a6c5f544-64c5-4e03-ac8c-7d84c8e92d5d"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset resetType="Report">
+						<datasetRun subDataset="errorTypeGraphDataSet" uuid="c8aacba0-976b-463b-9e82-23244e6f8c10">
+							<dataSourceExpression><![CDATA[$F{errorTypeGraphSource}]]></dataSourceExpression>
+						</datasetRun>
+					</dataset>
+					<keyExpression><![CDATA[$F{label}]]></keyExpression>
+					<valueExpression><![CDATA[$F{value}]]></valueExpression>
+					<labelExpression><![CDATA[$F{label}.toString()]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+			<pieChart>
+				<chart evaluationTime="Report">
+					<reportElement x="583" y="940" width="320" height="240" uuid="23eb3b22-5bd0-424b-9291-889e7f37f5e8"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset resetType="Report">
+						<datasetRun subDataset="errorSystemGraphDataSet" uuid="59b0a3dc-e20e-4b9f-a976-bf92f2a8cc00">
+							<dataSourceExpression><![CDATA[$F{systemGraphSource}]]></dataSourceExpression>
+						</datasetRun>
+					</dataset>
+					<keyExpression><![CDATA[$F{label}]]></keyExpression>
+					<valueExpression><![CDATA[$F{value}]]></valueExpression>
+					<labelExpression><![CDATA[$F{label}.toString()]]></labelExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
 			<componentElement>
-				<reportElement x="220" y="1080" width="600" height="200" uuid="d4bf5ccc-b1d1-49ff-9562-bbb09d13b03a">
+				<reportElement x="121" y="360" width="800" height="200" uuid="7ca6028c-ffd3-4bda-8f1b-62da62348ea1">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -662,13 +644,13 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="systemTableXGraphDataSet" uuid="dcfa541b-d439-4947-81be-71c6cf8ae570">
+					<datasetRun subDataset="systemTableXGraphDataSet" uuid="7f7cba7c-0cc5-4a67-9e53-b4f2c8abfadb">
 						<datasetParameter name="REPORT_DATA_SOURCE">
 							<datasetParameterExpression><![CDATA[$F{errordataSource}]]></datasetParameterExpression>
 						</datasetParameter>
 						<dataSourceExpression><![CDATA[$F{systemTableXGraphSource}]]></dataSourceExpression>
 					</datasetRun>
-					<jr:column width="200" uuid="429bb57f-1232-446e-beb9-d7f8f40096bd">
+					<jr:column width="200" uuid="305a5c83-da10-47cd-8dfd-414a9ea4d576">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -680,7 +662,7 @@
 								<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="200" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="2236f59b-4215-4a25-8d9b-9c89ad05bc90">
+								<reportElement mode="Opaque" x="0" y="0" width="200" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="0d3e5f32-14ac-4274-a17e-64fae9becd7e">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
 								<box>
@@ -697,7 +679,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="200" height="30" uuid="0141950e-a734-4fe6-9b7b-8e26ed92a20f"/>
+								<reportElement x="0" y="0" width="200" height="30" uuid="eb081621-63ed-4aed-860b-32c9d665c826"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -711,12 +693,12 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="200" uuid="eb2bd6b8-a82f-4219-bf9e-6c11536840d5">
+					<jr:column width="200" uuid="646681f7-194b-4742-a38e-5588d5388af7">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="200" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="62bf68a0-4663-4b63-a749-796ee037e8d2">
+								<reportElement mode="Opaque" x="0" y="0" width="200" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="61cbfd95-64b9-4955-a456-756d66869453">
 									<property name="com.jaspersoft.studio.unit.y" value="px"/>
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -735,7 +717,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="200" height="30" uuid="7b19fe2e-56b9-4d55-9c23-04f1ab68e806"/>
+								<reportElement x="0" y="0" width="200" height="30" uuid="b60eaa6d-54a9-4cc9-8e21-1d1545475af9"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -749,12 +731,12 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="200" uuid="a661ff0a-857e-4e36-bcf2-f94c27d35bf3">
+					<jr:column width="200" uuid="981462fb-c610-4ea4-afd6-363d2b4d5082">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:tableHeader height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="200" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="06775131-b99e-4cb4-a4f0-fd92a27388c1">
+								<reportElement mode="Opaque" x="0" y="0" width="200" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="f44153ea-5fd3-47d9-85ca-1f2cc45caec7">
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								</reportElement>
@@ -772,7 +754,7 @@
 						</jr:tableHeader>
 						<jr:detailCell height="30">
 							<textField>
-								<reportElement x="0" y="0" width="200" height="30" uuid="e4998d84-624b-4e6d-b15c-7d14dda0a82a"/>
+								<reportElement x="0" y="0" width="200" height="30" uuid="8a64695d-62a2-422e-964e-01a395f92ead"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -786,8 +768,51 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
+					<jr:column width="200" uuid="17b2478c-f0e3-4148-b3b7-025edf6acd0c">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<jr:tableHeader height="30" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<box>
+								<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement mode="Opaque" x="0" y="0" width="200" height="30" forecolor="#FFFFFF" backcolor="#012A4D" uuid="556ea1e2-e113-432e-a3b5-cfea00fcdcf9">
+									<property name="com.jaspersoft.studio.unit.width" value="px"/>
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</reportElement>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Titillium Web" size="12" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Porcentaje de errores]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:detailCell height="30">
+							<textField>
+								<reportElement x="0" y="0" width="200" height="30" uuid="fca873be-afd4-454e-8895-90b7649bcc20"/>
+								<box>
+									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textElement textAlignment="Center">
+									<font fontName="Titillium Web" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{label2}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
 				</jr:table>
 			</componentElement>
 		</band>
-	</summary>
+	</detail>
 </jasperReport>

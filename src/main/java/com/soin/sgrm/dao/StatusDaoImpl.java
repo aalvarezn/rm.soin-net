@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.utils.Constant;
 
 @Repository
 public class StatusDaoImpl implements StatusDao {
@@ -52,6 +53,14 @@ public class StatusDaoImpl implements StatusDao {
 	public void delete(Integer id) {
 		Status status = findById(id);
 		sessionFactory.getCurrentSession().delete(status);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Status> listWithOutAnul() {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Status.class);
+		crit.add(Restrictions.not(Restrictions.in("name", Constant.FILTRED)));
+		return crit.list();
 	}
 
 }

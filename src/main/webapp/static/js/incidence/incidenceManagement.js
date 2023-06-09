@@ -52,6 +52,9 @@ $(document).ready(function() {
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 	initImpactFormValidation
 	activeItemMenu("managerRFCItem");
+	$formChangeStatus.find('#statusId').change(function() {
+		$formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
+	});
 	// dropDownChange();
 	// $("#addRFCSection").hide();
 	// $fmRFC.find("#sId").selectpicker('val',"");

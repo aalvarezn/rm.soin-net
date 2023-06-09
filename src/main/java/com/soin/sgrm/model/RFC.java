@@ -162,6 +162,9 @@ public class RFC implements Serializable {
 
 	@Transient
 	private String releasesList;
+	
+	@Transient
+	private Integer isRequest;
 
 	public Long getId() {
 		return id;
@@ -441,6 +444,14 @@ public class RFC implements Serializable {
 
 	public void setNode(NodeRFC node) {
 		this.node = node;
+	}
+
+	public Integer getIsRequest() {
+		return isRequest;
+	}
+
+	public void setRequest(Integer isRequest) {
+		this.isRequest = isRequest;
 	}
 	
 	

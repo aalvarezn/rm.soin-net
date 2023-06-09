@@ -249,6 +249,7 @@ function sendPartialRFC() {
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
 			senders:$rfcEditForm.find('#senders').val(),
 			message:$rfcEditForm.find('#messagePer').val(),
+			isRequest:0
 		}),
 		success : function(response) {
 			// responseAjaxSendPartialRelease(response);
@@ -1048,6 +1049,7 @@ function sendRFC() {
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
 			senders:$rfcEditForm.find('#senders').val(),
 			message:$rfcEditForm.find('#messagePer').val(),
+			isRequest:0
 		}),
 		success : function(response) {
 			responseAjaxSendRFC(response);
@@ -1064,8 +1066,10 @@ function sendRFC() {
 }
 
 function requestRFC() {
-	
+	console.log("aqui");
 	changeSaveButton(true);
+	var trying=true;
+	console.log(trying);
 	var valueSchema="";
 	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
 		$('#bd').val('');
@@ -1102,6 +1106,7 @@ function requestRFC() {
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
 			senders:$rfcEditForm.find('#senders').val(),
 			message:$rfcEditForm.find('#messagePer').val(),
+			isRequest:1
 		}),
 		success : function(response) {
 			responseAjaxRequestRFC(response);

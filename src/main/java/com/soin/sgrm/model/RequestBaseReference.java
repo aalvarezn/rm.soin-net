@@ -22,6 +22,24 @@ public class RequestBaseReference implements Serializable,Cloneable {
 	
 	@Column(name = "NUM_SOLICITUD")
 	private String numRequest;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getNumRequest() {
+		return numRequest;
+	}
+
+	public void setNumRequest(String numRequest) {
+		this.numRequest = numRequest;
+	}
+	
+	
 	
 	
 }

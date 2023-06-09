@@ -12,6 +12,8 @@ public interface BaseDao<PK, T> {
 	T getByKey(String key, String value);
 	
 	T getById(Long id);
+	
+	T getById(Integer id);
 
 	void save(T model);
 

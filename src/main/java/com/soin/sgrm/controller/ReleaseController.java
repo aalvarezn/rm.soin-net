@@ -322,6 +322,7 @@ public class ReleaseController extends BaseController {
 			}else {
 				model.addAttribute("cc","");
 			}
+
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
