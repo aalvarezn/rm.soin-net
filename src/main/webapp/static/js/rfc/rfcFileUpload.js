@@ -104,10 +104,27 @@ function uploads() {
 }
 
 function upload() {
+	var verification=null;
+	var num=0;
 	$('#addFileModal table input[type=file]').each(function(index, value) {
 		var idRow = $(this).closest('tr').prop('id');
 		var f = $(this)[0].files;
-		uploadInputFile(f, idRow);
+		if(verification===null){
+			verification=f.length;
+			uploadInputFile(f, idRow,num);
+			num++;
+			if(verification===num){
+				num=0;
+				verification=null;
+			}
+		}else{
+			uploadInputFile(f, idRow,num);
+			num++;
+			if(verification===num){
+				num=0;
+				verification=null;
+			}
+		}
 	});
 
 	if ($('#addFileModal table input[type=file]').length == 0) {
@@ -117,11 +134,16 @@ function upload() {
 
 }
 
-function uploadInputFile(f, idRow) {
+function uploadInputFile(f, idRow,index) {
 	var cont = getCont()
 	var formData = new FormData();
-	formData
-			.append('file', $('#addFileModal table #file_' + idRow)[0].files[0]);
+	if($('#addFileModal table #file_' + idRow)[0].files[index]===undefined){
+		formData
+		.append('file', $('#addFileModal table #file_' + idRow)[0].files[0]);
+	}else{
+		formData
+		.append('file', $('#addFileModal table #file_' + idRow)[0].files[index]);
+	} 
 	// Ajax call for file uploaling
 	var ajaxReq = $.ajax({
 		url : cont + "file/" + "singleUploadRFC-" + $('#rfcId').val(),
