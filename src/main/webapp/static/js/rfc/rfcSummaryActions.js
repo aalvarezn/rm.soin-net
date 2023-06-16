@@ -45,6 +45,14 @@ $(function() {
 	 $('.tagInitMail').tagsInput({
 		 placeholder: 'Ingrese los correos'
 	 });
+		// Datetimepicker plugin
+		$('#dateChange').datetimepicker({
+			locale: 'es',
+			format: 'DD/MM/YYYY hh:mm a',
+			maxDate : new Date()
+		});
+		
+
 });
 
 

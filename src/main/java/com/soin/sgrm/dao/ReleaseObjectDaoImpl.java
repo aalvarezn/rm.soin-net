@@ -105,7 +105,7 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 						"inner join sistemas_sistema s on s.id = r.sistema_id " + 
 						"inner join releases_release_objetos rob on rob.release_id = r.id " + 
 						"inner join sistemas_objeto obj on rob.objeto_id = obj.id " + 
-						"where r.id <> :id and  e.nombre <> 'Anulado' and obj.nombre = :nombre and obj.item_de_configuracion_id = :tipoItem " + 
+						"where r.id <> :id and  e.nombre <> 'Anulado' and  e.nombre <> 'Borrador' and obj.nombre = :nombre and obj.item_de_configuracion_id = :tipoItem " + 
 						"and obj.tipo_objeto_id = :tipoObjeto and r.fecha_creacion < :fechaRelease " + 
 				"order by r.fecha_creacion desc ) where rownum <= 1");
 
@@ -170,7 +170,7 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 					+ "," + objects.get(i).getTypeObject() + "'" + (((i + 1) == objects.size()) ? "" : ",");
 		}
 
-		String sql = String.format(
+ 		String sql = String.format(
 				"select DISTINCT(d.id) , r1.numero_release from releases_release r1 " + "inner join "
 						+ "(select nombre, max(id) id from  ( "
 						+ "select DISTINCT(r.id), r.numero_release, o.nombre, o.fecha_revision from releases_release r "
@@ -181,7 +181,7 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 						+ "inner join releases_estado e " 
 						+ "	on e.id = r.estado_id  where r.id != :id and "
 						+ "o.nombre || ',' || o.item_de_configuracion_id || ',' || o.tipo_objeto_id in ( %s ) "
-						+ "and r.sistema_id = :system and r.fecha_creacion < :fecha and e.nombre <> 'Anulado') " 
+						+ "and r.sistema_id = :system and r.fecha_creacion < :fecha and e.nombre <> 'Anulado' and e.nombre <> 'Borrador'  ) " 
 						+ "group by nombre) d " 
 						+ "on r1.id = d.id ", concatObjet);
 
@@ -215,7 +215,7 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 						+ "inner join sistemas_objeto o " + "    on o.id = ro.objeto_id "
 						+ "inner join releases_estado e " + "    on e.id = r.estado_id " + "where r.id != :id and "
 						+ "o.nombre || ',' || o.item_de_configuracion_id || ',' || o.tipo_objeto_id in ( %s ) "
-						+ "and r.sistema_id = :system and r.fecha_creacion < :fecha and e.nombre <> 'Anulado' ",
+						+ "and r.sistema_id = :system and r.fecha_creacion < :fecha and e.nombre <> 'Anulado' and e.nombre <> 'Borrador' ",
 						concatObjet);
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql).addScalar("ID", new IntegerType())

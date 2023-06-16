@@ -2,6 +2,7 @@ package com.soin.sgrm.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -804,7 +805,7 @@ public class RFCController extends BaseController {
 
 		if (rfc.getRequestDateBegin().trim().equals(""))
 			errors.add(new MyError("dateBegin", "Valor requerido."));
-
+			
 		if (rfc.getRequestDateBegin().trim().equals(""))
 			errors.add(new MyError("dateFinish", "Valor requerido."));
 
@@ -839,6 +840,28 @@ public class RFCController extends BaseController {
 		if (rfc.getMessage() != null) {
 			if (rfc.getMessage().length() > 256) {
 				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
+			}
+		}
+		
+		if(rfc.getIsRequest()==1) {
+			if(!rfc.getRequestDateBegin().trim().equals("")) {
+				Timestamp requestDate=CommonUtils.getSystemTimestamp();
+				Timestamp requestDateBegin = CommonUtils.convertStringToTimestamp(rfc.getRequestDateBegin(), "dd/MM/yyyy hh:mm a");
+				int comparation = requestDate.compareTo(requestDateBegin);
+				if(comparation>0) {
+					errors.add(new MyError("dateBegin", "La fecha inicio tiene que ser mayor a la fecha que se realiza la solicitud."));
+				}
+				
+			}
+			
+			if(!rfc.getRequestDateFinish().trim().equals("")) {
+				Timestamp requestDate=CommonUtils.getSystemTimestamp();
+				Timestamp requestDateFinish = CommonUtils.convertStringToTimestamp(rfc.getRequestDateFinish(), "dd/MM/yyyy hh:mm a");
+				int comparation = requestDate.compareTo(requestDateFinish);
+				if(comparation>0) {
+					errors.add(new MyError("dateFinish", "La fecha fin tiene que ser mayor a la fecha que se realiza la solicitud."));
+				}
+				
 			}
 		}
 

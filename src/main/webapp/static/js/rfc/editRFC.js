@@ -47,7 +47,7 @@ $(function() {
 	$('#dateBegin').datetimepicker({
 		locale: 'es',
 		format: 'DD/MM/YYYY hh:mm a',
-		minDate : new Date(),
+		minDate : moment().add(10, 'minutes'),
 		sideBySide: true
 	});
 	$('#dateFinish').datetimepicker({
@@ -55,8 +55,13 @@ $(function() {
 		format: 'DD/MM/YYYY hh:mm a',
 		sideBySide: true
 	});
+	
+	
+	var currentDate = moment();
+	var initialDate = currentDate.add(1, 'hour').add(10, 'minutes');
+	$('#dateFinish').data("DateTimePicker").date(initialDate);
 	   $("#dateBegin").on("dp.change", function (e) {
-		   
+		 
            $('#dateFinish').data("DateTimePicker").minDate(e.date.add(60,'m'));
        });
 	   
@@ -249,6 +254,7 @@ function sendPartialRFC() {
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
 			senders:$rfcEditForm.find('#senders').val(),
 			message:$rfcEditForm.find('#messagePer').val(),
+			isRequest:0
 		}),
 		success : function(response) {
 			// responseAjaxSendPartialRelease(response);
@@ -1048,6 +1054,7 @@ function sendRFC() {
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
 			senders:$rfcEditForm.find('#senders').val(),
 			message:$rfcEditForm.find('#messagePer').val(),
+			isRequest:0
 		}),
 		success : function(response) {
 			responseAjaxSendRFC(response);
@@ -1064,8 +1071,10 @@ function sendRFC() {
 }
 
 function requestRFC() {
-	
+	console.log("aqui");
 	changeSaveButton(true);
+	var trying=true;
+	console.log(trying);
 	var valueSchema="";
 	if(boolean($rfcEditForm.find('#requiredBD').val())==false){
 		$('#bd').val('');
@@ -1102,6 +1111,7 @@ function requestRFC() {
 			requestEsp:$rfcEditForm.find('#requestEspRFC').val(),
 			senders:$rfcEditForm.find('#senders').val(),
 			message:$rfcEditForm.find('#messagePer').val(),
+			isRequest:1
 		}),
 		success : function(response) {
 			responseAjaxRequestRFC(response);

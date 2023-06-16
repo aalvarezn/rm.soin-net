@@ -33,12 +33,14 @@ import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestBaseReference;
 import com.soin.sgrm.model.RequestError;
 import com.soin.sgrm.model.RequestRM_P1_R1;
 import com.soin.sgrm.model.RequestRM_P1_R2;
 import com.soin.sgrm.model.RequestRM_P1_R3;
 import com.soin.sgrm.model.RequestRM_P1_R4;
 import com.soin.sgrm.model.RequestRM_P1_R5;
+import com.soin.sgrm.model.Request_Estimate;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.StatusRequest;
@@ -55,6 +57,7 @@ import com.soin.sgrm.service.RequestBaseR1Service;
 import com.soin.sgrm.service.RequestBaseService;
 import com.soin.sgrm.service.RequestErrorService;
 import com.soin.sgrm.service.RequestRM_P1_R4Service;
+import com.soin.sgrm.service.Request_EstimateService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.service.SystemService;
@@ -106,6 +109,9 @@ public class RequestBaseManagementController extends BaseController {
 
 	@Autowired
 	RequestErrorService requestErrorService;
+	
+	@Autowired
+	Request_EstimateService requestEstimateService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -173,6 +179,7 @@ public class RequestBaseManagementController extends BaseController {
 		return requests;
 	}
 
+	@SuppressWarnings("null")
 	@RequestMapping(value = "/statusRequest", method = RequestMethod.GET)
 	public @ResponseBody JsonResponse draftRFC(HttpServletRequest request, Model model,
 			@RequestParam(value = "idRequest", required = true) Long idRequest,
@@ -182,6 +189,7 @@ public class RequestBaseManagementController extends BaseController {
 			@RequestParam(value = "idError", required = false) Long idError,
 			@RequestParam(value = "sendEmail", required = true) boolean sendEmail,
 			@RequestParam(value = "senders", required = false) String senders,
+			@RequestParam(value = "requestDateEstimate", required = false) String requestDateEstimate,
 			@RequestParam(value = "note", required = false) String note) {
 		JsonResponse res = new JsonResponse();
 		try {
@@ -253,6 +261,30 @@ public class RequestBaseManagementController extends BaseController {
 				requestBaseNew.setOperator(getUserLogin().getFullName());
 				requestBaseNew.setMotive(motive);
 				requestBaseNew.setRequestDate(dateFormat2);
+			}
+			
+			if(status != null && status.getName().equals("En proceso")) {
+				Request_Estimate requestEstimate=requestEstimateService.findByIdRequest(idRequest);
+				Timestamp dateFormatRequestDate = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+				Timestamp dateFormatRequestDateEstimate = CommonUtils.convertStringToTimestamp(requestDateEstimate, "dd/MM/yyyy hh:mm a");
+				if(requestEstimate!=null) {
+					
+				
+					requestEstimate.setRequestDate(dateFormatRequestDate);
+					requestEstimate.setRequestDateEstimate(dateFormatRequestDateEstimate);
+					requestEstimate.setRequestDateFinal(null);
+					requestEstimateService.update(requestEstimate);
+				}else {
+					RequestBaseReference requestBaseReference=new RequestBaseReference();
+				    requestEstimate=new Request_Estimate();
+					requestBaseReference.setId(idRequest);
+					requestEstimate.setRequestBase(requestBaseReference);
+					requestEstimate.setRequestDate(dateFormatRequestDate);
+					requestEstimate.setRequestDateEstimate(dateFormatRequestDateEstimate);
+					requestEstimate.setRequestDateFinal(null);
+					requestEstimateService.save(requestEstimate);
+				}
+				
 			}
 
 			requestBaseService.update(requestBaseNew);
