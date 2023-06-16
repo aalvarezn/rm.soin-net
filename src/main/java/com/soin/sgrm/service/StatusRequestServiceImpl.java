@@ -51,4 +51,10 @@ public class StatusRequestServiceImpl implements StatusRequestService{
 		dao.update(model);
 	}
 
+	@Override
+	public List<StatusRequest> findWithFilter() {
+		
+		return dao.findWithFilter();
+	}
+
 }
