@@ -50,7 +50,7 @@ function ajaxSaveAuthority(response) {
 	switch (response.status) {
 	case 'success':
 		location.reload();
-		swal("Correcto!", "Role creado correctamente.", "success", 2000)
+		swal("Correcto!", "Rol creado correctamente.", "success", 2000)
 		break;
 	case 'fail':
 		unblockUI();
@@ -99,7 +99,7 @@ function updateAuthority() {
 		type : "POST",
 		url : getCont() + "admin/authority/" + "updateAuthority",
 		data : {
-			// Informacion role
+			// Informacion rol
 			id : $authorityModalForm.find('#authorityId').val(),
 			name : $authorityModalForm.find('#name').val(),
 			description : $authorityModalForm.find('#description').val()
@@ -121,7 +121,7 @@ function ajaxUpdateAuthority(response) {
 	switch (response.status) {
 	case 'success':
 		location.reload();
-		swal("Correcto!", "Role modificado correctamente.", "success", 2000)
+		swal("Correcto!", "Rol modificado correctamente.", "success", 2000)
 		break;
 	case 'fail':
 		unblockUI();
@@ -174,7 +174,7 @@ function ajaxDeleteAuthority(response){
 	switch (response.status) {
 	case 'success':
 		location.reload();
-		swal("Correcto!", "El role ha sido eliminado exitosamente.",
+		swal("Correcto!", "El rol ha sido eliminado exitosamente.",
 				"success", 2000)
 		break;
 	case 'fail':

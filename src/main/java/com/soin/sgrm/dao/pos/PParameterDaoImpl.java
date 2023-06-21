@@ -17,6 +17,7 @@ public class PParameterDaoImpl implements PParameterDao {
 	@Autowired
 	@Qualifier("sessionFactoryPos")
 	private SessionFactory sessionFactory;
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<PParameter> listAll() {
