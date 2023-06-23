@@ -9,19 +9,25 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
-@SuppressWarnings("serial")
+import org.hibernate.annotations.GenericGenerator;
+
+
 @Entity
 @Table(name = "SEGURIDAD_CUSTOMUSER")
 public class PUser implements Serializable {
-	
+	private static final long serialVersionUID = 1L;
+
 	@Id
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Integer id;
 	
 	@Column(name = "LAST_LOGIN")
 	private Timestamp lastLogin;
@@ -46,10 +52,10 @@ public class PUser implements Serializable {
 	private String email;
 	
 	@Column(name = "IS_STAFF")
-	private int isStaff;
+	private Boolean isStaff;
 	
 	@Column(name = "IS_ACTIVE")
-	private int isActive;
+	private Boolean isActive;
 	
 	@Column(name = "DATE_JOINED")
 	private Timestamp dateJoined;
@@ -113,19 +119,19 @@ public class PUser implements Serializable {
 		this.email = email;
 	}
 
-	public int getIsStaff() {
+	public boolean getIsStaff() {
 		return isStaff;
 	}
 
-	public void setIsStaff(int isStaff) {
+	public void setIsStaff(boolean isStaff) {
 		this.isStaff = isStaff;
 	}
 
-	public int getIsActive() {
+	public boolean getIsActive() {
 		return isActive;
 	}
 
-	public void setIsActive(int isActive) {
+	public void setIsActive(boolean isActive) {
 		this.isActive = isActive;
 	}
 

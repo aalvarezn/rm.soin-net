@@ -42,7 +42,7 @@ public class PAttentionGroup implements Serializable{
 	private String code;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_LEAD")
+	@JoinColumn(name = "\"ID_LEAD\"")
 	private PUser lead;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })

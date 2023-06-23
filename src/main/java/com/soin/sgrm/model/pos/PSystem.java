@@ -24,6 +24,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -31,14 +32,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.utils.Constant;
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "SISTEMAS_SISTEMA")
 public class PSystem implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SISTEMAS_SISTEMA_SQ")
-	@SequenceGenerator(name = "SISTEMAS_SISTEMA_SQ", sequenceName = "SISTEMAS_SISTEMA_SQ", allocationSize = 1)
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private int id;
 
@@ -74,48 +76,48 @@ public class PSystem implements Serializable {
 	private Boolean installationInstructions;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "LIDER_TECNICO_ID", nullable = true)
+	@JoinColumn(name = "\"LIDER_TECNICO_ID\"", nullable = true)
 	private PUser leader;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@Cascade({ CascadeType.EVICT })
-	@JoinColumn(name = "PROYECTO_ID", nullable = true)
+	@JoinColumn(name = "\"PROYECTO_ID\"", nullable = true)
 	private PProject proyect;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "SISTEMAS_SISTEMA_EQUIPO_TR2580", joinColumns = {
-			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
+			@JoinColumn(name = "\"SISTEMA_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"CUSTOMUSER_ID\"") })
 	private Set<PUser> userTeam = new HashSet<PUser>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "SISTEMAS_SISTEMA_GESTORES", joinColumns = {
-			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
+			@JoinColumn(name = "\"SISTEMA_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"CUSTOMUSER_ID\"") })
 	private Set<PUser> managers = new HashSet<PUser>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "SISTEMA_GESTORINCIDENCIA", joinColumns = {
-			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
+			@JoinColumn(name = "\"SISTEMA_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"CUSTOMUSER_ID\"") })
 	private Set<PUser> managersIncidence = new HashSet<PUser>();
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "SISTEMA_USUARIOINCIDENCIA", joinColumns = {
-			@JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = { @JoinColumn(name = "CUSTOMUSER_ID") })
+			@JoinColumn(name = "\"SISTEMA_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"CUSTOMUSER_ID\"") })
 	private Set<PUser> usersIncidence = new HashSet<PUser>();
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
 	@JoinTable(name = "SISTEMA_GRUPOATENCION", joinColumns = {
-			@JoinColumn(name = "ID_SISTEMA") }, inverseJoinColumns = { @JoinColumn(name = "ID_GRUPO") })
+			@JoinColumn(name = "\"ID_SISTEMA\"") }, inverseJoinColumns = { @JoinColumn(name = "\"ID_GRUPO\"") })
 	private Set<PAttentionGroup> attentionGroup = new HashSet<PAttentionGroup>();
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "SISTEMA_CORREO", joinColumns = { @JoinColumn(name = "SISTEMA_ID") }, inverseJoinColumns = {
-			@JoinColumn(name = "CORREO_ID") })
+	@JoinTable(name = "SISTEMA_CORREO", joinColumns = { @JoinColumn(name = "\"SISTEMA_ID\"") }, inverseJoinColumns = {
+			@JoinColumn(name = "\"CORREO_ID\"") })
 	private Set<PEmailTemplate> emailTemplate = new HashSet<PEmailTemplate>();
 
 	@Transient

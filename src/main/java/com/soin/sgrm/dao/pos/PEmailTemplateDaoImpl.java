@@ -23,7 +23,7 @@ public class PEmailTemplateDaoImpl extends AbstractDao<Long, PEmailTemplate> imp
 
 	@Autowired
 	@Qualifier("sessionFactoryPos")
-	private SessionFactory sessionFactory;;
+	private SessionFactory sessionFactory;
 
 	@SuppressWarnings("unchecked")
 	@Override
