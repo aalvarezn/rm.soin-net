@@ -23,7 +23,7 @@ public class PSystemDaoImpl implements PSystemDao {
 
 	@Autowired
 	@Qualifier("sessionFactoryPos")
-	private SessionFactory sessionFactory;;
+	private SessionFactory sessionFactory;
 
 	@SuppressWarnings("unchecked")
 	@Override
