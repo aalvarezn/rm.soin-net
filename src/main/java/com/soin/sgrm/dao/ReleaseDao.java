@@ -12,6 +12,7 @@ import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTrackingShow;
@@ -100,6 +101,8 @@ public interface ReleaseDao {
 	Release_RFCFast findRelease_RFCByIdFast(int id);
 
 	ReleaseTrackingShow findReleaseTracking(int id);
+
+	ReleaseSummaryFile findByIdSummaryFile(Integer id);
 	
 
 }
