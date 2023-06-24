@@ -205,29 +205,29 @@ public class SystemConfigurationController extends BaseController {
 					systemConfigurationService.save(systemConfig);
 				}
 			} else if (profile.equals("postgres")) {
-				SystemConfiguration systemConfig = systemConfigurationService.findBySystemId(sys.getSystemId());
+				PSystemConfiguration psystemConfig = psystemConfigurationService.findBySystemId(sys.getSystemId());
 
-				if (systemConfig != null) {
+				if (psystemConfig != null) {
 					res.setStatus("fail");
 					res.addError("systemId", "Ya existe una configuración para el sistema");
 				} else {
-					systemConfig = new SystemConfiguration();
-					systemConfig.setObservations(sys.getObservations());
-					systemConfig.setSolutionInfo(sys.getSolutionInfo());
-					systemConfig.setDefinitionEnvironment(sys.getDefinitionEnvironment());
-					systemConfig.setInstalationData(sys.getInstalationData());
-					systemConfig.setDataBaseInstructions(sys.getDataBaseInstructions());
-					systemConfig.setDownEnvironment(sys.getDownEnvironment());
-					systemConfig.setEnvironmentObservations(sys.getEnvironmentObservations());
-					systemConfig.setSuggestedTests(sys.getSuggestedTests());
-					systemConfig.setConfigurationItems(sys.getConfigurationItems());
-					systemConfig.setDependencies(sys.getDependencies());
-					systemConfig.setAttachmentFiles(sys.getAttachmentFiles());
-					systemConfig.setApplicationVersion(sys.isApplicationVersion());
-					SystemInfo system = new SystemInfo();
-					system.setId(sys.getSystemId());
-					systemConfig.setSystem(system);
-					systemConfigurationService.save(systemConfig);
+					psystemConfig = new PSystemConfiguration();
+					psystemConfig.setObservations(sys.getObservations());
+					psystemConfig.setSolutionInfo(sys.getSolutionInfo());
+					psystemConfig.setDefinitionEnvironment(sys.getDefinitionEnvironment());
+					psystemConfig.setInstalationData(sys.getInstalationData());
+					psystemConfig.setDataBaseInstructions(sys.getDataBaseInstructions());
+					psystemConfig.setDownEnvironment(sys.getDownEnvironment());
+					psystemConfig.setEnvironmentObservations(sys.getEnvironmentObservations());
+					psystemConfig.setSuggestedTests(sys.getSuggestedTests());
+					psystemConfig.setConfigurationItems(sys.getConfigurationItems());
+					psystemConfig.setDependencies(sys.getDependencies());
+					psystemConfig.setAttachmentFiles(sys.getAttachmentFiles());
+					psystemConfig.setApplicationVersion(sys.isApplicationVersion());
+					PSystemInfo psystem = new PSystemInfo();
+					psystem.setId(sys.getSystemId());
+					psystemConfig.setSystem(psystem);
+					psystemConfigurationService.save(psystemConfig);
 				}
 			}
 

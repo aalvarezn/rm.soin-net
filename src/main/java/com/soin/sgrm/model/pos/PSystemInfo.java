@@ -31,7 +31,7 @@ public class PSystemInfo implements Serializable {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Integer id;
 
 	@Column(name = "CODIGO")
 	private String code;
@@ -40,10 +40,10 @@ public class PSystemInfo implements Serializable {
 	private String name;
 
 	@Column(name = "NOMECLATURA_VIEJA")
-	private int nomenclature;
+	private Boolean nomenclature;
 
 	@Column(name = "PROYECTO_ID")
-	private int proyectId;
+	private Integer proyectId;
 
 	@Column(name = "IMPORTAR_OBJETOS_BASE_DATOS")
 	private Boolean importObjects;
@@ -80,11 +80,11 @@ public class PSystemInfo implements Serializable {
 			@JoinColumn(name = "\"CORREO_ID\"") })
 	private Set<PEmailTemplate> emailTemplate = new HashSet<PEmailTemplate>();
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -104,11 +104,11 @@ public class PSystemInfo implements Serializable {
 		this.name = name;
 	}
 
-	public int getNomenclature() {
+	public Boolean getNomenclature() {
 		return nomenclature;
 	}
 
-	public void setNomenclature(int nomenclature) {
+	public void setNomenclature(Boolean nomenclature) {
 		this.nomenclature = nomenclature;
 	}
 

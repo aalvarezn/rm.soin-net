@@ -30,7 +30,7 @@ public class PSystemConfiguration implements Serializable {
 	private Integer id;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SISTEMA_ID", nullable = true)
+	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
 	private PSystemInfo system;
 
 	@Column(name = "INFORMACION_GENERAL")

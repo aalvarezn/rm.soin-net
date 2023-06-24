@@ -28,7 +28,7 @@ public class PEmailTemplate implements Serializable {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Integer id;
 
 	@Column(name = "NOMBRE")
 	@NotEmpty(message = Constant.EMPTY)
