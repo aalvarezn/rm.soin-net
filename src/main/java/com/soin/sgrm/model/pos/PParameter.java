@@ -26,7 +26,7 @@ public class PParameter implements Serializable {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Integer id;
 
 	@Column(name = "CODIGO")
 	private Integer code;

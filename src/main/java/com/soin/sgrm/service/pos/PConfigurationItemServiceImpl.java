@@ -1,4 +1,4 @@
-package com.soin.sgrm.model.pos;
+package com.soin.sgrm.service.pos;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.ConfigurationItemDao;
 import com.soin.sgrm.dao.pos.PConfigurationItemDao;
 import com.soin.sgrm.model.ConfigurationItem;
+import com.soin.sgrm.model.pos.PConfigurationItem;
 
 @Transactional("transactionManagerPos")
 @Service("PConfigurationItemService")

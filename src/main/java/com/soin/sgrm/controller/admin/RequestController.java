@@ -16,6 +16,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -41,10 +42,14 @@ import com.soin.sgrm.model.GDoc;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
+import com.soin.sgrm.model.pos.PProject;
 import com.soin.sgrm.service.GDocService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.TypeRequestService;
+import com.soin.sgrm.service.pos.PProjectService;
+import com.soin.sgrm.service.pos.PRequestService;
+import com.soin.sgrm.service.pos.PTypeRequestService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -65,23 +70,60 @@ public class RequestController extends BaseController {
 
 	@Autowired
 	TypeRequestService typeRequestService;
+	
+	@Autowired
+	PRequestService prequestService;
+
+	@Autowired
+	PProjectService pprojectService;
+
+	@Autowired
+	PTypeRequestService ptypeRequestService;
 
 	@Autowired
 	GDocService gDocService;
-
+	
+	private final Environment environment;
 	private static final String APPLICATION_NAME = "sgrm";
 	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
 	private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
 
+	
+	@Autowired
+	public RequestController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
+	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest req, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("requests", requestService.list());
-		model.addAttribute("request", new Request());
-		model.addAttribute("projects", projectService.listAll());
-		model.addAttribute("project", new Project());
-		model.addAttribute("typeRequests", typeRequestService.list());
-		model.addAttribute("typeRequest", new TypeRequest());
+		
+		String profile = profileActive();
+		if (profile.equals("oracle")) {
+			model.addAttribute("requests", requestService.list());
+			model.addAttribute("request", new Request());
+			model.addAttribute("projects", projectService.listAll());
+			model.addAttribute("project", new Project());
+			model.addAttribute("typeRequests", typeRequestService.list());
+			model.addAttribute("typeRequest", new TypeRequest());
+		} else if (profile.equals("postgres")) {
+			model.addAttribute("requests", requestService.list());
+			model.addAttribute("request", new Request());
+			model.addAttribute("projects", projectService.listAll());
+			model.addAttribute("project", new Project());
+			model.addAttribute("typeRequests", typeRequestService.list());
+			model.addAttribute("typeRequest", new TypeRequest());
+		}
+		
+		
 		return "/admin/request/request";
 	}
 

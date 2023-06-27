@@ -26,7 +26,7 @@ import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.model.pos.PTypeRequest;
 
 @Repository
-public class RequestDaoImpl implements RequestDao {
+public class PRequestDaoImpl implements PRequestDao {
 
 	@Autowired
 	@Qualifier("sessionFactoryPos")

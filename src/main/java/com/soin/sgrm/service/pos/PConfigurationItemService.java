@@ -1,8 +1,9 @@
-package com.soin.sgrm.model.pos;
+package com.soin.sgrm.service.pos;
 
 import java.util.List;
 
 import com.soin.sgrm.model.ConfigurationItem;
+import com.soin.sgrm.model.pos.PConfigurationItem;
 
 public interface PConfigurationItemService {
 
