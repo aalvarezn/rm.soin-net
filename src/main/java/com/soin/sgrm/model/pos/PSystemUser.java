@@ -29,7 +29,7 @@ public class PSystemUser implements Serializable {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Integer id;
 
 	@Column(name = "CODIGO")
 	private String code;
@@ -38,28 +38,28 @@ public class PSystemUser implements Serializable {
 	private String name;
 
 	@Column(name = "NOMECLATURA_VIEJA")
-	private int nomenclature;
+	private Boolean nomenclature;
 
 	@Column(name = "INSTRUCCIONES_INSTALACION_665F")
-	private int installation_instructions_665f;
+	private Boolean installation_instructions_665f;
 
 	@Column(name = "OBSERVACIONES_ADICIONALES_1441")
-	private String additional_remarks_1441;
+	private Boolean additional_remarks_1441;
 
-	@Column(name = "\"LIDER_TECNICO_ID\"")
-	private int tec_leader_id;
+	@Column(name = "LIDER_TECNICO_ID")
+	private Integer tec_leader_id;
 
 	@Column(name = "ES_BO")
-	private int is_bo;
+	private Boolean is_bo;
 
 	@Column(name = "IMPORTAR_OBJETOS_BASE_DATOS")
-	private int import_objects_db;
+	private Boolean import_objects_db;
 
 	@Column(name = "REQUIERE_COMANDOS_PERSONALEB6A")
-	private int required_commands;
+	private Boolean required_commands;
 
 	@Column(name = "ES_AIA")
-	private String is_aia;
+	private Boolean is_aia;
 
 	@Column(name = "PROYECTO_ID")
 	private Integer proyectId;
@@ -76,11 +76,11 @@ public class PSystemUser implements Serializable {
 			@JoinColumn(name = "\"SISTEMA_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"CUSTOMUSER_ID\"") })
 	private Set<PUser> managers = new HashSet<PUser>();
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -100,68 +100,65 @@ public class PSystemUser implements Serializable {
 		this.name = name;
 	}
 
-	public int getNomenclature() {
+
+	public Boolean getNomenclature() {
 		return nomenclature;
 	}
 
-	public void setNomenclature(int nomenclature) {
+	public void setNomenclature(Boolean nomenclature) {
 		this.nomenclature = nomenclature;
 	}
 
-	public int getInstallation_instructions_665f() {
+	public Boolean getInstallation_instructions_665f() {
 		return installation_instructions_665f;
 	}
 
-	public void setInstallation_instructions_665f(int installation_instructions_665f) {
+	public void setInstallation_instructions_665f(Boolean installation_instructions_665f) {
 		this.installation_instructions_665f = installation_instructions_665f;
 	}
 
-	public String getAdditional_remarks_1441() {
+	public Boolean getAdditional_remarks_1441() {
 		return additional_remarks_1441;
 	}
 
-	public void setAdditional_remarks_1441(String additional_remarks_1441) {
+	public void setAdditional_remarks_1441(Boolean additional_remarks_1441) {
 		this.additional_remarks_1441 = additional_remarks_1441;
 	}
 
-	public int getTec_leader_id() {
-		return tec_leader_id;
-	}
-
-	public void setTec_leader_id(int tec_leader_id) {
-		this.tec_leader_id = tec_leader_id;
-	}
-
-	public int getIs_bo() {
+	public Boolean getIs_bo() {
 		return is_bo;
 	}
 
-	public void setIs_bo(int is_bo) {
+	public void setIs_bo(Boolean is_bo) {
 		this.is_bo = is_bo;
 	}
 
-	public int getImport_objects_db() {
+	public Boolean getImport_objects_db() {
 		return import_objects_db;
 	}
 
-	public void setImport_objects_db(int import_objects_db) {
+	public void setImport_objects_db(Boolean import_objects_db) {
 		this.import_objects_db = import_objects_db;
 	}
 
-	public int getRequired_commands() {
+	public Boolean getRequired_commands() {
 		return required_commands;
 	}
 
-	public void setRequired_commands(int required_commands) {
+	public void setRequired_commands(Boolean required_commands) {
 		this.required_commands = required_commands;
 	}
 
-	public String getIs_aia() {
+	public Boolean getIs_aia() {
 		return is_aia;
 	}
 
-	public void setIs_aia(String is_aia) {
+	public void setIs_aia(Boolean is_aia) {
 		this.is_aia = is_aia;
+	}
+
+	public void setTec_leader_id(Integer tec_leader_id) {
+		this.tec_leader_id = tec_leader_id;
 	}
 
 	public Integer getProyectId() {

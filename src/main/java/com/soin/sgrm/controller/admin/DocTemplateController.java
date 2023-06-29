@@ -216,7 +216,7 @@ public class DocTemplateController extends BaseController {
 			if (profile.equals("oracle")) {
 				docTemplateService.delete(id);
 			} else if (profile.equals("postgres")) {
-				docTemplateService.delete(id);
+				pdocTemplateService.delete(id);
 			}
 			
 			res.setStatus("success");

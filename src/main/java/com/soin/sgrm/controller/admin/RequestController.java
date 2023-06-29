@@ -42,11 +42,15 @@ import com.soin.sgrm.model.GDoc;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
+import com.soin.sgrm.model.pos.PGDoc;
 import com.soin.sgrm.model.pos.PProject;
+import com.soin.sgrm.model.pos.PRequest;
+import com.soin.sgrm.model.pos.PTypeRequest;
 import com.soin.sgrm.service.GDocService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.TypeRequestService;
+import com.soin.sgrm.service.pos.PGDocService;
 import com.soin.sgrm.service.pos.PProjectService;
 import com.soin.sgrm.service.pos.PRequestService;
 import com.soin.sgrm.service.pos.PTypeRequestService;
@@ -83,6 +87,8 @@ public class RequestController extends BaseController {
 	@Autowired
 	GDocService gDocService;
 	
+	@Autowired
+	PGDocService pgDocService;
 	private final Environment environment;
 	private static final String APPLICATION_NAME = "sgrm";
 	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -115,12 +121,12 @@ public class RequestController extends BaseController {
 			model.addAttribute("typeRequests", typeRequestService.list());
 			model.addAttribute("typeRequest", new TypeRequest());
 		} else if (profile.equals("postgres")) {
-			model.addAttribute("requests", requestService.list());
-			model.addAttribute("request", new Request());
-			model.addAttribute("projects", projectService.listAll());
-			model.addAttribute("project", new Project());
-			model.addAttribute("typeRequests", typeRequestService.list());
-			model.addAttribute("typeRequest", new TypeRequest());
+			model.addAttribute("requests", prequestService.list());
+			model.addAttribute("request", new PRequest());
+			model.addAttribute("projects", pprojectService.listAll());
+			model.addAttribute("project", new PProject());
+			model.addAttribute("typeRequests", ptypeRequestService.list());
+			model.addAttribute("typeRequest", new PTypeRequest());
 		}
 		
 		
@@ -128,16 +134,26 @@ public class RequestController extends BaseController {
 	}
 
 	@RequestMapping(value = "/findRequest/{id}", method = RequestMethod.GET)
-	public @ResponseBody Request findRequest(@PathVariable Integer id, HttpServletRequest req, Locale locale,
+	public @ResponseBody Object findRequest(@PathVariable Integer id, HttpServletRequest req, Locale locale,
 			Model model, HttpSession session) {
 		try {
-			Request request = requestService.findById(id);
-			return request;
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				Request request = requestService.findById(id);
+				return request;
+			} else if (profile.equals("postgres")) {
+				PRequest request = prequestService.findById(id);
+				return request;
+			}
+			
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
+		return null;
 	}
 
 	@RequestMapping(path = "/saveRequest", method = RequestMethod.POST)
@@ -167,11 +183,31 @@ public class RequestController extends BaseController {
 			}
 
 			if (res.getStatus().equals("success")) {
-				request.setActive(true);
-				request.setProyect(projectService.findById(request.getProyectId()));
-				request.setTypeRequest(typeRequestService.findById(request.getTypeRequestId()));
-				requestService.save(request);
-				res.setObj(request);
+				
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					request.setActive(true);
+					request.setProyect(projectService.findById(request.getProyectId()));
+					request.setTypeRequest(typeRequestService.findById(request.getTypeRequestId()));
+					requestService.save(request);
+					res.setObj(request);
+				} else if (profile.equals("postgres")) {
+					PRequest prequest=new PRequest();
+					prequest.setActive(true);
+					prequest.setProyect(pprojectService.findById(request.getProyectId()));
+					prequest.setCode_ice(request.getCode_ice());
+					prequest.setCode_soin(request.getCode_soin());
+					prequest.setDescription(request.getDescription());
+					prequest.setLiderIce(request.getLiderIce());
+					prequest.setLeaderSoin(request.getLeaderSoin());
+					prequest.setIceManagement(request.getIceManagement());
+					prequest.setSoinManagement(request.getSoinManagement());
+					prequest.setStatus(request.getStatus());
+					prequest.setTypeRequest(ptypeRequestService.findById(request.getTypeRequestId()));
+					prequestService.save(prequest);
+					res.setObj(prequest);
+				}
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
@@ -206,21 +242,43 @@ public class RequestController extends BaseController {
 			}
 
 			if (res.getStatus().equals("success")) {
-				Request requestOrigin = requestService.findById(request.getId());
-				requestOrigin.setStatus(request.getStatus());
-				requestOrigin.setCode_soin(request.getCode_soin());
-				requestOrigin.setCode_ice(request.getCode_ice());
-				requestOrigin.setDescription(request.getDescription());
-				requestOrigin.setLeaderSoin(request.getLeaderSoin());
-				requestOrigin.setLiderIce(request.getLiderIce());
-				requestOrigin.setSoinManagement(request.getSoinManagement());
-				requestOrigin.setIceManagement(request.getIceManagement());
+				
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					Request requestOrigin = requestService.findById(request.getId());
+					requestOrigin.setStatus(request.getStatus());
+					requestOrigin.setCode_soin(request.getCode_soin());
+					requestOrigin.setCode_ice(request.getCode_ice());
+					requestOrigin.setDescription(request.getDescription());
+					requestOrigin.setLeaderSoin(request.getLeaderSoin());
+					requestOrigin.setLiderIce(request.getLiderIce());
+					requestOrigin.setSoinManagement(request.getSoinManagement());
+					requestOrigin.setIceManagement(request.getIceManagement());
 
-				request.setProyect(projectService.findById(request.getProyectId()));
-				request.setTypeRequest(typeRequestService.findById(request.getTypeRequestId()));
+					request.setProyect(projectService.findById(request.getProyectId()));
+					request.setTypeRequest(typeRequestService.findById(request.getTypeRequestId()));
 
-				requestService.update(requestOrigin);
-				res.setObj(request);
+					requestService.update(requestOrigin);
+					res.setObj(request);
+				} else if (profile.equals("postgres")) {
+					PRequest prequestOrigin = prequestService.findById(request.getId());
+					prequestOrigin.setStatus(request.getStatus());
+					prequestOrigin.setCode_soin(request.getCode_soin());
+					prequestOrigin.setCode_ice(request.getCode_ice());
+					prequestOrigin.setDescription(request.getDescription());
+					prequestOrigin.setLeaderSoin(request.getLeaderSoin());
+					prequestOrigin.setLiderIce(request.getLiderIce());
+					prequestOrigin.setSoinManagement(request.getSoinManagement());
+					prequestOrigin.setIceManagement(request.getIceManagement());
+
+					prequestOrigin.setProyect(pprojectService.findById(request.getProyectId()));
+					prequestOrigin.setTypeRequest(ptypeRequestService.findById(request.getTypeRequestId()));
+
+					prequestService.update(prequestOrigin);
+					res.setObj(prequestOrigin);
+				}
+				
+			
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
@@ -235,9 +293,15 @@ public class RequestController extends BaseController {
 	public @ResponseBody JsonResponse deleteRequest(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			requestService.delete(id);
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				requestService.delete(id);
+			} else if (profile.equals("postgres")) {
+				prequestService.delete(id);
+			}
 			res.setStatus("success");
 			res.setObj(id);
+			
 		} catch (Exception e) {
 
 			res.setStatus("exception");
@@ -259,50 +323,101 @@ public class RequestController extends BaseController {
 			HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
-			List<GDoc> configs = gDocService.list();
-			List<TypeRequest> typeRequests = typeRequestService.list();
+			
+			
 
-			Thread syncRequest = new Thread(() -> {
-				syncRequest(configs, typeRequests, requestService.list());
-			});
-			Thread syncTPOs = new Thread(() -> {
-				TypeRequest type = null;
-				for (TypeRequest typeRequest : typeRequests) {
-					if (typeRequest.getCode().equals("TPO"))
-						type = typeRequest;
-				}
-				syncTPOs(configs, type, requestService.listByType(type));
-			});
-			Thread syncTPOsSupport = new Thread(() -> {
-				TypeRequest type = null;
-				for (TypeRequest typeRequest : typeRequests) {
-					if (typeRequest.getCode().equals("TPO"))
-						type = typeRequest;
-				}
-				syncTPOsSupport(configs, type, requestService.listByType(type));
-			});
-			Thread syncTPOsMonthly = new Thread(() -> {
-				TypeRequest type = null;
-				for (TypeRequest typeRequest : typeRequests) {
-					if (typeRequest.getCode().equals("TPO"))
-						type = typeRequest;
-				}
-				syncTPOsMonthly(configs, type, requestService.listByType(type));
-			});
-			Thread syncBTs = new Thread(() -> {
-				TypeRequest type = null;
-				for (TypeRequest typeRequest : typeRequests) {
-					if (typeRequest.getCode().equals("BT"))
-						type = typeRequest;
-				}
-				syncBTs(configs, type, requestService.listByType(type));
-			});
-			syncTPOs.start();
-			syncRequest.start();
-			syncTPOsSupport.start();
-			syncTPOsMonthly.start();
-			syncBTs.start();
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				List<GDoc> configs = gDocService.list();
+				List<TypeRequest> typeRequests = typeRequestService.list();
 
+				Thread syncRequest = new Thread(() -> {
+					syncRequest(configs, typeRequests, requestService.list());
+				});
+				Thread syncTPOs = new Thread(() -> {
+					TypeRequest type = null;
+					for (TypeRequest typeRequest : typeRequests) {
+						if (typeRequest.getCode().equals("TPO"))
+							type = typeRequest;
+					}
+					syncTPOs(configs, type, requestService.listByType(type));
+				});
+				Thread syncTPOsSupport = new Thread(() -> {
+					TypeRequest type = null;
+					for (TypeRequest typeRequest : typeRequests) {
+						if (typeRequest.getCode().equals("TPO"))
+							type = typeRequest;
+					}
+					syncTPOsSupport(configs, type, requestService.listByType(type));
+				});
+				Thread syncTPOsMonthly = new Thread(() -> {
+					TypeRequest type = null;
+					for (TypeRequest typeRequest : typeRequests) {
+						if (typeRequest.getCode().equals("TPO"))
+							type = typeRequest;
+					}
+					syncTPOsMonthly(configs, type, requestService.listByType(type));
+				});
+				Thread syncBTs = new Thread(() -> {
+					TypeRequest type = null;
+					for (TypeRequest typeRequest : typeRequests) {
+						if (typeRequest.getCode().equals("BT"))
+							type = typeRequest;
+					}
+					syncBTs(configs, type, requestService.listByType(type));
+				});
+				syncTPOs.start();
+				syncRequest.start();
+				syncTPOsSupport.start();
+				syncTPOsMonthly.start();
+				syncBTs.start();
+
+			} else if (profile.equals("postgres")) {
+				List<PGDoc> configs = pgDocService.list();
+				List<PTypeRequest> typeRequests = ptypeRequestService.list();
+
+				Thread psyncRequest = new Thread(() -> {
+					psyncRequest(configs, typeRequests, prequestService.list());
+				});
+				Thread psyncTPOs = new Thread(() -> {
+					PTypeRequest type = null;
+					for (PTypeRequest typeRequest : typeRequests) {
+						if (typeRequest.getCode().equals("TPO"))
+							type = typeRequest;
+					}
+					psyncTPOs(configs, type, prequestService.listByType(type));
+				});
+				Thread psyncTPOsSupport = new Thread(() -> {
+					PTypeRequest type = null;
+					for (PTypeRequest typeRequest : typeRequests) {
+						if (typeRequest.getCode().equals("TPO"))
+							type = typeRequest;
+					}
+					psyncTPOsSupport(configs, type, prequestService.listByType(type));
+				});
+				Thread psyncTPOsMonthly = new Thread(() -> {
+					PTypeRequest type = null;
+					for (PTypeRequest typeRequest : typeRequests) {
+						if (typeRequest.getCode().equals("TPO"))
+							type = typeRequest;
+					}
+					psyncTPOsMonthly(configs, type, prequestService.listByType(type));
+				});
+				Thread psyncBTs = new Thread(() -> {
+					PTypeRequest type = null;
+					for (PTypeRequest typeRequest : typeRequests) {
+						if (typeRequest.getCode().equals("BT"))
+							type = typeRequest;
+					}
+					psyncBTs(configs, type, prequestService.listByType(type));
+				});
+				psyncTPOs.start();
+				psyncRequest.start();
+				psyncTPOsSupport.start();
+				psyncTPOsMonthly.start();
+				psyncBTs.start();
+
+			}
 			res.setStatus("success");
 			res.setData("Inicia proceso de sincronización.");
 		} catch (Exception e) {
@@ -313,7 +428,411 @@ public class RequestController extends BaseController {
 		}
 		return res;
 	}
+	public void psyncRequest(List<PGDoc> configs, List<PTypeRequest> typeRequests, List<PRequest> requests) {
+		try {
+			// Se define los indices de las columnas
+			Integer leaderSoinIndex = null, idIceIndex = null, descriptionIndex = null, iceManagementIndex = null,
+					typeIndex = null, tpoIndex = null, count = 0;
+			PProject proyect = null;
+			PRequest request = null;
+			PTypeRequest typeRequest = null;
+			Boolean existRequest = false;
+			// Se recorren las configuracion para acceder a la hoja de TPOs
+			for (PGDoc config : configs) {
+				List<List<Object>> values = pgetSheets(config, "MATRIZ");
+				count = 0;
+				// Se recorre los registros con un contador para definir los indices del inicio
+				// con la primera fila
+				for (List<Object> row : values) {
+					// Se inicia de nuevo el requerimiento
+					request = null;
+					if (count == 0) {
+						for (int i = 0; i < row.size(); i++)
+							row.set(i, ((String) row.get(i)).trim());
+						tpoIndex = row.indexOf("CODIGO");
+						idIceIndex = row.indexOf("RQ");
+						descriptionIndex = row.indexOf("DESCRIPCION");
+						leaderSoinIndex = row.indexOf("LIDER TECNICO");
+						iceManagementIndex = row.indexOf("REFERENTE");
+						typeIndex = row.indexOf("TIPO");
+						proyect = config.getProyect();
+					} else {
+						// Se verifica que la hoja tenga la columna de TPO
+						if (tpoIndex != -1) {
+							// Se verfica si el requerimiento ya existe
+							existRequest = false;
+							for (PRequest req : requests) {
+								if (CommonUtils.equalsWithNulls(row.get(tpoIndex), req.getCode_soin())
+										&& CommonUtils.equalsWithNulls(row.get(idIceIndex), req.getCode_ice())) {
+									request = req;
+									existRequest = true;
+								}
+							}
+							try {
+								typeRequest = null;
+								// Se obtiene el tipo de requerimiento
+								for (PTypeRequest type : typeRequests) {
+									if (type.getCode().equals((String) row.get(typeIndex))) {
+										typeRequest = type;
+									}
+								}
+								// Si no existe, se crea y se agrega a la lista
+								if (typeRequest == null) {
+									typeRequest = new PTypeRequest();
+									typeRequest.setCode((String) row.get(typeIndex));
+									typeRequest.setDescription((String) row.get(typeIndex));
+									typeRequest = ptypeRequestService.save(typeRequest);
+									typeRequests.add(typeRequest);
+								}
 
+								// Se crea en caso de que no exista
+								request = (!existRequest) ? new PRequest() : request;
+								request.setCode_soin((String) row.get(tpoIndex));
+								request.setCode_ice((String) row.get(idIceIndex));
+								request.setLiderIce((String) row.get(leaderSoinIndex));
+								request.setDescription((String) row.get(descriptionIndex));
+								request.setIceManagement((String) row.get(iceManagementIndex));
+								request.setProyect(proyect);
+								request.setTypeRequest(typeRequest);
+								request.setActive(true);
+								if (existRequest)
+									prequestService.update(request);
+								else
+									prequestService.save(request);
+
+							} catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
+							}
+						}
+					}
+					count++;
+				}
+			}
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+	}
+
+	public void psyncTPOs(List<PGDoc> configs, PTypeRequest type, List<PRequest> requests) {
+		try {
+			// Se define los indices de las columnas
+			Integer statusIndex = null, idIceIndex = null, descriptionIndex = null, soinManagementIndex = null,
+					iceManagementIndex = null, tpoIndex = null, count = 0;
+			PProject proyect = null;
+			PRequest request = null;
+			Boolean existRequest = false;
+			// Se recorren las configuracion para acceder a la hoja de TPOs
+			for (PGDoc config : configs) {
+				List<List<Object>> values = pgetSheets(config, "TPO´s");
+				count = 0;
+				// Se recorre los registros con un contador para definir los indices del inicio
+				// con la primera fila
+				for (List<Object> row : values) {
+					// Se inicia de nuevo el requerimiento
+					request = null;
+					if (count == 0) {
+						for (int i = 0; i < row.size(); i++)
+							row.set(i, ((String) row.get(i)).trim());
+						statusIndex = row.indexOf("ESTADO");
+						tpoIndex = row.indexOf("TPO");
+						idIceIndex = row.indexOf("ID ICE");
+						descriptionIndex = row.indexOf("Nombre Requerimiento");
+						soinManagementIndex = row.indexOf("Gestores de Procesos de Negocio SOIN");
+						iceManagementIndex = row.indexOf("Referente ICE");
+						proyect = config.getProyect();
+					} else {
+						// Se verifica que la hoja tenga la columna de TPO
+						if (tpoIndex != -1) {
+							// Se verfica si el requerimiento ya existe
+							existRequest = false;
+							PRequest req = prequestService.listByTypeAndCodeSoin(type,
+									((String) row.get(tpoIndex)).trim());
+
+							if (req != null) {
+								request = req;
+								existRequest = true;
+							}
+
+							try {
+								// Se crea en caso de que no exista
+								request = (!existRequest) ? new PRequest() : request;
+								request.setCode_soin((String) row.get(tpoIndex));
+								request.setCode_ice((String) row.get(idIceIndex));
+								request.setStatus((String) row.get(statusIndex));
+								request.setDescription((String) row.get(descriptionIndex));
+								request.setSoinManagement((String) row.get(soinManagementIndex));
+								request.setIceManagement((String) row.get(iceManagementIndex));
+								request.setTypeRequest(type);
+								request.setProyect(proyect);
+								request.setActive(true);
+
+								if (existRequest)
+									prequestService.update(request);
+								else
+									prequestService.save(request);
+
+							} catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
+							}
+						}
+					}
+					count++;
+				}
+			}
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+	}
+
+	public void psyncTPOsSupport(List<PGDoc> configs, PTypeRequest type, List<PRequest> requests) {
+		try {
+			// Se define los indices de las columnas
+			Integer statusIndex = null, idIceIndex = null, descriptionIndex = null, soinManagementIndex = null,
+					iceManagementIndex = null, tpoIndex = null, count = 0;
+			PProject proyect = null;
+			PRequest request = null;
+			Boolean existRequest = false;
+			// Se recorren las configuracion para acceder a la hoja de TPOs
+			for (PGDoc config : configs) {
+				List<List<Object>> values = pgetSheets(config, "TPOsSoporte");
+				count = 0;
+				// Se recorre los registros con un contador para definir los indices del inicio
+				// con la primera fila
+				for (List<Object> row : values) {
+					// Se inicia de nuevo el requerimiento
+					request = null;
+					if (count == 0) {
+						for (int i = 0; i < row.size(); i++)
+							row.set(i, ((String) row.get(i)).trim());
+						statusIndex = row.indexOf("ESTADO");
+						tpoIndex = row.indexOf("TPO");
+						idIceIndex = row.indexOf("ID ICE");
+						descriptionIndex = row.indexOf("Nombre Requerimiento");
+						soinManagementIndex = row.indexOf("Gestores de Procesos de Negocio SOIN");
+						iceManagementIndex = row.indexOf("Referente ICE");
+						proyect = config.getProyect();
+					} else {
+						// Se verifica que la hoja tenga la columna de TPO
+						if (tpoIndex != -1) {
+							// Se verfica si el requerimiento ya existe
+							existRequest = false;
+							for (PRequest req : requests) {
+								if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())) {
+									request = req;
+									existRequest = true;
+								}
+							}
+							try {
+								// Se crea en caso de que no exista
+								request = (!existRequest) ? new PRequest() : request;
+								request.setCode_soin((String) row.get(tpoIndex));
+								request.setCode_ice((String) row.get(idIceIndex));
+								request.setStatus((String) row.get(statusIndex));
+								request.setDescription((String) row.get(descriptionIndex));
+								request.setSoinManagement((String) row.get(soinManagementIndex));
+								request.setIceManagement((String) row.get(iceManagementIndex));
+								request.setTypeRequest(type);
+								request.setProyect(proyect);
+								request.setActive(true);
+								if (existRequest)
+									prequestService.update(request);
+								else
+									prequestService.save(request);
+							} catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
+							}
+						}
+					}
+					count++;
+				}
+			}
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+	}
+
+	public void psyncTPOsMonthly(List<PGDoc> configs, PTypeRequest type, List<PRequest> requests) {
+		try {
+			// Se define los indices de las columnas
+			Integer statusIndex = null, idIceIndex = null, descriptionIndex = null, soinManagementIndex = null,
+					iceManagementIndex = null, tpoIndex = null, count = 0;
+			PProject proyect = null;
+			PRequest request = null;
+			Boolean existRequest = false;
+			// Se recorren las configuracion para acceder a la hoja de TPOs
+			for (PGDoc config : configs) {
+				List<List<Object>> values = pgetSheets(config, "Mensual AIA");
+				count = 0;
+				// Se recorre los registros con un contador para definir los indices del inicio
+				// con la primera fila
+				for (List<Object> row : values) {
+					// Se inicia de nuevo el requerimiento
+					request = null;
+					if (count == 0) {
+						for (int i = 0; i < row.size(); i++)
+							row.set(i, ((String) row.get(i)).trim());
+						statusIndex = row.indexOf("Estado");
+						tpoIndex = row.indexOf("TPO");
+						idIceIndex = row.indexOf("RQ");
+						descriptionIndex = row.indexOf("Descripción");
+						soinManagementIndex = row.indexOf("Gestor SOIN");
+						iceManagementIndex = row.indexOf("Referente ICE");
+						proyect = config.getProyect();
+					} else {
+						// Se verifica que la hoja tenga la columna de TPO
+						if (tpoIndex != -1) {
+							// Se verfica si el requerimiento ya existe
+							existRequest = false;
+							for (PRequest req : requests) {
+								if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())
+										&& (((String) row.get(idIceIndex)).trim()).equals(req.getCode_ice().trim())) {
+									request = req;
+									existRequest = true;
+								}
+							}
+							try {
+								// Se crea en caso de que no exista
+								request = (!existRequest) ? new PRequest() : request;
+								request.setCode_soin((String) row.get(tpoIndex));
+								request.setCode_ice((String) row.get(idIceIndex));
+								request.setStatus((String) row.get(statusIndex));
+								request.setDescription((String) row.get(descriptionIndex));
+								request.setSoinManagement((String) row.get(soinManagementIndex));
+								request.setIceManagement((String) row.get(iceManagementIndex));
+								request.setTypeRequest(type);
+								request.setProyect(proyect);
+								request.setActive(true);
+								if (existRequest)
+									prequestService.update(request);
+								else
+									prequestService.save(request);
+
+							} catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
+							}
+						}
+					}
+					count++;
+				}
+			}
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+	}
+
+	public void psyncBTs(List<PGDoc> configs, PTypeRequest type, List<PRequest> requests) {
+		try {
+			// Se define los indices de las columnas
+			Integer statusIndex = null, descriptionIndex = null, soinManagementIndex = null, iceManagementIndex = null,
+					btIndex = null, codeIce = null, count = 0;
+			PProject proyect = null;
+			PRequest request = null;
+			Boolean existRequest = false;
+			// Se recorren las configuracion para acceder a la hoja de TPOs
+			for (PGDoc config : configs) {
+				List<List<Object>> values = pgetSheets(config, "BT´s");
+				count = 0;
+				// Se recorre los registros con un contador para definir los indices del inicio
+				// con la primera fila
+				for (List<Object> row : values) {
+					// Se inicia de nuevo el requerimiento
+
+					request = null;
+					if (count == 0) {
+						for (int i = 0; i < row.size(); i++)
+							row.set(i, ((String) row.get(i)).trim());
+						statusIndex = row.indexOf("Estado");
+						btIndex = row.indexOf("Boleta");
+						codeIce = row.indexOf("RQ");
+						descriptionIndex = row.indexOf("Nombre");
+						soinManagementIndex = row.indexOf("Gestor SOIN");
+						iceManagementIndex = row.indexOf("Referente ICE");
+						proyect = config.getProyect();
+					} else {
+						// Se verifica que la hoja tenga la columna de TPO
+						if (btIndex != -1) {
+							// Se verfica si el requerimiento ya existe
+							existRequest = false;
+							for (PRequest req : requests) {
+								if ((((String) row.get(btIndex)).trim()).equals(req.getCode_soin().trim())) {
+									request = req;
+									existRequest = true;
+								}
+							}
+							try {
+								// Se crea en caso de que no exista
+								request = (!existRequest) ? new PRequest() : request;
+								request.setCode_soin((String) row.get(btIndex));
+								request.setStatus((String) row.get(statusIndex));
+								request.setDescription((String) row.get(codeIce) + " " + row.get(descriptionIndex));
+								request.setSoinManagement((String) row.get(soinManagementIndex));
+								request.setIceManagement((String) row.get(iceManagementIndex));
+								request.setCode_ice((String) row.get(codeIce));
+								request.setTypeRequest(type);
+								request.setProyect(proyect);
+								request.setActive(true);
+								if (existRequest) {
+									prequestService.update(request);
+								} else {
+									request.setActive(true);
+									prequestService.save(request);
+								}
+
+							} catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
+							}
+						}
+					}
+					count++;
+				}
+			}
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+	}
+
+	public List<List<Object>> pgetSheets(PGDoc config, String range) {
+		try {
+			final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+			final String spreadsheetId = config.getSpreadSheet();
+			Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, pgetCredentials(HTTP_TRANSPORT, config))
+					.setApplicationName(APPLICATION_NAME).build();
+			ValueRange values = service.spreadsheets().values().get(spreadsheetId, range).execute();
+			List<List<Object>> sheets = values.getValues();
+			return sheets;
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return new ArrayList<List<Object>>();
+	}
+
+	/**
+	 * Se crea un objeto de credenciales con la informacion del excel.
+	 */
+	@SuppressWarnings("deprecation")
+	private Credential pgetCredentials(final NetHttpTransport HTTP_TRANSPORT, PGDoc config)
+			throws IOException, GeneralSecurityException {
+		String key = config.getCredentials();
+
+		InputStream inputStream = new ByteArrayInputStream(key.getBytes(Charset.forName("UTF-8")));
+
+		Credential credential = GoogleCredential.fromStream(inputStream, HTTP_TRANSPORT, JSON_FACTORY)
+				.createScoped(SCOPES);
+		credential.refreshToken();
+		return credential;
+
+	}
 	public void syncRequest(List<GDoc> configs, List<TypeRequest> typeRequests, List<Request> requests) {
 		try {
 			// Se define los indices de las columnas
@@ -724,13 +1243,26 @@ public class RequestController extends BaseController {
 	public @ResponseBody JsonResponse softDelete(HttpServletRequest req, HttpServletResponse response, Locale locale,
 			Model model, HttpSession session) {
 		JsonResponse res = new JsonResponse();
-		Request request;
+		
 		try {
-			Integer requestId = Integer.parseInt(req.getParameter("requestId"));
-			request = requestService.findById(requestId);
-			request.setActive(!request.getActive());
-			requestService.softDelete(request);
-			res.setObj(request.getActive());
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				Request request;
+				Integer requestId = Integer.parseInt(req.getParameter("requestId"));
+				request = requestService.findById(requestId);
+				request.setActive(!request.getActive());
+				requestService.softDelete(request);
+				res.setObj(request.getActive());
+			} else if (profile.equals("postgres")) {
+				PRequest prequest;
+				Integer prequestId = Integer.parseInt(req.getParameter("requestId"));
+				prequest = prequestService.findById(prequestId);
+				prequest.setActive(!prequest.getActive());
+				prequestService.softDelete(prequest);
+				res.setObj(prequest.getActive());
+			}
+			
 			res.setStatus("success");
 
 		} catch (Exception e) {

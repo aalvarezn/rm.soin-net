@@ -137,6 +137,7 @@ public class PSystemDaoImpl implements PSystemDao {
 
 	@Override
 	public PSystemUser findSystemUserById(Integer id) {
+
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PSystemUser.class);
 		crit.add(Restrictions.eq("id", id));
 		return (PSystemUser) crit.uniqueResult();

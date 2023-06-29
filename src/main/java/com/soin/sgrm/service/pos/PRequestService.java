@@ -3,6 +3,7 @@ package com.soin.sgrm.service.pos;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.soin.sgrm.model.TypeRequest;
 import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.model.pos.PTypeRequest;
 
@@ -31,6 +32,8 @@ public interface PRequestService {
 	void softDelete(PRequest request);
 
 	PRequest findByNameCode(String tpo);
+
+
 
 
 

@@ -1,4 +1,4 @@
-package com.soin.sgrm.model;
+package com.soin.sgrm.model.pos;
 
 import java.io.Serializable;
 
@@ -20,20 +20,23 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.soin.sgrm.utils.Constant;
 
-@SuppressWarnings("serial")
+
 @Entity
 @Table(name = "AMBIENTES_AMBIENTE")
-public class Ambient implements Serializable {
+public class PAmbient implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AMBIENTES_AMBIENTE_SQ")
-	@SequenceGenerator(name = "AMBIENTES_AMBIENTE_SQ", sequenceName = "AMBIENTES_AMBIENTE_SQ", allocationSize = 1)
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Integer id;
 
 	@Column(name = "CODIGO")
 	@NotEmpty(message = Constant.EMPTY)
@@ -55,18 +58,18 @@ public class Ambient implements Serializable {
 	private String serverName;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SISTEMA_ID", nullable = true)
-	private SystemUser system;
+	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
+	private PSystemUser system;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "TIPO_AMBIENTE_ID", nullable = true)
-	private TypeAmbient typeAmbient;
+	@JoinColumn(name = "\"TIPO_AMBIENTE_ID\"", nullable = true)
+	private PTypeAmbient typeAmbient;
 
 	@Transient
 	private Integer typeAmbientId;
 
 	@Transient
-	private int systemId;
+	private Integer systemId;
 
 	public int getId() {
 		return id;
@@ -108,19 +111,19 @@ public class Ambient implements Serializable {
 		this.serverName = serverName;
 	}
 
-	public SystemUser getSystem() {
+	public PSystemUser getSystem() {
 		return system;
 	}
 
-	public void setSystem(SystemUser system) {
+	public void setSystem(PSystemUser system) {
 		this.system = system;
 	}
 
-	public TypeAmbient getTypeAmbient() {
+	public PTypeAmbient getTypeAmbient() {
 		return typeAmbient;
 	}
 
-	public void setTypeAmbient(TypeAmbient typeAmbient) {
+	public void setTypeAmbient(PTypeAmbient typeAmbient) {
 		this.typeAmbient = typeAmbient;
 	}
 

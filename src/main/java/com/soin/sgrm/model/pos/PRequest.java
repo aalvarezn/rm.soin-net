@@ -45,7 +45,7 @@ public class PRequest implements Serializable {
 	private String soinManagement;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "PROYECTO_ID", nullable = true)
+	@JoinColumn(name = "\"PROYECTO_ID\"", nullable = true)
 	private PProject proyect;
 
 	@Column(name = "ESTADO")
@@ -64,15 +64,13 @@ public class PRequest implements Serializable {
 	private String iceManagement;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "TIPO_REQUERIMIENTO_ID", nullable = true)
+	@JoinColumn(name = "\"TIPO_REQUERIMIENTO_ID\"", nullable = true)
 	private PTypeRequest typeRequest;
 
 	@Value("${active:true}")
 	@Column(name = "ACTIVO")
 	private boolean active;
 	
-	@Column(name = "AUTO")
-	private Integer auto;
 
 	@Transient
 	Integer typeRequestId;
@@ -192,14 +190,7 @@ public class PRequest implements Serializable {
 		this.active = active;
 	}
 
-	public Integer getAuto() {
-		return auto;
-	}
 
-	public void setAuto(Integer auto) {
-		this.auto = auto;
-	}
-	
 	
 
 }
