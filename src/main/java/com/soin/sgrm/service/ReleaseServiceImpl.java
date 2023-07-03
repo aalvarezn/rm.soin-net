@@ -352,6 +352,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 			throws SQLException, ParseException {
 		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
 				statusId,projectId);
+	}
   @Override
 	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
 		// TODO Auto-generated method stub
