@@ -472,7 +472,6 @@ function requestRelease() {
 	.ajax({
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 60000,
 		data : {
 			// Informacion general
 			release_id : $(form + ' #release_id').val(),
@@ -606,7 +605,6 @@ function sendRelease() {
 		// async : false,
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 6000000,
 		data : {
 			// Informacion general
 			release_id : $(form + ' #release_id').val(),
@@ -884,7 +882,6 @@ function sendPartialRelease() {
 		// async : false,
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 6000000,
 		data : {
 			// Informacion general
 			release_id : $releaseEditForm.find('#release_id').val(),

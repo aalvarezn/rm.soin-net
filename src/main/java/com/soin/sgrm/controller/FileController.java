@@ -51,6 +51,7 @@ import com.soin.sgrm.model.RFCFile;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseFile;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReportFile;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.RequestBase;
@@ -154,7 +155,7 @@ public class FileController extends BaseController {
 	@RequestMapping(value = "/impactObject-{id}", method = RequestMethod.GET)
 	public void impactObject(HttpServletResponse response, @PathVariable Integer id) throws IOException, SQLException {
 		String basePath = env.getProperty("fileStore.path");
-		ReleaseSummary release = releaseService.findById(id); // se obtiene el release
+		ReleaseSummaryFile release = releaseService.findByIdSummaryFile(id); // se obtiene el release
 		String path = basePath + createPath(release, basePath) + "documentos/";
 		new File(path).mkdirs();
 		File temp = new File(path + release.getReleaseNumber() + ".csv");
@@ -205,7 +206,7 @@ public class FileController extends BaseController {
 
 		// Direccion del archivo a guardar
 		String basePath = env.getProperty("fileStore.path");
-		ReleaseSummary release=releaseService.findById(id);
+		ReleaseSummaryFile release=releaseService.findByIdSummaryFile(id);
 		String path = createPath(release, basePath);
 		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
 
@@ -300,7 +301,7 @@ public class FileController extends BaseController {
 	 * @return: Base path del release.
 	 * @throws SQLException
 	 **/
-	public String createPath(ReleaseSummary release, String basePath) throws SQLException {
+	public String createPath(ReleaseSummaryFile release, String basePath) throws SQLException {
 
 			Project project = projectService.findById(release.getSystem().getProyectId());
 			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
@@ -319,6 +320,33 @@ public class FileController extends BaseController {
 		
 
 	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del release.
+	 * @author: Esteban Bogantes H.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathDownload(ReleaseSummary release, String basePath) throws SQLException {
+
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
+			if (release.getRequestList().size() != 0) {
+				Request request = release.getRequestList().iterator().next();
+				if (request.getCode_ice() != null) {
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
+				} else {
+					path += request.getCode_soin().replace(" ","") + "/";
+				}
+			}
+			path += release.getReleaseNumber() + "/";
+			path=path.trim();
+			new File(basePath + path).mkdirs();
+			return path;
+		
+
+	}
+
 
 	/**
 	 * @description: Crea la asociacion para descargar el archivo en la respuesta.
@@ -345,7 +373,7 @@ public class FileController extends BaseController {
 	 * @author: Esteban Bogantes H.
 	 * @return: archivo a descargar.
 	 **/
-	@SuppressWarnings({ "unused" })
+
 	@RequestMapping(value = "/download/{releaseId}/{docId}", method = RequestMethod.GET)
 	public void downloadFile(HttpServletResponse response, @PathVariable Integer releaseId, @PathVariable Integer docId)
 			throws FileNotFoundException, Docx4JException, IOException {
@@ -358,7 +386,7 @@ public class FileController extends BaseController {
 			if (docFile != null) {
 				// Se obtiene el archivo plantilla
 				File fileTemplate = new File(env.getProperty("fileStore.templates") + docFile.getTemplateName());
-				String path = basePath + createPath(release, basePath) + "documentos/";
+				String path = basePath + createPathDownload(release, basePath) + "documentos/";
 				new File(path).mkdirs();
 				String sufix = (docFile.getSufix() == null) ? "" : docFile.getSufix();
 				// Se genera el archivo de salida

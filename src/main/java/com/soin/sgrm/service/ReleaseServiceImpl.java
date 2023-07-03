@@ -23,6 +23,7 @@ import com.soin.sgrm.model.ReleaseReportFast;
 import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTrackingShow;
@@ -351,6 +352,11 @@ public class ReleaseServiceImpl implements ReleaseService {
 			throws SQLException, ParseException {
 		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
 				statusId,projectId);
+  @Override
+	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
+		// TODO Auto-generated method stub
+		return dao.findByIdSummaryFile(id);
+
 	}
 
 }
