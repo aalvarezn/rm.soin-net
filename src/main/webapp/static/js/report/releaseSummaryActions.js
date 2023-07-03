@@ -234,12 +234,12 @@ function draw(objs) {
 	var options = {
 			interaction: {
 				navigationButtons: false,
-				keyboard: false,
+				keyboard: true,
 				dragNodes:false,
-				dragView:false,
+				dragView:true,
 				hideNodesOnDrag:false,
 				hideEdgesOnZoom:true,
-				zoomView:false,
+				zoomView:true,
 			},
 			nodes: {
 				shape: "box",
@@ -407,14 +407,22 @@ function exportPDF(releaseNumber){
 					cache : false,
 					contentType : false,
 					processData : false,
-					async : false,
+					async : true,
 					url: getCont() + "file/singleUploadReport-"+idRelease,
 					data : formData,
+				    beforeSend: function() {
+				    	showSpinner();
+				      },
 					success: function(result) {
 						 var link = document.createElement('a');
 					        link.href= getCont()+'report/downloadRelease/'+ idRelease;
 					        link.click();
-					}
+					},
+					   complete: function() {
+						      // ocultar el mensaje de descarga después de completar la
+								// solicitud
+						      hideSpinner();
+						    },
 				});
 		  });
 		  /*
@@ -456,6 +464,14 @@ function exportPDF(releaseNumber){
 */
 
 }
+function showSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "flex";
+}
 
+function hideSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "none";
+}
 
 

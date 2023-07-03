@@ -55,9 +55,9 @@ $(function() {
 	formChangeStatus.find('#statusId').change(function() {
 		formChangeStatus.find('#motive').val($(this).children("option:selected").attr('data-motive'));
 	});
-
-	loadTableRelease();
 	$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+	loadTableRelease();
+	
 });
 
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
@@ -114,7 +114,8 @@ function loadTableRelease() {
 						"serverSide" : true,
 						"sAjaxSource" : getCont() + "report/listRelease",
 						"fnServerParams": function ( aoData ) {
-							aoData.push({"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
+							aoData.push(
+									{"name": "dateRange", "value": $('#tableFilters input[name="daterange"]').val()},
 									{"name": "systemId", "value": $('#tableFilters #systemId').children("option:selected").val()},
 									{"name": "projectId", "value": $('#tableFilters #projectId').children("option:selected").val()},
 									{"name": "statusId", "value": $('#tableFilters #statusId').children("option:selected").val()});
@@ -204,20 +205,23 @@ function confirmCancelRelease(index){
 	});
 }
 
-function downLoadReport(){
+function downLoadReport(typeDocument){
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
 		cache : false,
 		contentType: "application/json; charset=utf-8",
-		async : false,
+		async : true,
 		url : getCont() + "report/downloadreportrelease",
-		timeout : 60000,
 		data : {
 			dateRange :$('#tableFilters input[name="daterange"]').val(),
 			projectId: $('#tableFilters #projectId').children("option:selected").val(),
-			systemId: $('#tableFilters #systemId').children("option:selected").val()
-		},
+			systemId: $('#tableFilters #systemId').children("option:selected").val(),
+			typeDocument:typeDocument
+		},	    
+		beforeSend: function() {
+	    	showSpinner();
+	      },
 		success : function(response) {
 			console.log(response);
 			//console.log(atob(response.obj.file));
@@ -228,8 +232,15 @@ function downLoadReport(){
 			link.download = response.obj.name;
 			link.click();   
 		},
+		
+		   complete: function() {
+			      // ocultar el mensaje de descarga después de completar la
+					// solicitud
+			      hideSpinner();
+			    },
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
+			  hideSpinner();
 		}
 	});
 
@@ -400,14 +411,32 @@ function openReleaseTrackingModal(releaseId) {
 	console.log(releaseId);
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	console.log(dtReleases);
-	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 1); // idRow
+	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
 	console.log(idRow[0]);
 	var rowData = releaseTable.row(idRow).data();
 	console.log(rowData);
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
-	loadTrackingRelease(rowData);
-	$('#trackingReleaseModal').modal('show');
+
+	
+	$.ajax({
+		type : "GET",
+		url : getCont() + "rfc/tracking/"+ rowData.id ,
+		timeout : 600000,
+		data : {},
+		success : function(response) {
+			tracking=response.obj;
+			loadTrackingRelease(tracking);
+			$('#trackingReleaseModal').modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+
+	
+	
+	
 }
 
 function loadTrackingRelease(rowData){
@@ -525,4 +554,14 @@ function getColorNode(status){
 
 function exportPDF(){
 	 location.href=getCont()+'report/downloadReportGeneral';
+}
+
+function showSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "flex";
+}
+
+function hideSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "none";
 }

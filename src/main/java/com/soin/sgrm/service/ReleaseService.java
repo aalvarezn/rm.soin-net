@@ -13,6 +13,7 @@ import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseReport;
+import com.soin.sgrm.model.ReleaseReportFast;
 import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
@@ -106,7 +107,10 @@ public interface ReleaseService {
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
 			throws SQLException, ParseException;
 
-	List<ReleaseReport> listReleaseReportFilter(int systemId, int projectId, String dateRange);
+	JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
+			throws SQLException, ParseException;
+	List<ReleaseReportFast> listReleaseReportFilter(int systemId, int projectId, String dateRange);
 
 	Release_RFCFast findRelease_RFCByIdFast(int id);
 

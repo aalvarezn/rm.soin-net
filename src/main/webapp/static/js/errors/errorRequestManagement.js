@@ -432,21 +432,26 @@ function downLoadReport1(){
 
 }
 
-function downLoadReport(){
+function downLoadReport(typeDocument){
+	console.log(typeDocument);
 	console.log($('#tableFilters input[name="daterange"]').val().replaceAll("/","^"));
 	$.ajax({
 		type : "GET",
 		cache : false,
 		contentType: "application/json; charset=utf-8",
-		async : false,
+		async : true,
 		url : getCont() + "management/error/downloaderrorrequest",
 		timeout : 60000,
 		data : {
 			dateRange :$('#tableFilters input[name="daterange"]').val(),
 			typePetitionId: $('#tableFilters #typePetitionId').children("option:selected").val(),
 			errorId: $('#tableFilters #errorId').children("option:selected").val(),
-			systemId: $('#tableFilters #systemId').children("option:selected").val()
+			systemId: $('#tableFilters #systemId').children("option:selected").val(),
+			typeDocument:typeDocument
 		},
+	    beforeSend: function() {
+	    	showSpinner();
+	      },
 		success : function(response) {
 			console.log(response);
 			//console.log(atob(response.obj.file));
@@ -457,6 +462,11 @@ function downLoadReport(){
 			link.download = response.obj.name;
 			link.click();   
 		},
+		   complete: function() {
+			      // ocultar el mensaje de descarga después de completar la
+					// solicitud
+			      hideSpinner();
+			    },
 		error : function(x, t, m) {
 			notifyAjaxError(x, t, m);
 		}
@@ -464,7 +474,15 @@ function downLoadReport(){
 
 
 }
+function showSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "flex";
+}
 
+function hideSpinner(){
+	var miElemento = document.getElementById("loading"); 
+	miElemento.style.display = "none";
+}
 
 function dropDownChange(){
 

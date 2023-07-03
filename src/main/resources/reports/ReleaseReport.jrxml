@@ -51,6 +51,7 @@
 	<parameter name="releaseDataSource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
 	<parameter name="statusTracking" class="java.lang.String"/>
 	<parameter name="treeImage" class="java.io.InputStream"/>
+	<parameter name="logo" class="java.io.InputStream"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -85,8 +86,13 @@
 				<reportElement x="0" y="91" width="100" height="1" uuid="f653b67f-7814-43e9-920d-67decbb14762"/>
 			</break>
 			<image>
-				<reportElement x="463" y="-10" width="110" height="100" uuid="da525213-6588-4c1a-b197-0c9df770b230"/>
-				<imageExpression><![CDATA["C:/Users/Soin/Documents/Repositorios/SGRM/src/main/webapp/static/images/logo.png"]]></imageExpression>
+				<reportElement x="460" y="-10" width="110" height="80" uuid="e3096181-d9f5-4170-8062-bdf5b3820538">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
 			</image>
 		</band>
 	</title>
@@ -95,7 +101,7 @@
 			<property name="com.jaspersoft.studio.layout"/>
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<componentElement>
-				<reportElement x="28" y="960" width="497" height="60" uuid="a9aee03b-c2af-491b-82d4-3b48cc7830b6">
+				<reportElement positionType="Float" x="28" y="960" width="497" height="60" uuid="a9aee03b-c2af-491b-82d4-3b48cc7830b6">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -413,13 +419,13 @@
 				<textFieldExpression><![CDATA[$F{observations}]]></textFieldExpression>
 			</textField>
 			<rectangle>
-				<reportElement x="-21" y="900" width="599" height="50" backcolor="#012A4D" uuid="86c448d5-6648-40b7-a51f-149f420e413c"/>
+				<reportElement positionType="Float" x="-21" y="900" width="599" height="50" backcolor="#012A4D" uuid="86c448d5-6648-40b7-a51f-149f420e413c"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid" lineColor="#012A4D"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="-113" y="910" width="367" height="30" forecolor="#FFFFFF" uuid="551f17e9-36bb-4d1a-b195-27b30204723d"/>
+				<reportElement positionType="Float" x="-113" y="910" width="367" height="30" forecolor="#FFFFFF" uuid="551f17e9-36bb-4d1a-b195-27b30204723d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="14" isBold="true"/>
 				</textElement>
@@ -468,20 +474,20 @@
 				<textFieldExpression><![CDATA[$F{riskName}]]></textFieldExpression>
 			</textField>
 			<rectangle>
-				<reportElement x="-19" y="560" width="595" height="50" backcolor="#012A4D" uuid="e041cfb2-a30b-400c-8f5f-dcf77aaf9e08"/>
+				<reportElement positionType="Float" x="-19" y="560" width="595" height="50" backcolor="#012A4D" uuid="e041cfb2-a30b-400c-8f5f-dcf77aaf9e08"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement x="-10" y="570" width="160" height="30" forecolor="#FFFFFF" uuid="f664a553-ec74-402c-92b8-d206b26a3baf"/>
+				<reportElement positionType="Float" x="-10" y="570" width="160" height="30" forecolor="#FFFFFF" uuid="f664a553-ec74-402c-92b8-d206b26a3baf"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Titillium Web" size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Árbol de dependencias]]></text>
 			</staticText>
 			<image>
-				<reportElement x="-17" y="610" width="593" height="280" uuid="784d8114-8a09-4228-9bfb-56399de4fcaa"/>
+				<reportElement positionType="Float" x="-17" y="610" width="593" height="280" uuid="784d8114-8a09-4228-9bfb-56399de4fcaa"/>
 				<imageExpression><![CDATA[$P{treeImage}]]></imageExpression>
 			</image>
 		</band>

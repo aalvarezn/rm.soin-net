@@ -62,6 +62,12 @@ public class RequestRM_P1_R4 implements Serializable {
 	@Transient
 	private Long requestBaseId;
 	
+	@Transient
+	private String typeName;
+	
+	@Transient
+	private String ambientName;
+	
 	public Long getId() {
 		return id;
 	}
@@ -157,6 +163,24 @@ public class RequestRM_P1_R4 implements Serializable {
 
 	public void setUserGit(String userGit) {
 		this.userGit = userGit;
+	}
+
+	public String getTypeName() {
+		if(getType()==null) {
+			return "Sin tipo seleccionado";
+		}else {
+			return getType().getCode();
+		}
+		
+		
+	}
+
+	public String getAmbientName() {
+		if(getAmbient()==null) {
+			return "Sin ambiente seleccionado";
+		}else {
+			return getAmbient().getName();
+		}
 	}
 	
 	

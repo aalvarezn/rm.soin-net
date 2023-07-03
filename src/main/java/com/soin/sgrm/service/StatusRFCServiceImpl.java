@@ -49,4 +49,10 @@ public class StatusRFCServiceImpl  implements StatusRFCService{
 		dao.update(model);
 	}
 
+	@Override
+	public List<StatusRFC> findWithFilter() {
+		
+		return dao.findWithFilter();
+	}
+
 }
