@@ -64,8 +64,12 @@ $(function() {
 	initRequestFormValidation();
 	initRequestR1FormValidation();
 	$('#createR1').hide();
+	$('#createR2').hide();
+	  $('#tId').on('shown.bs.select', function() {
+		    $('[data-toggle="tooltip"]').tooltip();
+		  });
 
-	
+	  changeCheckBox();
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -450,6 +454,24 @@ function createRequestR1() {
 		}
 	});
 }
+
+function changeCheckBox(){
+	$("#requiredFunctionalDes").change(function() {
+	    // Verificar el estado del checkbox
+	    if ($(this).is(":checked")) {
+	    	$('#dropShow').hide();
+	    	console.log("awdwa");
+	    	$('#createR2').show();
+	    	$('#createRequest').hide();
+	    } else {
+	    	console.log("adaw");
+	    	$('#dropShow').show();
+	    	$('#createR2').hide();
+	    	$('#createRequest').show();
+	    }
+	});
+
+}
 function dropDownChangeRequest(){
 	$('#tId').on('change', function(){
 		var typeRequest =$('#tId option:selected').text();
@@ -462,11 +484,16 @@ function dropDownChangeRequest(){
 			$('#sId').selectpicker('refresh');
 			$('#sId2').selectpicker('val',  "");
 			$('#tId2').selectpicker('val',  $('#tId').val());
+			$('#checkShow').attr( "hidden",true);
+		}else if(typeRequest==='RM-P1-R2'){
+			$('#checkShow').attr( "hidden",false);
 			
+			resetDrop();
 		}else{
 			resetDrop();
 			$('#formAddR1').attr( "hidden",true);
 			$('#formAddRequest').attr( "hidden",false);
+			$('#checkShow').attr( "hidden",true);
 
 		}
 	});
