@@ -58,4 +58,6 @@ public interface SystemDao {
 
 	List<System> getSystemByProject(Integer projectId);
 
+	void saveAndSiges(System addSystem);
+
 }

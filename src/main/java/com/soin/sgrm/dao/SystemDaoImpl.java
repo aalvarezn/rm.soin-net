@@ -3,7 +3,9 @@ package com.soin.sgrm.dao;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -15,6 +17,7 @@ import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.SystemModule;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.System;
 
 @Repository
@@ -251,5 +254,24 @@ public class SystemDaoImpl implements SystemDao {
 		List<System> systemList = crit.list();
 
 		return systemList;
+	}
+
+	@Override
+	public void saveAndSiges(System addSystem) {
+		 Session session = sessionFactory.getCurrentSession();
+		 Transaction tx = session.beginTransaction();
+		   try {
+			   sessionFactory.getCurrentSession().save(addSystem);
+			   Siges siges= new Siges();
+			   SystemInfo system=new SystemInfo();
+			   system.setId(addSystem.getId());
+			   siges.setSystem(system);
+			   siges.setCodeSiges(addSystem.getSigesCode());
+			   siges.setEmailTemplateId(1);
+			   sessionFactory.getCurrentSession().save(siges);
+		    } catch (Exception e) {
+		        tx.rollback();
+		        throw e;
+		    }
 	}
 }

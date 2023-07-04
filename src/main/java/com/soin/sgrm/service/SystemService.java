@@ -60,4 +60,6 @@ public interface SystemService {
 
 	List<System> getSystemByProject(Integer projectId);
 
+	void saveAndSiges(System addSystem);
+
 }

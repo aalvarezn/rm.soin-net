@@ -142,6 +142,8 @@ public class System implements Serializable {
 	@Transient
 	Integer emailId;
 
+	@Transient
+	String sigesCode;
 	public int getId() {
 		return id;
 	}
@@ -496,4 +498,12 @@ public class System implements Serializable {
 		}
 	}
 
+	public String getSigesCode() {
+		return sigesCode;
+	}
+
+	public void setSigesCode(String sigesCode) {
+		this.sigesCode = sigesCode;
+	}
+	
 }

@@ -143,4 +143,10 @@ public class SystemServiceImpl implements SystemService {
 		// TODO Auto-generated method stub
 		 return dao.getSystemByProject(projectId);
 	}
+
+	@Override
+	public void saveAndSiges(System addSystem) {
+		dao.saveAndSiges(addSystem);
+		
+	}
 }
