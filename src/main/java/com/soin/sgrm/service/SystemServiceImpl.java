@@ -112,7 +112,6 @@ public class SystemServiceImpl implements SystemService {
 		return dao.listSystemUserByIds(ids);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<System> listProjects(int id){
 		return dao.listProjects(id);
 	}
@@ -134,13 +133,13 @@ public class SystemServiceImpl implements SystemService {
 
 	@Override
 	public List<System> findByManagerIncidence(Integer idUser) {
-		// TODO Auto-generated method stub
+	
 		return dao.findByManagerIncidence(idUser);
 	}
 
 	@Override
 	public List<System> getSystemByProject(Integer projectId) {
-		// TODO Auto-generated method stub
+		
 		 return dao.getSystemByProject(projectId);
 	}
 
@@ -148,5 +147,11 @@ public class SystemServiceImpl implements SystemService {
 	public void saveAndSiges(System addSystem) {
 		dao.saveAndSiges(addSystem);
 		
+	}
+
+	@Override
+	public boolean checkUniqueCode(String sCode, Integer proyectId,Integer typeCheck) {
+		
+		return dao.checkUniqueCode(sCode,proyectId,typeCheck);
 	}
 }

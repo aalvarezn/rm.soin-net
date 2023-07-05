@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -131,10 +132,17 @@ public class RequestBaseController extends BaseController {
 			List<StatusRequest> statuses = statusService.findAll();
 			List<TypePetition> typePetitionsFilter = typePetitionService.listTypePetition();
 			List<TypePetition> typePetitions = typePetitionService.findAll();
+			List<Project> proyects = new ArrayList<Project>();
+			for (System system : systems) {
+				if (!proyects.contains(system.getProyect())) {
+					proyects.add(system.getProyect());
+				}
+			}
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("typePetitionsFilter", typePetitionsFilter);
 			model.addAttribute("typePetitions", typePetitions);
 			model.addAttribute("systems", systems);
+			model.addAttribute("proyects", proyects);
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
 			e.printStackTrace();
@@ -271,7 +279,7 @@ public class RequestBaseController extends BaseController {
 		return res;
 	}
 
-	@RequestMapping(path = "savesys", method = RequestMethod.POST)
+	@RequestMapping(path = "/savesys", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveSystemRequest(HttpServletRequest request, @RequestBody System addSystem) {
 		JsonResponse res = new JsonResponse();
 		try {
@@ -298,6 +306,20 @@ public class RequestBaseController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
+	}
+
+	@RequestMapping(path = "/sysName", method = RequestMethod.POST)
+	public @ResponseBody Boolean checkSysName(HttpServletRequest request, @RequestParam("sCode") String sCode,
+			@RequestParam("proyectId") Integer proyectId, @RequestParam("typeCheck") Integer typeCheck) {
+
+		try {
+			return systemService.checkUniqueCode(sCode, proyectId, typeCheck);
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return false;
 	}
 
 	@RequestMapping(value = "/editRequest-{id}", method = RequestMethod.GET)

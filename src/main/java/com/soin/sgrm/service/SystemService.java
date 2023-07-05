@@ -62,4 +62,6 @@ public interface SystemService {
 
 	void saveAndSiges(System addSystem);
 
+	boolean checkUniqueCode(String sCode, Integer proyectId,Integer typeCheck);
+
 }

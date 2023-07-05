@@ -127,8 +127,8 @@
 			class="btn btn-primary waves-effect" onclick="createRequestR1()">CREAR
 			SOLICITUD</button>
 			<button id="createR2" type="button"
-			class="btn btn-primary waves-effect" onclick="createRequestR1()">CREAR
-			SOLICITUD</button>
+			class="btn btn-primary waves-effect" onclick="openCreate()">CREAR
+			SISTEMA</button>
 			
 	</div>
 

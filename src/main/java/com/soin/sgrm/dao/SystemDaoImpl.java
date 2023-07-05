@@ -274,4 +274,20 @@ public class SystemDaoImpl implements SystemDao {
 		        throw e;
 		    }
 	}
+
+	@Override
+	public boolean checkUniqueCode(String sCode, Integer proyectId,Integer typeCheck) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("proyect", "proyect");
+		crit.add(Restrictions.eq("proyect.id", proyectId));
+		if(typeCheck==1) {
+			crit.add(Restrictions.eq("code", sCode));
+		}else if(typeCheck==0) {
+			crit.add(Restrictions.eq("name", sCode));
+		}
+		
+		crit.setProjection(Projections.rowCount());
+	    Long count = (Long) crit.uniqueResult();
+	    return count == 0;
+	}
 }
