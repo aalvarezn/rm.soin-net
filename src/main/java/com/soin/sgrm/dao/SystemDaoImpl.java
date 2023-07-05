@@ -259,18 +259,18 @@ public class SystemDaoImpl implements SystemDao {
 	@Override
 	public void saveAndSiges(System addSystem) {
 		 Session session = sessionFactory.getCurrentSession();
-		 Transaction tx = session.beginTransaction();
+	
 		   try {
-			   sessionFactory.getCurrentSession().save(addSystem);
+			   session.save(addSystem);
 			   Siges siges= new Siges();
 			   SystemInfo system=new SystemInfo();
 			   system.setId(addSystem.getId());
 			   siges.setSystem(system);
 			   siges.setCodeSiges(addSystem.getSigesCode());
 			   siges.setEmailTemplateId(1);
-			   sessionFactory.getCurrentSession().save(siges);
+			   session.save(siges);
 		    } catch (Exception e) {
-		        tx.rollback();
+		      
 		        throw e;
 		    }
 	}

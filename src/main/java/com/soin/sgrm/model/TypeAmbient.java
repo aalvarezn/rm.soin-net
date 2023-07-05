@@ -20,8 +20,6 @@ import com.soin.sgrm.utils.Constant;
 public class TypeAmbient implements Serializable {
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private int id;
 

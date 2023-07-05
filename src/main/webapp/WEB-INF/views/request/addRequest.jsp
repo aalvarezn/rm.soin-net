@@ -16,7 +16,7 @@
 							data-live-search="true">
 							<option value="">-- Seleccione una opci&oacute;n --</option>
 							<c:forEach items="${typePetitionsFilter}" var="typePetition">
-								<option  data-content="<span data-toggle='tooltip' title='${typePetition.code}'>${typePetition.description}</span>" value="${typePetition.id }">${typePetition.code }</option>
+								<option  data-content="<span data-toggle='tooltip' title='${typePetition.code}'>${typePetition.code}-${typePetition.description}</span>" value="${typePetition.id }">${typePetition.code }</option>
 							</c:forEach>
 						</select>
 
@@ -78,7 +78,7 @@
 							data-live-search="true">
 							<option value="">-- Seleccione una opci&oacute;n --</option>
 							<c:forEach items="${typePetitionsFilter}" var="typePetition">
-								<option  data-content="<span data-toggle='tooltip' title='${typePetition.code}'>${typePetition.description}</span>" value="${typePetition.id }">${typePetition.code }</option>
+								<option  data-content="<span data-toggle='tooltip' title='${typePetition.code}'>${typePetition.code}-${typePetition.description}</span>" value="${typePetition.id }">${typePetition.code }</option>
 							</c:forEach>
 						</select>
 
@@ -105,7 +105,7 @@
 					<label>C&oacute;digo de oportunidad</label>
 					<div class="form-group m-b-0">
 						<input type="text" class="form-control" id="sCode" maxlength="50"
-							name="sCode"
+							name="sCode" onpaste="return false"
 							placeholder="Escriba un texto corto '_' para separarlo"
 							style="height: 60px; padding-bottom: 20px;"
 							onkeypress="return verifyLetters(event)">

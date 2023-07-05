@@ -73,7 +73,8 @@ $(function() {
 		  });
 
 	  changeCheckBox();
-	  
+	
+	
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
 	$('input[name="daterange"]').val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
@@ -120,6 +121,34 @@ function verifyLetters(e){
 	if(characters.indexOf(keyboard)==-1&&!special_keyboard){
 		return false;
 	}
+}
+
+function verifyCode(e){
+	 key = e.keyCode || e.which;
+	 
+	 keyboard=String.fromCharCode(key);
+		characters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYXZ_-1234567890";
+		specials="95";
+		
+		special_keyboard=false;
+		
+		for(var i in specials){
+			if(key==specials[i]){
+				special_keyboard=true;
+			}
+		}
+		if(characters.indexOf(keyboard)==-1&&!special_keyboard){
+			return false;
+		}
+	 if (key === 32) {
+		    return false; 
+		  }
+	 
+	  if (e.ctrlKey || e.metaKey) {
+	    return false; 
+	  }
+	
+	  return true;
 }
 
 function initRequestTable() {
@@ -317,7 +346,7 @@ function createRequest() {
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					codeProyect : $fmRequest.find('#sigesId').val(),
+					codeSigesId : $fmRequest.find('#sigesId').val(),
 					systemId : $fmRequest.find('#sId').val(),
 					typePetitionId:$fmRequest.find('#tId').val(),
 				}),
@@ -490,11 +519,10 @@ function dropDownChangeRequest(){
 			$('#checkShow').attr( "hidden",true);
 			$('#createR2').hide();
 		}else if(typeRequest==='RM-P1-R2'){
-			$('#checkShow').attr( "hidden",false);
+			$('#dropShow').hide();
 			$("#requiredFunctionalDes").prop("checked", false);
-	    	$('#dropShow').show();
-	    	$('#createR2').hide();
-	    	$('#createRequest').show();
+	    	$('#createR2').show();
+	    	$('#createRequest').hide();
 			resetDrop();
 		}else{
 			resetDrop();
@@ -535,7 +563,7 @@ function dropDownChange(){
 					var s = '';
 					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 					for(var i = 0; i < result.length; i++) {
-						s += '<option value="' + result[i].codeSiges + '">' + result[i].codeSiges + '</option>';
+						s += '<option value="' + result[i].id + '">' + result[i].codeSiges + '</option>';
 					}
 					$('#sigesId').html(s);
 					$('#sigesId').prop('disabled', false);
@@ -621,7 +649,7 @@ function initSigesFormValidation() {
 			'sCode' : {
 				required : true,
 				minlength : 1,
-				maxlength : 100,
+				maxlength : 10,
 				remote: {
                     url: getCont() + "/request/sysName", // URL para
 															// verificar la
@@ -637,12 +665,13 @@ function initSigesFormValidation() {
                                 typeCheck:1
                     		
                     	}
-					}
+					},
+					
 			},
 			'sName' : {
 				required : true,
 				minlength : 1,
-				maxlength : 100,
+				maxlength : 50,
 				
 				remote: {
                     url: getCont() + "/request/sysName", // URL para
@@ -664,7 +693,7 @@ function initSigesFormValidation() {
 			'sigesCode' : {
 				required : true,
 				minlength : 1,
-				maxlength : 100,
+				maxlength : 50,
 			},
 			'proyectId' : {
 				required : true,
@@ -718,18 +747,52 @@ function saveSystem(){
 					name : $fmSiges.find('#sName').val(),
 					code : $fmSiges.find('#sCode').val(),
 					sigesCode : $fmSiges.find('#sigesCode').val(),
-					proyectId : $fmSiges.find('#proyectId').val()
+					proyectId : $fmSiges.find('#proyectId').val(),
+					leaderId : $fmSiges.find('#userId').val()
 					
 				}),
 				success : function(response) {
 					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtSiges.ajax.reload();
-					$mdSiges.modal('hide');
+					notifyMs(response.message, response.status);
+					console.log(response.obj)
+					if(response.status==="success"){
+					blockUI();
+					$.ajax({
+						type : "POST",
+						url : getCont() + "request/" ,
+						dataType : "json",
+						contentType: "application/json; charset=utf-8",
+						timeout : 60000,
+						data : JSON.stringify({
+							codeProyect : response.obj.sigesCode,
+							systemId : response.obj.id,
+							typePetitionId:response.obj.typePetitionId,
+						}),
+						success : function(response) {
+							unblockUI();
+							notifyMs(response.message, response.status);
+							window.location = getCont()
+							+ "request/editRequest-"
+							+ response.data;
+							
+							// $dtImpact.ajax.reload();
+							// $mdImpact.modal('hide');
+						},
+						error : function(x, t, m) {
+							unblockUI();
+							console.log(x);
+							console.log(t);
+							console.log(m);
+						}
+					});
+					}else{
+						unblockUI();
+						notifyMs(response.message, response.status);
+					}
 				},
 				error : function(x, t, m) {
 					unblockUI();
-				
+					notifyMs(response.message, response.status);
 				}
 			});
 		}

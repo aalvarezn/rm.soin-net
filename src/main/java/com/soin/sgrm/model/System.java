@@ -138,6 +138,9 @@ public class System implements Serializable {
 
 	@Transient
 	Integer proyectId;
+	
+	@Transient
+	Long typePetitionId;
 
 	@Transient
 	Integer emailId;
@@ -504,6 +507,14 @@ public class System implements Serializable {
 
 	public void setSigesCode(String sigesCode) {
 		this.sigesCode = sigesCode;
+	}
+
+	public Long getTypePetitionId() {
+		return typePetitionId;
+	}
+
+	public void setTypePetitionId(Long typePetitionId) {
+		this.typePetitionId = typePetitionId;
 	}
 	
 }

@@ -39,6 +39,7 @@ import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
@@ -57,6 +58,7 @@ import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypePetitionR4Service;
 import com.soin.sgrm.service.TypePetitionService;
+import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
@@ -119,6 +121,9 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	ErrorRequestService errorService;
+	
+	@Autowired
+	UserInfoService userInfoService;
 
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 
@@ -132,12 +137,9 @@ public class RequestBaseController extends BaseController {
 			List<StatusRequest> statuses = statusService.findAll();
 			List<TypePetition> typePetitionsFilter = typePetitionService.listTypePetition();
 			List<TypePetition> typePetitions = typePetitionService.findAll();
-			List<Project> proyects = new ArrayList<Project>();
-			for (System system : systems) {
-				if (!proyects.contains(system.getProyect())) {
-					proyects.add(system.getProyect());
-				}
-			}
+			List<Project> proyects = projectService.listAll();
+			model.addAttribute("users", userInfoService.list());
+			model.addAttribute("user", new UserInfo());
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("typePetitionsFilter", typePetitionsFilter);
 			model.addAttribute("typePetitions", typePetitions);
@@ -214,7 +216,7 @@ public class RequestBaseController extends BaseController {
 						res.setStatus("success");
 						addRequest.setMotive("Inicio de Solicitud");
 						addRequest.setOperator(user.getFullName());
-						Siges codeSiges = sigeService.findByKey("codeSiges", addRequest.getCodeProyect());
+						Siges codeSiges = sigeService.findById( addRequest.getCodeSigesId());
 						addRequest.setSiges(codeSiges);
 
 						addRequest.setNumRequest(addRequest.getCodeOpportunity());
@@ -238,7 +240,7 @@ public class RequestBaseController extends BaseController {
 					res.setStatus("success");
 					addRequest.setMotive("Inicio de Solicitud");
 					addRequest.setOperator(user.getFullName());
-					Siges codeSiges = sigeService.findByKey("codeSiges", addRequest.getCodeProyect());
+					Siges codeSiges = sigeService.findById( addRequest.getCodeSigesId());
 					addRequest.setSiges(codeSiges);
 					addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
 					addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),
@@ -284,24 +286,40 @@ public class RequestBaseController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			User user = userService.getUserByUsername(getUserLogin().getUsername());
-
-			addSystem.setProyect(projectService.findById(addSystem.getProyectId()));
-			addSystem.setAdditionalObservations(false);
-			addSystem.changeEmail(null);
-			addSystem.setIsAIA(false);
-			addSystem.setIsBO(false);
-			addSystem.setImportObjects(false);
-			addSystem.setNomenclature(false);
-			addSystem.setCustomCommands(false);
-			addSystem.setImportObjects(false);
-			Set<User> managersNews = new HashSet<>();
-			managersNews.add(user);
-			systemService.saveAndSiges(addSystem);
-			res.setObj(addSystem);
+			if(!systemService.checkUniqueCode(addSystem.getCode(), addSystem.getProyectId(), 1)) {
+				res.setStatus("error");
+				
+				res.setMessage("Error al crear sistema codigo ya utilizado para un mismo proyecto!");
+			}else if(!systemService.checkUniqueCode(addSystem.getName(), addSystem.getProyectId(), 0)) {
+				res.setStatus("error");
+				res.setMessage("Error al crear sistema nombre ya utilizado para un mismo proyecto!");
+			}else {
+				res.setStatus("success");
+				addSystem.setProyect(projectService.findById(addSystem.getProyectId()));
+				TypePetition typePetition=typePetitionService.findByKey("code", "RM-P1-R2");
+				
+				User leader =new User();
+				leader.setId(addSystem.getLeaderId());
+				addSystem.setLeader(leader);
+				addSystem.setTypePetitionId(typePetition.getId());
+				addSystem.setAdditionalObservations(false);
+				addSystem.changeEmail(null);
+				addSystem.setIsAIA(false);
+				addSystem.setIsBO(false);
+				addSystem.setImportObjects(false);
+				addSystem.setNomenclature(false);
+				addSystem.setCustomCommands(false);
+				addSystem.setImportObjects(false);
+				addSystem.setInstallationInstructions(false);
+				addSystem.setManagersId(getUserLogin().getId().toString());
+				systemService.saveAndSiges(addSystem);
+				res.setObj(addSystem);
+			}
+		
 
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al crear solicitud!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}

@@ -251,7 +251,7 @@ public class RFCController extends BaseController {
 				res.setStatus("success");
 				addRFC.setMotive("Inicio de RFC");
 				addRFC.setOperator(user.getFullName());
-				Siges codeSiges = sigeService.findByKey("codeSiges", addRFC.getCodeProyect());
+				Siges codeSiges = sigeService.findById(addRFC.getCodeSigesId());
 				addRFC.setSiges(codeSiges);
 				addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect()));
 				addRFC.setSystemInfo(systemService.findById(addRFC.getSystemId()));
@@ -557,7 +557,7 @@ public class RFCController extends BaseController {
 			if (rfc == null) {
 				return "redirect:/";
 			}
-			Siges codeSiges = sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+			Siges codeSiges = rfc.getSiges();
 
 			List<String> systemsImplicated = new ArrayList<String>();
 
@@ -632,7 +632,7 @@ public class RFCController extends BaseController {
 			if (rfc == null) {
 				return "redirect:/";
 			}
-			Siges codeSiges = sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+			Siges codeSiges = rfc.getSiges();
 
 			List<String> systemsImplicated = new ArrayList<String>();
 
