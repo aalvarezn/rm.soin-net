@@ -35,10 +35,6 @@ function initDataTable() {
 						{
 							"mDataProp" : 'description'
 						},
-<<<<<<< HEAD
-=======
-						
->>>>>>> rc_gestion_incidencias
 						{
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';
@@ -59,7 +55,7 @@ function initDataTable() {
 						ordering : false,
 			});
 }
-<<<<<<< HEAD
+
 function updateSLA(index) {	
 	console.log(index);
 	Swal.fire({
@@ -87,9 +83,7 @@ function updateSLA(index) {
 		}
 	});
 }
-=======
 
->>>>>>> rc_gestion_incidencias
 function showStatusIncidence(index){
 	$fmStatusIncidence.validate().resetForm();
 	$fmStatusIncidence[0].reset();
@@ -142,10 +136,6 @@ function updateStatusIncidence() {
 	});
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> rc_gestion_incidencias
 function saveStatusIncidence() {
 	
 	if (!$fmStatusIncidence.valid())

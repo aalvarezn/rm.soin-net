@@ -32,6 +32,7 @@ import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.ReleaseReportFast;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTrackingShow;
@@ -611,7 +612,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		return crit;
 	}
-	
+
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaByReport(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
@@ -764,7 +765,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Releases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion")))
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"),Restrictions.eq("statuses.name", "Instalación PreQA")))
 				.add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla
@@ -889,16 +890,17 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength,
-			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId) throws SQLException, ParseException {
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
+			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,projectId);
+				systemId, statusId, projectId);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,projectId);
+				systemId, statusId, projectId);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -939,11 +941,11 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		if (projectId != 0) {
 			crit.add(Restrictions.eq("proyect.id", projectId));
 		}
-		
+
 		if (systemId != 0) {
 			crit.add(Restrictions.eq("system.id", systemId));
 		}
-		
+
 		crit.add(Restrictions.not(Restrictions.in("status.name", Constant.FILTRED)));
 		crit.addOrder(Order.desc("createDate"));
 
@@ -958,22 +960,25 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 	@Override
 	public ReleaseTrackingShow findReleaseTracking(int id) {
-		ReleaseTrackingShow release = (ReleaseTrackingShow) sessionFactory.getCurrentSession().get(ReleaseTrackingShow.class, id);
+		ReleaseTrackingShow release = (ReleaseTrackingShow) sessionFactory.getCurrentSession()
+				.get(ReleaseTrackingShow.class, id);
 		return release;
 	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength,
-			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId) throws SQLException, ParseException {
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
+			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,projectId);
+				systemId, statusId, projectId);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,projectId);
+				systemId, statusId, projectId);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -986,4 +991,13 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		json.setData(aaData);
 		return json;
 	}
+
+	@Override
+	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
+		ReleaseSummaryFile release = (ReleaseSummaryFile) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseSummaryFile.class).add(Restrictions.eq("id", id)).uniqueResult();
+		return release;
+
+	}
+
 }
