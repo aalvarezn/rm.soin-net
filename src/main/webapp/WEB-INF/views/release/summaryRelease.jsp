@@ -215,6 +215,7 @@
 						<div class="form-line">
 							<textarea readonly rows="" cols="" class="form-control"
 								placeholder="No Aplica." style="">${release.description}</textarea>
+								
 						</div>
 					</div>
 				</div>
