@@ -1,35 +1,33 @@
 package com.soin.sgrm.dao;
 
-import java.text.SimpleDateFormat;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.DateType;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
-import org.hibernate.type.TimestampType;
-import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.google.gdata.util.ParseException;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_Objects;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.utils.JsonSheet;
 
 @Repository
 public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
@@ -107,7 +105,7 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 						"inner join sistemas_sistema s on s.id = r.sistema_id " + 
 						"inner join releases_release_objetos rob on rob.release_id = r.id " + 
 						"inner join sistemas_objeto obj on rob.objeto_id = obj.id " + 
-						"where r.id <> :id and  e.nombre <> 'Anulado' and obj.nombre = :nombre and obj.item_de_configuracion_id = :tipoItem " + 
+						"where r.id <> :id and  e.nombre <> 'Anulado' and  e.nombre <> 'Borrador' and obj.nombre = :nombre and obj.item_de_configuracion_id = :tipoItem " + 
 						"and obj.tipo_objeto_id = :tipoObjeto and r.fecha_creacion < :fechaRelease " + 
 				"order by r.fecha_creacion desc ) where rownum <= 1");
 
@@ -172,7 +170,7 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 					+ "," + objects.get(i).getTypeObject() + "'" + (((i + 1) == objects.size()) ? "" : ",");
 		}
 
-		String sql = String.format(
+ 		String sql = String.format(
 				"select DISTINCT(d.id) , r1.numero_release from releases_release r1 " + "inner join "
 						+ "(select nombre, max(id) id from  ( "
 						+ "select DISTINCT(r.id), r.numero_release, o.nombre, o.fecha_revision from releases_release r "
@@ -183,7 +181,7 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 						+ "inner join releases_estado e " 
 						+ "	on e.id = r.estado_id  where r.id != :id and "
 						+ "o.nombre || ',' || o.item_de_configuracion_id || ',' || o.tipo_objeto_id in ( %s ) "
-						+ "and r.sistema_id = :system and r.fecha_creacion < :fecha and e.nombre <> 'Anulado') " 
+						+ "and r.sistema_id = :system and r.fecha_creacion < :fecha and e.nombre <> 'Anulado' and e.nombre <> 'Borrador'  ) " 
 						+ "group by nombre) d " 
 						+ "on r1.id = d.id ", concatObjet);
 
@@ -217,7 +215,7 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 						+ "inner join sistemas_objeto o " + "    on o.id = ro.objeto_id "
 						+ "inner join releases_estado e " + "    on e.id = r.estado_id " + "where r.id != :id and "
 						+ "o.nombre || ',' || o.item_de_configuracion_id || ',' || o.tipo_objeto_id in ( %s ) "
-						+ "and r.sistema_id = :system and r.fecha_creacion < :fecha and e.nombre <> 'Anulado' ",
+						+ "and r.sistema_id = :system and r.fecha_creacion < :fecha and e.nombre <> 'Anulado' and e.nombre <> 'Borrador' ",
 						concatObjet);
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql).addScalar("ID", new IntegerType())
@@ -229,6 +227,74 @@ public class ReleaseObjectDaoImpl implements ReleaseObjectDao {
 		if (list.isEmpty())
 			return null;
 		return list;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public JsonSheet<?> listObjectsByReleases(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer releaseId, Integer sql) throws SQLException, ParseException {
+		JsonSheet json = new JsonSheet();
+		Criteria crit = criteriaObjects( sEcho, iDisplayStart, iDisplayLength, sSearch,
+				releaseId,sql);
+
+		crit.setFirstResult(iDisplayStart);
+		crit.setMaxResults(iDisplayLength);
+
+		Criteria critCount = criteriaObjects( sEcho, iDisplayStart, iDisplayLength, sSearch,
+				releaseId,sql);
+
+		critCount.setProjection(Projections.rowCount());
+		Long count = (Long) critCount.uniqueResult();
+		int recordsTotal = count.intValue();
+		List<ReleaseObjectEdit> aaData = crit.list();
+		json.setDraw(sEcho);
+		json.setRecordsTotal(recordsTotal);
+		json.setRecordsFiltered(recordsTotal);
+		json.setData(aaData);
+		return json;
+	}
+	public Criteria criteriaObjects(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			Integer systemId,Integer sql)
+			throws SQLException, ParseException {
+
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		crit.createAlias("objects", "objects")
+		.add(Restrictions.eq("releaseId", systemId));
+
+		if(sql==1) {
+			crit.add(Restrictions.eq("objects.isSql", sql));
+		}
+
+		// Valores de busqueda en la tabla
+		if (sSearch != null && !((sSearch.trim()).equals("")))
+			crit.add(Restrictions.like("objects.name", sSearch, MatchMode.ANYWHERE).ignoreCase());
+
+
+		return crit;
+	}
+
+	@Override
+	public Integer listCountByReleases(Integer releaseId) throws ParseException, SQLException {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		crit.createAlias("objects", "objects")
+		.add(Restrictions.eq("releaseId", releaseId));
+
+		crit.setProjection(Projections.rowCount());
+		Long count = (Long) crit.uniqueResult();
+		int recordsTotal = count.intValue();
+	
+		return recordsTotal;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Release_Objects> listObjectsSql(Integer idRelease) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		crit.createAlias("objects", "objects")
+		.add(Restrictions.eq("releaseId", idRelease));
+			crit.add(Restrictions.eq("objects.isSql", 1));
+		
+		return crit.list();
 	}
 
 }

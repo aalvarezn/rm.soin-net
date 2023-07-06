@@ -47,6 +47,13 @@
 
 <link rel="stylesheet" type="text/css"
 	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<!-- TagInput Js -->
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css"
+	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
 </head>
 
 <body class="theme-grey">
@@ -84,6 +91,7 @@
 			</div>
 			<div class="block-header">
 				<p class="font-20">
+					<input type="hidden" id="release_id" value="${release.id}">
 					<span class="col-blue-grey">RESUMEN RELEASE</span> <span
 						class="flr font-bold col-cyan ">${release.releaseNumber}</span>
 				</p>
@@ -829,16 +837,17 @@
 				</div>
 			</c:if>
 
+
 			<c:if test="${systemConfiguration.configurationItems}">
 				<div class="row clearfix">
 					<div class="col-sm-12">
 						<h5 class="titulares">Items de Configuraci&oacute;n y Objetos</h5>
 					</div>
-					<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-10">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-10">
 						<div class="clearfix">
 							<div class="table-responsive">
-							<div class="help-info">Agregados: <span id="countObject">${release.objects.size()}</span></div>
-								<table id="configurationItemsTable"
+
+								<table id="tableTest"
 									class="table table-bordered table-striped table-hover dataTable no-footer">
 									<thead>
 										<tr>
@@ -850,16 +859,6 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach items="${release.objects}" var="object">
-											<tr>
-												<td>${object.name}</td>
-												<td><fmt:formatDate value="${object.revision_Date}"
-														pattern="dd/MM/YYYY" /></td>
-												<td>${object.revision_SVN}</td>
-												<td>${object.typeObject.name}</td>
-												<td>${object.configurationItem.name}</td>
-											</tr>
-										</c:forEach>
 									</tbody>
 								</table>
 							</div>
@@ -868,11 +867,12 @@
 					<div class="col-sm-12">
 						<h5 class="titulares">Objetos SQL</h5>
 					</div>
-					<div class="col-lg-12 col-md-12 col-sm-6 col-xs-12 m-t-10">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t-10">
 						<div class="clearfix">
 							<div class="table-responsive">
-								<table
-									class="table tableIni table-bordered table-striped table-hover dataTable no-footer">
+
+								<table id="tableTest2"
+									class="table table-bordered table-striped table-hover dataTable no-footer">
 									<thead>
 										<tr>
 											<th>Nombre del Objeto</th>
@@ -882,50 +882,6 @@
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach items="${release.objects}" var="releaseObject">
-											<c:if test="${releaseObject.isSql == 1}">
-												<tr id="${releaseObject.id}">
-													<td>${releaseObject.name}</td>
-													<td><c:choose>
-															<c:when test="${releaseObject.execute == 1}">
-																<div class="switch">
-																	<label>NO<input disabled="disabled"
-																		type="checkbox" checked="checked" value="1"><span
-																		class="lever"></span>S&Iacute;
-																	</label>
-																</div>
-															</c:when>
-															<c:otherwise>
-																<div class="switch">
-																	<label>NO<input disabled="disabled"
-																		type="checkbox" value="0"><span class="lever"></span>S&Iacute;
-																	</label>
-																</div>
-															</c:otherwise>
-														</c:choose></td>
-													<td><c:set var="dbScheme"
-															value="${fn:replace(releaseObject.dbScheme, ',', ', ')}" />
-														${dbScheme}</td>
-													<td><c:choose>
-															<c:when test="${releaseObject.executePlan == 1}">
-																<div class="switch">
-																	<label>NO<input disabled="disabled"
-																		type="checkbox" checked="checked" value="1"><span
-																		class="lever"></span>S&Iacute;
-																	</label>
-																</div>
-															</c:when>
-															<c:otherwise>
-																<div class="switch">
-																	<label>NO<input disabled="disabled"
-																		type="checkbox" value="0"><span class="lever"></span>S&Iacute;
-																	</label>
-																</div>
-															</c:otherwise>
-														</c:choose></td>
-												</tr>
-											</c:if>
-										</c:forEach>
 									</tbody>
 								</table>
 							</div>
@@ -933,6 +889,8 @@
 					</div>
 				</div>
 			</c:if>
+
+
 			<c:if test="${systemConfiguration.dependencies}">
 				<div class="row clearfix m-t-10">
 					<div class="col-sm-12">
@@ -1088,7 +1046,7 @@
 									</button>
 								</c:if>
 								<button type="button" class="btn btn-default setIcon"
-									onclick="changeStatusRelease(${release.id}, '${release.releaseNumber}' )"
+									onclick="changeStatusRelease(${release.id}, '${release.releaseNumber}', '${cc}' )"
 									title="Borrador"
 									style="background-color: #00294c !important; color: #fff; border: none !important;">
 									<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i
@@ -1104,6 +1062,9 @@
 	<%@include file="../plantilla/footer.jsp"%>
 	<script
 		src="<c:url value='/static/js/release/releaseSummaryActions.js'/>"></script>
+	<script src="<c:url value='/static/js/release/tableObjects.js'/>"></script>
+	<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 
 </body>
 

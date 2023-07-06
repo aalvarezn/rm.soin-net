@@ -84,15 +84,62 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_Release Manager")) {
 			return "redirect:/management/release/";
 		}
-
+		if (request.isUserInRole("ROLE_QA")) {
+			return "redirect:/release/qa";
+		}
+		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
+			return "redirect:/baseKnowledge/";
+		}
 		return "redirect:/release/";
 	}
+	
+	@RequestMapping(value = "/homeRFC", method = RequestMethod.GET)
+	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+		if (request.isUserInRole("ROLE_Release Manager")) {
+			return "redirect:/management/rfc/";
+		}
+
+		return "redirect:/rfc/";
+	}
+	@RequestMapping(value = "/homeRequest", method = RequestMethod.GET)
+	public String indexRequest(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+		if (request.isUserInRole("ROLE_Release Manager")) {
+			return "redirect:/management/request/";
+		}
+
+		return "redirect:/request/";
+	}
+	
+	@RequestMapping(value = "/homeIncidence", method = RequestMethod.GET)
+	public String indexIncidence(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		return "redirect:/incidence/";
+	}
+	
+	@RequestMapping(value = "/homeIncidenceAttention", method = RequestMethod.GET)
+	public String indexIncidenceAttention(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		return "redirect:/incidenceManagement/";
+	}
+	
+	@RequestMapping(value = "/homeBaseKnowledge", method = RequestMethod.GET)
+	public String indexBaseKnow(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+
+
+
+		return "redirect:/baseKnowledge/";
+	}
+
 
 	@RequestMapping(value = "/successLogin", method = RequestMethod.GET)
 	public String successLogin(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		if (request.isUserInRole("ROLE_Admin")) {
 			return "redirect:/admin/";
 		}
+		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
+			return "redirect:/baseKnowledge/";
+		}
+		
 
 		return "redirect:/";
 	}

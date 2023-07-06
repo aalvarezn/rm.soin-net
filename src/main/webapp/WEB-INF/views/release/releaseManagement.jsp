@@ -57,7 +57,10 @@
 
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
-
+	<!-- TagInput Js -->
+<link
+	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
+	rel="stylesheet" type="text/css">
 </head>
 <body class="theme-grey">
 	<input type="hidden" id="postMSG" name="postMSG" value="${data}">
@@ -187,6 +190,14 @@
 						</select>
 					</div>
 				</div>
+				<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
+					<div class="button-demo-refresh" style="padding-top: 25px;">
+						<button title="Refrescar tabla con filtros!" type="button"
+							class="btn btn-primary setIcon" onclick="refreshTable()">
+							<span><i class="material-icons m-t--2 ">update</i></span>
+						</button>
+					</div>
+				</div>
 			</div>
 			<!-- #tableFilters# -->
 			<div class="row clearfix">
@@ -226,6 +237,8 @@
 		src="<c:url value='/static/js/pages/tables/jquery-datatable.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/release/releaseManagement.js?v=${jsVersion}'/>"></script>
+			<script
+		src="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.js'/>"></script>
 </body>
 
 </html>

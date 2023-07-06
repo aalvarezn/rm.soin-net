@@ -1,5 +1,7 @@
 package com.soin.sgrm.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +23,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User getUserByUsername(String username) {
-		// TODO Auto-generated method stub
+	
 		return userDao.getUserByUsername(username);
 	}
+	
+	@Override
+	public List<User> getUsersRM() {
+	
+		return userDao.getUserRM();
+	}
+	@Override
+	public User findUserById(Integer id) {
+	
+		return userDao.findUserById(id);
+	}
+	
+
 
 }

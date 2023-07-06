@@ -108,6 +108,7 @@
 									<th>Nombre Usuario</th>
 									<th>Nombre Completo</th>
 									<th>Alias</th>
+									<th>Usuario Github</th>
 									<th>Correo</th>
 									<th class="actCol" style="text-align: center;">Activo</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
@@ -119,6 +120,7 @@
 										<td>${user.username}</td>
 										<td>${user.fullName}</td>
 										<td>${user.shortName}</td>
+										<td>${user.gitusername}</td>
 										<td>${user.emailAddress}</td>
 										<td><div class="iconLine align-center">
 												<c:if test="${!user.active}">

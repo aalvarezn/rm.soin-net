@@ -62,6 +62,12 @@ public class ReleaseEdit implements Serializable, Cloneable {
 	@Column(name = "SOPORTE_OPERATIVO_ICE")
 	private String operativeSupport;
 
+	@Column(name = "REMITENTES")
+	private String senders;
+
+	@Column(name = "MENSAJE_DESARROLLADOR")
+	private String message;
+
 	// Informacion General
 	@Value("${priority:0}")
 	@Column(name = "PRIORIDAD_ID", nullable = true)
@@ -278,6 +284,9 @@ public class ReleaseEdit implements Serializable, Cloneable {
 
 	@Transient
 	private String dateChange;
+	
+	@Transient
+	private Timestamp timeNew;
 
 	public int getId() {
 		return id;
@@ -844,4 +853,28 @@ public class ReleaseEdit implements Serializable, Cloneable {
 		this.motive = motive;
 	}
 
+	public Timestamp getTimeNew() {
+		return timeNew;
+	}
+
+	public void setTimeNew(Timestamp timeNew) {
+		this.timeNew = timeNew;
+	}
+
+	public String getSenders() {
+		return senders;
+	}
+
+	public void setSenders(String senders) {
+		this.senders = senders;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
 }

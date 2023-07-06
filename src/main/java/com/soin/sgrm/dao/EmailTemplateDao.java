@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.soin.sgrm.model.EmailTemplate;
 
-public interface EmailTemplateDao {
+public interface EmailTemplateDao  extends BaseDao<Integer, EmailTemplate>{
 
 	List<EmailTemplate> listAll();
 

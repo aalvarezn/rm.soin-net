@@ -15,11 +15,13 @@
 		</div>
 	</div>
 	<div class="row clearfix">
-		<div class="alig_btn" style="margin-top: 10px;">
-			<button type="button" class="btn btn-primary setIcon"
-				onclick="openCrontabForm()">
-				<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
-			</button>
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+			<div class="alig_btn" style="margin-top: 10px;">
+				<button type="button" class="btn btn-primary setIcon"
+					onclick="openCrontabForm()">
+					<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
+				</button>
+			</div>
 		</div>
 	</div>
 	<div class="row clearfix">
@@ -65,11 +67,13 @@
 		</div>
 	</div>
 	<div class="row clearfix">
-		<div class="alig_btn" style="margin-top: 10px;">
-			<button type="button" class="btn btn-primary setIcon"
-				onclick="openButtonForm()">
-				<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
-			</button>
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+			<div class="alig_btn" style="margin-top: 10px;">
+				<button type="button" class="btn btn-primary setIcon"
+					onclick="openButtonForm()">
+					<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
+				</button>
+			</div>
 		</div>
 	</div>
 	<div class="row clearfix">
@@ -115,11 +119,13 @@
 		</div>
 	</div>
 	<div class="row clearfix">
-		<div class="alig_btn" style="margin-top: 10px;">
-			<button type="button" class="btn btn-primary setIcon"
-				onclick="openButtonFileForm()">
-				<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
-			</button>
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+			<div class="alig_btn" style="margin-top: 10px;">
+				<button type="button" class="btn btn-primary setIcon"
+					onclick="openButtonFileForm()">
+					<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
+				</button>
+			</div>
 		</div>
 	</div>
 	<div class="row clearfix">
@@ -165,80 +171,70 @@
 		</div>
 	</div>
 	<div class="row clearfix">
-		<div class="alig_btn" style="margin-top: 10px;">
-			<c:if test="${release.system.importObjects}">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
+			<div class="alig_btn" style="margin-top: 10px;">
+				<c:if test="${release.system.importObjects}">
+					<button type="button" class="btn btn-default setIcon"
+						onclick="synchronizeObjects()">
+						<span>SINCRONIZAR</span><span style="margin-left: 10px"><i
+							class="material-icons m-t--2 ">autorenew</i></span>
+					</button>
+				</c:if>
 				<button type="button" class="btn btn-default setIcon"
-					onclick="synchronizeObjects()">
-					<span>SINCRONIZAR</span><span style="margin-left: 10px"><i
-						class="material-icons m-t--2 ">autorenew</i></span>
+					onclick="openCSVModal()">
+					<span>SUBIR CSV</span><span style="margin-left: 10px"><i
+						class="material-icons m-t--2 ">cloud_upload</i></span>
 				</button>
-			</c:if>
-			<button type="button" class="btn btn-default setIcon"
-				onclick="openCSVModal()">
-				<span>SUBIR CSV</span><span style="margin-left: 10px"><i
-					class="material-icons m-t--2 ">cloud_upload</i></span>
-			</button>
-			<button type="button" class="btn btn-primary setIcon"
-				onclick="openObjectItemModal()">
-				<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
-			</button>
+				<button type="button" class="btn btn-primary setIcon"
+					onclick="openObjectItemModal()">
+					<span>AGREGAR</span><span><i class="material-icons m-t--2 ">add</i></span>
+				</button>
+			</div>
 		</div>
 	</div>
+
 	<div class="row clearfix">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<div class="table-responsive"
-				style="margin-top: 20px; margin-bottom: 20px;">
-				<div class="help-info">Agregados: <span id="countObject">${release.releaseObjects.size()}</span></div>
-				<table
-					class="table tableIni table-bordered table-striped table-hover dataTable"
-					id="configurationItemsTable">
-					<thead>
-						<tr>
-							<th>Nombre</th>
-							<th>Descripci&oacute;n</th>
-							<th>Revisi&oacute;n SVN</th>
-							<th>Fecha de revisi&oacute;n</th>
-							<th>Tipo</th>
-							<th>Item Configuraci&oacute;n</th>
-							<th class="actCol"
-								style="text-align: center; padding-left: 0px; padding-right: 0px;">Acciones</th>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach items="${release.releaseObjects}" var="releaseObject">
-							<tr id="${releaseObject.id}">
-								<td>${releaseObject.name}</td>
-								<td>${releaseObject.description}</td>
-								<td>${releaseObject.revision_SVN}</td>
-								<td><fmt:formatDate value="${releaseObject.revision_Date}"
-										pattern="dd/MM/YYYY" /></td>
-								<td>${releaseObject.typeObject.name}</td>
-								<td>${releaseObject.configurationItem.name}</td>
-								<td><div style="text-align: center">
-										<i onclick="deleteconfigurationItemsRow(${releaseObject.id})"
-											class="material-icons gris" style="font-size: 30px;">delete</i>
-									</div></td>
-							</tr>
-						</c:forEach>
-					</tbody>
-				</table>
+
+			<div class="help-info">
+				Agregados: <span id="countObject"></span>
 			</div>
+
+			<table id="tableTest4"
+				class="table table-bordered table-striped table-hover dataTable no-footer">
+				<thead>
+					<tr>
+						<th>Nombre</th>
+						<th>Fecha Revisión</th>
+						<th>Número Revisión</th>
+						<th>Tipo</th>
+						<th>Item Configuración</th>
+						<th class="actCol"
+							style="text-align: center; padding-left: 0px; padding-right: 0px;">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
 			<div style="margin-top: -15px;" class="form-group m-t-10 m-b-0i">
 				<label id="configurationItemsTable_error" class="error fieldError"
 					for="name" style="visibility: hidden;">Campo Requerido.</label>
 			</div>
 		</div>
+
 	</div>
+
 	<div class="row clearfix">
 
 		<div class="col-sm-12">
 			<h5 class="titulares">Objetos SQL</h5>
 		</div>
 	</div>
+
 	<div class="row clearfix">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<div class="col-lg-12 col-md-6 col-sm-12 col-xs-12">
 			<div class="table-responsive"
-				style="margin-top: 20px; margin-bottom: 20px;">
+				style="margin-top: 20px; margin-bottom: 20px; overflow-x: auto;">
 				<table
 					class="table tableIni table-bordered table-striped table-hover dataTable"
 					id="sqlObjectTable">
@@ -251,15 +247,15 @@
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach items="${release.releaseObjects}" var="releaseObject">
-							<c:if test="${releaseObject.isSql == 1}">
-								<tr id="${releaseObject.id}">
-									<td>${releaseObject.name}</td>
+						<c:forEach items="${releaseObject}" var="releaseObjects">
+							<c:if test="${releaseObjects.objects.isSql == 1}">
+								<tr id="${releaseObjects.objects.id}">
+									<td>${releaseObjects.objects.name}</td>
 									<td><c:choose>
-											<c:when test="${releaseObject.execute == 1}">
+											<c:when test="${releaseObjects.objects.execute == 1}">
 												<div class="switch">
 													<label>NO<input
-														id="obj_sql_exec_${releaseObject.id}" type="checkbox"
+														id="obj_sql_exec_${releaseObjects.objects.id}" type="checkbox"
 														checked="checked" value="1"><span class="lever"></span>S&Iacute;
 													</label>
 												</div>
@@ -267,24 +263,24 @@
 											<c:otherwise>
 												<div class="switch">
 													<label>NO<input
-														id="obj_sql_exec_${releaseObject.id}" type="checkbox"
+														id="obj_sql_exec_${releaseObjects.objects.id}" type="checkbox"
 														value="0"><span class="lever"></span>S&Iacute;
 													</label>
 												</div>
 											</c:otherwise>
 										</c:choose></td>
-									<td><input id="form-tags-${releaseObject.id}"
+									<td><input id="form-tags-${releaseObjects.objects.id}"
 										maxlength="150" class="tagInit" name="tags-1" type="text"
-										value="${releaseObject.dbScheme}">
+										value="${releaseObjects.objects.dbScheme}">
 										<div class="form-group m-b-0i">
-											<label id="form-tags-${releaseObject.id}_error"
+											<label id="form-tags-${releaseObjects.objects.id}_error"
 												class="error fieldError" for="name"
 												style="visibility: hidden;">Campo Requerido.</label>
 										</div></td>
 									<td><c:choose>
-											<c:when test="${releaseObject.executePlan == 1}">
+											<c:when test="${releaseObjects.objects.executePlan == 1}">
 												<div class="switch">
-													<label>NO<input id="obj_sql_rp_${releaseObject.id}"
+													<label>NO<input id="obj_sql_rp_${releaseObjects.objects.id}"
 														type="checkbox" checked="checked" value="1"><span
 														class="lever"></span>S&Iacute;
 													</label>
@@ -292,7 +288,7 @@
 											</c:when>
 											<c:otherwise>
 												<div class="switch">
-													<label>NO<input id="obj_sql_rp_${releaseObject.id}"
+													<label>NO<input id="obj_sql_rp_${releaseObjects.objects.id}"
 														type="checkbox" value="0"><span class="lever"></span>S&Iacute;
 													</label>
 												</div>
@@ -336,7 +332,7 @@
 										name="dependencyTechnical" class="form-control"
 										placeholder="Ingrese las dependencias..."
 										style="height: 60px;">
-										<div class="help-info">M&aacute;x. 50 caracteres</div>
+									<div class="help-info">M&aacute;x. 50 caracteres</div>
 								</div>
 							</div>
 						</div>
@@ -379,7 +375,7 @@
 										name="dependencyFunctional" class="form-control"
 										placeholder="Ingrese las dependencias..."
 										style="height: 60px;">
-										<div class="help-info">M&aacute;x. 50 caracteres</div>
+									<div class="help-info">M&aacute;x. 50 caracteres</div>
 								</div>
 							</div>
 						</div>
@@ -430,10 +426,11 @@
 								<div class="form-group m-b-0i">
 									<div class="form-line">
 										<textarea rows="2" cols="" id="functionalDescription"
-											maxlength="100" name="functionalDescription"
+											maxlength="500" name="functionalDescription"
 											class="form-control"
-											placeholder="Ingrese una breve descripci&oacute;n..." style="">${release.functionalDescription}</textarea>
-											<div class="help-info">M&aacute;x. 100 caracteres</div>
+											placeholder="Ingrese las dependencias no encontradas..."
+											style="">${release.functionalDescription}</textarea>
+										<div class="help-info">M&aacute;x. 500 caracteres</div>
 									</div>
 								</div>
 							</div>
@@ -446,10 +443,11 @@
 								<div class="form-group m-b-0i">
 									<div class="form-line">
 										<textarea rows="2" cols="" id="functionalDescription"
-											maxlength="100" name="functionalDescription"
+											maxlength="500" name="functionalDescription"
 											class="form-control"
-											placeholder="Ingrese una breve descripcion..." style="">${release.functionalDescription}</textarea>
-											<div class="help-info">M&aacute;x. 100 caracteres</div>
+											placeholder="Ingrese las dependencias no encontradas..."
+											style="">${release.functionalDescription}</textarea>
+										<div class="help-info">M&aacute;x. 500 caracteres</div>
 									</div>
 								</div>
 							</div>

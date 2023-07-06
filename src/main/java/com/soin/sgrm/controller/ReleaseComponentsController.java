@@ -1,11 +1,14 @@
 package com.soin.sgrm.controller;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -48,6 +51,7 @@ import com.soin.sgrm.utils.JsonAutocomplete;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
 import com.soin.sgrm.utils.MyLevel;
+import com.google.common.collect.Sets;
 import com.soin.sgrm.exception.Sentry;
 
 @Controller
@@ -74,6 +78,7 @@ public class ReleaseComponentsController extends BaseController {
 	private TypeObjectService typeObjectService;
 	@Autowired
 	private RMReleaseFileService rmReleaseSerivce;
+	
 
 	@RequestMapping(value = "/addReleaseAmbient", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse addReleaseAmbient(HttpServletRequest request, ModelMap model) {
@@ -437,6 +442,20 @@ public class ReleaseComponentsController extends BaseController {
 			TypeObject type = null;
 			BulkLoad bl = new BulkLoad();
 			if (list.size() != 0) {
+				
+				Set<ReleaseObject> listObjects=release.getReleaseObjects();
+				
+				for(ReleaseObject object:listObjects) {
+					releaseObjectService.deleteObject(release.getId(),object);
+				}
+				List<ReleaseObject> listEmpty=new ArrayList<ReleaseObject>(); 
+				release.setReleaseObjects(Sets.newHashSet(listEmpty));
+				Set<Dependency>dependenciesDelete=release.getDependencies();
+				for(Dependency dependencyDelete:dependenciesDelete) {
+					dependencyService.delete(dependencyDelete);
+				}
+				List<Dependency> listDependencyEmpty=new ArrayList<Dependency>(); 
+				release.setDependencies(Sets.newHashSet(listDependencyEmpty));
 				for (RMReleaseFile rmReleaseFile : list) {
 					obj = new ReleaseObjectEdit(rmReleaseFile.getFilename(), rmReleaseFile.getFilename(),
 							rmReleaseFile.getRevision() + "", release.getModule_id());
@@ -446,7 +465,8 @@ public class ReleaseComponentsController extends BaseController {
 						obj.setTypeObject(type.getId());
 						obj.setItemConfiguration(configurationItem.getId());
 						obj.setModuleId(release.getModule_id());
-						obj.setRevision_Date(CommonUtils.getSqlDate(CommonUtils.getSystemDate().toLowerCase()));
+						Date pruebaFecha=CommonUtils.getSqlDateNew(CommonUtils.getSystemDate().toLowerCase());
+						obj.setRevision_Date(pruebaFecha);
 						obj.setIsSql((configurationItem.getName().equalsIgnoreCase("Base Datos")) ? 1 : 0);
 						objects.add(obj);
 					}
@@ -461,7 +481,6 @@ public class ReleaseComponentsController extends BaseController {
 				listObj = releaseObjectService.findReleaseToAddByObjectList(objects, release);
 
 			ReleaseUser releaseFrom = releaseService.findReleaseUserById(id);
-//			Release releaseObjects = releaseService.findReleaseById(id);
 			ArrayList<Dependency> dependencies = new ArrayList<Dependency>();
 			Dependency dependency = null;
 			ReleaseUser releaseTo = null;

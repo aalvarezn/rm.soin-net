@@ -6,6 +6,7 @@ var dependenciesTechnicalList = [];
 var ambientsList = [];
 var modifiedComponentsList = [];
 var actionsList = [];
+var $dtObjects;
 
 
 let countAmbients, ambientInterval, $auxAmb;
@@ -107,6 +108,14 @@ $releaseEditForm.find('#dependencyTechnical').keydown(function( event ) {
 });
 
 $(function() {
+	countObjects();
+	 $('.tagInitMail').tagsInput({
+		 placeholder: 'Ingrese los correos'
+	 });
+
+	$('.tagInit').tagsInput({
+		width:'400px'
+	});
 	$('.nav-tabs > li a[title]').tooltip();
 	// Wizard
 	$('.stepper a[data-toggle="tab"]').on('show.bs.tab', function(e) {
@@ -185,6 +194,7 @@ $(function() {
 	ambientsList = listLi('listAmbients');
 	modifiedComponentsList = listLi('listComponents');
 	actionsList = listRowsId('environmentActionTable');
+	initTableObjectRelease();
 });
 
 function formHasChanges(){
@@ -211,7 +221,7 @@ function loadAutoCompleteModifiedComponent(search) {
 	.ajax({
 		type : "GET",
 		url : getCont() + "release/" + "modifiedComponentAutoComplete",
-		timeout: 60000,
+		timeout: 6000000,
 		data : {},
 		success : function(response) {
 			autocompleteModifiedComponent(response);
@@ -260,7 +270,7 @@ function loadAutoCompleteRelease(search, isFunctional) {
 	.ajax({
 		type : "GET",
 		url : getCont() + "release/" + "releaseAutoComplete-" + search,
-		timeout: 60000,
+		timeout: 6000000,
 		data : {
 			release_id : $('#generateReleaseForm #release_id').val()
 		},
@@ -321,7 +331,7 @@ function loadAutoCompleteAmbient(search) {
 		type : "GET",
 		url : cont + "ambient/" + "ambientAutoComplete-" + search + "-"
 		+ $('#generateReleaseForm #systemId').val(),
-		timeout: 60000,
+		timeout: 6000000,
 		data : {},
 		success : function(response) {
 			autocompleteAmbient(response);
@@ -462,7 +472,6 @@ function requestRelease() {
 	.ajax({
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 60000,
 		data : {
 			// Informacion general
 			release_id : $(form + ' #release_id').val(),
@@ -499,7 +508,10 @@ function requestRelease() {
 			ambient : JSON.stringify(ambients),
 			preConditions : $(form + ' #preConditions').val(),
 			postConditions : $(form + ' #postConditions').val(),
-
+			// Datos Email
+			senders:$releaseEditForm.find('#senders').val(),
+			message:$releaseEditForm.find('#messagePer').val(),
+			
 			// Componentes de AIA
 			modifiedComponent : JSON.stringify(modifiedComponents),
 
@@ -540,7 +552,7 @@ function requestRelease() {
 															.val()
 		},
 		success : function(response) {
-			console.log(response);
+			
 			responseAjaxRequestRelease(response);
 		},
 		error: function(x, t, m) {
@@ -593,7 +605,6 @@ function sendRelease() {
 		// async : false,
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 60000,
 		data : {
 			// Informacion general
 			release_id : $(form + ' #release_id').val(),
@@ -631,6 +642,10 @@ function sendRelease() {
 			preConditions : $(form + ' #preConditions').val(),
 			postConditions : $(form + ' #postConditions').val(),
 
+			// Datos Email
+			senders:$releaseEditForm.find('#senders').val(),
+			message:$releaseEditForm.find('#messagePer').val(),
+			
 			// Componentes de AIA
 			modifiedComponent : JSON.stringify(modifiedComponents),
 
@@ -790,17 +805,37 @@ function synchronizeObjects() {
 		type : "POST",
 		url : cont + "release/" + "synchronize/"
 		+ $('#generateReleaseForm #release_id').val(),
-		timeout: 60000,
+		timeout: 60000000,
 		data : {},
 		success : function(response) {
 			responseAjaxSynchronize(response);
+			$.each(response.obj.dependencies, function(key, value) {
+				modifyDependency(value.to_release);
+			});
+			reloadPreview();
+			$dtObjects.ajax.reload();
+			countObjects();
 		},
 		error: function(x, t, m) {
 			notifyAjaxError(x, t, m);
 		}
 	});
 }
+function countObjects(){
 
+	var sId =$('#generateReleaseForm #release_id').val();
+
+	$.ajax({
+		type: 'GET',
+		url: getCont() + "release/countObjects/"+sId,
+		success: function(result) {
+			$('#countObject').text(result);
+		
+			}
+			
+			
+		});
+	}
 function responseAjaxSynchronize(response) {
 
 	switch (response.status) {
@@ -808,10 +843,12 @@ function responseAjaxSynchronize(response) {
 		if(response.obj == null)
 			swal("Correcto!", response.data,"success", 2000);
 		else {
-			addRowObject(response.obj.objects);
+			//ddRowObject(response.obj.objects);
+			/*
 			$.each(response.obj.dependencies, function(key, value) {
 				modifyDependency(value.to_release);
 			});
+			*/
 			swal("Correcto!", "Sincronizacion finalizada correctamente.",
 					"success", 2000)
 		}
@@ -837,6 +874,7 @@ function sendPartialRelease() {
 	var modifiedComponents = listLi('listComponents');
 	var actions = listRowsId('environmentActionTable');
 	var objectItemConfiguration = listItemObjects();
+
 	changeSaveButton(true);
 	var cont = getCont();
 	$
@@ -844,7 +882,6 @@ function sendPartialRelease() {
 		// async : false,
 		type : "POST",
 		url : cont + "release/" + "saveRelease",
-		timeout: 60000,
 		data : {
 			// Informacion general
 			release_id : $releaseEditForm.find('#release_id').val(),
@@ -897,7 +934,9 @@ function sendPartialRelease() {
 			prodInstallationInstructions : $releaseEditForm.find('#prodInstallationInstructions').val(),
 			prodVerificationInstructions : $releaseEditForm.find('#prodVerificationInstructions').val(),
 			prodRollbackPlan : $releaseEditForm.find('#prodRollbackPlan').val(),
-
+			// Datos Email
+			senders:$releaseEditForm.find('#senders').val(),
+			message:$releaseEditForm.find('#messagePer').val(),
 			// Pruebas minimas
 			minimalEvidence : $releaseEditForm.find('#minimalEvidence').val(),
 
@@ -954,4 +993,57 @@ function changeSaveButton(save){
 		$releaseEditForm.find('#btnSave').find('#btnText').text('GUARDAR');
 		$releaseEditForm.find('#btnSave').find('#btnIcon').text('check_box');
 	}
+}
+
+function initTableObjectRelease() {
+
+	$dtObjects = $('#tableTest4').DataTable(
+			{
+
+				lengthMenu : [ [ 10, 25, 50, -1 ],
+					[ '10', '25', '50', 'Mostrar todo' ] ],
+					"iDisplayLength" : 10,
+					"language" : optionLanguaje,
+					"iDisplayStart" : 0,
+					"processing" : true,
+					"serverSide" : true,
+					"sAjaxSource" : getCont() + "release/listObjects",
+					"fnServerParams" : function(aoData) {
+						aoData.push({"name": "releaseId", "value": $('#release_id').val()},
+						);
+					},
+					"aoColumns" : [
+						{
+							"mDataProp" : "objects.name",
+						},
+						{
+							"mRender" : function(data, type, row, meta) {
+								return moment(row.objects.revision_Date).format('DD/MM/YYYY h:mm:ss a');
+							}
+						},
+						{
+							"mDataProp" : "objects.revision_SVN"
+						},
+						{
+							"mDataProp" : "objects.typeObject.name"
+						},
+						{
+							"mDataProp" : "objects.configurationItem.name"
+						},
+						{
+							render : function(data, type, row, meta) {
+								
+								var options = '<div class="iconLineC">';
+								options += '<a onclick="deleteconfigurationItemsRow('
+									+ row.objects.id
+									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
+
+								options += ' </div>';
+
+								return options;
+							}
+						} 
+						 ],
+					ordering : false,
+			});
 }

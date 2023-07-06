@@ -84,6 +84,13 @@ public class RequestDaoImpl implements RequestDao {
 		return (Request) crit.uniqueResult();
 	}
 
+	@Override
+	public Request findByNameCode(String code_soin) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Request.class);
+		crit.add(Restrictions.eq("code_soin", code_soin));
+		return (Request) crit.uniqueResult();
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Request> list() {
@@ -118,6 +125,14 @@ public class RequestDaoImpl implements RequestDao {
 	@Override
 	public void softDelete(Request request) {
 		sessionFactory.getCurrentSession().update(request);
+	}
+
+	@Override
+	public Request listByTypeAndCodeSoin(TypeRequest type, String code_soin) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Request.class);
+		crit.createCriteria("typeRequest").add(Restrictions.eq("id", type.getId()));
+		crit.add(Restrictions.eq("code_soin", code_soin));
+		return (Request) crit.uniqueResult();
 	}
 
 }

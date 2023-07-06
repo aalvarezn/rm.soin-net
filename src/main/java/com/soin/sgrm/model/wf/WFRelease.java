@@ -1,11 +1,8 @@
 package com.soin.sgrm.model.wf;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import java.sql.Timestamp;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +37,7 @@ public class WFRelease implements Serializable {
 	private String releaseNumber;
 
 	@Column(name = "FECHA_CREACION")
-	private Date createDate;
+	private Timestamp createDate;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "SOLICITADO_POR_ID", nullable = true)
@@ -59,6 +57,11 @@ public class WFRelease implements Serializable {
 
 	@Column(name = "OPERADOR")
 	private String operator;
+	
+	@Value("${retries:0}")
+	@Column(name = "REINTENTOS", nullable = false)
+	private Integer retries;
+
 
 	@OrderBy("trackingDate ASC")
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -81,11 +84,11 @@ public class WFRelease implements Serializable {
 		this.releaseNumber = releaseNumber;
 	}
 
-	public Date getCreateDate() {
+	public Timestamp getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(Date createDate) {
+	public void setCreateDate(Timestamp createDate) {
 		this.createDate = createDate;
 	}
 
@@ -136,9 +139,20 @@ public class WFRelease implements Serializable {
 	public void setTracking(Set<ReleaseTracking> tracking) {
 		this.tracking = tracking;
 	}
+	
+	
+
+	public Integer getRetries() {
+		return retries;
+	}
+
+	public void setRetries(Integer retries) {
+		this.retries = retries;
+	}
 
 	public void convertReleaseToWFRelease(Release release) {
 		this.node = release.getNode();
+		this.createDate=release.getCreateDate();
 		this.releaseNumber = release.getReleaseNumber();
 		this.system = release.getSystem();
 		this.status = release.getStatus();

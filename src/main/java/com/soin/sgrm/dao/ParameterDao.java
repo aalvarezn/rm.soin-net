@@ -14,4 +14,6 @@ public interface ParameterDao {
 
 	void updateParameter(Parameter param);
 
+	Parameter getParameterByCode(Integer code);
+
 }

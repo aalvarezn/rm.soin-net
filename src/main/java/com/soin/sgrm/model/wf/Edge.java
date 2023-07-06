@@ -24,6 +24,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.soin.sgrm.utils.Constant;
 
@@ -44,6 +45,7 @@ public class Edge implements Serializable {
 	private Node nodeFrom;
 
 	@ManyToOne(fetch = FetchType.EAGER)
+	//@JsonBackReference
 	@JoinColumn(name = "TO_NODE_ID", nullable = true)
 	private Node nodeTo;
 

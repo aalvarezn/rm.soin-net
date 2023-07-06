@@ -17,7 +17,7 @@ $('.tagInit').tagsInput();
 $(function() {
 	$emailForm.find("textarea").parent().removeClass('focused');
 	$emailForm.find("input").parent().removeClass('focused');
-
+	changeAttributte();
 	$('#htmlBody').summernote({
 		lang : 'es-ES',
 		placeholder : 'Ingrese su plantilla de correo',
@@ -26,6 +26,17 @@ $(function() {
 	});
 });
 
+function changeAttributte(){
+	$('#changeType').change(function(){
+		if($(this).val()==0){
+			$('#ReleaseAttributtes').slideToggle();
+			$('#RFCAttributtes').slideToggle();
+		}else{
+			$('#ReleaseAttributtes').slideToggle();
+			$('#RFCAttributtes').slideToggle();
+		}
+	});
+}
 function sendEmailTest() {
 	resetErrors();
 	blockUI();

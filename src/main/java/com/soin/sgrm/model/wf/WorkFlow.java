@@ -49,8 +49,16 @@ public class WorkFlow implements Serializable {
 	@OneToMany(mappedBy = "workFlow", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Node> nodes = new ArrayList<Node>();
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ID_TIPO", nullable = true)
+	private Type type;
+	
 	@Transient
 	private Integer systemId;
+
+	@Transient
+	private Integer typeId;
+	
 
 	public int getId() {
 		return id;
@@ -92,4 +100,20 @@ public class WorkFlow implements Serializable {
 		this.systemId = systemId;
 	}
 
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public Integer getTypeId() {
+		return typeId;
+	}
+
+	public void setTypeId(Integer typeId) {
+		this.typeId = typeId;
+	}
+	
 }

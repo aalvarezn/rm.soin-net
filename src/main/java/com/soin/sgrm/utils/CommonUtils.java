@@ -1,6 +1,8 @@
 package com.soin.sgrm.utils;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -43,6 +45,29 @@ public class CommonUtils {
 		} catch (Exception e) {
 			throw new Exception("Formato de Fecha Inválida.");
 		}
+	}
+	
+	public static java.sql.Date getSqlDateNew(String dateString) throws Exception{
+        String inputPattern = "yyyy-MM-dd HH:mm:ss.SSS";
+        String outputPattern = "yyyy-MM-dd 00:00:00.000";
+
+        SimpleDateFormat inputFormat = new SimpleDateFormat(inputPattern);
+        SimpleDateFormat outputFormat = new SimpleDateFormat(outputPattern);
+
+        try {
+            java.util.Date utilDate = inputFormat.parse(dateString);
+
+            String formattedDateString = outputFormat.format(utilDate);
+            java.util.Date formattedUtilDate = outputFormat.parse(formattedDateString);
+
+            java.sql.Date sqlDate = new java.sql.Date(formattedUtilDate.getTime());
+            
+            return sqlDate;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+		return null;
+
 	}
 
 	public static java.sql.Date getSqlDate() {
@@ -107,4 +132,17 @@ public class CommonUtils {
 		return a.equals(b);
 	}
 
+	public static Timestamp convertStringToTimestamp(String str_date, String format) {
+        if (str_date == null || str_date.length() == 0)
+            return null;
+        try {
+            DateFormat formatter = new SimpleDateFormat(format);
+            // you can change format of date
+            Date date = formatter.parse(str_date);
+            java.sql.Timestamp timeStampDate = new Timestamp(date.getTime());
+            return timeStampDate;
+        } catch (ParseException e) {
+            return null;
+        }
+    }
 }

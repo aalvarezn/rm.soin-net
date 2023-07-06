@@ -39,17 +39,41 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+
+import com.soin.sgrm.model.BaseKnowledge;
+import com.soin.sgrm.model.BaseKnowledgeFile;
 import com.soin.sgrm.model.DocTemplate;
+import com.soin.sgrm.model.Incidence;
+import com.soin.sgrm.model.IncidenceFile;
 import com.soin.sgrm.model.Project;
+import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.RFCFile;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseFile;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryFile;
+import com.soin.sgrm.model.ReportFile;
 import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.RequestBase;
+import com.soin.sgrm.model.RequestBaseFile;
+import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.Siges;
+import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.service.BaseKnowledgeFileService;
+import com.soin.sgrm.service.BaseKnowledgeService;
 import com.soin.sgrm.service.DocTemplateService;
+import com.soin.sgrm.service.IncidenceFileService;
+import com.soin.sgrm.service.IncidenceService;
 import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.RFCFileService;
+import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseFileService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.ReportFileService;
+import com.soin.sgrm.service.RequestBaseService;
+import com.soin.sgrm.service.RequestFileService;
 import com.soin.sgrm.service.RequestService;
+import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.DocxContext;
@@ -81,10 +105,41 @@ public class FileController extends BaseController {
 	ReleaseFileService releaseFileService;
 	@Autowired
 	ResourceLoader resourceLoader;
+	
+	@Autowired
+	RFCService rfcService;
+	
+	@Autowired
+	BaseKnowledgeService baseKnowledgeService;
+	
+	@Autowired
+	IncidenceService incidenceService;
 
+	
+	@Autowired
+	RequestBaseService requestBaseService;
+
+	@Autowired 
+	RFCFileService rfcFileService;
+
+	@Autowired 
+	BaseKnowledgeFileService baseKnowFileService;
+	
+	@Autowired 
+	RequestFileService requestFileService;
+	
+	@Autowired
+	IncidenceFileService incidenceFileService;
+	
+	@Autowired
+	SigesService sigesService;
+	
 	@Autowired
 	private Environment env;
-
+	
+	@Autowired
+	ReportFileService reportFileService;
+	
 	DocxVariables docxVariables = null;
 
 	DocxContext context = null;
@@ -100,8 +155,8 @@ public class FileController extends BaseController {
 	@RequestMapping(value = "/impactObject-{id}", method = RequestMethod.GET)
 	public void impactObject(HttpServletResponse response, @PathVariable Integer id) throws IOException, SQLException {
 		String basePath = env.getProperty("fileStore.path");
-		ReleaseEdit release = releaseService.findEditById(id); // se obtiene el release
-		String path = basePath + createPath(release.getId(), basePath) + "documentos/";
+		ReleaseSummaryFile release = releaseService.findByIdSummaryFile(id); // se obtiene el release
+		String path = basePath + createPath(release, basePath) + "documentos/";
 		new File(path).mkdirs();
 		File temp = new File(path + release.getReleaseNumber() + ".csv");
 		List<String> list = releaseFileService.ImpactObjects(id); // lista de objetos
@@ -151,7 +206,8 @@ public class FileController extends BaseController {
 
 		// Direccion del archivo a guardar
 		String basePath = env.getProperty("fileStore.path");
-		String path = createPath(id, basePath);
+		ReleaseSummaryFile release=releaseService.findByIdSummaryFile(id);
+		String path = createPath(release, basePath);
 		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
 
 		// Referencia del archivo
@@ -245,29 +301,52 @@ public class FileController extends BaseController {
 	 * @return: Base path del release.
 	 * @throws SQLException
 	 **/
-	public String createPath(Integer id, String basePath) throws SQLException {
-		ReleaseEdit release;
-		try {
-			release = releaseService.findEditById(id);
+	public String createPath(ReleaseSummaryFile release, String basePath) throws SQLException {
+
 			Project project = projectService.findById(release.getSystem().getProyectId());
 			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
 			if (release.getRequestList().size() != 0) {
 				Request request = release.getRequestList().iterator().next();
 				if (request.getCode_ice() != null) {
-					path += request.getCode_soin() + "_" + request.getCode_ice() + "/";
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
 				} else {
-					path += request.getCode_soin() + "/";
+					path += request.getCode_soin().replace(" ","") + "/";
 				}
 			}
 			path += release.getReleaseNumber() + "/";
+			path=path.trim();
 			new File(basePath + path).mkdirs();
 			return path;
-		} catch (SQLException e) {
-			Sentry.capture(e, "files");
-			throw e;
-		}
+		
 
 	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del release.
+	 * @author: Esteban Bogantes H.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathDownload(ReleaseSummary release, String basePath) throws SQLException {
+
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
+			if (release.getRequestList().size() != 0) {
+				Request request = release.getRequestList().iterator().next();
+				if (request.getCode_ice() != null) {
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
+				} else {
+					path += request.getCode_soin().replace(" ","") + "/";
+				}
+			}
+			path += release.getReleaseNumber() + "/";
+			path=path.trim();
+			new File(basePath + path).mkdirs();
+			return path;
+		
+
+	}
+
 
 	/**
 	 * @description: Crea la asociacion para descargar el archivo en la respuesta.
@@ -294,7 +373,7 @@ public class FileController extends BaseController {
 	 * @author: Esteban Bogantes H.
 	 * @return: archivo a descargar.
 	 **/
-	@SuppressWarnings({ "unused" })
+
 	@RequestMapping(value = "/download/{releaseId}/{docId}", method = RequestMethod.GET)
 	public void downloadFile(HttpServletResponse response, @PathVariable Integer releaseId, @PathVariable Integer docId)
 			throws FileNotFoundException, Docx4JException, IOException {
@@ -307,7 +386,7 @@ public class FileController extends BaseController {
 			if (docFile != null) {
 				// Se obtiene el archivo plantilla
 				File fileTemplate = new File(env.getProperty("fileStore.templates") + docFile.getTemplateName());
-				String path = basePath + createPath(releaseId, basePath) + "documentos/";
+				String path = basePath + createPathDownload(release, basePath) + "documentos/";
 				new File(path).mkdirs();
 				String sufix = (docFile.getSufix() == null) ? "" : docFile.getSufix();
 				// Se genera el archivo de salida
@@ -541,6 +620,601 @@ public class FileController extends BaseController {
 		OutputStream os = new FileOutputStream(outFile);
 		stamper.stamp(inputstream, context, os);
 		os.close();
+	}
+	
+
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathRFC(Long id, String basePath) throws SQLException {
+		RFC rfc;
+		try {
+			rfc = rfcService.findById(id);
+			Siges siges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
+			SystemInfo system= siges.getSystem();
+			String path = system.getName() + "/" +siges.getCodeSiges()  + "/";
+
+			path += rfc.getNumRequest() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	
+	/**
+	 * @description: Adjunta el archivo al rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	@RequestMapping(value = "/singleUploadRFC-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadRFC(@PathVariable Long id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		
+		
+		// valida que se selecciono un archivo
+		if (file.getName().equals("") || file.isEmpty()) {
+			json.setStatus("fail");
+			json.setException("Archivo no seleccionado");
+			return json;
+		}
+		
+		// Direccion del archivo a guardar
+		String basePath = env.getProperty("fileStore.path");
+		String path = createPathRFC(id, basePath);
+		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+		// Referencia del archivo
+		RFCFile rfcFile = new RFCFile();
+		rfcFile.setName(fileName);
+		rfcFile.setPath(basePath + path + fileName);
+		long time = System.currentTimeMillis();
+		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+		rfcFile.setRevisionDate(revisionDate);
+		try {
+			// Se carga el archivo y se guarda la referencia
+			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+			rfcFileService.saveRFCFile(id, rfcFile);
+			rfcFile = rfcFileService.findByKey("path", rfcFile.getPath());
+			json.setStatus("success");
+			json.setObj(rfcFile);
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
+			json.setStatus("exception");
+			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			json.setStatus("exception");
+			json.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			if (e instanceof MaxUploadSizeExceededException) {
+				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			}
+		}
+		return json;
+	}
+	
+	/**
+	 * @description: Descarga de un archivo particular del rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: archivo a descargar.
+	 **/
+	@RequestMapping(value = "/singleDownloadRFC-{id}", method = RequestMethod.GET)
+	public void downloadFileRFC(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+		RFCFile rfcFile = rfcFileService.findById(id);
+		File file = new File(rfcFile.getPath());
+
+		// Se modifica la respuesta para descargar el archivo
+		response.setContentType("text/plain");
+		response.setHeader("Content-Disposition", "attachment;filename=" + rfcFile.getName());
+		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+		response.setContentLength((int) file.length());
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	/**
+	 * @description: borra un archivo adjuntado de un rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: response de la eliminacion.
+	 **/
+	@RequestMapping(value = "/deleteFileUploadRFC-{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteFileUploadRFC(@PathVariable Long id) {
+		JsonResponse res = new JsonResponse();
+		res.setStatus("success");
+		try {
+			RFCFile rfcFile = rfcFileService.findById(id);
+			rfcFileService.deleteRFC(rfcFile);
+			File file = new File(rfcFile.getPath());
+			if (file.exists()) {
+				file.delete();
+			}
+			res.setData(rfcFile.getId() + "");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del request.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del request.
+	 * @throws SQLException
+	 **/
+	public String createPathRequest(Long id, String basePath) throws SQLException {
+		RequestBaseR1  requestBase;
+		try {
+			String path="";
+			requestBase = requestBaseService.findByR1(id);
+			if(!requestBase.getTypePetition().getCode().equals("RM-P1-R1")) {
+				RequestBase newRequestBase =requestBaseService.findById(id);
+				Siges siges = newRequestBase.getSiges();
+				SystemInfo system= siges.getSystem();
+				 path = system.getName() + "/" +siges.getCodeSiges()  + "/"+requestBase.getTypePetition().getCode()+"/";
+			}else {
+				SystemInfo system= requestBase.getSystemInfo();
+				path = system.getName() + "/"+requestBase.getTypePetition().getCode()+"/";
+			}
+			
+
+			path += requestBase.getNumRequest() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	
+	/**
+	 * @description: Adjunta el archivo al request.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	@RequestMapping(value = "/singleUploadRequest-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadRequest(@PathVariable Long id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		
+		
+		// valida que se selecciono un archivo
+		if (file.getName().equals("") || file.isEmpty()) {
+			json.setStatus("fail");
+			json.setException("Archivo no seleccionado");
+			return json;
+		}
+		
+		// Direccion del archivo a guardar
+		String basePath = env.getProperty("fileStore.path");
+		String path = createPathRequest(id, basePath);
+		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+		// Referencia del archivo
+		RequestBaseFile requestFile = new RequestBaseFile();
+		requestFile.setName(fileName);
+		requestFile.setPath(basePath + path + fileName);
+		long time = System.currentTimeMillis();
+		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+		requestFile.setRevisionDate(revisionDate);
+		try {
+			// Se carga el archivo y se guarda la referencia
+			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+			requestFileService.saveRequestFile(id, requestFile);
+			requestFile = requestFileService.findByKey("path", requestFile.getPath());
+			json.setStatus("success");
+			json.setObj(requestFile);
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
+			json.setStatus("exception");
+			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			json.setStatus("exception");
+			json.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			if (e instanceof MaxUploadSizeExceededException) {
+				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			}
+		}
+		return json;
+	}
+	
+	/**
+	 * @description: Descarga de un archivo particular del rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: archivo a descargar.
+	 **/
+	@RequestMapping(value = "/singleDownloadRequest-{id}", method = RequestMethod.GET)
+	public void downloadFileRequest(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+		RequestBaseFile requestFile = requestFileService.findById(id);
+		File file = new File(requestFile.getPath());
+
+		// Se modifica la respuesta para descargar el archivo
+		response.setContentType("text/plain");
+		response.setHeader("Content-Disposition", "attachment;filename=" + requestFile.getName());
+		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+		response.setContentLength((int) file.length());
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	/**
+	 * @description: borra un archivo adjuntado de un rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: response de la eliminacion.
+	 **/
+	@RequestMapping(value = "/deleteFileUploadRequest-{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteFileUploadRequest(@PathVariable Long id) {
+		JsonResponse res = new JsonResponse();
+		res.setStatus("success");
+		try {
+			RequestBaseFile requestFile = requestFileService.findById(id);
+			requestFileService.deleteRequest(requestFile);
+			File file = new File(requestFile.getPath());
+			if (file.exists()) {
+				file.delete();
+			}
+			res.setData(requestFile.getId() + "");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del error know.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del error know.
+	 * @throws SQLException
+	 **/
+	public String createPathBaseKnow(BaseKnowledge baseKnowledge, String basePath) throws SQLException {
+		try {
+
+			String path = "/BaseConocimiento/"+baseKnowledge.getSystem().getName()+"/"+baseKnowledge.getComponent().getName()  + "/";
+			path += baseKnowledge.getNumError() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	
+	/**
+	 * @description: Adjunta el archivo al error know.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+
+	@RequestMapping(value = "/singleUploadBaseKnow-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadBaseKnowledge(@PathVariable Long id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		BaseKnowledge baseKnowledge = baseKnowledgeService.findById(id);
+		
+		// valida que se selecciono un archivo
+		if (file.getName().equals("") || file.isEmpty()) {
+			json.setStatus("fail");
+			json.setException("Archivo no seleccionado");
+			return json;
+		}
+		
+		// Direccion del archivo a guardar
+		String basePath = baseKnowledge.getUrl();
+		String path = createPathBaseKnow(baseKnowledge, basePath);
+		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+		// Referencia del archivo
+		BaseKnowledgeFile baseKnowFile = new BaseKnowledgeFile();
+		baseKnowFile.setName(fileName);
+		baseKnowFile.setPath(basePath + path + fileName);
+		long time = System.currentTimeMillis();
+		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+		baseKnowFile.setRevisionDate(revisionDate);
+		try {
+			// Se carga el archivo y se guarda la referencia
+			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+			baseKnowFileService.saveBaseKnowledgeFile(id, baseKnowFile);
+			baseKnowFile = baseKnowFileService.findByKey("path", baseKnowFile.getPath());
+			json.setStatus("success");
+			json.setObj(baseKnowFile);
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
+			json.setStatus("exception");
+			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			json.setStatus("exception");
+			json.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			if (e instanceof MaxUploadSizeExceededException) {
+				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			}
+		}
+		return json;
+	}
+	
+	/**
+	 * @description: Descarga de un archivo particular del error baseKnow.
+	 * @author: Anthony Alvarez N.
+	 * @return: archivo a descargar.
+	 **/
+	@RequestMapping(value = "/singleDownloadBaseKnowledge-{id}", method = RequestMethod.GET)
+	public void downloadFileBaseKnowledge(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+		BaseKnowledgeFile baseKnowFile = baseKnowFileService.findById(id);
+		File file = new File(baseKnowFile.getPath());
+
+		// Se modifica la respuesta para descargar el archivo
+		response.setContentType("text/plain");
+		response.setHeader("Content-Disposition", "attachment;filename=" + baseKnowFile.getName());
+		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+		response.setContentLength((int) file.length());
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	/**
+	 * @description: borra un archivo adjuntado de un base knowledge.
+	 * @author: Anthony Alvarez N.
+	 * @return: response de la eliminacion.
+	 **/
+	@RequestMapping(value = "/deleteFileUploadBaseKnowledge-{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteFileUploadBaseKnowledge(@PathVariable Long id) {
+		JsonResponse res = new JsonResponse();
+		res.setStatus("success");
+		try {
+			BaseKnowledgeFile baseKnowledgeFile = baseKnowFileService.findById(id);
+			baseKnowFileService.deleteBaseKnowLedgeFile(baseKnowledgeFile);
+			File file = new File(baseKnowledgeFile.getPath());
+			if (file.exists()) {
+				file.delete();
+			}
+			res.setData(baseKnowledgeFile.getId() + "");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	
+	/**
+	 * @description: Descarga de un archivo particular del incidence.
+	 * @author: Anthony Alvarez N.
+	 * @return: archivo a descargar.
+	 **/
+	@RequestMapping(value = "/singleDownloadIncidence-{id}", method = RequestMethod.GET)
+	public void downloadFileIncidence(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+		IncidenceFile incidenceFile =incidenceFileService.findById(id);
+		File file = new File(incidenceFile.getPath());
+
+		// Se modifica la respuesta para descargar el archivo
+		response.setContentType("text/plain");
+		response.setHeader("Content-Disposition", "attachment;filename=" + incidenceFile.getName());
+		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		if (mimeType == null) {
+			mimeType = "application/octet-stream";
+		}
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+		response.setContentLength((int) file.length());
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	}
+	
+	/**
+	 * @description: borra un archivo adjuntado de una incidencia.
+	 * @author: Anthony Alvarez N.
+	 * @return: response de la eliminacion.
+	 **/
+	@RequestMapping(value = "/deleteFileUploadIncidence-{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteFileUploadIncidence(@PathVariable Long id) {
+		JsonResponse res = new JsonResponse();
+		res.setStatus("success");
+		try {
+			IncidenceFile incidenceFile = incidenceFileService.findById(id);
+			incidenceFileService.deleteIncidence(incidenceFile);
+			File file = new File(incidenceFile.getPath());
+			if (file.exists()) {
+				file.delete();
+			}
+			res.setData(incidenceFile.getId() + "");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			res.setStatus("exception");
+			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del incidencia.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathIncidence(Long id, String basePath) throws SQLException {
+		Incidence incidence;
+		try {
+			incidence = incidenceService.getIncidences(id);
+			String path =  "tickets"+ "/" +incidence.getSystem().getName() + "/";
+
+			path += incidence.getNumTicket() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	/**
+	 * @description: Adjunta el archivo al Incidence.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	
+	@RequestMapping(value = "/singleUploadIncidence-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleFileUploadIncidence(@PathVariable Long id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		// valida que se selecciono un archivo
+				if (file.getName().equals("") || file.isEmpty()) {
+					json.setStatus("fail");
+					json.setException("Archivo no seleccionado");
+					return json;
+				}
+				
+				String basePath = env.getProperty("fileStore.path");
+				String path = createPathIncidence(id, basePath);
+				String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+				// Referencia del archivo
+				IncidenceFile incidenceFile = new IncidenceFile();
+				incidenceFile.setName(fileName);
+				incidenceFile.setPath(basePath + path + fileName);
+				long time = System.currentTimeMillis();
+				java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+				incidenceFile.setRevisionDate(revisionDate);
+				try {
+					// Se carga el archivo y se guarda la referencia
+					FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+					incidenceFileService.saveIncidenceFile(id, incidenceFile);
+					incidenceFile = incidenceFileService.findByKey("path", incidenceFile.getPath());
+					json.setStatus("success");
+					json.setObj(incidenceFile);
+				} catch (SQLException ex) {
+					Sentry.capture(ex, "files");
+					json.setStatus("exception");
+					json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+				} catch (Exception e) {
+					Sentry.capture(e, "files");
+					json.setStatus("exception");
+					json.setException(e.getMessage());
+					logger.log(MyLevel.RELEASE_ERROR, e.toString());
+					if (e instanceof MaxUploadSizeExceededException) {
+						json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+					}
+				}
+				return json;
+				
+	}
+	
+	/**
+	 * @description: Adjunta el archivo al rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: estado de la carga del archivo.
+	 * @throws SQLException
+	 **/
+	@RequestMapping(value = "/singleUploadReport-{id}", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse singleUploadReport(@PathVariable Integer id,
+			@RequestParam("file") MultipartFile file) throws SQLException {
+		JsonResponse json = new JsonResponse();
+		
+		
+		// valida que se selecciono un archivo
+		if (file.getName().equals("") || file.isEmpty()) {
+			json.setStatus("fail");
+			json.setException("Archivo no seleccionado");
+			return json;
+		}
+		
+		// Direccion del archivo a guardar
+		String basePath = env.getProperty("fileStore.path");
+		String path = createPathReport(id, basePath);
+		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+		// Referencia del archivo
+		ReportFile reportFile = new ReportFile();
+		reportFile.setName(fileName);
+		reportFile.setPath(basePath + path + fileName);
+		reportFile.setIdRelease(id);
+		long time = System.currentTimeMillis();
+		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+		reportFile.setRevisionDate(revisionDate);
+		try {
+			// Se carga el archivo y se guarda la referencia
+			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+			reportFileService.saveReportFile(id, reportFile);
+			reportFile = reportFileService.findByKey("path", reportFile.getPath());
+			json.setStatus("success");
+			json.setObj(reportFile);
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "files");
+			json.setStatus("exception");
+			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			json.setStatus("exception");
+			json.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			if (e instanceof MaxUploadSizeExceededException) {
+				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			}
+		}
+		return json;
+	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del report.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathReport(Integer id, String basePath) throws SQLException {
+		try {
+
+			String path = "Reportes/";
+			path += id + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
 	}
 
 }

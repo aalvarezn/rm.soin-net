@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
+import com.soin.sgrm.utils.JsonSheet;
 
 public interface RequestService {
 
@@ -17,6 +18,8 @@ public interface RequestService {
 	List<Request> list();
 
 	List<Request> listByType(TypeRequest type);
+	
+	Request listByTypeAndCodeSoin(TypeRequest type,String code_soin);
 
 	Request findById(Integer id);
 
@@ -27,5 +30,9 @@ public interface RequestService {
 	void delete(Integer id);
 	
 	void softDelete(Request request);
+
+	Request findByNameCode(String tpo);
+
+
 
 }

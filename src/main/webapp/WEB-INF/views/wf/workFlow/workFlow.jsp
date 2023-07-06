@@ -90,7 +90,7 @@
 			<div class="row clearfix">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="" style="padding-top: -5pc;">
-						<h2 class="title-Adm m-t-0">TRÁMITES</h2>
+						<h2 class="title-Adm m-t-0">TR&Aacute;MITES</h2>
 					</div>
 					<hr>
 				</div>
@@ -105,6 +105,7 @@
 								<tr>
 									<th>Nombre</th>
 									<th>Sistema</th>
+									<th>Tipo</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>
@@ -113,6 +114,7 @@
 									<tr id="${workFlow.id}">
 										<td>${workFlow.name}</td>
 										<td>${workFlow.system.code}</td>
+										<td>${workFlow.type.name}</td>
 										<td><div class="iconLineC">
 												<a
 													href="<c:url value='/wf/workFlow/workFlowEdit/${workFlow.id}'/>"><i

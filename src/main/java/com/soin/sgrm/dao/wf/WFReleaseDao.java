@@ -23,4 +23,6 @@ public interface WFReleaseDao {
 	
 	Integer countByType(String group, Object[] ids);
 
+	void wfStatusReleaseWithOutMin(WFRelease release);
+
 }

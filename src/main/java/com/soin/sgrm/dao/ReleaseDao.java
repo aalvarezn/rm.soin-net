@@ -7,12 +7,21 @@ import java.util.List;
 
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
-import com.soin.sgrm.model.ReleaseObject;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
+import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
-import com.soin.sgrm.model.Risk;
-import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.ReleaseReport;
+import com.soin.sgrm.model.ReleaseReportFast;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryFile;
+import com.soin.sgrm.model.ReleaseSummaryMin;
+import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTrackingShow;
+import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.Release_RFC;
+import com.soin.sgrm.model.Release_RFCFast;
+import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.utils.JsonSheet;
 import com.soin.sgrm.utils.ReleaseCreate;
@@ -27,6 +36,10 @@ public interface ReleaseDao {
 
 	JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
+	
+	JsonSheet<?> listByAllSystemQA(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
+	
 	/* #Paginacion por ajax de 10 items# */
 
 	Integer countByType(String name, String type, int query, Object[] ids);
@@ -56,5 +69,44 @@ public interface ReleaseDao {
 	void requestRelease(Release release);
 
 	ArrayList<ReleaseObjectEdit> saveReleaseObjects(Integer release_id, ArrayList<ReleaseObjectEdit> objects);
+
+	JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch, Integer systemId) throws SQLException, ParseException;
+
+	Release_RFC findRelease_RFCById(Integer id);
+
+	Integer getDependency(int id);
+
+	void updateStatusReleaseRFC(Release_RFCFast release,String operator);
+  
+	Releases_WithoutObj findReleaseWithouObj(Integer id);
+
+	void insertReleaseError(ReleaseError release) throws Exception;
+
+	ReleaseSummaryMin findByIdMin(Integer id);
+
+	ReleaseEditWithOutObjects findEditByIdWithOutObjects(Integer idRelease);
+
+	ReleaseTinySummary findByIdTiny(int id);
+
+	List<ReleaseTrackingToError> listByAllSystemError(String dateRange, int systemId);
+
+	ReleaseReport findByIdReleaseReport(Integer id);
+
+	List<ReleaseReport> listReleaseReport();
+
+	JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId) throws SQLException, ParseException;
+
+	List<ReleaseReportFast> listReleaseReportFilter(int systemId, int projectId, String dateRange);
+
+	Release_RFCFast findRelease_RFCByIdFast(int id);
+
+	ReleaseTrackingShow findReleaseTracking(int id);
+
+	JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId) throws SQLException, ParseException;
+	ReleaseSummaryFile findByIdSummaryFile(Integer id);
+
+	
 
 }

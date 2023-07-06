@@ -203,4 +203,53 @@ public class SystemDaoImpl implements SystemDao {
 		return crit.list();
 	}
 
+	
+	@SuppressWarnings("unchecked")
+	public List<System> listProjects(int id) {
+		   return sessionFactory.getCurrentSession().createCriteria(System.class)
+		    		.createAlias("managers","managers")
+		    		.add(Restrictions.eq("managers.id", id))
+		    		.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<System> findByUserIncidence(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("usersIncidence", "usersIncidence");
+		crit.add( Restrictions.eq("usersIncidence.id", id));
+		List<System> systemList = crit.list();
+		return systemList;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<System> findByGroupIncidence(List<Long> listAttentionGroupId) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("attentionGroup", "attentionGroup");
+		crit.add( Restrictions.in("attentionGroup.id", listAttentionGroupId));
+		List<System> systemList = crit.list();
+		return systemList;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<System> findByManagerIncidence(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("managersIncidence", "managersIncidence");
+		crit.add( Restrictions.eq("managersIncidence.id", id));
+		List<System> systemList = crit.list();
+
+		return systemList;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<System> getSystemByProject(Integer projectId) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("proyect", "proyect");
+		crit.add( Restrictions.eq("proyect.id", projectId));
+		List<System> systemList = crit.list();
+
+		return systemList;
+	}
 }

@@ -40,6 +40,7 @@ public interface SystemService {
 
 	System findSystemById(Integer id);
 
+	SystemInfo findSystemInfoById(Integer id);
 	void save(System system);
 
 	void update(System system);
@@ -47,4 +48,16 @@ public interface SystemService {
 	void delete(Integer id);
 	
 	Object[] myTeamsProyect(String name);
+	
+	List<System> listProjects(int id);
+
+
+	List<System> findByGroupIncidence(List<Long> listAttentionGroupId);
+
+	List<System> findByUserIncidence(Integer userLogin);
+
+	List<System> findByManagerIncidence(Integer idUser);
+
+	List<System> getSystemByProject(Integer projectId);
+
 }

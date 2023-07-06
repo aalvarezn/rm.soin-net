@@ -3,6 +3,8 @@ package com.soin.sgrm.service.wf;
 import java.util.List;
 
 import com.soin.sgrm.model.wf.Edge;
+import com.soin.sgrm.model.wf.EdgeIncidence;
+import com.soin.sgrm.model.wf.EdgeRFC;
 
 public interface EdgeService {
 
@@ -15,4 +17,25 @@ public interface EdgeService {
 	Edge update(Edge edge);
 
 	void delete(Integer id) throws Exception;
+	
+	List<EdgeRFC> listEdgeRFC();
+
+	EdgeRFC findByIdEdgeRFC(Integer id);
+
+	EdgeRFC saveEdgeRFC(EdgeRFC edge);
+
+	EdgeRFC updateEdgeRFC(EdgeRFC edge);
+
+	void deleteEdgeRFC(Integer id) throws Exception;
+
+
+	List<EdgeIncidence> listEdgeIncidence();
+
+	EdgeIncidence findByIdEdgeIncidence(Integer id);
+
+	EdgeIncidence saveEdgeIncidence(EdgeIncidence edge);
+
+	EdgeIncidence updateEdgeIncidence(EdgeIncidence edge);
+
+	void deleteEdgeIncidence(Integer id) throws Exception;
 }

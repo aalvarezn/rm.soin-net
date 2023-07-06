@@ -156,6 +156,27 @@
 					</div>
 				</div>
 				<div class="row clearfix">
+					<div class="form-group">
+						<label for="subject" class="col-sm-1 col-form-label lbtxt m-t-10">Tipo:</label>
+						<div class="col-sm-3">
+							<div class="row clearfix">
+
+
+								<select class="form-control show-tick" id="changeType"
+									name="changeType">
+									<option value="0">Release</option>
+									<option value="1">RFC</option>
+
+								</select>
+
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div id="ReleaseAttributtes" class="row clearfix">
+
 					<div class="col-sm-12">
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{userName}}">Solicitante</button>
@@ -181,13 +202,52 @@
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{ambient}}">Ambientes</button>
 						<button type="button" class="btn btn-primary btn-xs"
-							onclick="copyToClipboard($(this))" data-type="{{minimalEvidence}}">Pruebas</button>
+							onclick="copyToClipboard($(this))"
+							data-type="{{minimalEvidence}}">Pruebas</button>
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{dependencies}}">Dependencias</button>
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{objects}}">Objetos</button>
 						<button type="button" class="btn btn-primary btn-xs"
 							onclick="copyToClipboard($(this))" data-type="{{version}}">Versión</button>
+							<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{message}}">Mensaje adicional</button>
+					</div>
+				</div>
+				<div id="RFCAttributtes" class="row clearfix" hidden>
+					<div class="col-sm-12">
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{userName}}">Solicitante</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{rfcNumber}}">Número
+							RFC</button>
+							<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{systemMain}}">Sistema Principal</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{priority}}">Prioridad</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{typeChange}}">Tipo
+							de cambio</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{impact}}">Impacto</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{detail}}">Detalle</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{reason}}">Razón</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))"
+							data-type="{{requestDateBegin}}">Fecha Inicial</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))"
+							data-type="{{requestDateFinish}}">Fecha final</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{effect}}">Efecto</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))" data-type="{{releases}}">Releases</button>
+						<button type="button" class="btn btn-primary btn-xs"
+							onclick="copyToClipboard($(this))"
+							data-type="{{systemsInvolved}}">Sistemas impactados</button>
+
 					</div>
 				</div>
 				<div class="row clearfix">

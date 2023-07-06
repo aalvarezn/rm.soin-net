@@ -9,9 +9,9 @@
 		<label for="email_address">Nombre del Bot&oacute;n</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line">
-				<input type="text" id="name" value="" maxlength="50"
+				<input type="text" id="name" value="" maxlength="100"
 					class="form-control" placeholder="Ingrese un valor..">
-				<div class="help-info">M&aacute;x. 50 caracteres</div>
+				<div class="help-info">M&aacute;x. 100 caracteres</div>
 			</div>
 			<label id="name_error" class="error fieldError" for="name"
 				style="visibility: hidden;">Valor requerido.</label>

@@ -1,6 +1,8 @@
 /* Navbar ====================================== */
 @import url(materialize.css);
 
+
+
 .navbar {
 	font-family: "Roboto", sans-serif;
 	-webkit-border-radius: 0;
@@ -2705,6 +2707,12 @@ to {
 	margin-right: 8px;
 	margin-bottom: 13px;
 	min-width: 120px;
+}
+
+.button-demo-refresh .btn {
+	margin-right: 8px;
+	margin-bottom: 13px;
+	min-width: 10px;
 }
 
 .demo-button-groups .btn-group {
@@ -11437,6 +11445,18 @@ html.ie11 .bs-searchbox .form-control {
 	padding: 0px !important;
 	font-size: 22px;
 }
+.verde {
+	color: #196f3d;
+	cursor: pointer;
+	padding: 0px !important;
+	font-size: 22px;
+}
+.naranja {
+	color: #ff9800;
+	cursor: pointer;
+	padding: 0px !important;
+	font-size: 22px;
+}
 
 .gris:nth-child(2) {
 	margin-left: 7px;
@@ -11963,6 +11983,11 @@ ul.stepper>li>a::before {
 	font-size: 5px;
 	text-align: center;
 }
+.iconLineR {
+	white-space: nowrap;
+	font-size: 5px;
+	text-align: right;
+}
 
 .iconLineC>a>li {
 	font-size: 22px;
@@ -11981,6 +12006,9 @@ ul.stepper>li>a::before {
 	vertical-align: middle;
 	height: 35px;
 }
+
+
+
 
 .btn_add {
 	width: 30px;
@@ -12509,4 +12537,42 @@ textarea {
 .filterMS{
 	width: 100%;
 	padding-left: 15px;
+}
+
+#loading {
+  position: fixed;
+  z-index: 9999;
+  height: 100%;
+  width: 100%;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+.loading-text {
+  margin-left: 10px;
+  color: #8A8A8A;;
+  font-size: 24px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+#loading {
+  display: none;
 }

@@ -528,6 +528,46 @@ function isNumeric(str){
 	return $.isNumeric(str);
 }
 
+
+let optionRangePicker =  {
+		"autoUpdateInput": false,
+		"opens": 'left',
+		"orientation": 'right',
+		"locale": {
+			"format": "DD/MM/YYYY",
+			"separator": " - ",
+			"applyLabel": "Aplicar",
+			"cancelLabel": "Cancelar",
+			"fromLabel": "Desde",
+			"toLabel": "Hasta",
+			"customRangeLabel": "Custom",
+			"daysOfWeek": [
+				"Do",
+				"Lu",
+				"Ma",
+				"Mi",
+				"Ju",
+				"Vi",
+				"Sa"
+				],
+				"monthNames": [
+					"Enero",
+					"Febrero",
+					"Marzo",
+					"Abril",
+					"Mayo",
+					"Junio",
+					"Julio",
+					"Agosto",
+					"Septiembre",
+					"Octubre",
+					"Noviembre",
+					"Deciembre"
+					],
+					"firstDay": 1
+		}
+};
+
 let optionLanguaje = {
 		"emptyTable" : "No existen registros",
 		"zeroRecords" : "No existen registros",
@@ -536,3 +576,82 @@ let optionLanguaje = {
 		"infoEmpty" : "Mostrando 0 a 0 de 0 registros",
 		"infoFiltered" : "",
 };
+
+var highlight = function(input) {
+	$(input).parents('.form-line').addClass('error');
+};
+var unhighlight = function(input) {
+	$(input).parents('.form-line').removeClass('error');
+};
+var errorPlacement = function(error, element) {
+	$(element).parents('.form-group').append(error);;
+};
+
+var swalDefault = {
+		icon: 'question',
+		showCancelButton: true,
+		customClass: 'swal-wide',
+		cancelButtonText: 'Cancelar',
+		cancelButtonColor: '#f14747',
+		confirmButtonColor: '#3085d6',
+		confirmButtonText: 'Aceptar',
+};
+
+function notifyMs(message, status) {
+	switch (status) {
+	case 'success':
+		Swal.fire({
+			icon: status,
+			title: 'Correcto',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	case 'error':
+		Swal.fire({
+			icon: status,
+			title: 'Error',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	case 'warning':
+		Swal.fire({
+			icon: status,
+			title: 'Precaución',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	case 'info':
+		Swal.fire({
+			icon: status,
+			title: 'Información',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	default:
+		Swal.fire({
+			icon: status,
+			title: 'Error',
+			text: message,
+			customClass: 'swal-wide',
+			timer: 2000
+		})
+		break;
+	}
+}
+
+/*
+//add the rule here
+jQuery.validator.addMethod("selectOption",function(value,element,param) {
+	console.log(element);
+	return elementValue != param;
+},
+"Value cannot be {0}");*/
+

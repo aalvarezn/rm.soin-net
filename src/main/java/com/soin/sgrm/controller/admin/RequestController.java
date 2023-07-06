@@ -6,20 +6,15 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Row;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,18 +32,15 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.Sheet;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.GDoc;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
-import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.service.GDocService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RequestService;
@@ -58,6 +50,7 @@ import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
 
+@SuppressWarnings("deprecation")
 @Controller
 @RequestMapping("/admin/request")
 public class RequestController extends BaseController {
@@ -77,7 +70,7 @@ public class RequestController extends BaseController {
 	GDocService gDocService;
 
 	private static final String APPLICATION_NAME = "sgrm";
-	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
 	private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
 
@@ -398,12 +391,14 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (Request req : requests) {
-								if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())) {
-									request = req;
-									existRequest = true;
-								}
+							Request req = requestService.listByTypeAndCodeSoin(type,
+									((String) row.get(tpoIndex)).trim());
+
+							if (req != null) {
+								request = req;
+								existRequest = true;
 							}
+
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new Request() : request;
@@ -581,7 +576,7 @@ public class RequestController extends BaseController {
 		try {
 			// Se define los indices de las columnas
 			Integer statusIndex = null, descriptionIndex = null, soinManagementIndex = null, iceManagementIndex = null,
-					btIndex = null, count = 0;
+					btIndex = null, codeIce = null, count = 0;
 			Project proyect = null;
 			Request request = null;
 			Boolean existRequest = false;
@@ -593,12 +588,14 @@ public class RequestController extends BaseController {
 				// con la primera fila
 				for (List<Object> row : values) {
 					// Se inicia de nuevo el requerimiento
+
 					request = null;
 					if (count == 0) {
 						for (int i = 0; i < row.size(); i++)
 							row.set(i, ((String) row.get(i)).trim());
 						statusIndex = row.indexOf("Estado");
-						btIndex = row.indexOf("ID Boleta");
+						btIndex = row.indexOf("Boleta");
+						codeIce = row.indexOf("RQ");
 						descriptionIndex = row.indexOf("Nombre");
 						soinManagementIndex = row.indexOf("Gestor SOIN");
 						iceManagementIndex = row.indexOf("Referente ICE");
@@ -619,9 +616,10 @@ public class RequestController extends BaseController {
 								request = (!existRequest) ? new Request() : request;
 								request.setCode_soin((String) row.get(btIndex));
 								request.setStatus((String) row.get(statusIndex));
-								request.setDescription((String) row.get(descriptionIndex));
+								request.setDescription((String) row.get(codeIce) + " " + row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								request.setCode_ice((String) row.get(codeIce));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								request.setActive(true);
@@ -666,6 +664,7 @@ public class RequestController extends BaseController {
 	/**
 	 * Se crea un objeto de credenciales con la informacion del excel.
 	 */
+	@SuppressWarnings("deprecation")
 	private Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT, GDoc config)
 			throws IOException, GeneralSecurityException {
 		String key = config.getCredentials();
