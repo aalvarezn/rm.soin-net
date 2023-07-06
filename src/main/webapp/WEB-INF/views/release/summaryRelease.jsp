@@ -215,18 +215,14 @@
 						<div class="form-line">
 							<textarea readonly rows="" cols="" class="form-control"
 								placeholder="No Aplica." style="">${release.description}</textarea>
-								
 						</div>
 					</div>
 				</div>
 				<c:if test="${systemConfiguration.observations}">
 					<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">
-						<label for="">Observaciones</label>
-						<div class="form-group m-b-0i">
-							<div class="form-line">
-								<textarea readonly rows="" cols="" class="form-control"
-									placeholder="No Aplica." style="">${release.observations}</textarea>
-							</div>
+						<label for="observations">Observaciones</label>
+						<div class="form-group m-b-0">
+							<div class="form-line" style="white-space: pre-wrap;">${textChanged}</div>
 						</div>
 					</div>
 				</c:if>
