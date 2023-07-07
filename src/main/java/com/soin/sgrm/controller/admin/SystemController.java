@@ -155,6 +155,7 @@ public class SystemController extends BaseController {
 					if (temp != null)
 						usersNews.add(temp);
 				}
+				system.checkTeamsExists(usersNews);
 				// se agregan los usuarios de gestion
 				temp = null;
 				Set<User> managersNews = new HashSet<>();
@@ -163,7 +164,7 @@ public class SystemController extends BaseController {
 					if (temp != null)
 						managersNews.add(temp);
 				}
-
+				system.checkManagersExists(managersNews);
 				if (system.getEmailId() != null) {
 					EmailTemplate email = emailService.findById(system.getEmailId());
 					system.changeEmail(email);

@@ -121,7 +121,7 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	ErrorRequestService errorService;
-	
+
 	@Autowired
 	UserInfoService userInfoService;
 
@@ -216,7 +216,7 @@ public class RequestBaseController extends BaseController {
 						res.setStatus("success");
 						addRequest.setMotive("Inicio de Solicitud");
 						addRequest.setOperator(user.getFullName());
-						Siges codeSiges = sigeService.findById( addRequest.getCodeSigesId());
+						Siges codeSiges = sigeService.findById(addRequest.getCodeSigesId());
 						addRequest.setSiges(codeSiges);
 
 						addRequest.setNumRequest(addRequest.getCodeOpportunity());
@@ -240,7 +240,7 @@ public class RequestBaseController extends BaseController {
 					res.setStatus("success");
 					addRequest.setMotive("Inicio de Solicitud");
 					addRequest.setOperator(user.getFullName());
-					Siges codeSiges = sigeService.findById( addRequest.getCodeSigesId());
+					Siges codeSiges = sigeService.findById(addRequest.getCodeSigesId());
 					addRequest.setSiges(codeSiges);
 					addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
 					addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),
@@ -286,6 +286,7 @@ public class RequestBaseController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			User user = userService.getUserByUsername(getUserLogin().getUsername());
+			Project proyect= projectService.findById(addSystem.getProyectId());
 			if(!systemService.checkUniqueCode(addSystem.getCode(), addSystem.getProyectId(), 1)) {
 				res.setStatus("error");
 				
@@ -293,6 +294,9 @@ public class RequestBaseController extends BaseController {
 			}else if(!systemService.checkUniqueCode(addSystem.getName(), addSystem.getProyectId(), 0)) {
 				res.setStatus("error");
 				res.setMessage("Error al crear sistema nombre ya utilizado para un mismo proyecto!");
+			}else if(!proyect.getAllowRepeat()&&!sigeService.checkUniqueCode(addSystem.getSigesCode())) {
+					res.setStatus("error");
+					res.setMessage("Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");	
 			}else {
 				res.setStatus("success");
 				addSystem.setProyect(projectService.findById(addSystem.getProyectId()));
@@ -312,6 +316,19 @@ public class RequestBaseController extends BaseController {
 				addSystem.setImportObjects(false);
 				addSystem.setInstallationInstructions(false);
 				addSystem.setManagersId(getUserLogin().getId().toString());
+				addSystem.setName(addSystem.getCode());
+				// se agregan los usuarios de equipo
+				User temp = null;
+				// se agregan los usuarios de gestion
+				temp = null;
+				Set<User> managersNews = new HashSet<>();
+				for (Integer index : addSystem.getManagersId()) {
+					temp = userService.findUserById(index);
+					if (temp != null)
+						managersNews.add(temp);
+				}
+				
+				addSystem.checkManagersExists(managersNews);
 				systemService.saveAndSiges(addSystem);
 				res.setObj(addSystem);
 			}

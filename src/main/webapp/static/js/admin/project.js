@@ -1,5 +1,6 @@
 $(function() {
 	activeItemMenu("projectItem");
+	changeCheckBox();
 });
 var $projectTable = $('#projectTable').DataTable({
 	"language" : {
@@ -31,7 +32,8 @@ function saveProject() {
 			// Informacion proyectos
 			id : 0,
 			code : $projectModalForm.find('#code').val(),
-			description : $projectModalForm.find('#description').val()
+			description : $projectModalForm.find('#description').val(),
+			allowRepeat: boolean($projectModalForm.find('#isAllow').val())
 		},
 		success : function(response) {
 			ajaxSaveProject(response)
@@ -45,7 +47,17 @@ function saveProject() {
 		}
 	});
 }
+function changeCheckBox(){
+	$("#isAllow").change(function() {
+	    // Verificar el estado del checkbox
+	    if ($(this).is(":checked")) {
+	    	$projectModalForm.find('#isAllow').val('1');
+	    } else {
+	    	$projectModalForm.find('#isAllow').val('0');
+	    }
+	});
 
+}
 function ajaxSaveProject(response) {
 	switch (response.status) {
 	case 'success':
@@ -67,6 +79,7 @@ function ajaxSaveProject(response) {
 
 function updateProjectModal(index) {
 	resetErrors();
+	desActiveInputCheckbox($projectModalForm, 'isAllow');
 	$('#btnUpdateProject').show();
 	$('#btnSaveProject').hide();
 	blockUI();
@@ -80,6 +93,8 @@ function updateProjectModal(index) {
 			$projectModalForm.find('#projectId').val(index);
 			$projectModalForm.find('#code').val(response.code);
 			$projectModalForm.find('#description').val(response.description);
+			if (response.allowRepeat)
+				activeInputCheckbox($projectModalForm, 'isAllow');
 			$projectModal.modal('show');
 		},
 		error : function(x, t, m) {
@@ -94,6 +109,7 @@ function closeProjectModal() {
 }
 
 function updateProject() {
+	console.log($projectModalForm.find('#isAllow').val());
 	blockUI();
 	$.ajax({
 		type : "POST",
@@ -102,7 +118,8 @@ function updateProject() {
 			// Informacion proyecto
 			id : $projectModalForm.find('#projectId').val(),
 			code : $projectModalForm.find('#code').val(),
-			description : $projectModalForm.find('#description').val()
+			description : $projectModalForm.find('#description').val(),
+			allowRepeat: boolean($projectModalForm.find('#isAllow').val())
 		},
 		success : function(response) {
 			ajaxUpdateProject(response)

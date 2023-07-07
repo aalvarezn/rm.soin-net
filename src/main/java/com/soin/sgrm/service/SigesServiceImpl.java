@@ -53,6 +53,11 @@ public class SigesServiceImpl implements SigesService{
 		return dao.listCodeSiges(id);
 	}
 
+	@Override
+	public boolean checkUniqueCode(String sigesCode) {
+		return dao.checkUniqueCode(sigesCode);
+	}
+
 
 
 }
