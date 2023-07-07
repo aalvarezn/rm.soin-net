@@ -253,6 +253,7 @@ public class RFCController extends BaseController {
 				addRFC.setOperator(user.getFullName());
 				Siges codeSiges = sigeService.findById(addRFC.getCodeSigesId());
 				addRFC.setSiges(codeSiges);
+				addRFC.setCodeProyect(codeSiges.getCodeSiges());
 				addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect()));
 				addRFC.setSystemInfo(systemService.findById(addRFC.getSystemId()));
 				rfcService.save(addRFC);
@@ -506,7 +507,13 @@ public class RFCController extends BaseController {
 			model.addAttribute("rfc", rfcEdit);
 			model.addAttribute("senders", rfcEdit.getSenders());
 			model.addAttribute("message", rfcEdit.getMessage());
-			model.addAttribute("ccs", getCC(rfcEdit.getSiges().getEmailTemplate().getCc()));
+			
+			if(rfcEdit.getSiges().getEmailTemplate()!=null) {
+				model.addAttribute("ccs", getCC(rfcEdit.getSiges().getEmailTemplate().getCc()));
+			}else {
+				model.addAttribute("ccs", getCC(""));
+			}
+			
 
 			return "/rfc/editRFC";
 

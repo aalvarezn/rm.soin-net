@@ -286,23 +286,24 @@ public class RequestBaseController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			User user = userService.getUserByUsername(getUserLogin().getUsername());
-			Project proyect= projectService.findById(addSystem.getProyectId());
-			if(!systemService.checkUniqueCode(addSystem.getCode(), addSystem.getProyectId(), 1)) {
+			Project proyect = projectService.findById(addSystem.getProyectId());
+			if (!systemService.checkUniqueCode(addSystem.getCode(), addSystem.getProyectId(), 1)) {
 				res.setStatus("error");
-				
+
 				res.setMessage("Error al crear sistema codigo ya utilizado para un mismo proyecto!");
-			}else if(!systemService.checkUniqueCode(addSystem.getName(), addSystem.getProyectId(), 0)) {
+			} else if (!systemService.checkUniqueCode(addSystem.getName(), addSystem.getProyectId(), 0)) {
 				res.setStatus("error");
 				res.setMessage("Error al crear sistema nombre ya utilizado para un mismo proyecto!");
-			}else if(!proyect.getAllowRepeat()&&!sigeService.checkUniqueCode(addSystem.getSigesCode())) {
-					res.setStatus("error");
-					res.setMessage("Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");	
-			}else {
+			} else if (!proyect.getAllowRepeat() && !sigeService.checkUniqueCode(addSystem.getSigesCode())) {
+				res.setStatus("error");
+				res.setMessage(
+						"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
+			} else {
 				res.setStatus("success");
 				addSystem.setProyect(projectService.findById(addSystem.getProyectId()));
-				TypePetition typePetition=typePetitionService.findByKey("code", "RM-P1-R2");
-				
-				User leader =new User();
+				TypePetition typePetition = typePetitionService.findByKey("code", "RM-P1-R2");
+
+				User leader = new User();
 				leader.setId(addSystem.getLeaderId());
 				addSystem.setLeader(leader);
 				addSystem.setTypePetitionId(typePetition.getId());
@@ -315,24 +316,16 @@ public class RequestBaseController extends BaseController {
 				addSystem.setCustomCommands(false);
 				addSystem.setImportObjects(false);
 				addSystem.setInstallationInstructions(false);
-				addSystem.setManagersId(getUserLogin().getId().toString());
 				addSystem.setName(addSystem.getCode());
-				// se agregan los usuarios de equipo
-				User temp = null;
-				// se agregan los usuarios de gestion
-				temp = null;
 				Set<User> managersNews = new HashSet<>();
-				for (Integer index : addSystem.getManagersId()) {
-					temp = userService.findUserById(index);
-					if (temp != null)
-						managersNews.add(temp);
-				}
+				User manager= new User();
+				manager.setId(getUserLogin().getId());
+				managersNews.add(leader);
 				
 				addSystem.checkManagersExists(managersNews);
 				systemService.saveAndSiges(addSystem);
 				res.setObj(addSystem);
 			}
-		
 
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
