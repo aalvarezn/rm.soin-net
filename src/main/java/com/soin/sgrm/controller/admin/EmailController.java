@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -21,8 +22,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.TypeAmbient;
+import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PImpact;
 import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.pos.PEmailTemplateService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.JsonResponse;
@@ -37,17 +42,50 @@ public class EmailController extends BaseController {
 
 	@Autowired
 	EmailTemplateService emailService;
+	
+	@Autowired
+	PEmailTemplateService pemailService;
 
+	private final Environment environment;
+
+	@Autowired
+	public EmailController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
+	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("emails", emailService.listAll());
+		
+		String profile = profileActive();
+		if (profile.equals("oracle")) {
+			model.addAttribute("emails", emailService.listAll());
+		} else if (profile.equals("postgres")) {
+			model.addAttribute("emails", pemailService.listAll());
+		}
+		
 		return "/admin/email/email";
 	}
 
 	@RequestMapping(value = { "/editarEmail-{id}" }, method = RequestMethod.GET)
 	public String editEmail(@PathVariable Integer id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session) {
-		model.addAttribute("email", emailService.findById(id));
+		
+		String profile = profileActive();
+		if (profile.equals("oracle")) {
+			model.addAttribute("email", emailService.findById(id));
+		} else if (profile.equals("postgres")) {
+			model.addAttribute("email", pemailService.findById(id));
+		}
+		
+		
 		return "/admin/email/editemail";
 	}
 
@@ -97,7 +135,13 @@ public class EmailController extends BaseController {
 			if (res.getStatus().equals("fail")) {
 				return res;
 			}
-			emailService.sendMail(email.getTo(), email.getCc(), email.getSubject(), email.getHtml());
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				emailService.sendMail(email.getTo(), email.getCc(), email.getSubject(), email.getHtml());
+			} else if (profile.equals("postgres")) {
+				pemailService.sendMail(email.getTo(), email.getCc(), email.getSubject(), email.getHtml());
+			}
+			
 
 		} catch (Exception e) {
 			Sentry.capture(e, "email");
@@ -115,6 +159,7 @@ public class EmailController extends BaseController {
 			Locale locale, HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
+			String profile = profileActive();
 			res.setStatus("success");
 			if (email.getName() == null || ((email.getName() != null) ? email.getName() : "").trim().equals("")) {
 				res.setStatus("fail");
@@ -126,10 +171,18 @@ public class EmailController extends BaseController {
 				res.addError("subject", Constant.EMPTY);
 			}
 			if (email.getName() != null) {
-				if (emailService.existEmailTemplate(email.getName().trim())) {
-					res.setStatus("fail");
-					res.addError("name", "Nombre de plantilla ya existe");
+				if (profile.equals("oracle")) {
+					if (emailService.existEmailTemplate(email.getName().trim())) {
+						res.setStatus("fail");
+						res.addError("name", "Nombre de plantilla ya existe");
+					}
+				} else if (profile.equals("postgres")) {
+					if (pemailService.existEmailTemplate(email.getName().trim())) {
+						res.setStatus("fail");
+						res.addError("name", "Nombre de plantilla ya existe");
+					}
 				}
+				
 			}
 			if (res.getStatus().equals("fail")) {
 				return res;
@@ -138,8 +191,25 @@ public class EmailController extends BaseController {
 			email.setCreatedormodify(CommonUtils.getSystemTimestamp());
 			email.setState(0);
 			email.setUsermodify(getUserLogin().getId());
-			emailService.saveEmail(email);
-			res.setObj(email);
+			if (profile.equals("oracle")) {
+				
+				emailService.saveEmail(email);
+				res.setObj(email);
+			} else if (profile.equals("postgres")) {
+				PEmailTemplate pEmail=new PEmailTemplate();
+				pEmail.setCc(email.getCc());
+				pEmail.setName(email.getName());
+				pEmail.setSubject(email.getSubject());
+				pEmail.setCreatedormodify(CommonUtils.getSystemTimestamp());
+				pEmail.setState(0);
+				pEmail.setRetry(0);
+				pEmail.setUsermodify(getUserLogin().getId());
+				pemailService.saveEmail(pEmail);
+				res.setObj(pEmail);
+			}
+			
+		
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "email");
 			res.setStatus("exception");
@@ -155,6 +225,7 @@ public class EmailController extends BaseController {
 			Locale locale, HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
+			String profile = profileActive();
 			res.setStatus("success");
 			if (errors.hasErrors()) {
 				for (FieldError error : errors.getFieldErrors()) {
@@ -164,10 +235,20 @@ public class EmailController extends BaseController {
 			}
 
 			if (email.getName() != null) {
-				if (emailService.existEmailTemplate(email.getName().trim(), email.getId())) {
-					res.setStatus("fail");
-					res.addError("name", "Nombre de plantilla ya existe");
+				
+				if (profile.equals("oracle")) {
+					if (emailService.existEmailTemplate(email.getName().trim(), email.getId())) {
+						res.setStatus("fail");
+						res.addError("name", "Nombre de plantilla ya existe");
+					}
+				} else if (profile.equals("postgres")) {
+					if (pemailService.existEmailTemplate(email.getName().trim(), email.getId())) {
+						res.setStatus("fail");
+						res.addError("name", "Nombre de plantilla ya existe");
+					}
 				}
+				
+				
 			}
 
 			if (email.getTo() == null || ((email.getTo() != null) ? email.getTo() : "").trim().equals("")) {
@@ -207,12 +288,28 @@ public class EmailController extends BaseController {
 			if (res.getStatus().equals("fail")) {
 				return res;
 			}
-
-			email.setRetry(0);
-			email.setCreatedormodify(CommonUtils.getSystemTimestamp());
-			email.setState(1);
-			email.setUsermodify(getUserLogin().getId());
-			emailService.updateEmail(email);
+			if (profile.equals("oracle")) {
+				email.setRetry(0);
+				email.setCreatedormodify(CommonUtils.getSystemTimestamp());
+				email.setState(1);
+				email.setUsermodify(getUserLogin().getId());
+				emailService.updateEmail(email);
+			} else if (profile.equals("postgres")) {
+				PEmailTemplate pEmail=new PEmailTemplate();
+				pEmail.setCc(email.getCc());
+				pEmail.setName(email.getName());
+				pEmail.setFrom(email.getFrom());
+				pEmail.setTo(email.getTo());
+				pEmail.setHtml(email.getHtml());
+				pEmail.setSubject(email.getSubject());
+				pEmail.setCreatedormodify(CommonUtils.getSystemTimestamp());
+				pEmail.setState(1);
+				pEmail.setRetry(0);
+				pEmail.setUsermodify(getUserLogin().getId());
+				pEmail.setId(email.getId());
+				pemailService.updateEmail(pEmail);
+			}
+			
 
 		} catch (Exception e) {
 			Sentry.capture(e, "email");
@@ -227,7 +324,13 @@ public class EmailController extends BaseController {
 	public @ResponseBody JsonResponse deleteEmail(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			emailService.deleteEmail(id);
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				emailService.deleteEmail(id);
+			} else if (profile.equals("postgres")) {
+				pemailService.deleteEmail(id);
+			}
+			
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {

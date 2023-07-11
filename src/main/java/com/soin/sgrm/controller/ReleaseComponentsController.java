@@ -444,6 +444,7 @@ public class ReleaseComponentsController extends BaseController {
 			if (list.size() != 0) {
 				
 				Set<ReleaseObject> listObjects=release.getReleaseObjects();
+				
 				for(ReleaseObject object:listObjects) {
 					releaseObjectService.deleteObject(release.getId(),object);
 				}

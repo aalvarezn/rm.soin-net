@@ -66,7 +66,7 @@ public class Ambient implements Serializable {
 	private Integer typeAmbientId;
 
 	@Transient
-	private Integer systemId;
+	private int systemId;
 
 	public int getId() {
 		return id;

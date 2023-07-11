@@ -21,6 +21,7 @@ import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestBaseTrackingToError;
 import com.soin.sgrm.model.RequestRM_P1_R1;
+import com.soin.sgrm.model.RequestReport;
 import com.soin.sgrm.model.SystemInfo;
 
 @Repository
@@ -132,5 +133,11 @@ public class RequestBaseDaoImpl extends AbstractDao<Long, RequestBase> implement
 		crit.addOrder(Order.desc("trackingDate"));
 
 		return crit.list();
+	}
+	@Override
+	public RequestReport findByReport(Long id) {
+		  return (RequestReport) getSession().createCriteria(RequestReport.class)
+		    		.add(Restrictions.eq("id", id))
+		    		.uniqueResult();
 	}
 }

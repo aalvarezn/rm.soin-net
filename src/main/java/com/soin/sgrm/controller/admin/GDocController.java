@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -20,10 +21,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
+import com.soin.sgrm.model.Authority;
 import com.soin.sgrm.model.GDoc;
 import com.soin.sgrm.model.Project;
+import com.soin.sgrm.model.pos.PAuthority;
+import com.soin.sgrm.model.pos.PGDoc;
+import com.soin.sgrm.model.pos.PProject;
 import com.soin.sgrm.service.GDocService;
 import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.pos.PGDocService;
+import com.soin.sgrm.service.pos.PProjectService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -40,27 +47,67 @@ public class GDocController extends BaseController {
 
 	@Autowired
 	ProjectService projectService;
+	
+	@Autowired
+	PGDocService pgDocService;
 
+	@Autowired
+	PProjectService pprojectService;
+
+	private final Environment environment;
+
+	@Autowired
+	public GDocController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
+	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("gDocs", gDocService.list());
-		model.addAttribute("gDoc", new GDoc());
-		model.addAttribute("projects", projectService.listAll());
-		model.addAttribute("project", new Project());
+		String profile = profileActive();
+		if (profile.equals("oracle")) {
+			model.addAttribute("gDocs", gDocService.list());
+			model.addAttribute("gDoc", new GDoc());
+			model.addAttribute("projects", projectService.listAll());
+			model.addAttribute("project", new Project());
+		} else if (profile.equals("postgres")) {
+			model.addAttribute("gDocs", pgDocService.list());
+			model.addAttribute("gDoc", new PGDoc());
+			model.addAttribute("projects", pprojectService.listAll());
+			model.addAttribute("project", new PProject());
+		}
+		
 		return "/admin/gDoc/gDoc";
 	}
 
 	@RequestMapping(value = "/findGDoc/{id}", method = RequestMethod.GET)
-	public @ResponseBody GDoc findGDoc(@PathVariable Integer id, HttpServletRequest request, Locale locale, Model model,
+	public @ResponseBody Object findGDoc(@PathVariable Integer id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session) {
 		try {
-			GDoc gDoc = gDocService.findById(id);
-			return gDoc;
+			
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				GDoc gDoc = gDocService.findById(id);
+				return gDoc;
+			} else if (profile.equals("postgres")) {
+				PGDoc pgDoc = pgDocService.findById(id);
+				return pgDoc;
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "gDocs");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
+		return null;
 	}
 
 	@RequestMapping(path = "/saveGDoc", method = RequestMethod.POST)
@@ -85,10 +132,24 @@ public class GDocController extends BaseController {
 			}
 
 			if (res.getStatus().equals("success")) {
-				gDoc.setProyect(projectService.findById(gDoc.getProyectId()));
-				gDoc.setNextSincronization(CommonUtils.getSqlDate());
-				gDocService.save(gDoc);
-				res.setObj(gDoc);
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					
+					gDoc.setProyect(projectService.findById(gDoc.getProyectId()));
+					gDoc.setNextSincronization(CommonUtils.getSqlDate());
+					gDocService.save(gDoc);
+					res.setObj(gDoc);
+				} else if (profile.equals("postgres")) {
+					PGDoc pgDoc= new PGDoc();
+					pgDoc.setCredentials(gDoc.getCredentials());
+					pgDoc.setDescription(gDoc.getDescription());
+					pgDoc.setSpreadSheet(gDoc.getSpreadSheet());
+					pgDoc.setProyect(pprojectService.findById(gDoc.getProyectId()));
+					pgDoc.setNextSincronization(CommonUtils.getSqlDate());
+					pgDocService.save(pgDoc);
+					res.setObj(pgDoc);
+				}
+	
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "gDocs");
@@ -117,13 +178,25 @@ public class GDocController extends BaseController {
 			}
 
 			if (res.getStatus().equals("success")) {
-				GDoc gDocOrigin = gDocService.findById(gDoc.getId());
-				gDocOrigin.setCredentials(gDoc.getCredentials());
-				gDocOrigin.setSpreadSheet(gDoc.getSpreadSheet());
-				gDocOrigin.setDescription(gDoc.getDescription());
-				gDocOrigin.setProyect(projectService.findById(gDoc.getProyectId()));
-				gDocService.update(gDocOrigin);
-				res.setObj(gDoc);
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					GDoc gDocOrigin = gDocService.findById(gDoc.getId());
+					gDocOrigin.setCredentials(gDoc.getCredentials());
+					gDocOrigin.setSpreadSheet(gDoc.getSpreadSheet());
+					gDocOrigin.setDescription(gDoc.getDescription());
+					gDocOrigin.setProyect(projectService.findById(gDoc.getProyectId()));
+					gDocService.update(gDocOrigin);
+					res.setObj(gDoc);
+				} else if (profile.equals("postgres")) {
+					PGDoc pgDocOrigin = pgDocService.findById(gDoc.getId());
+					pgDocOrigin.setCredentials(gDoc.getCredentials());
+					pgDocOrigin.setSpreadSheet(gDoc.getSpreadSheet());
+					pgDocOrigin.setDescription(gDoc.getDescription());
+					pgDocOrigin.setProyect(pprojectService.findById(gDoc.getProyectId()));
+					pgDocService.update(pgDocOrigin);
+					res.setObj(gDoc);
+				}
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "gDocs");
@@ -138,7 +211,13 @@ public class GDocController extends BaseController {
 	public @ResponseBody JsonResponse deleteGDoc(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			gDocService.delete(id);
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				gDocService.delete(id);
+			} else if (profile.equals("postgres")) {
+				pgDocService.delete(id);
+			}
+			
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {

@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -88,9 +89,11 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
 @Controller
 @RequestMapping("/management/error")
@@ -267,7 +270,7 @@ public class ErrorsManagementController extends BaseController {
 			}
 
 			if (request.getParameter("sigesId").equals("")) {
-				sigesId = null;
+				sigesId = (long) 0;
 			} else {
 				sigesId = (long) Integer.parseInt(request.getParameter("sigesId"));
 			}
@@ -443,6 +446,7 @@ public class ErrorsManagementController extends BaseController {
 			Long errorId;
 			int projectId;
 			int systemId;
+			int typeDocument;
 			if (!request.getParameter("errorId").equals("") && request.getParameter("errorId") != null) {
 				errorId = (long) Integer.parseInt(request.getParameter("errorId"));
 			} else {
@@ -460,9 +464,25 @@ public class ErrorsManagementController extends BaseController {
 			} else {
 				projectId = 0;
 			}
+			if (request.getParameter("typeDocument").equals("")) {
+				typeDocument = 0;
+			} else {
+				typeDocument =  Integer.parseInt(request.getParameter("typeDocument"));
+			}
+			
+
+				
+			
 			String dateRange = request.getParameter("dateRange");
-			ClassPathResource resource = new ClassPathResource(
-					"reports" + File.separator + "ErrorReleaseGeneral" + ".jrxml");
+			ClassPathResource resource = null;
+			if(typeDocument==2) {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "ErrorReleaseGeneral" + ".jrxml");
+			
+			}else {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "ErrorReleaseGeneralExcel" + ".jrxml");
+			}
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 
@@ -539,6 +559,11 @@ public class ErrorsManagementController extends BaseController {
 				if (valueError != 0 || valueRequest != 0) {
 					totalReleases += valueRequest;
 					ErrorTypeGraph errorTypeGraph = new ErrorTypeGraph();
+					Double percentageErrors = (((double) valueRequest - (double) valueError) / (double) valueRequest);
+					percentageErrors = percentageErrors * 100;
+					percentageErrors = 100 - percentageErrors;
+					percentageErrors = Math.round(percentageErrors * 100d) / 100d;
+					errorTypeGraph.setLabel2(percentageErrors.toString()+"%");
 					errorTypeGraph.setValue(valueError);
 					errorTypeGraph.setValueRequest(valueRequest);
 					errorTypeGraph.setLabel(systemOnly.getName());
@@ -563,13 +588,35 @@ public class ErrorsManagementController extends BaseController {
 			percentageErrors = 100 - percentageErrors;
 			percentageErrors = Math.round(percentageErrors * 100d) / 100d;
 			parameters.put("totalReleases", totalReleases.toString());
-			parameters.put("percentageErrors", percentageErrors.toString());
+			parameters.put("percentageErrors", percentageErrors.toString()+"%");
 			parameters.put("totalErrors", totalReleasesError.toString());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
-
-			String reportName = "SalidasNoConformesReleases-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+			String reportName = "";
 			String basePath = env.getProperty("fileStore.path");
-			JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+			if(typeDocument==2) {
+				reportName= "SalidasNoConformesReleases-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+				JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+				
+			}else {
+				reportName="SalidasNoConformesReleases-" + CommonUtils.getSystemDate("yyyyMMdd") + ".xlsx";
+				JRXlsxExporter exporter = new JRXlsxExporter();
+		        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+
+		        SimpleXlsxReportConfiguration configuration=new SimpleXlsxReportConfiguration();
+		        configuration.setDetectCellType(true);
+		       
+		        configuration.setCollapseRowSpan(true);
+		        configuration.setIgnoreCellBorder(true);
+		        configuration.setWhitePageBackground(true);
+		        configuration.setRemoveEmptySpaceBetweenColumns(true);
+		        configuration.setOnePagePerSheet(true);
+		        configuration.setSheetNames(new String[] { "Hoja1", "Hoja2", "Hoja3" });
+		        exporter.setConfiguration(configuration);
+		        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream( basePath + reportName)));	
+		        exporter.exportReport();
+
+			}
+
 			File file = new File(basePath + reportName);
 			byte[] encoded = org.apache.commons.net.util.Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
@@ -600,6 +647,7 @@ public class ErrorsManagementController extends BaseController {
 			Long sigesId;
 			int systemId;
 			int projectId;
+			int typeDocument;
 			if (!request.getParameter("errorId").equals("") && request.getParameter("errorId") != null) {
 				errorId = (long) Integer.parseInt(request.getParameter("errorId"));
 			} else {
@@ -615,16 +663,30 @@ public class ErrorsManagementController extends BaseController {
 			if (!request.getParameter("sigesId").equals("") && request.getParameter("sigesId") != null) {
 				sigesId = (long) Integer.parseInt(request.getParameter("sigesId"));
 			} else {
-				sigesId = null;
+				sigesId = (long) 0;
 			}
 			if (!request.getParameter("projectId").equals("") && request.getParameter("projectId") != null) {
 				projectId = Integer.parseInt(request.getParameter("projectId"));
 			} else {
 				projectId = 0;
 			}
+			if (request.getParameter("typeDocument").equals("")) {
+				typeDocument = 0;
+			} else {
+				typeDocument =  Integer.parseInt(request.getParameter("typeDocument"));
+			}
 			String dateRange = request.getParameter("dateRange");
-			ClassPathResource resource = new ClassPathResource(
-					"reports" + File.separator + "ErrorRFCGeneral" + ".jrxml");
+			
+			ClassPathResource resource = null;
+			if(typeDocument==2) {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "ErrorRFCGeneral" + ".jrxml");
+			
+			}else {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "ErrorRFCGeneralExcel" + ".jrxml");
+			}
+
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 
@@ -695,6 +757,11 @@ public class ErrorsManagementController extends BaseController {
 				if (valueError != 0 || valueRequest != 0) {
 					totalRFC += valueRequest;
 					ErrorTypeGraph errorTypeGraph = new ErrorTypeGraph();
+					Double percentageErrors = (((double) valueRequest - (double) valueError) / (double) valueRequest);
+					percentageErrors = percentageErrors * 100;
+					percentageErrors = 100 - percentageErrors;
+					percentageErrors = Math.round(percentageErrors * 100d) / 100d;
+					errorTypeGraph.setLabel2(percentageErrors.toString()+"%");
 					errorTypeGraph.setValue(valueError);
 					errorTypeGraph.setValueRequest(valueRequest);
 					errorTypeGraph.setLabel(systemOnly.getName());
@@ -718,13 +785,35 @@ public class ErrorsManagementController extends BaseController {
 			percentageErrors = 100 - percentageErrors;
 			percentageErrors = Math.round(percentageErrors * 100d) / 100d;
 			parameters.put("totalRFC", totalRFC.toString());
-			parameters.put("percentageErrors", percentageErrors.toString());
+			parameters.put("percentageErrors", percentageErrors.toString()+"%");
 			parameters.put("totalErrors", totalRFCError.toString());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
-
-			String reportName = "SalidasNoConformesRFC-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+			String reportName = "";
 			String basePath = env.getProperty("fileStore.path");
-			JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+			if(typeDocument==2) {
+				reportName= "SalidasNoConformesRFC-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+				JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+				
+			}else {
+				reportName="SalidasNoConformesRFC-" + CommonUtils.getSystemDate("yyyyMMdd") + ".xlsx";
+				JRXlsxExporter exporter = new JRXlsxExporter();
+		        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+
+		        SimpleXlsxReportConfiguration configuration=new SimpleXlsxReportConfiguration();
+		        configuration.setDetectCellType(true);
+			       
+		        configuration.setCollapseRowSpan(true);
+		        configuration.setIgnoreCellBorder(true);
+		        configuration.setWhitePageBackground(true);
+		        configuration.setRemoveEmptySpaceBetweenColumns(true);
+		     
+		        configuration.setOnePagePerSheet(true);
+		        configuration.setSheetNames(new String[] { "Hoja1", "Hoja2", "Hoja3" });
+		        exporter.setConfiguration(configuration);
+		        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream( basePath + reportName)));	
+		        exporter.exportReport();
+			}
+			
 			File file = new File(basePath + reportName);
 			byte[] encoded = org.apache.commons.net.util.Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
@@ -755,6 +844,7 @@ public class ErrorsManagementController extends BaseController {
 			Long typePetitionId;
 			int systemId;
 			int projectId;
+			int typeDocument;
 			if (!request.getParameter("errorId").equals("") && request.getParameter("errorId") != null) {
 				errorId = (long) Integer.parseInt(request.getParameter("errorId"));
 			} else {
@@ -772,10 +862,23 @@ public class ErrorsManagementController extends BaseController {
 			} else {
 				typePetitionId = null;
 			}
+			if (request.getParameter("typeDocument").equals("")) {
+				typeDocument = 0;
+			} else {
+				typeDocument =  Integer.parseInt(request.getParameter("typeDocument"));
+			}
+			ClassPathResource resource = null;
+			if(typeDocument==2) {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "ErrorRequestGeneral" + ".jrxml");
+			
+			}else {
+				 resource = new ClassPathResource(
+							"reports" + File.separator + "ErrorRequestGeneralExcel" + ".jrxml");
+			}
 
 			String dateRange = request.getParameter("dateRange");
-			ClassPathResource resource = new ClassPathResource(
-					"reports" + File.separator + "ErrorRequestGeneral" + ".jrxml");
+	
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 
@@ -860,6 +963,11 @@ public class ErrorsManagementController extends BaseController {
 				if (valueError != 0 || valueRequest != 0) {
 					totalRequest += valueRequest;
 					ErrorTypeGraph errorTypeGraph = new ErrorTypeGraph();
+					Double percentageErrors = (((double) valueRequest - (double) valueError) / (double) valueRequest);
+					percentageErrors = percentageErrors * 100;
+					percentageErrors = 100 - percentageErrors;
+					percentageErrors = Math.round(percentageErrors * 100d) / 100d;
+					errorTypeGraph.setLabel2(percentageErrors.toString()+"%");
 					errorTypeGraph.setValue(valueError);
 					errorTypeGraph.setValueRequest(valueRequest);
 					errorTypeGraph.setLabel(systemOnly.getName());
@@ -885,13 +993,37 @@ public class ErrorsManagementController extends BaseController {
 			percentageErrors = 100 - percentageErrors;
 			percentageErrors = Math.round(percentageErrors * 100d) / 100d;
 			parameters.put("totalRequest", totalRequest.toString());
-			parameters.put("percentageErrors", percentageErrors.toString());
+			parameters.put("percentageErrors", percentageErrors.toString()+"%");
 			parameters.put("totalErrors", totalRequestError.toString());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parameters, beanCollectionDataSource);
-
-			String reportName = "SalidasNoConformesSolicitudes-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+			String reportName = "";
 			String basePath = env.getProperty("fileStore.path");
-			JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+			if(typeDocument==2) {
+				reportName= "SalidasNoConformesSolicitudes-" + CommonUtils.getSystemDate("yyyyMMdd") + ".pdf";
+				JasperExportManager.exportReportToPdfFile(jasperPrint, basePath + reportName);
+				
+			}else {
+				reportName="SalidasNoConformesSolicitudes-" + CommonUtils.getSystemDate("yyyyMMdd") + ".xlsx";
+				JRXlsxExporter exporter = new JRXlsxExporter();
+		        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+
+		        SimpleXlsxReportConfiguration configuration=new SimpleXlsxReportConfiguration();
+		        configuration.setDetectCellType(true);
+			       
+		        configuration.setCollapseRowSpan(true);
+		        configuration.setIgnoreCellBorder(true);
+		        configuration.setWhitePageBackground(true);
+		        configuration.setRemoveEmptySpaceBetweenColumns(true);
+		     
+		        configuration.setOnePagePerSheet(true);
+		        configuration.setSheetNames(new String[] { "Hoja1", "Hoja2", "Hoja3" });
+		        exporter.setConfiguration(configuration);
+		       
+		        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream( basePath + reportName)));	
+		        exporter.exportReport();
+			}
+
+			
 			File file = new File(basePath + reportName);
 			byte[] encoded = org.apache.commons.net.util.Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 			String mimeType = URLConnection.guessContentTypeFromName(file.getName());

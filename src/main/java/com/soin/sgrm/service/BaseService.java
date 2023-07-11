@@ -17,6 +17,8 @@ public interface BaseService<PK, T> {
 	void update(T model);
 
 	
+
+	
 	
 
 }

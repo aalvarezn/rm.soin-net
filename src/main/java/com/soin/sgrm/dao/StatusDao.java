@@ -17,4 +17,6 @@ public interface StatusDao {
 	void update(Status status);
 
 	void delete(Integer id);
+
+	List<Status> listWithOutAnul();
 }

@@ -1,7 +1,9 @@
 package com.soin.sgrm.controller.wf;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,15 +25,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.Errors_Release;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFCError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemUser;
+import com.soin.sgrm.model.TypePetition;
+import com.soin.sgrm.model.TypeRequest;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.NodeRFC;
 import com.soin.sgrm.model.wf.WFRFC;
@@ -44,10 +52,12 @@ import com.soin.sgrm.service.RFCErrorService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestNewService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.TypeRequestService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.service.wf.WFReleaseService;
 import com.soin.sgrm.service.wf.WFRFCService;
@@ -96,6 +106,12 @@ public class WorkFlowManagerController extends BaseController {
 	private SigesService sigesService;
 	@Autowired
 	private RFCService rfcService;
+	
+	@Autowired
+	private RequestNewService requestNewService;
+	@Autowired
+	private TypeRequestService typeRequestService;
+	
 	@RequestMapping(value = "/release/", method = RequestMethod.GET)
 	public String indexRelease(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -116,6 +132,101 @@ public class WorkFlowManagerController extends BaseController {
 		}
 		return "/wf/workFlow/workFlowManagerRelease";
 
+	}
+	
+	
+	@RequestMapping(value = "/tpo/", method = RequestMethod.GET)
+	public String indexTPOs(HttpServletRequest request, Locale locale, Model model, HttpSession session,
+			RedirectAttributes redirectAttributes) {
+		try {
+			Integer userLogin = getUserLogin().getId();
+			
+			List<System> systems=systemService.findByUserIncidence(userLogin);
+			List<Project>projects=new ArrayList<>();
+			
+			for(System system: systems) {
+				system.getProyect();
+				boolean veri=true;
+				for(Project project: projects) {
+					if(project.getId()==system.getProyect().getId()) {
+						veri=false;
+					}
+				}
+				if(veri) {
+					projects.add(system.getProyect());
+				}
+			}
+			model.addAttribute("projects", projects);
+			model.addAttribute("project", new Project());
+			model.addAttribute("typeRequests", typeRequestService.list());
+			model.addAttribute("typeRequest", new TypeRequest());
+		} catch (Exception e) {
+			Sentry.capture(e, "wfTPOManagement");
+			redirectAttributes.addFlashAttribute("data",
+					"Error en la carga de la pagina inicial/systemas." + " ERROR: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return "/wf/request/request";
+
+	}
+	
+
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = { "/listTpos" }, method = RequestMethod.GET)
+	public @ResponseBody JsonSheet listTPOs(HttpServletRequest request, Locale locale, Model model) {
+		JsonSheet<?> requests = new JsonSheet<>();
+		try {
+
+			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
+			Integer iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart"));
+			Integer iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			String sSearch = request.getParameter("sSearch");
+			int proyectId;
+			int typeId;
+			Integer userLogin = getUserLogin().getId();
+			if (request.getParameter("proyectFilter").equals("")) {
+				proyectId = 0;
+			} else {
+				proyectId =  Integer.parseInt(request.getParameter("proyectFilter"));
+			}
+
+			if (request.getParameter("typeRequestFilter").equals("")) {
+				typeId= 0;
+			} else {
+				typeId = Integer.parseInt(request.getParameter("typeRequestFilter"));
+			}
+			
+			requests = requestNewService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, proyectId, typeId,userLogin);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return requests;
+
+	}
+	
+	@RequestMapping(value = "/updateRequest/{id}", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse updateRequest(@PathVariable Integer id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			Request requestUpt=requestNewService.findById(id);
+			if(requestUpt.getAuto()==1) {
+				requestUpt.setAuto(0);
+				res.setMessage("Aprobacion automatica desactivada!");
+			}else {
+				requestUpt.setAuto(1);
+				res.setMessage("Aprobacion automatica activada!");
+			}
+			res.setStatus("success");
+			requestNewService.update(requestUpt);
+			
+		} catch (Exception e) {
+			Sentry.capture(e, "typePetition");
+			res.setStatus("exception");
+			res.setMessage("Error al modificaar el Tipo solicitud!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 	@RequestMapping(value = "/rfc/", method = RequestMethod.GET)
 	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session,

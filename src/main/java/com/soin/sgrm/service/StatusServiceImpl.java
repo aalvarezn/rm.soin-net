@@ -46,4 +46,10 @@ public class StatusServiceImpl implements StatusService {
 		dao.delete(id);
 	}
 
+	@Override
+	public List<Status> listWithOutAnul() {
+		// TODO Auto-generated method stub
+		return dao.listWithOutAnul();
+	}
+
 }
