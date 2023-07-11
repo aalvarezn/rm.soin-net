@@ -47,8 +47,8 @@ public class AttentionGroup implements Serializable{
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "GRUPOATENCION_USUARIO", joinColumns = { @JoinColumn(name = "ID_GRUPO") }, inverseJoinColumns = {
-			@JoinColumn(name = "ID_USUARIO") })
+	@JoinTable(name = "\"GRUPOATENCION_USUARIO\"", joinColumns = { @JoinColumn(name = "\"ID_GRUPO\"") }, inverseJoinColumns = {
+			@JoinColumn(name = "\"ID_USUARIO\"") })
 	private Set<User> userAttention= new HashSet<>();
 	
 

@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.controller.ReleaseRequestController;
 import com.soin.sgrm.model.Authority;
+import com.soin.sgrm.model.pos.PAuthority;
 import com.soin.sgrm.service.AuthorityService;
+import com.soin.sgrm.service.pos.PAuthorityService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
@@ -35,25 +38,60 @@ public class AuthorityController extends BaseController {
 
 	@Autowired
 	AuthorityService authorityService;
+	
+	@Autowired
+	PAuthorityService pauthorityService;
+	
+	private final Environment environment;
 
+	@Autowired
+	public AuthorityController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("authoritys", authorityService.list());
-		model.addAttribute("authority", new Authority());
+		String profile = profileActive();
+		if (profile.equals("oracle")) {
+			model.addAttribute("authoritys", authorityService.list());
+			model.addAttribute("authority", new Authority());
+		} else if (profile.equals("postgres")) {
+			model.addAttribute("authoritys", pauthorityService.list());
+			model.addAttribute("authority", new PAuthority());
+		}
+		
 		return "/admin/authority/authority";
 	}
 
 	@RequestMapping(value = "/findAuthority/{id}", method = RequestMethod.GET)
-	public @ResponseBody Authority findAuthority(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+	public @ResponseBody Object findAuthority(@PathVariable Integer id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {
 		try {
-			Authority authority = authorityService.findById(id);
-			return authority;
+			
+			String profile = profileActive();
+			
+			if (profile.equals("oracle")) {
+				Authority authority = authorityService.findById(id);
+				return authority;
+			} else if (profile.equals("postgres")) {
+				PAuthority pauthority = pauthorityService.findById(id);
+				return pauthority;
+			}
+			
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "authority");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
+		return null;
 	}
 
 	@RequestMapping(path = "/saveAuthority", method = RequestMethod.POST)
@@ -72,13 +110,22 @@ public class AuthorityController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				authorityService.save(authority);
-				res.setObj(authority);
+				
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					authorityService.save(authority);
+					res.setObj(authority);
+				} else if (profile.equals("postgres")) {
+					PAuthority pauthority= new PAuthority();
+					pauthority.setName(authority.getName());
+					pauthorityService.save(pauthority);
+					res.setObj(pauthority);
+				}
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "authority");
 			res.setStatus("exception");
-			res.setException("Error al crear role: " + e.toString());
+			res.setException("Error al crear rol: " + e.toString());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -98,15 +145,24 @@ public class AuthorityController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				Authority authorityOrigin = authorityService.findById(authority.getId());
-				authorityOrigin.setName(authority.getName());
-				authorityService.update(authorityOrigin);
-				res.setObj(authority);
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					Authority authorityOrigin = authorityService.findById(authority.getId());
+					authorityOrigin.setName(authority.getName());
+					authorityService.update(authorityOrigin);
+					res.setObj(authority);
+				} else if (profile.equals("postgres")) {
+					PAuthority pauthorityOrigin = pauthorityService.findById(authority.getId());
+					pauthorityOrigin.setName(authority.getName());
+					pauthorityService.update(pauthorityOrigin);
+					res.setObj(authority);
+				}
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "authority");
 			res.setStatus("exception");
-			res.setException("Error al modificar role: " + e.toString());
+			res.setException("Error al modificar rol: " + e.toString());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -116,16 +172,22 @@ public class AuthorityController extends BaseController {
 	public @ResponseBody JsonResponse deleteAuthority(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			authorityService.delete(id);
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				authorityService.delete(id);
+			} else if (profile.equals("postgres")) {
+				pauthorityService.delete(id);
+			}
+			
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {
 			res.setStatus("exception");
-			res.setException("Error al eliminar role: " + e.getCause().getCause().getCause().getMessage() + ":"
+			res.setException("Error al eliminar rol: " + e.getCause().getCause().getCause().getMessage() + ":"
 					+ e.getMessage());
 
 			if (e.getCause().getCause().getCause().getMessage().contains("ORA-02292")) {
-				res.setException("Error al eliminar role: Existen referencias que debe eliminar antes");
+				res.setException("Error al eliminar rol: Existen referencias que debe eliminar antes");
 			} else {
 				Sentry.capture(e, "authority");
 			}

@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -35,10 +36,30 @@ public class ImpactController extends BaseController {
 	@Autowired
 	ImpactService impactService;
 
+	private final Environment environment;
+
+	@Autowired
+	public ImpactController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		 for (String profile : activeProfiles) {
+			 return profile;
+	        }
+		return "";
+	}
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("impacts", impactService.list());
-		model.addAttribute("impact", new Impact());
+		if(profileActive().equals("oracle")) {
+			model.addAttribute("impacts", impactService.list());
+			model.addAttribute("impact", new Impact());
+		}else if(profileActive().equals("postgresql")) {
+			model.addAttribute("impacts", impactService.list());
+			model.addAttribute("impact", new Impact());
+		}
+	
 		return "/admin/impact/impact";
 	}
 

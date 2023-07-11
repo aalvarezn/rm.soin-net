@@ -33,12 +33,14 @@ public class ReportTest {
 	
 	@Transient
 	private JRBeanCollectionDataSource requestDataSource;
+	@Transient
+	private JRBeanCollectionDataSource countDataSource;
+	@Transient
+	private JRBeanCollectionDataSource listCountDataSource;
+
+
 	
-
-
-
-	
-	public void setReleaseDataSource(List<ReleaseReport> releaseDataSource) {
+	public void setReleaseDataSource(List<ReleaseReportFast> releaseDataSource) {
 		JRBeanCollectionDataSource releaseDataSource1 = new JRBeanCollectionDataSource(releaseDataSource, false);
 		this.releaseDataSource = releaseDataSource1;
 	}
@@ -58,11 +60,22 @@ public class ReportTest {
 		return rfcDataSource;
 	}
 	
-	public void setRequestDataSource(List<ErrorTypeGraph> requestDataSource) {
-		JRBeanCollectionDataSource requestDataSource1 = new JRBeanCollectionDataSource(requestDataSource, false);
+	public void setRequestDataSource(List<RequestReport> requests) {
+		JRBeanCollectionDataSource requestDataSource1 = new JRBeanCollectionDataSource(requests, false);
 		this.requestDataSource = requestDataSource1;
 	}
 	
+	
+	
+	public JRBeanCollectionDataSource getCountDataSource() {
+		return countDataSource;
+	}
+
+	public void setCountDataSource(List<?> count) {
+		JRBeanCollectionDataSource countDataSource = new JRBeanCollectionDataSource(count, false);
+		this.countDataSource = countDataSource;
+	}
+
 	public JRBeanCollectionDataSource getRequestDataSource() {
 		return requestDataSource;
 	}
@@ -140,5 +153,16 @@ public class ReportTest {
 		}
 	}
 
+	public void setListCountDataSource(List<ReportGhap> reportList) {
+		JRBeanCollectionDataSource listCountDataSource = new JRBeanCollectionDataSource(reportList, false);
+		this.listCountDataSource = listCountDataSource;
+	}
+
+	public JRBeanCollectionDataSource getListCountDataSource() {
+		return listCountDataSource;
+	}
+
+	
+	
 	
 }

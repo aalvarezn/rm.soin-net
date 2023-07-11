@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -22,8 +23,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.TypeObject;
+import com.soin.sgrm.model.pos.PSystemInfo;
+import com.soin.sgrm.model.pos.PTypeObject;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.service.TypeObjectService;
+import com.soin.sgrm.service.pos.PSystemService;
+import com.soin.sgrm.service.pos.PTypeObjectService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -40,26 +45,66 @@ public class TypeObjectController extends BaseController {
 	@Autowired
 	SystemService systemService;
 
+	@Autowired
+	PTypeObjectService ptypeObjectService;
+
+	@Autowired
+	PSystemService psystemService;
+	
+	private final Environment environment;
+
+	@Autowired
+	public TypeObjectController(Environment environment) {
+		this.environment = environment;
+	}
+	
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
+	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("typeObjects", typeObjectService.list());
-		model.addAttribute("typeObject", new TypeObject());
-		model.addAttribute("systems", systemService.listAll());
-		model.addAttribute("system", new SystemInfo());
+		
+		String profile = profileActive();
+		if (profile.equals("oracle")) {
+			model.addAttribute("typeObjects", typeObjectService.list());
+			model.addAttribute("typeObject", new TypeObject());
+			model.addAttribute("systems", systemService.listAll());
+			model.addAttribute("system", new SystemInfo());
+		} else if (profile.equals("postgres")) {
+			model.addAttribute("typeObjects", ptypeObjectService.list());
+			model.addAttribute("typeObject", new PTypeObject());
+			model.addAttribute("systems", psystemService.listAll());
+			model.addAttribute("system", new PSystemInfo());
+		}
+		
 		return "/admin/typeObject/typeObject";
 	}
 
 	@RequestMapping(value = "/findTypeObject/{id}", method = RequestMethod.GET)
-	public @ResponseBody TypeObject findTypeObject(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+	public @ResponseBody Object findTypeObject(@PathVariable Integer id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {
 		try {
-			TypeObject typeObject = typeObjectService.findById(id);
-			return typeObject;
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				TypeObject typeObject = typeObjectService.findById(id);
+				return typeObject;
+			} else if (profile.equals("postgres")) {
+				PTypeObject typeObject = ptypeObjectService.findById(id);
+				return typeObject;
+			}
+			
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "typeObject");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
+		return null;
 	}
 
 	@RequestMapping(path = "/saveTypeObject", method = RequestMethod.POST)
@@ -84,9 +129,22 @@ public class TypeObjectController extends BaseController {
 			}
 
 			if (res.getStatus().equals("success")) {
-				typeObject.setSystem(systemService.findById(typeObject.getSystemId()));
-				typeObjectService.save(typeObject);
-				res.setObj(typeObject);
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					typeObject.setSystem(systemService.findById(typeObject.getSystemId()));
+					typeObjectService.save(typeObject);
+					res.setObj(typeObject);
+				} else if (profile.equals("postgres")) {
+					PTypeObject ptypeObject= new PTypeObject();
+					ptypeObject.setSystem(psystemService.findById(typeObject.getSystemId()));
+					ptypeObject.setDescription(typeObject.getDescription());
+					ptypeObject.setExtension(typeObject.getExtension());
+					ptypeObject.setName(typeObject.getName());
+					ptypeObjectService.save(ptypeObject);
+					res.setObj(ptypeObject);
+				}
+				
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "typeObject");
@@ -116,12 +174,24 @@ public class TypeObjectController extends BaseController {
 			}
 
 			if (res.getStatus().equals("success")) {
-				TypeObject typeObjectOrigin = typeObjectService.findById(typeObject.getId());
-				typeObjectOrigin.setName(typeObject.getName());
-				typeObjectOrigin.setDescription(typeObject.getDescription());
-				typeObjectOrigin.setSystem(systemService.findById(typeObject.getSystemId()));
-				typeObjectService.update(typeObjectOrigin);
-				res.setObj(typeObject);
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					TypeObject typeObjectOrigin = typeObjectService.findById(typeObject.getId());
+					typeObjectOrigin.setName(typeObject.getName());
+					typeObjectOrigin.setDescription(typeObject.getDescription());
+					typeObjectOrigin.setSystem(systemService.findById(typeObject.getSystemId()));
+					typeObjectService.update(typeObjectOrigin);
+					res.setObj(typeObject);
+				} else if (profile.equals("postgres")) {
+					PTypeObject ptypeObjectOrigin = ptypeObjectService.findById(typeObject.getId());
+					ptypeObjectOrigin.setName(typeObject.getName());
+					ptypeObjectOrigin.setDescription(typeObject.getDescription());
+					ptypeObjectOrigin.setSystem(psystemService.findById(typeObject.getSystemId()));
+					ptypeObjectService.update(ptypeObjectOrigin);
+					res.setObj(ptypeObjectOrigin);
+				}
+				
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "typeObject");
@@ -137,7 +207,12 @@ public class TypeObjectController extends BaseController {
 	public @ResponseBody JsonResponse deleteTypeObject(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			typeObjectService.delete(id);
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				typeObjectService.delete(id);
+			} else if (profile.equals("postgres")) {
+				ptypeObjectService.delete(id);
+			}
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {
