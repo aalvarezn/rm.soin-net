@@ -801,9 +801,14 @@ function saveSystem(){
 function openCreate(){
 	$fmSiges.validate().resetForm();
 	$fmSiges[0].reset();
+	$fmSiges.find('#userId').selectpicker('val',"");
 	$fmSiges.find('#proyectId').selectpicker('val',"");
 	$mdSiges.find('#save').show();
 	$mdSiges.find('#update').hide();
 	$mdSiges.modal('show');
 }
 
+
+function closeSiges(){
+	$mdSiges.modal('hide');
+}

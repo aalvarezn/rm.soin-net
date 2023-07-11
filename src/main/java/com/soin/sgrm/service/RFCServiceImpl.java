@@ -160,12 +160,12 @@ public class RFCServiceImpl implements RFCService {
 		return "Sin Asignar";
 	}
 
-	public String generateRFCNumber(String codeProject) {
+	public String generateRFCNumber(String codeProject,String codeSystem) {
 		String numRFC = "";
 		String partCode = "";
 		try {
 
-			partCode = "RFC_" + codeProject + "_SC";
+			partCode = "RFC_" + codeProject.toUpperCase() +"_"+codeSystem.toUpperCase()+ "_SC";
 
 			numRFC = verifySecuence(partCode);
 
