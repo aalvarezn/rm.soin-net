@@ -32,6 +32,7 @@ import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.ReleaseReportFast;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTrackingShow;
@@ -961,6 +962,13 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		ReleaseTrackingShow release = (ReleaseTrackingShow) sessionFactory.getCurrentSession().get(ReleaseTrackingShow.class, id);
 		return release;
 	}
+
+	@Override
+	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
+		ReleaseSummaryFile release = (ReleaseSummaryFile) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseSummaryFile.class).add(Restrictions.eq("id", id)).uniqueResult();
+		return release;
+}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength,

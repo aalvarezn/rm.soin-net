@@ -240,6 +240,34 @@ public class SystemController extends BaseController {
 			}
 
 			if (res.getStatus().equals("success")) {
+
+				system.setProyect(projectService.findById(system.getProyectId()));
+				system.setLeader(userService.findUserById(system.getLeaderId()));
+
+				// se agregan los usuarios de equipo
+				User temp = null;
+				Set<User> usersNews = new HashSet<>();
+				for (Integer index : system.getUserTeamId()) {
+					temp = userService.findUserById(index);
+					if (temp != null)
+						usersNews.add(temp);
+				}
+				system.checkTeamsExists(usersNews);
+				// se agregan los usuarios de gestion
+				temp = null;
+				Set<User> managersNews = new HashSet<>();
+				for (Integer index : system.getManagersId()) {
+					temp = userService.findUserById(index);
+					if (temp != null)
+						managersNews.add(temp);
+				}
+				system.checkManagersExists(managersNews);
+				if (system.getEmailId() != null) {
+					EmailTemplate email = emailService.findById(system.getEmailId());
+					system.changeEmail(email);
+				} else {
+					system.changeEmail(null);
+
 				String profile = profileActive();
 				if (profile.equals("oracle")) {
 
@@ -318,6 +346,7 @@ public class SystemController extends BaseController {
 
 					psystemService.save(psystem);
 					res.setObj(psystem);
+
 				}
 
 			}

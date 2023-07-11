@@ -167,6 +167,14 @@ public class ProjectController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
+
+				Project proj = projectService.findById(project.getId());
+				proj.setCode(project.getCode());
+				proj.setDescription(project.getDescription());
+				proj.setAllowRepeat(project.getAllowRepeat());
+				projectService.update(proj);
+				res.setObj(project);
+
 				String profile = profileActive();
 				if (profile.equals("oracle")) {
 					Project proj = projectService.findById(project.getId());

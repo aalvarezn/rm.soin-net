@@ -3,7 +3,9 @@ package com.soin.sgrm.dao;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -15,6 +17,7 @@ import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.SystemModule;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.System;
 
 @Repository
@@ -251,5 +254,40 @@ public class SystemDaoImpl implements SystemDao {
 		List<System> systemList = crit.list();
 
 		return systemList;
+	}
+
+	@Override
+	public void saveAndSiges(System addSystem) {
+		 Session session = sessionFactory.getCurrentSession();
+	
+		   try {
+			   session.save(addSystem);
+			   Siges siges= new Siges();
+			   SystemInfo system=new SystemInfo();
+			   system.setId(addSystem.getId());
+			   siges.setSystem(system);
+			   siges.setCodeSiges(addSystem.getSigesCode());
+			   siges.setEmailTemplateId(1);
+			   session.save(siges);
+		    } catch (Exception e) {
+		      
+		        throw e;
+		    }
+	}
+
+	@Override
+	public boolean checkUniqueCode(String sCode, Integer proyectId,Integer typeCheck) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("proyect", "proyect");
+		crit.add(Restrictions.eq("proyect.id", proyectId));
+		if(typeCheck==1) {
+			crit.add(Restrictions.eq("code", sCode));
+		}else if(typeCheck==0) {
+			crit.add(Restrictions.eq("name", sCode));
+		}
+		
+		crit.setProjection(Projections.rowCount());
+	    Long count = (Long) crit.uniqueResult();
+	    return count == 0;
 	}
 }
