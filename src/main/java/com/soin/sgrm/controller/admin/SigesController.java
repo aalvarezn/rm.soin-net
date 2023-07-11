@@ -30,6 +30,7 @@ import com.soin.sgrm.model.pos.PSiges;
 import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.pos.PEmailTemplateService;
@@ -52,6 +53,10 @@ public class SigesController extends BaseController {
 	@Autowired 
 	EmailTemplateService emailTemplateService;
 	
+
+	@Autowired 
+	ProjectService proyectService;
+  
 	@Autowired
 	PSigesService psigesService;
 	
@@ -76,6 +81,7 @@ public class SigesController extends BaseController {
 		}
 		return "";
 	}
+
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		
@@ -126,10 +132,27 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
+
+			SystemInfo system= systemService.findSystemInfoById(addSiges.getSystemId());
+			EmailTemplate emailTemplate= emailTemplateService.findById(addSiges.getEmailTemplateId());
+			addSiges.setEmailTemplate(emailTemplate);
+			addSiges.setSystem(system);
+			Project proyect =proyectService.findById(system.getProyectId());
 			
+			if(proyect.getAllowRepeat()) {
+				
+			}
 			
+			if (!proyect.getAllowRepeat() && !sigesService.checkUniqueCode(addSiges.getCodeSiges())) {
+				res.setStatus("error");
+				res.setMessage(
+						"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
+			}else {
+				sigesService.save(addSiges);
+				res.setMessage("Siges agregado!");
+			}
 			
-			
+		
 			String profile = profileActive();
 			if (profile.equals("oracle")) {
 				SystemInfo system= systemService.findSystemInfoById(addSiges.getSystemId());
@@ -161,10 +184,11 @@ public class SigesController extends BaseController {
 				}
 			}
 			
+
 			
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al agregar siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}

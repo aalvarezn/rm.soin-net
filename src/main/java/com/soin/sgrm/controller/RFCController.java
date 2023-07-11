@@ -62,6 +62,7 @@ import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.wf.Node;
@@ -253,8 +254,11 @@ public class RFCController extends BaseController {
 				addRFC.setOperator(user.getFullName());
 				Siges codeSiges = sigeService.findById(addRFC.getCodeSigesId());
 				addRFC.setSiges(codeSiges);
-				addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect()));
-				addRFC.setSystemInfo(systemService.findById(addRFC.getSystemId()));
+				addRFC.setCodeProyect(codeSiges.getCodeSiges());
+				SystemInfo systemInfo=systemService.findById(addRFC.getSystemId());
+				addRFC.setSystemInfo(systemInfo);
+				addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect(),systemInfo.getCode()));
+				
 				rfcService.save(addRFC);
 				res.setData(addRFC.getId().toString());
 				res.setMessage("Se creo correctamente el RFC!");
@@ -506,7 +510,13 @@ public class RFCController extends BaseController {
 			model.addAttribute("rfc", rfcEdit);
 			model.addAttribute("senders", rfcEdit.getSenders());
 			model.addAttribute("message", rfcEdit.getMessage());
-			model.addAttribute("ccs", getCC(rfcEdit.getSiges().getEmailTemplate().getCc()));
+			
+			if(rfcEdit.getSiges().getEmailTemplate()!=null) {
+				model.addAttribute("ccs", getCC(rfcEdit.getSiges().getEmailTemplate().getCc()));
+			}else {
+				model.addAttribute("ccs", getCC(""));
+			}
+			
 
 			return "/rfc/editRFC";
 

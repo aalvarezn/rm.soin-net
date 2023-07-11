@@ -47,7 +47,7 @@
 
 					</div>
 					<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-						<label>Proyecto SIGES</label>
+						<label>Codigo proyecto</label>
 						<div class="form-group m-b-0">
 							<select id="sigesId" name="sigesId" disabled
 								class="form-control show-tick selectpicker"
