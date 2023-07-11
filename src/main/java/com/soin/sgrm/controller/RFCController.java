@@ -62,6 +62,7 @@ import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.wf.Node;
@@ -254,8 +255,10 @@ public class RFCController extends BaseController {
 				Siges codeSiges = sigeService.findById(addRFC.getCodeSigesId());
 				addRFC.setSiges(codeSiges);
 				addRFC.setCodeProyect(codeSiges.getCodeSiges());
-				addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect()));
-				addRFC.setSystemInfo(systemService.findById(addRFC.getSystemId()));
+				SystemInfo systemInfo=systemService.findById(addRFC.getSystemId());
+				addRFC.setSystemInfo(systemInfo);
+				addRFC.setNumRequest(rfcService.generateRFCNumber(addRFC.getCodeProyect(),systemInfo.getCode()));
+				
 				rfcService.save(addRFC);
 				res.setData(addRFC.getId().toString());
 				res.setMessage("Se creo correctamente el RFC!");

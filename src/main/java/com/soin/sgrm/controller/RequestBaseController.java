@@ -242,10 +242,11 @@ public class RequestBaseController extends BaseController {
 					addRequest.setOperator(user.getFullName());
 					Siges codeSiges = sigeService.findById(addRequest.getCodeSigesId());
 					addRequest.setSiges(codeSiges);
+					addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
 					addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
 					addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),
-							addRequest.getTypePetition().getCode()));
-					addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
+							addRequest.getTypePetition().getCode(),addRequest.getSystemInfo().getCode()));
+					
 					requestBaseService.save(addRequest);
 					if (addRequest.getTypePetition().getCode().equals("RM-P1-R5")) {
 						RequestRM_P1_R5 requestR5 = new RequestRM_P1_R5();

@@ -2065,15 +2065,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
 			
-			String[] split = senders.split(",");
-
-			boolean verify = ArrayUtils.contains(split, user.getEmail());
-			if (!verify) {
-				senders = senders + "," + user.getEmail();
-			}
+			
 			for (String ccUser : senders.split(",")) {
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
-
 			}
 
 			if(email.getCc()!=null) {
@@ -2082,7 +2076,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 		
 			mimeMessage.addRecipient(Message.RecipientType.TO,
-					new InternetAddress(email.getTo()));
+					new InternetAddress(user.getEmail()));
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
