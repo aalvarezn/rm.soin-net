@@ -34,6 +34,7 @@ import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.pos.PEmailTemplateService;
+import com.soin.sgrm.service.pos.PProjectService;
 import com.soin.sgrm.service.pos.PSigesService;
 import com.soin.sgrm.service.pos.PSystemService;
 import com.soin.sgrm.utils.JsonResponse;
@@ -57,6 +58,9 @@ public class SigesController extends BaseController {
 	@Autowired 
 	ProjectService proyectService;
   
+	@Autowired 
+	PProjectService pproyectService;
+	
 	@Autowired
 	PSigesService psigesService;
 	
@@ -132,26 +136,6 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-
-			SystemInfo system= systemService.findSystemInfoById(addSiges.getSystemId());
-			EmailTemplate emailTemplate= emailTemplateService.findById(addSiges.getEmailTemplateId());
-			addSiges.setEmailTemplate(emailTemplate);
-			addSiges.setSystem(system);
-			Project proyect =proyectService.findById(system.getProyectId());
-			
-			if(proyect.getAllowRepeat()) {
-				
-			}
-			
-			if (!proyect.getAllowRepeat() && !sigesService.checkUniqueCode(addSiges.getCodeSiges())) {
-				res.setStatus("error");
-				res.setMessage(
-						"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
-			}else {
-				sigesService.save(addSiges);
-				res.setMessage("Siges agregado!");
-			}
-			
 		
 			String profile = profileActive();
 			if (profile.equals("oracle")) {
@@ -159,13 +143,14 @@ public class SigesController extends BaseController {
 				EmailTemplate emailTemplate= emailTemplateService.findById(addSiges.getEmailTemplateId());
 				addSiges.setEmailTemplate(emailTemplate);
 				addSiges.setSystem(system);
-				Siges codeSiges= sigesService.findByKey("codeSiges", addSiges.getCodeSiges().trim());
-				if(codeSiges==null) {
-				sigesService.save(addSiges);
-				res.setMessage("Siges agregado!");
+				Project proyect =proyectService.findById(system.getProyectId());
+				if (!proyect.getAllowRepeat() && !sigesService.checkUniqueCode(addSiges.getCodeSiges())) {
+					res.setStatus("error");
+					res.setMessage(
+							"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
 				}else {
-					res.setStatus("exception");
-					res.setMessage("Error al agregar siges codigo Siges ya utilizado!");
+					sigesService.save(addSiges);
+					res.setMessage("Siges agregado!");
 				}
 			} else if (profile.equals("postgres")) {
 				PSiges paddSiges=new PSiges();
@@ -174,13 +159,14 @@ public class SigesController extends BaseController {
 				paddSiges.setEmailTemplate(pemailTemplate);
 				paddSiges.setSystem(psystem);
 				paddSiges.setCodeSiges(addSiges.getCodeSiges());
-				PSiges pcodeSiges= psigesService.findByKey("codeSiges", addSiges.getCodeSiges().trim());
-				if(pcodeSiges==null) {
-				psigesService.save(paddSiges);
-				res.setMessage("Siges agregado!");
+				PProject pproyect =pproyectService.findById(psystem.getProyectId());
+				if (!pproyect.getAllowRepeat() && !psigesService.checkUniqueCode(addSiges.getCodeSiges())) {
+					res.setStatus("error");
+					res.setMessage(
+							"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
 				}else {
-					res.setStatus("exception");
-					res.setMessage("Error al agregar siges codigo Siges ya utilizado!");
+					psigesService.save(paddSiges);
+					res.setMessage("Siges agregado!");
 				}
 			}
 			

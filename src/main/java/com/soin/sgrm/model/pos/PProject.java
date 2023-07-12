@@ -61,6 +61,9 @@ public class PProject implements Serializable {
 
 	@Column(name = "NOTIFICAR_LIDER_TECNICO")
 	private Boolean notifyTechLead;
+	
+	@Column(name = "PERMITIR_REPETIR")
+	private Boolean allowRepeat;
 
 	public int getId() {
 		return id;
@@ -150,4 +153,13 @@ public class PProject implements Serializable {
 		this.notifyTechLead = notifyTechLead;
 	}
 
+	public Boolean getAllowRepeat() {
+		return allowRepeat;
+	}
+
+	public void setAllowRepeat(Boolean allowRepeat) {
+		this.allowRepeat = allowRepeat;
+	}
+	
+	
 }

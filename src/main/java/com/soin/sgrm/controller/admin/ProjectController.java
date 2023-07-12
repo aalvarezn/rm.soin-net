@@ -93,6 +93,7 @@ public class ProjectController extends BaseController {
 				project.setPmoEmail(pproject.getPmoEmail());
 				project.setReleaseManagerEmail(pproject.getReleaseManagerEmail());
 				project.setUserEmail(pproject.getUserEmail());
+				project.setAllowRepeat(pproject.getAllowRepeat());
 			}
 
 			return project;
@@ -139,6 +140,7 @@ public class ProjectController extends BaseController {
 					pproject.setPmoEmail(project.getPmoEmail());
 					pproject.setReleaseManagerEmail(project.getReleaseManagerEmail());
 					pproject.setUserEmail(project.getUserEmail());
+					pproject.setAllowRepeat(project.getAllowRepeat());
 					pprojectService.save(pproject);
 					res.setObj(pproject);
 				}
@@ -168,24 +170,21 @@ public class ProjectController extends BaseController {
 			}
 			if (res.getStatus().equals("success")) {
 
-				Project proj = projectService.findById(project.getId());
-				proj.setCode(project.getCode());
-				proj.setDescription(project.getDescription());
-				proj.setAllowRepeat(project.getAllowRepeat());
-				projectService.update(proj);
-				res.setObj(project);
+
 
 				String profile = profileActive();
 				if (profile.equals("oracle")) {
 					Project proj = projectService.findById(project.getId());
 					proj.setCode(project.getCode());
 					proj.setDescription(project.getDescription());
+					proj.setAllowRepeat(project.getAllowRepeat());
 					projectService.update(proj);
 					res.setObj(project);
 				} else if (profile.equals("postgres")) {
 					PProject pproj = pprojectService.findById(project.getId());
 					pproj.setCode(project.getCode());
 					pproj.setDescription(project.getDescription());
+					pproj.setAllowRepeat(project.getAllowRepeat());
 					pprojectService.update(pproj);
 					res.setObj(pproj);
 				}
