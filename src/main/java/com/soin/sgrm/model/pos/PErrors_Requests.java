@@ -7,12 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "RELEASES_IMPACTO")
-public class PImpact implements Serializable {
+@Table(name = "ERRORES_SOLIC")
+public class PErrors_Requests implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -20,7 +19,7 @@ public class PImpact implements Serializable {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Long id;
 
 	@Column(name = "NOMBRE")
 	private String name;
@@ -28,11 +27,11 @@ public class PImpact implements Serializable {
 	@Column(name = "DESCRIPCION")
 	private String description;
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
