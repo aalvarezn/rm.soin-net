@@ -1,11 +1,11 @@
-package com.soin.sgrm.dao.pos;
+package com.soin.sgrm.service.pos;
 
 import java.util.List;
 
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.pos.PPriority;
 
-public interface PPriorityDao {
+public interface PPriorityService {
 
 	List<PPriority> list();
 

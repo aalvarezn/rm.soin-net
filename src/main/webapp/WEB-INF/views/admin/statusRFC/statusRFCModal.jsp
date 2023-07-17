@@ -6,7 +6,7 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title" id="largeModalLabel">Status RFC</h4>
+				<h4 class="modal-title" id="largeModalLabel">Estado RFC</h4>
 			</div>
 			<div class="modal-body">
 				<form id="statusRFCModalForm" action="">

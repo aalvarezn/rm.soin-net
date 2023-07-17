@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -21,7 +22,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Priority;
+import com.soin.sgrm.model.Risk;
+import com.soin.sgrm.model.pos.PPriority;
+import com.soin.sgrm.model.pos.PRisk;
 import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.pos.PPriorityService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
@@ -35,24 +40,59 @@ public class PriorityController extends BaseController {
 	@Autowired
 	PriorityService priorityService;
 
+	@Autowired
+	PPriorityService ppriorityService;
+	
+	private final Environment environment;
+
+	@Autowired
+	public PriorityController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
+	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("prioritys", priorityService.list());
-		model.addAttribute("priority", new Priority());
+		
+		String profile = profileActive();
+		if (profile.equals("oracle")) {
+			model.addAttribute("prioritys", priorityService.list());
+			model.addAttribute("priority", new Priority());
+		} else if (profile.equals("postgres")) {
+			model.addAttribute("prioritys", ppriorityService.list());
+			model.addAttribute("priority", new PPriority());
+		}
+		
 		return "/admin/priority/priority";
 	}
 
 	@RequestMapping(value = "/findPriority/{id}", method = RequestMethod.GET)
-	public @ResponseBody Priority findPriority(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+	public @ResponseBody Object findPriority(@PathVariable Integer id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {
 		try {
-			Priority priority = priorityService.findById(id);
-			return priority;
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				Priority priority = priorityService.findById(id);
+				return priority;
+			} else if (profile.equals("postgres")) {
+				PPriority priority = ppriorityService.findById(id);
+				return priority;
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "priority");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
+		return null;
 	}
 
 	@RequestMapping(path = "/savePriority", method = RequestMethod.POST)
@@ -71,8 +111,18 @@ public class PriorityController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				priorityService.save(priority);
-				res.setObj(priority);
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					priorityService.save(priority);
+					res.setObj(priority);
+				} else if (profile.equals("postgres")) {
+					PPriority ppriority=new PPriority();
+					ppriority.setDescription(priority.getDescription());
+					ppriority.setName(priority.getName());
+					ppriorityService.save(ppriority);
+					res.setObj(priority);
+				}
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "priority");
@@ -97,11 +147,23 @@ public class PriorityController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				Priority priorityOrigin = priorityService.findById(priority.getId());
-				priorityOrigin.setName(priority.getName());
-				priorityOrigin.setDescription(priority.getDescription());
-				priorityService.update(priorityOrigin);
-				res.setObj(priority);
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					Priority priorityOrigin = priorityService.findById(priority.getId());
+					priorityOrigin.setName(priority.getName());
+					priorityOrigin.setDescription(priority.getDescription());
+					priorityService.update(priorityOrigin);
+					res.setObj(priority);
+				} else if (profile.equals("postgres")) {
+					PPriority ppriorityOrigin = ppriorityService.findById(priority.getId());
+					ppriorityOrigin.setName(priority.getName());
+					ppriorityOrigin.setDescription(priority.getDescription());
+					ppriorityOrigin.setId(priority.getId());
+					ppriorityService.update(ppriorityOrigin);
+					res.setObj(ppriorityOrigin);
+				}
+				
+
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "priority");
@@ -116,7 +178,14 @@ public class PriorityController extends BaseController {
 	public @ResponseBody JsonResponse deletePriority(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			priorityService.delete(id);
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				priorityService.delete(id);
+			} else if (profile.equals("postgres")) {
+				ppriorityService.delete(id);
+			}
+		
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {

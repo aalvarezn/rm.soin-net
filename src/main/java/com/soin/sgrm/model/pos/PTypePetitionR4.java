@@ -4,53 +4,53 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import com.soin.sgrm.utils.Constant;
 
 @Entity
-@Table(name = "RELEASES_RIESGO")
-public class PRisk implements Serializable {
-
+@Table(name = "SOLICITUD_TIPO_R4")
+public class PTypePetitionR4 implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private Integer id;
+	private Long id;
 
-	@Column(name = "NOMBRE")
-	@NotEmpty(message = Constant.EMPTY)
-	@Size(max = 50, message = "Máximo 50 caracteres.")
-	private String name;
+	@Column(name = "CODIGO")
+	private String code;
 
 	@Column(name = "DESCRIPCION")
-	@NotEmpty(message = Constant.EMPTY)
 	private String description;
+	
+	@Column(name = "ESTADO")
+	private Integer status;
+	
 
-	public Integer getId() {
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getCode() {
+		return code;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getDescription() {
@@ -61,4 +61,16 @@ public class PRisk implements Serializable {
 		this.description = description;
 	}
 
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	
+	
+	
+	
 }
