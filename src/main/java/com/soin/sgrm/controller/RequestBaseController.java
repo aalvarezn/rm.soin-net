@@ -242,6 +242,7 @@ public class RequestBaseController extends BaseController {
 					addRequest.setOperator(user.getFullName());
 					Siges codeSiges = sigeService.findById(addRequest.getCodeSigesId());
 					addRequest.setSiges(codeSiges);
+					addRequest.setCodeProyect(codeSiges.getCodeSiges());
 					addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
 					addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
 					addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),
