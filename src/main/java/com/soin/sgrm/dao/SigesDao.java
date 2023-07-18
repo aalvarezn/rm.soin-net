@@ -9,4 +9,8 @@ public interface SigesDao extends BaseDao<Long, Siges> {
 
 	public boolean checkUniqueCode(String sigesCode);
 
+	public boolean veryUpdateSigesCode(Long id, String codeSiges);
+
+	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges);
+
 }

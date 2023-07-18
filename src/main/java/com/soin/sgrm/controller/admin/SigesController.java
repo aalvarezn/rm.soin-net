@@ -38,22 +38,22 @@ public class SigesController extends BaseController {
 
 	@Autowired
 	SigesService sigesService;
-	
+
 	@Autowired
 	SystemService systemService;
-	
-	@Autowired 
+
+	@Autowired
 	EmailTemplateService emailTemplateService;
-	
-	@Autowired 
+
+	@Autowired
 	ProjectService proyectService;
-	
+
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("systems",systemService.listAll());
-		model.addAttribute("system",new System());
-		model.addAttribute("emailTemplates",emailTemplateService.listAll());
-		model.addAttribute("emailTemplate",new EmailTemplate());
+		model.addAttribute("systems", systemService.listAll());
+		model.addAttribute("system", new System());
+		model.addAttribute("emailTemplates", emailTemplateService.listAll());
+		model.addAttribute("emailTemplate", new EmailTemplate());
 		return "/admin/siges/siges";
 	}
 
@@ -75,27 +75,25 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			SystemInfo system= systemService.findSystemInfoById(addSiges.getSystemId());
-			EmailTemplate emailTemplate= emailTemplateService.findById(addSiges.getEmailTemplateId());
+			SystemInfo system = systemService.findSystemInfoById(addSiges.getSystemId());
+			EmailTemplate emailTemplate = emailTemplateService.findById(addSiges.getEmailTemplateId());
 			addSiges.setEmailTemplate(emailTemplate);
 			addSiges.setSystem(system);
-			Project proyect =proyectService.findById(system.getProyectId());
-			
-			if(proyect.getAllowRepeat()) {
-				
+			Project proyect = proyectService.findById(system.getProyectId());
+
+			if (proyect.getAllowRepeat()) {
+
 			}
-			
+
 			if (!proyect.getAllowRepeat() && !sigesService.checkUniqueCode(addSiges.getCodeSiges())) {
 				res.setStatus("error");
 				res.setMessage(
 						"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
-			}else {
+			} else {
 				sigesService.save(addSiges);
 				res.setMessage("Siges agregado!");
 			}
-			
-		
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
 			res.setStatus("error");
@@ -110,34 +108,29 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			SystemInfo system= systemService.findSystemInfoById(uptSiges.getSystemId());
-			EmailTemplate emailTemplate= emailTemplateService.findById( uptSiges.getEmailTemplateId());
+			SystemInfo system = systemService.findSystemInfoById(uptSiges.getSystemId());
+			EmailTemplate emailTemplate = emailTemplateService.findById(uptSiges.getEmailTemplateId());
 			uptSiges.setEmailTemplate(emailTemplate);
 			uptSiges.setSystem(system);
-			Project proyect =proyectService.findById(system.getProyectId());
-			Siges sigesCode=sigesService.findById(uptSiges.getId());
-			if(sigesCode.getCodeSiges()!=uptSiges.getCodeSiges()){
-				
-				Siges sigesVerification=sigesService.findByKey("codeSiges", uptSiges.getCodeSiges());
-				if(sigesVerification.getId()==uptSiges.getId()) {
-					sigesService.update(uptSiges);
-					res.setMessage("Siges modificado!");
-				}else {
-					
-					if(proyect.getAllowRepeat()) {
+			Project proyect = proyectService.findById(system.getProyectId());
+
+			if (sigesService.veryUpdateSigesCode(uptSiges.getId(), uptSiges.getCodeSiges())) {
+				sigesService.update(uptSiges);
+				res.setMessage("Siges modificado!");
+			} else {
+				if (sigesService.veryUpdateSigesCodeDif(uptSiges.getId(), uptSiges.getCodeSiges())) {
+					if (proyect.getAllowRepeat()) {
 						sigesService.update(uptSiges);
 						res.setMessage("Siges modificado!");
-					}else {
+					} else {
 						res.setStatus("error");
 						res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
 					}
-				
+				} else {
+					sigesService.update(uptSiges);
+					res.setMessage("Siges modificado!");
 				}
-			}else {
-				sigesService.update(uptSiges);
-				res.setMessage("Siges modificado!");
 			}
-			
 
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
