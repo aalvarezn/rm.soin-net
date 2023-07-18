@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.RequestBaseR1Dao;
 import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestReport;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.Constant;
@@ -222,6 +223,25 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 	public Integer countByType(Integer id, String type, int query, Object[] object) {
 		
 		return dao.countByType(id, type, query, object);
+	}
+	@Override
+	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, String dateRange, Integer systemId, Long typePetitionId) throws ParseException {
+		
+		return dao.findAllReportRequest( sEcho,  iDisplayStart,  iDisplayLength,
+			 sSearch,  dateRange,  systemId,  typePetitionId);
+	}
+	@Override
+	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			String sSearch, String dateRange, List<Integer> systemsId, Long typePetitionId) throws ParseException {
+		
+		 return dao.findAllReportRequest( sEcho,  iDisplayStart,  iDisplayLength,
+				 sSearch,  dateRange,  systemsId,  typePetitionId);
+	}
+	@Override
+	public List<RequestReport> listRequestReportFilter(int projectId, int systemId, Long typePetitionId,
+			String dateRange) throws ParseException {
+		return dao.listRequestReportFilter(projectId,systemId,typePetitionId,dateRange);
 	}
 
 }

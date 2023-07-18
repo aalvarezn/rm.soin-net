@@ -58,6 +58,11 @@ public abstract class AbstractDao<PK extends Serializable, T> {
 	public T getById(Long id) {
 		return (T) getSession().createCriteria(persistentClass).add(Restrictions.eq("id", id)).uniqueResult();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public T getById(Integer id) {
+		return (T) getSession().createCriteria(persistentClass).add(Restrictions.eq("id", id)).uniqueResult();
+	}
 
 	public void persist(T entity) {
 		getSession().persist(entity);

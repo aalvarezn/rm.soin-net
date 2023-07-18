@@ -35,7 +35,6 @@ function initDataTable() {
 						{
 							"mDataProp" : 'description'
 						},
-
 						{
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';

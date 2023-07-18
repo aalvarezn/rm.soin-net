@@ -11,6 +11,7 @@ import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseReport;
+import com.soin.sgrm.model.ReleaseReportFast;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseSummaryMin;
@@ -96,13 +97,16 @@ public interface ReleaseDao {
 	JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId) throws SQLException, ParseException;
 
-	List<ReleaseReport> listReleaseReportFilter(int systemId, int projectId, String dateRange);
+	List<ReleaseReportFast> listReleaseReportFilter(int systemId, int projectId, String dateRange);
 
 	Release_RFCFast findRelease_RFCByIdFast(int id);
 
 	ReleaseTrackingShow findReleaseTracking(int id);
 
+	JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId) throws SQLException, ParseException;
 	ReleaseSummaryFile findByIdSummaryFile(Integer id);
+
 	
 
 }
