@@ -58,6 +58,15 @@ public class SigesServiceImpl implements SigesService{
 		return dao.checkUniqueCode(sigesCode);
 	}
 
+	@Override
+	public boolean veryUpdateSigesCode(Long id, String codeSiges) {
+		
+		return dao.veryUpdateSigesCode(id,codeSiges);
+	}
 
+	@Override
+	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges) {
+		return dao.veryUpdateSigesCodeDif(id,codeSiges);
+	}
 
 }
