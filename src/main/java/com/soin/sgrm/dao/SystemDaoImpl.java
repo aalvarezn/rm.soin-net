@@ -272,6 +272,7 @@ public class SystemDaoImpl implements SystemDao {
 			siges.setCodeSiges(addSystem.getSigesCode());
 			siges.setEmailTemplate(emailTemplate);
 			session.save(siges);
+			addSystem.setSigesId(siges.getId());
 		} catch (Exception e) {
 
 			throw e;
