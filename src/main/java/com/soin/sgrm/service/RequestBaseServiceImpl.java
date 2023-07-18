@@ -164,7 +164,7 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 
 			partCode =  codeProject ;
 
-			numRequest = verifySecuence(partCode,description.toUpperCase(),codeSystem.toUpperCase());
+			numRequest = verifySecuence(partCode.toUpperCase(),description.toUpperCase(),codeSystem.toUpperCase());
 
 		} catch (Exception e) {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
