@@ -86,10 +86,15 @@ function updateSiges() {
 					emailTemplateId :$fmSiges.find('#sEmailId').val()
 				}),
 				success : function(response) {
+					
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtSiges.ajax.reload();
-					$mdSiges.modal('hide');
+					
+					if(response.status==="success"){
+						$dtSiges.ajax.reload();
+						$mdSiges.modal('hide');
+					}
+					
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -125,9 +130,13 @@ function saveSiges() {
 				}),
 				success : function(response) {
 					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtSiges.ajax.reload();
-					$mdSiges.modal('hide');
+					notifyMs(response.message, response.status);
+					
+					if(response.status==="success"){
+						$dtSiges.ajax.reload();
+						$mdSiges.modal('hide');
+					}
+					
 				},
 				error : function(x, t, m) {
 					unblockUI();

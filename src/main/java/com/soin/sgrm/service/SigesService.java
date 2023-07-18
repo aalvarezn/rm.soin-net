@@ -7,5 +7,7 @@ import com.soin.sgrm.model.Siges;
 public interface SigesService extends BaseService<Long, Siges>{
 	public List<Siges> listCodeSiges(Integer id);
 
+	public boolean checkUniqueCode(String sigesCode);
+
 
 }

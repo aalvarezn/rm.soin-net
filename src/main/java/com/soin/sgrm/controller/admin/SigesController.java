@@ -25,6 +25,7 @@ import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.EmailTemplateService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.utils.JsonResponse;
@@ -44,10 +45,13 @@ public class SigesController extends BaseController {
 	@Autowired 
 	EmailTemplateService emailTemplateService;
 	
+	@Autowired 
+	ProjectService proyectService;
+	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		model.addAttribute("systems",systemService.listAll());
-		model.addAttribute("system",new Project());
+		model.addAttribute("system",new System());
 		model.addAttribute("emailTemplates",emailTemplateService.listAll());
 		model.addAttribute("emailTemplate",new EmailTemplate());
 		return "/admin/siges/siges";
@@ -75,18 +79,26 @@ public class SigesController extends BaseController {
 			EmailTemplate emailTemplate= emailTemplateService.findById(addSiges.getEmailTemplateId());
 			addSiges.setEmailTemplate(emailTemplate);
 			addSiges.setSystem(system);
-			Siges codeSiges= sigesService.findByKey("codeSiges", addSiges.getCodeSiges().trim());
-			if(codeSiges==null) {
-			sigesService.save(addSiges);
-			res.setMessage("Siges agregado!");
-			}else {
-				res.setStatus("exception");
-				res.setMessage("Error al agregar siges codigo Siges ya utilizado!");
+			Project proyect =proyectService.findById(system.getProyectId());
+			
+			if(proyect.getAllowRepeat()) {
+				
 			}
+			
+			if (!proyect.getAllowRepeat() && !sigesService.checkUniqueCode(addSiges.getCodeSiges())) {
+				res.setStatus("error");
+				res.setMessage(
+						"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
+			}else {
+				sigesService.save(addSiges);
+				res.setMessage("Siges agregado!");
+			}
+			
+		
 			
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al agregar siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
@@ -102,6 +114,7 @@ public class SigesController extends BaseController {
 			EmailTemplate emailTemplate= emailTemplateService.findById( uptSiges.getEmailTemplateId());
 			uptSiges.setEmailTemplate(emailTemplate);
 			uptSiges.setSystem(system);
+			Project proyect =proyectService.findById(system.getProyectId());
 			Siges sigesCode=sigesService.findById(uptSiges.getId());
 			if(sigesCode.getCodeSiges()!=uptSiges.getCodeSiges()){
 				
@@ -110,8 +123,15 @@ public class SigesController extends BaseController {
 					sigesService.update(uptSiges);
 					res.setMessage("Siges modificado!");
 				}else {
-					res.setStatus("exception");
-					res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
+					
+					if(proyect.getAllowRepeat()) {
+						sigesService.update(uptSiges);
+						res.setMessage("Siges modificado!");
+					}else {
+						res.setStatus("error");
+						res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
+					}
+				
 				}
 			}else {
 				sigesService.update(uptSiges);
@@ -121,7 +141,7 @@ public class SigesController extends BaseController {
 
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al modificar siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
@@ -137,7 +157,7 @@ public class SigesController extends BaseController {
 			res.setMessage("Siges eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al eliminar el siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}

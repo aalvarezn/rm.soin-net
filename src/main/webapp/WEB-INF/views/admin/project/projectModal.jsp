@@ -41,6 +41,14 @@
 									Requerido.</label>
 							</div>
 						</div>
+						<div
+							class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t--20 m-b--20">
+							<div class="switch" style="margin-top: 20px;">
+								<label>Permitir repetir código proyecto<input id="isAllow" type="checkbox" value="0"><span
+									class="lever"></span>
+								</label>
+							</div>
+						</div>
 					</form>
 				</div>
 			</div>

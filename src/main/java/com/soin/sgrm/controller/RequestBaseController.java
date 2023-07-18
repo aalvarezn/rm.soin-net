@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -38,6 +39,7 @@ import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
@@ -56,6 +58,7 @@ import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypePetitionR4Service;
 import com.soin.sgrm.service.TypePetitionService;
+import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
@@ -67,7 +70,7 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	SystemService systemService;
-	
+
 	@Autowired
 	ProjectService projectService;
 
@@ -88,7 +91,7 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	TypePetitionR4Service typePetitionR4Service;
-	
+
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
 
@@ -119,6 +122,9 @@ public class RequestBaseController extends BaseController {
 	@Autowired
 	ErrorRequestService errorService;
 
+	@Autowired
+	UserInfoService userInfoService;
+
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -131,10 +137,14 @@ public class RequestBaseController extends BaseController {
 			List<StatusRequest> statuses = statusService.findAll();
 			List<TypePetition> typePetitionsFilter = typePetitionService.listTypePetition();
 			List<TypePetition> typePetitions = typePetitionService.findAll();
+			List<Project> proyects = projectService.listAll();
+			model.addAttribute("users", userInfoService.list());
+			model.addAttribute("user", new UserInfo());
 			model.addAttribute("statuses", statuses);
 			model.addAttribute("typePetitionsFilter", typePetitionsFilter);
 			model.addAttribute("typePetitions", typePetitions);
 			model.addAttribute("systems", systems);
+			model.addAttribute("proyects", proyects);
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
 			e.printStackTrace();
@@ -206,7 +216,7 @@ public class RequestBaseController extends BaseController {
 						res.setStatus("success");
 						addRequest.setMotive("Inicio de Solicitud");
 						addRequest.setOperator(user.getFullName());
-						Siges codeSiges = sigeService.findByKey("codeSiges", addRequest.getCodeProyect());
+						Siges codeSiges = sigeService.findById(addRequest.getCodeSigesId());
 						addRequest.setSiges(codeSiges);
 
 						addRequest.setNumRequest(addRequest.getCodeOpportunity());
@@ -230,12 +240,13 @@ public class RequestBaseController extends BaseController {
 					res.setStatus("success");
 					addRequest.setMotive("Inicio de Solicitud");
 					addRequest.setOperator(user.getFullName());
-					Siges codeSiges = sigeService.findByKey("codeSiges", addRequest.getCodeProyect());
+					Siges codeSiges = sigeService.findById(addRequest.getCodeSigesId());
 					addRequest.setSiges(codeSiges);
+					addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
 					addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
 					addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),
-							addRequest.getTypePetition().getCode()));
-					addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
+							addRequest.getTypePetition().getCode(),addRequest.getSystemInfo().getCode()));
+					
 					requestBaseService.save(addRequest);
 					if (addRequest.getTypePetition().getCode().equals("RM-P1-R5")) {
 						RequestRM_P1_R5 requestR5 = new RequestRM_P1_R5();
@@ -269,6 +280,75 @@ public class RequestBaseController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
+	}
+
+	@RequestMapping(path = "/savesys", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveSystemRequest(HttpServletRequest request, @RequestBody System addSystem) {
+		JsonResponse res = new JsonResponse();
+		try {
+			User user = userService.getUserByUsername(getUserLogin().getUsername());
+			Project proyect = projectService.findById(addSystem.getProyectId());
+			if (!systemService.checkUniqueCode(addSystem.getCode(), addSystem.getProyectId(), 1)) {
+				res.setStatus("error");
+
+				res.setMessage("Error al crear sistema codigo ya utilizado para un mismo proyecto!");
+			} else if (!systemService.checkUniqueCode(addSystem.getName(), addSystem.getProyectId(), 0)) {
+				res.setStatus("error");
+				res.setMessage("Error al crear sistema nombre ya utilizado para un mismo proyecto!");
+			} else if (!proyect.getAllowRepeat() && !sigeService.checkUniqueCode(addSystem.getSigesCode())) {
+				res.setStatus("error");
+				res.setMessage(
+						"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
+			} else {
+				res.setStatus("success");
+				addSystem.setProyect(projectService.findById(addSystem.getProyectId()));
+				TypePetition typePetition = typePetitionService.findByKey("code", "RM-P1-R2");
+
+				User leader = new User();
+				leader.setId(addSystem.getLeaderId());
+				addSystem.setLeader(leader);
+				addSystem.setTypePetitionId(typePetition.getId());
+				addSystem.setAdditionalObservations(false);
+				addSystem.changeEmail(null);
+				addSystem.setIsAIA(false);
+				addSystem.setIsBO(false);
+				addSystem.setImportObjects(false);
+				addSystem.setNomenclature(false);
+				addSystem.setCustomCommands(false);
+				addSystem.setImportObjects(false);
+				addSystem.setInstallationInstructions(false);
+				addSystem.setName(addSystem.getCode());
+				Set<User> managersNews = new HashSet<>();
+				User manager= new User();
+				manager.setId(getUserLogin().getId());
+				managersNews.add(leader);
+				
+				addSystem.checkManagersExists(managersNews);
+				systemService.saveAndSiges(addSystem);
+				res.setObj(addSystem);
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("error");
+			res.setMessage("Error al crear solicitud!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(path = "/sysName", method = RequestMethod.POST)
+	public @ResponseBody Boolean checkSysName(HttpServletRequest request, @RequestParam("sCode") String sCode,
+			@RequestParam("proyectId") Integer proyectId, @RequestParam("typeCheck") Integer typeCheck) {
+
+		try {
+			return systemService.checkUniqueCode(sCode, proyectId, typeCheck);
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return false;
 	}
 
 	@RequestMapping(value = "/editRequest-{id}", method = RequestMethod.GET)
@@ -306,17 +386,17 @@ public class RequestBaseController extends BaseController {
 				return "/request/editRequestR3";
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
-				Project project=projectService.findById(requestEdit.getSystemInfo().getProyectId());
-				boolean verifySos=false;
-				if(project.getCode().equals("Sostenibilidad")) {
-					verifySos=true;
-				}else {
-					verifySos=false;
+				Project project = projectService.findById(requestEdit.getSystemInfo().getProyectId());
+				boolean verifySos = false;
+				if (project.getCode().equals("Sostenibilidad")) {
+					verifySos = true;
+				} else {
+					verifySos = false;
 				}
-				model.addAttribute("typesPetition",  typePetitionR4Service.listTypePetition());
+				model.addAttribute("typesPetition", typePetitionR4Service.listTypePetition());
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
 				model.addAttribute("SGRMList", ambientService.list("", "SGRM"));
-				model.addAttribute("verifySos",verifySos);
+				model.addAttribute("verifySos", verifySos);
 				return "/request/editRequestR4";
 			}
 
@@ -445,7 +525,7 @@ public class RequestBaseController extends BaseController {
 				String referer = request.getHeader("Referer");
 				return "redirect:" + referer;
 			}
-		
+
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
 				model.addAttribute("request", requestEdit);
 				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
@@ -817,7 +897,7 @@ public class RequestBaseController extends BaseController {
 				return "/plantilla/404";
 			}
 
-			List<Errors_Requests> errors=errorService.findAll();
+			List<Errors_Requests> errors = errorService.findAll();
 			model.addAttribute("errors", errors);
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
 				model.addAttribute("request", requestEdit);
@@ -844,19 +924,19 @@ public class RequestBaseController extends BaseController {
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
 				model.addAttribute("request", requestEdit);
-				Project project=projectService.findById(requestEdit.getSystemInfo().getProyectId());
-				boolean verifySos=false;
-				if(project.getCode().equals("Sostenibilidad")) {
-					verifySos=true;
-				}else {
-					verifySos=false;
+				Project project = projectService.findById(requestEdit.getSystemInfo().getProyectId());
+				boolean verifySos = false;
+				if (project.getCode().equals("Sostenibilidad")) {
+					verifySos = true;
+				} else {
+					verifySos = false;
 				}
-				
+
 				List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(requestEdit.getId());
 				model.addAttribute("listUsers", listUser);
 				model.addAttribute("statuses", statusService.findAll());
 				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				model.addAttribute("verifySos",verifySos);
+				model.addAttribute("verifySos", verifySos);
 				return "/request/sectionsEditR4/summaryRequest";
 			}
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
@@ -895,9 +975,9 @@ public class RequestBaseController extends BaseController {
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
 				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-			}else {
-				MyError error=getErrorSenders(request.getSenders());
-				if(error!=null) {
+			} else {
+				MyError error = getErrorSenders(request.getSenders());
+				if (error != null) {
 					errors.add(error);
 				}
 			}
@@ -921,13 +1001,13 @@ public class RequestBaseController extends BaseController {
 			if (request.getSenders() != null) {
 				if (request.getSenders().length() > 256) {
 					errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-				}else {
-					MyError error=getErrorSenders(request.getSenders());
-					if(error!=null) {
+				} else {
+					MyError error = getErrorSenders(request.getSenders());
+					if (error != null) {
 						errors.add(error);
 					}
 				}
-				
+
 			}
 			if (request.getMessage() != null) {
 				if (request.getMessage().length() > 256) {
@@ -952,9 +1032,9 @@ public class RequestBaseController extends BaseController {
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
 				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-			}else {
-				MyError error=getErrorSenders(request.getSenders());
-				if(error!=null) {
+			} else {
+				MyError error = getErrorSenders(request.getSenders());
+				if (error != null) {
 					errors.add(error);
 				}
 			}
@@ -984,13 +1064,13 @@ public class RequestBaseController extends BaseController {
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
 				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-			}else {
-				MyError error=getErrorSenders(request.getSenders());
-				if(error!=null) {
+			} else {
+				MyError error = getErrorSenders(request.getSenders());
+				if (error != null) {
 					errors.add(error);
 				}
 			}
-			
+
 		}
 		if (request.getMessage() != null) {
 			if (request.getMessage().length() > 256) {
@@ -1024,9 +1104,9 @@ public class RequestBaseController extends BaseController {
 		if (request.getSenders() != null) {
 			if (request.getSenders().length() > 256) {
 				errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
-			}else {
-				MyError error=getErrorSenders(request.getSenders());
-				if(error!=null) {
+			} else {
+				MyError error = getErrorSenders(request.getSenders());
+				if (error != null) {
 					errors.add(error);
 				}
 			}
@@ -1049,25 +1129,27 @@ public class RequestBaseController extends BaseController {
 		request.setAttribute("userC", userC);
 
 	}
+
 	public MyError getErrorSenders(String senders) {
-	
+
 		String[] listSenders = senders.split(",");
-		String to_invalid="";
+		String to_invalid = "";
 		for (int i = 0; i < listSenders.length; i++) {
 			if (!CommonUtils.isValidEmailAddress(listSenders[i])) {
-				if(to_invalid.equals("")) {
-					to_invalid +=listSenders[i];
-				}else {
-					to_invalid +=","+listSenders[i];
+				if (to_invalid.equals("")) {
+					to_invalid += listSenders[i];
+				} else {
+					to_invalid += "," + listSenders[i];
 				}
-				
+
 			}
 		}
 		if (!to_invalid.equals("")) {
-			return new MyError("senders", "dirección(es) inválida(s) " + to_invalid);	
+			return new MyError("senders", "dirección(es) inválida(s) " + to_invalid);
 		}
 		return null;
 	}
+
 	public List<String> getCC(String ccs) {
 
 		List<String> getCC = new ArrayList<String>();

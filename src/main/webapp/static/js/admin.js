@@ -489,6 +489,13 @@ function activeInputCheckbox(form, name){
 	form.find('#'+name).prop("checked", true);
 }
 
+
+function desActiveInputCheckbox(form, name){
+	form.find('#'+name).val('0');
+	form.find('#'+name).prop("checked", false);
+}
+
+
 function changeMenuItemTo(name){
 	var menu = $('#menuListItems');
 	menu.find('a').removeClass("toggled");
