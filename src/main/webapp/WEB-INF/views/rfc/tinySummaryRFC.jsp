@@ -80,7 +80,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Proyecto</label>
+					<label for="email_address">Sistema</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${rfc.systemInfo.name}</p>

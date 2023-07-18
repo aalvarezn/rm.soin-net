@@ -5,7 +5,8 @@ var $fmRequest = $('#formAddRequest');
 var $fmR1 = $('#formAddR1');
 var $formChangeUser = $('#changeUserForm');
 var $trackingRequestForm = $('#trackingRequestForm');
-
+var $mdSiges = $('#sigesModal');
+var $fmSiges = $('#sigesModalForm');
 $(function() {
 
 	$('input[name="daterange"]').daterangepicker({
@@ -52,7 +53,8 @@ $(function() {
 		format: 'DD/MM/YYYY hh:mm a',
 		maxDate : new Date()
 	});
-	//$('input[name="daterange"]').attr('value', moment().subtract(7, 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
+	// $('input[name="daterange"]').attr('value', moment().subtract(7,
+	// 'day').format("DD/MM/YYYY")+' - '+ moment().format('DD/MM/YYYY'));
 
 	activeItemMenu("requestItem");
 	dropDownChange();
@@ -63,8 +65,15 @@ $(function() {
 	initRequestTable();
 	initRequestFormValidation();
 	initRequestR1FormValidation();
+	initSigesFormValidation();
 	$('#createR1').hide();
+	$('#createR2').hide();
+	  $('#tId').on('shown.bs.select', function() {
+		    $('[data-toggle="tooltip"]').tooltip();
+		  });
 
+	  changeCheckBox();
+	
 	
 });
 $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
@@ -99,7 +108,7 @@ $('#tableFilters #statusId').change(function() {
 function verifyLetters(e){
 	key=e.keyCode || e. which;
 	keyboard=String.fromCharCode(key);
-	characters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYYZ_1234567890";
+	characters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYXZ_1234567890";
 	specials="95";
 	
 	special_keyboard=false;
@@ -112,6 +121,34 @@ function verifyLetters(e){
 	if(characters.indexOf(keyboard)==-1&&!special_keyboard){
 		return false;
 	}
+}
+
+function verifyCode(e){
+	 key = e.keyCode || e.which;
+	 
+	 keyboard=String.fromCharCode(key);
+		characters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWYXZ_-1234567890";
+		specials="95";
+		
+		special_keyboard=false;
+		
+		for(var i in specials){
+			if(key==specials[i]){
+				special_keyboard=true;
+			}
+		}
+		if(characters.indexOf(keyboard)==-1&&!special_keyboard){
+			return false;
+		}
+	 if (key === 32) {
+		    return false; 
+		  }
+	 
+	  if (e.ctrlKey || e.metaKey) {
+	    return false; 
+	  }
+	
+	  return true;
 }
 
 function initRequestTable() {
@@ -309,7 +346,7 @@ function createRequest() {
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					codeProyect : $fmRequest.find('#sigesId').val(),
+					codeSigesId : $fmRequest.find('#sigesId').val(),
 					systemId : $fmRequest.find('#sId').val(),
 					typePetitionId:$fmRequest.find('#tId').val(),
 				}),
@@ -320,8 +357,8 @@ function createRequest() {
 					+ "request/editRequest-"
 					+ response.data;
 					
-					//$dtImpact.ajax.reload();
-					//$mdImpact.modal('hide');
+					// $dtImpact.ajax.reload();
+					// $mdImpact.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -437,8 +474,8 @@ function createRequestR1() {
 					+ "request/editRequest-"
 					+ response.data;
 					
-					//$dtImpact.ajax.reload();
-					//$mdImpact.modal('hide');
+					// $dtImpact.ajax.reload();
+					// $mdImpact.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -449,6 +486,23 @@ function createRequestR1() {
 			});
 		}
 	});
+}
+
+function changeCheckBox(){
+	$("#requiredFunctionalDes").change(function() {
+	    // Verificar el estado del checkbox
+	    if ($(this).is(":checked")) {
+	    	$('#dropShow').hide();
+	    	$('#createR2').show();
+	    	$('#createRequest').hide();
+	    } else {
+	    	$('#dropShow').show();
+	    	$('#createR2').hide();
+	    	$('#createRequest').show();
+	    	resetDrop();
+	    }
+	});
+
 }
 function dropDownChangeRequest(){
 	$('#tId').on('change', function(){
@@ -462,12 +516,22 @@ function dropDownChangeRequest(){
 			$('#sId').selectpicker('refresh');
 			$('#sId2').selectpicker('val',  "");
 			$('#tId2').selectpicker('val',  $('#tId').val());
-			
+			$('#checkShow').attr( "hidden",true);
+			$('#createR2').hide();
+		}else if(typeRequest==='RM-P1-R2'){
+			$('#dropShow').hide();
+			$("#requiredFunctionalDes").prop("checked", false);
+	    	$('#createR2').show();
+	    	$('#createRequest').hide();
+			resetDrop();
 		}else{
 			resetDrop();
 			$('#formAddR1').attr( "hidden",true);
 			$('#formAddRequest').attr( "hidden",false);
-
+			$('#checkShow').attr( "hidden",true);
+	    	$('#createR2').hide();
+	    	$('#createRequest').show();
+	    	$('#dropShow').show();
 		}
 	});
 	
@@ -499,7 +563,7 @@ function dropDownChange(){
 					var s = '';
 					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 					for(var i = 0; i < result.length; i++) {
-						s += '<option value="' + result[i].codeSiges + '">' + result[i].codeSiges + '</option>';
+						s += '<option value="' + result[i].id + '">' + result[i].codeSiges + '</option>';
 					}
 					$('#sigesId').html(s);
 					$('#sigesId').prop('disabled', false);
@@ -569,6 +633,7 @@ function resetDrops(){
 	resetDrop();
 }	
 function resetDrop(){
+	$fmRequest.find('#sId').selectpicker('val',  "");
 	var s = '';
 	s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 	$('#sigesId').html(s);
@@ -578,3 +643,172 @@ function resetDrop(){
 	
 }
 
+function initSigesFormValidation() {
+	$fmSiges.validate({
+		rules : {
+			'sCode' : {
+				required : true,
+				minlength : 1,
+				maxlength : 10,
+				remote: {
+                    url: getCont() + "/request/sysName", // URL para
+															// verificar la
+															// unicidad del
+															// nombre en el
+															// servidor
+                    type: 'post',
+                    data: {
+                    	sCode: function() {
+                            return $('#sCode').val();},
+                            proyectId: function() {
+                                return $('#proyectId').val();},
+                                typeCheck:1
+                    		
+                    	}
+					},
+					
+			},
+			'sName' : {
+				required : true,
+				minlength : 1,
+				maxlength : 50,
+				
+				remote: {
+                    url: getCont() + "/request/sysName", // URL para
+															// verificar la
+															// unicidad del
+															// nombre en el
+															// servidor
+                    type: 'post',
+                    data: {
+                    	sCode: function() {
+                            return $('#sName').val();},
+                            proyectId: function() {
+                                return $('#proyectId').val();},
+                                typeCheck:0
+                    		
+                    	}
+					}
+			},
+			'sigesCode' : {
+				required : true,
+				minlength : 1,
+				maxlength : 50,
+			},
+			'proyectId' : {
+				required : true,
+			}
+		},
+		messages : {
+			'sCode' : {
+				required :  "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres",
+				remote: "No puede haber otro sistema con el mismo c&oacute;digo en el mismo proyecto"
+			},
+			'sName' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres",
+				remote: "No puede haber otro sistema con el mismo nombre en el mismo proyecto"
+			},
+			'sigesCode' : {
+				required : "Ingrese un valor",
+				minlength : "Ingrese un valor",
+				maxlength : "No puede poseer mas de {0} caracteres"
+			},
+			'proyectId' : {
+				required : "Seleccione un valor"
+			},
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
+	});
+}
+
+function saveSystem(){
+	if (!$fmSiges.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "POST",
+				url : getCont() + "/request/savesys" ,
+				dataType : "json",
+				contentType: "application/json; charset=utf-8",
+				timeout : 60000,
+				data : JSON.stringify({
+					name : $fmSiges.find('#sName').val(),
+					code : $fmSiges.find('#sCode').val(),
+					sigesCode : $fmSiges.find('#sigesCode').val(),
+					proyectId : $fmSiges.find('#proyectId').val(),
+					leaderId : $fmSiges.find('#userId').val()
+					
+				}),
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status);
+					console.log(response.obj)
+					if(response.status==="success"){
+					blockUI();
+					$.ajax({
+						type : "POST",
+						url : getCont() + "request/" ,
+						dataType : "json",
+						contentType: "application/json; charset=utf-8",
+						timeout : 60000,
+						data : JSON.stringify({
+							codeProyect : response.obj.sigesCode,
+							systemId : response.obj.id,
+							typePetitionId:response.obj.typePetitionId,
+						}),
+						success : function(response) {
+							unblockUI();
+							notifyMs(response.message, response.status);
+							window.location = getCont()
+							+ "request/editRequest-"
+							+ response.data;
+							
+							// $dtImpact.ajax.reload();
+							// $mdImpact.modal('hide');
+						},
+						error : function(x, t, m) {
+							unblockUI();
+							console.log(x);
+							console.log(t);
+							console.log(m);
+						}
+					});
+					}else{
+						unblockUI();
+						notifyMs(response.message, response.status);
+					}
+				},
+				error : function(x, t, m) {
+					unblockUI();
+					notifyMs(response.message, response.status);
+				}
+			});
+		}
+	});
+}
+function openCreate(){
+	$fmSiges.validate().resetForm();
+	$fmSiges[0].reset();
+	$fmSiges.find('#userId').selectpicker('val',"");
+	$fmSiges.find('#proyectId').selectpicker('val',"");
+	$mdSiges.find('#save').show();
+	$mdSiges.find('#update').hide();
+	$mdSiges.modal('show');
+}
+
+
+function closeSiges(){
+	$mdSiges.modal('hide');
+}

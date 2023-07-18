@@ -292,7 +292,7 @@ function createRFC() {
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					codeProyect : $fmRFC.find('#sigesId').val(),
+					codeSigesId : $fmRFC.find('#sigesId').val(),
 					systemId : $fmRFC.find('#sId').val()
 				}),
 				success : function(response) {
@@ -354,7 +354,7 @@ function dropDownChange(){
 					var s = '';
 					s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
 					for(var i = 0; i < result.length; i++) {
-						s += '<option value="' + result[i].codeSiges + '">' + result[i].codeSiges + '</option>';
+						s += '<option value="' + result[i].id + '">' + result[i].codeSiges + '</option>';
 					}
 					$('#sigesId').html(s);
 					$('#sigesId').prop('disabled', false);
