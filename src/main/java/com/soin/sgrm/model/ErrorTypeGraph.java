@@ -6,6 +6,7 @@ public class ErrorTypeGraph {
 	@Transient
 	private
 	String label;
+	String label2;
 	@Transient
 	private int value;
 	private int valueRequest;
@@ -26,6 +27,12 @@ public class ErrorTypeGraph {
 	}
 	public void setValueRequest(int valueRequest) {
 		this.valueRequest = valueRequest;
+	}
+	public String getLabel2() {
+		return label2;
+	}
+	public void setLabel2(String label2) {
+		this.label2 = label2;
 	}
 	
 	

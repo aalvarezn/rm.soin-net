@@ -2258,5 +2258,11 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public EmailTemplate getById(Integer id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 
