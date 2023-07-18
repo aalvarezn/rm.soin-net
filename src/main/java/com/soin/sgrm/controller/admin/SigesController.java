@@ -51,7 +51,7 @@ public class SigesController extends BaseController {
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		model.addAttribute("systems",systemService.listAll());
-		model.addAttribute("system",new Project());
+		model.addAttribute("system",new System());
 		model.addAttribute("emailTemplates",emailTemplateService.listAll());
 		model.addAttribute("emailTemplate",new EmailTemplate());
 		return "/admin/siges/siges";
@@ -114,6 +114,7 @@ public class SigesController extends BaseController {
 			EmailTemplate emailTemplate= emailTemplateService.findById( uptSiges.getEmailTemplateId());
 			uptSiges.setEmailTemplate(emailTemplate);
 			uptSiges.setSystem(system);
+			Project proyect =proyectService.findById(system.getProyectId());
 			Siges sigesCode=sigesService.findById(uptSiges.getId());
 			if(sigesCode.getCodeSiges()!=uptSiges.getCodeSiges()){
 				
@@ -122,8 +123,15 @@ public class SigesController extends BaseController {
 					sigesService.update(uptSiges);
 					res.setMessage("Siges modificado!");
 				}else {
-					res.setStatus("exception");
-					res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
+					
+					if(proyect.getAllowRepeat()) {
+						sigesService.update(uptSiges);
+						res.setMessage("Siges modificado!");
+					}else {
+						res.setStatus("error");
+						res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
+					}
+				
 				}
 			}else {
 				sigesService.update(uptSiges);
@@ -133,7 +141,7 @@ public class SigesController extends BaseController {
 
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al modificar siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
@@ -149,7 +157,7 @@ public class SigesController extends BaseController {
 			res.setMessage("Siges eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al eliminar el siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
