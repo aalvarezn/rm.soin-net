@@ -157,14 +157,14 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 	}
 
 	@Override
-	public String generateRequestNumber(String codeProject,String description) {
+	public String generateRequestNumber(String codeProject,String description,String codeSystem) {
 		String numRequest = "";
 		String partCode = "";
 		try {
 
 			partCode =  codeProject ;
 
-			numRequest = verifySecuence(partCode,description.toUpperCase());
+			numRequest = verifySecuence(partCode.toUpperCase(),description.toUpperCase(),codeSystem.toUpperCase());
 
 		} catch (Exception e) {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -173,21 +173,23 @@ public class RequestBaseServiceImpl implements RequestBaseService {
 		return numRequest;
 	}
 	
-	public String verifySecuence(String partCode,String description) {
-		String numRFC = "";
+	public String verifySecuence(String partCode,String description,String codeSystem) {
+		String numRequest = "";
 		try {
+			
+			partCode =  description +"_"+partCode+"_"+codeSystem+ "_SC";
 			int amount = existNumRequest(partCode);
 
 			if (amount == 0) {
-				numRFC = description+"_"+partCode +"_SC" + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
-				return numRFC;
+				numRequest = partCode + "_01_" + CommonUtils.getSystemDate("yyyyMMdd");
+				return numRequest;
 			} else {
 				if (amount < 10) {
-					numRFC = description +"_"+ partCode+"_SC"+ "_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
-					return numRFC;
+					numRequest = partCode+"_0" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+					return numRequest;
 				}
-				numRFC = description+"_"+ partCode+"_SC" + "_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
-				return numRFC;
+				numRequest = partCode+"_" + (amount + 1) + "_" + CommonUtils.getSystemDate("yyyyMMdd");
+				return numRequest;
 			}
 
 		} catch (Exception e) {

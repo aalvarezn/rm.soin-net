@@ -58,4 +58,8 @@ public interface SystemDao {
 
 	List<System> getSystemByProject(Integer projectId);
 
+	void saveAndSiges(System addSystem);
+
+	boolean checkUniqueCode(String sCode, Integer proyectId,Integer typeCheck);
+
 }

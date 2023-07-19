@@ -104,6 +104,7 @@ public class ProjectController extends BaseController {
 				Project proj = projectService.findById(project.getId());
 				proj.setCode(project.getCode());
 				proj.setDescription(project.getDescription());
+				proj.setAllowRepeat(project.getAllowRepeat());
 				projectService.update(proj);
 				res.setObj(project);
 			}
