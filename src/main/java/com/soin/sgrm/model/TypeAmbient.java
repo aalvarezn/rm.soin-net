@@ -22,6 +22,7 @@ import com.soin.sgrm.utils.Constant;
 public class TypeAmbient implements Serializable {
 
 	@Id
+
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AMBIENTES_TIPOAMBIENTE_SQ")
 	@SequenceGenerator(name = "AMBIENTES_TIPOAMBIENTE_SQ", sequenceName = "AMBIENTES_TIPOAMBIENTE_SQ", allocationSize = 1)
 	@Column(name = "ID")

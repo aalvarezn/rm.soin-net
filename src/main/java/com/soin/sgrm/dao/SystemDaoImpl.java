@@ -3,7 +3,9 @@ package com.soin.sgrm.dao;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -15,6 +17,8 @@ import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.SystemModule;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.System;
 
 @Repository
@@ -203,30 +207,28 @@ public class SystemDaoImpl implements SystemDao {
 		return crit.list();
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	public List<System> listProjects(int id) {
-		   return sessionFactory.getCurrentSession().createCriteria(System.class)
-		    		.createAlias("managers","managers")
-		    		.add(Restrictions.eq("managers.id", id))
-		    		.list();
+		return sessionFactory.getCurrentSession().createCriteria(System.class).createAlias("managers", "managers")
+				.add(Restrictions.eq("managers.id", id)).list();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<System> findByUserIncidence(Integer id) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
 		crit.createAlias("usersIncidence", "usersIncidence");
-		crit.add( Restrictions.eq("usersIncidence.id", id));
+		crit.add(Restrictions.eq("usersIncidence.id", id));
 		List<System> systemList = crit.list();
 		return systemList;
 	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<System> findByGroupIncidence(List<Long> listAttentionGroupId) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
 		crit.createAlias("attentionGroup", "attentionGroup");
-		crit.add( Restrictions.in("attentionGroup.id", listAttentionGroupId));
+		crit.add(Restrictions.in("attentionGroup.id", listAttentionGroupId));
 		List<System> systemList = crit.list();
 		return systemList;
 	}
@@ -236,7 +238,7 @@ public class SystemDaoImpl implements SystemDao {
 	public List<System> findByManagerIncidence(Integer id) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
 		crit.createAlias("managersIncidence", "managersIncidence");
-		crit.add( Restrictions.eq("managersIncidence.id", id));
+		crit.add(Restrictions.eq("managersIncidence.id", id));
 		List<System> systemList = crit.list();
 
 		return systemList;
@@ -247,9 +249,49 @@ public class SystemDaoImpl implements SystemDao {
 	public List<System> getSystemByProject(Integer projectId) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
 		crit.createAlias("proyect", "proyect");
-		crit.add( Restrictions.eq("proyect.id", projectId));
+		crit.add(Restrictions.eq("proyect.id", projectId));
 		List<System> systemList = crit.list();
 
 		return systemList;
+	}
+
+	@Override
+	public void saveAndSiges(System addSystem) {
+		Session session = sessionFactory.getCurrentSession();
+
+		try {
+
+			Criteria crit = sessionFactory.getCurrentSession().createCriteria(EmailTemplate.class);
+			crit.add(Restrictions.eq("name", "RFC Solicitado"));
+			EmailTemplate emailTemplate = (EmailTemplate) crit.uniqueResult();
+			session.save(addSystem);
+			Siges siges = new Siges();
+			SystemInfo system = new SystemInfo();
+			system.setId(addSystem.getId());
+			siges.setSystem(system);
+			siges.setCodeSiges(addSystem.getSigesCode());
+			siges.setEmailTemplate(emailTemplate);
+			session.save(siges);
+			addSystem.setSigesId(siges.getId());
+		} catch (Exception e) {
+
+			throw e;
+		}
+	}
+
+	@Override
+	public boolean checkUniqueCode(String sCode, Integer proyectId, Integer typeCheck) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(System.class);
+		crit.createAlias("proyect", "proyect");
+		crit.add(Restrictions.eq("proyect.id", proyectId));
+		if (typeCheck == 1) {
+			crit.add(Restrictions.eq("code", sCode));
+		} else if (typeCheck == 0) {
+			crit.add(Restrictions.eq("name", sCode));
+		}
+
+		crit.setProjection(Projections.rowCount());
+		Long count = (Long) crit.uniqueResult();
+		return count == 0;
 	}
 }
