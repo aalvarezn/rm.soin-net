@@ -9,5 +9,9 @@ public interface SigesService extends BaseService<Long, Siges>{
 
 	public boolean checkUniqueCode(String sigesCode);
 
+	boolean veryUpdateSigesCodeDif(Long id, String codeSiges);
+
+	boolean veryUpdateSigesCode(Long id, String codeSiges);
+
 
 }

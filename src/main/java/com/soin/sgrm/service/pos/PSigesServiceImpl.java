@@ -59,7 +59,16 @@ public class PSigesServiceImpl implements PSigesService{
 	public boolean checkUniqueCode(String codeSiges) {
 		return dao.checkUniqueCode(codeSiges);
 	}
+	@Override
+	public boolean veryUpdateSigesCode(Long id, String codeSiges) {
+		
+		return dao.veryUpdateSigesCode(id,codeSiges);
+	}
 
+	@Override
+	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges) {
+		return dao.veryUpdateSigesCodeDif(id,codeSiges);
+	}
 
 
 }

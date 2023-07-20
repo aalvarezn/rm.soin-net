@@ -10,4 +10,8 @@ public interface PSigesDao extends BaseDao<Long, PSiges> {
 
 	public boolean checkUniqueCode(String codeSiges);
 
+	boolean veryUpdateSigesCodeDif(Long id, String codeSiges);
+
+	boolean veryUpdateSigesCode(Long id, String codeSiges);
+
 }

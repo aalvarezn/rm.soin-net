@@ -7,6 +7,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.pos.PSiges;
 
 @Repository
@@ -28,7 +29,25 @@ public class PSigesDaoImpl extends  AbstractDao<Long, PSiges> implements PSigesD
 	    Long count = (Long) crit.uniqueResult();
 	    return count == 0;
 	}
+	@Override
+	public boolean veryUpdateSigesCode(Long id, String codeSiges) {
+		Criteria crit = getSession().createCriteria(PSiges.class);
+		crit.add(Restrictions.eq("codeSiges", codeSiges));
+		crit.add(Restrictions.eq("id", id));
+		crit.setProjection(Projections.rowCount());
+	    Long count = (Long) crit.uniqueResult();
+	    return count == 1;
+	}
 
+	@Override
+	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges) {
+		Criteria crit = getSession().createCriteria(PSiges.class);
+		crit.add(Restrictions.eq("codeSiges", codeSiges));
+		crit.add(Restrictions.ne("id", id));
+		crit.setProjection(Projections.rowCount());
+	    Long count = (Long) crit.uniqueResult();
+	    return count > 0;
+	}
 
 
 }

@@ -189,60 +189,54 @@ public class SigesController extends BaseController {
 			
 			String profile = profileActive();
 			if (profile.equals("oracle")) {
-				SystemInfo system= systemService.findSystemInfoById(uptSiges.getSystemId());
-				EmailTemplate emailTemplate= emailTemplateService.findById( uptSiges.getEmailTemplateId());
+				SystemInfo system = systemService.findSystemInfoById(uptSiges.getSystemId());
+				EmailTemplate emailTemplate = emailTemplateService.findById(uptSiges.getEmailTemplateId());
 				uptSiges.setEmailTemplate(emailTemplate);
 				uptSiges.setSystem(system);
-				Siges sigesCode=sigesService.findById(uptSiges.getId());
-				if(sigesCode.getCodeSiges()!=uptSiges.getCodeSiges()){
-					
-					Siges sigesVerification=sigesService.findByKey("codeSiges", uptSiges.getCodeSiges());
-					if(sigesVerification==null) {
-						sigesService.update(uptSiges);
-						res.setMessage("Siges modificado!");
-					}else {
-						if(sigesVerification.getId()==uptSiges.getId()) {
-							sigesService.update(uptSiges);
-							res.setMessage("Siges modificado!");
-						}else {
-							res.setStatus("exception");
-							res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
-						}
-					}
-				
-				}else {
+				Project proyect = proyectService.findById(system.getProyectId());
+
+				if (sigesService.veryUpdateSigesCode(uptSiges.getId(), uptSiges.getCodeSiges())) {
 					sigesService.update(uptSiges);
 					res.setMessage("Siges modificado!");
+				} else {
+					if (sigesService.veryUpdateSigesCodeDif(uptSiges.getId(), uptSiges.getCodeSiges())) {
+						if (proyect.getAllowRepeat()) {
+							sigesService.update(uptSiges);
+							res.setMessage("Siges modificado!");
+						} else {
+							res.setStatus("error");
+							res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
+						}
+					} else {
+						sigesService.update(uptSiges);
+						res.setMessage("Siges modificado!");
+					}
 				}
 			} else if (profile.equals("postgres")) {
 				PSiges puptSiges= new PSiges();
 				PSystemInfo system= psystemService.findSystemInfoById(uptSiges.getSystemId());
 				PEmailTemplate pemailTemplate= pemailTemplateService.findById( uptSiges.getEmailTemplateId());
+				PProject proyect = pproyectService.findById(system.getProyectId());
 				puptSiges.setEmailTemplate(pemailTemplate);
 				puptSiges.setSystem(system);
 				puptSiges.setId(uptSiges.getId());
 				puptSiges.setCodeSiges(uptSiges.getCodeSiges());
-				PSiges sigesCode=psigesService.findById(uptSiges.getId());
-				if(sigesCode.getCodeSiges()!=uptSiges.getCodeSiges()){
-					
-					PSiges psigesVerification=psigesService.findByKey("codeSiges", uptSiges.getCodeSiges());
-					
-					if(psigesVerification==null) {
-						psigesService.update(puptSiges);
-						res.setMessage("Siges modificado!");
-					}else {
-						if(psigesVerification.getId()==puptSiges.getId()) {
-							psigesService.update(puptSiges);
-							res.setMessage("Siges modificado!");
-						}else {
-							res.setStatus("exception");
-							res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
-						}
-					}
-					
-				}else {
+				if (psigesService.veryUpdateSigesCode(puptSiges.getId(), puptSiges.getCodeSiges())) {
 					psigesService.update(puptSiges);
 					res.setMessage("Siges modificado!");
+				} else {
+					if (psigesService.veryUpdateSigesCodeDif(puptSiges.getId(), puptSiges.getCodeSiges())) {
+						if (proyect.getAllowRepeat()) {
+							psigesService.update(puptSiges);
+							res.setMessage("Siges modificado!");
+						} else {
+							res.setStatus("error");
+							res.setMessage("Error al modificar siges este codigo ya pertenece a otro!");
+						}
+					} else {
+						psigesService.update(puptSiges);
+						res.setMessage("Siges modificado!");
+					}
 				}
 			}
 			
