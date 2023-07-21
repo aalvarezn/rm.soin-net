@@ -43,6 +43,7 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import com.soin.sgrm.model.BaseKnowledge;
 import com.soin.sgrm.model.BaseKnowledgeFile;
 import com.soin.sgrm.model.DocTemplate;
+import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.IncidenceFile;
 import com.soin.sgrm.model.Project;
@@ -59,6 +60,8 @@ import com.soin.sgrm.model.RequestBaseFile;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.pos.PBaseKnowledge;
+import com.soin.sgrm.model.pos.PBaseKnowledgeFile;
 import com.soin.sgrm.service.BaseKnowledgeFileService;
 import com.soin.sgrm.service.BaseKnowledgeService;
 import com.soin.sgrm.service.DocTemplateService;
@@ -75,6 +78,8 @@ import com.soin.sgrm.service.RequestFileService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.SystemService;
+import com.soin.sgrm.service.pos.PBaseKnowledgeFileService;
+import com.soin.sgrm.service.pos.PBaseKnowledgeService;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.DocxContext;
 import com.soin.sgrm.utils.DocxVariables;
@@ -140,12 +145,29 @@ public class FileController extends BaseController {
 	@Autowired
 	ReportFileService reportFileService;
 	
+	@Autowired
+	PBaseKnowledgeService pbaseKnowledgeService;
+	
+	@Autowired 
+	PBaseKnowledgeFileService pbaseKnowFileService;
 	DocxVariables docxVariables = null;
 
 	DocxContext context = null;
 
 	Map<String, String> replacedElementsMap;
+	
+	@Autowired
+	public FileController(Environment environment) {
+		this.env = environment;
+	}
 
+	public String profileActive() {
+		String[] activeProfiles = env.getActiveProfiles();
+		 for (String profile : activeProfiles) {
+			 return profile;
+	        }
+		return "";
+	}
 	/**
 	 * @description: Descarga de un archivo particular del release.
 	 * @author: Esteban Bogantes H.
@@ -912,6 +934,26 @@ public class FileController extends BaseController {
 	}
 	
 	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del error know.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del error know.
+	 * @throws SQLException
+	 **/
+	public String createPathPBaseKnow(PBaseKnowledge baseKnowledge, String basePath) throws SQLException {
+		try {
+
+			String path = "/BaseConocimiento/"+baseKnowledge.getSystem().getName()+"/"+baseKnowledge.getComponent().getName()  + "/";
+			path += baseKnowledge.getNumError() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	
+	/**
 	 * @description: Adjunta el archivo al error know.
 	 * @author: Anthony Alvarez N.
 	 * @return: estado de la carga del archivo.
@@ -922,47 +964,94 @@ public class FileController extends BaseController {
 	public @ResponseBody JsonResponse singleFileUploadBaseKnowledge(@PathVariable Long id,
 			@RequestParam("file") MultipartFile file) throws SQLException {
 		JsonResponse json = new JsonResponse();
-		BaseKnowledge baseKnowledge = baseKnowledgeService.findById(id);
-		
-		// valida que se selecciono un archivo
-		if (file.getName().equals("") || file.isEmpty()) {
-			json.setStatus("fail");
-			json.setException("Archivo no seleccionado");
-			return json;
-		}
-		
-		// Direccion del archivo a guardar
-		String basePath = baseKnowledge.getUrl();
-		String path = createPathBaseKnow(baseKnowledge, basePath);
-		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+		if(profileActive().equals("oracle")) {
+			BaseKnowledge baseKnowledge = baseKnowledgeService.findById(id);
+			
+			// valida que se selecciono un archivo
+			if (file.getName().equals("") || file.isEmpty()) {
+				json.setStatus("fail");
+				json.setException("Archivo no seleccionado");
+				return json;
+			}
+			
+			// Direccion del archivo a guardar
+			String basePath = baseKnowledge.getUrl();
+			String path = createPathBaseKnow(baseKnowledge, basePath);
+			String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
 
-		// Referencia del archivo
-		BaseKnowledgeFile baseKnowFile = new BaseKnowledgeFile();
-		baseKnowFile.setName(fileName);
-		baseKnowFile.setPath(basePath + path + fileName);
-		long time = System.currentTimeMillis();
-		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
-		baseKnowFile.setRevisionDate(revisionDate);
-		try {
-			// Se carga el archivo y se guarda la referencia
-			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
-			baseKnowFileService.saveBaseKnowledgeFile(id, baseKnowFile);
-			baseKnowFile = baseKnowFileService.findByKey("path", baseKnowFile.getPath());
-			json.setStatus("success");
-			json.setObj(baseKnowFile);
-		} catch (SQLException ex) {
-			Sentry.capture(ex, "files");
-			json.setStatus("exception");
-			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
-		} catch (Exception e) {
-			Sentry.capture(e, "files");
-			json.setStatus("exception");
-			json.setException(e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			if (e instanceof MaxUploadSizeExceededException) {
-				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			// Referencia del archivo
+			BaseKnowledgeFile baseKnowFile = new BaseKnowledgeFile();
+			baseKnowFile.setName(fileName);
+			baseKnowFile.setPath(basePath + path + fileName);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			baseKnowFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				baseKnowFileService.saveBaseKnowledgeFile(id, baseKnowFile);
+				baseKnowFile = baseKnowFileService.findByKey("path", baseKnowFile.getPath());
+				json.setStatus("success");
+				json.setObj(baseKnowFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
+			}
+		}else if(profileActive().equals("postgres")) {
+			PBaseKnowledge baseKnowledge = pbaseKnowledgeService.findById(id);
+			
+			// valida que se selecciono un archivo
+			if (file.getName().equals("") || file.isEmpty()) {
+				json.setStatus("fail");
+				json.setException("Archivo no seleccionado");
+				return json;
+			}
+			
+			// Direccion del archivo a guardar
+			String basePath = baseKnowledge.getUrl();
+			String path = createPathPBaseKnow(baseKnowledge, basePath);
+			String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+			// Referencia del archivo
+			PBaseKnowledgeFile baseKnowFile = new PBaseKnowledgeFile();
+			baseKnowFile.setName(fileName);
+			baseKnowFile.setPath(basePath + path + fileName);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			baseKnowFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				pbaseKnowFileService.saveBaseKnowledgeFile(id, baseKnowFile);
+				baseKnowFile = pbaseKnowFileService.findByKey("path", baseKnowFile.getPath());
+				json.setStatus("success");
+				json.setObj(baseKnowFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
 			}
 		}
+	
+		
+	
 		return json;
 	}
 	
@@ -973,22 +1062,41 @@ public class FileController extends BaseController {
 	 **/
 	@RequestMapping(value = "/singleDownloadBaseKnowledge-{id}", method = RequestMethod.GET)
 	public void downloadFileBaseKnowledge(HttpServletResponse response, @PathVariable Long id) throws IOException {
+		if(profileActive().equals("oracle")) {
+			BaseKnowledgeFile baseKnowFile = baseKnowFileService.findById(id);
+			File file = new File(baseKnowFile.getPath());
 
-		BaseKnowledgeFile baseKnowFile = baseKnowFileService.findById(id);
-		File file = new File(baseKnowFile.getPath());
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + baseKnowFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
+		}else if(profileActive().equals("postgres")) {
+			PBaseKnowledgeFile baseKnowFile = pbaseKnowFileService.findById(id);
+			File file = new File(baseKnowFile.getPath());
 
-		// Se modifica la respuesta para descargar el archivo
-		response.setContentType("text/plain");
-		response.setHeader("Content-Disposition", "attachment;filename=" + baseKnowFile.getName());
-		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-		if (mimeType == null) {
-			mimeType = "application/octet-stream";
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + baseKnowFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
 		}
-		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-		response.setContentLength((int) file.length());
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
+	
+		
 	}
 	
 	/**
@@ -999,21 +1107,40 @@ public class FileController extends BaseController {
 	@RequestMapping(value = "/deleteFileUploadBaseKnowledge-{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteFileUploadBaseKnowledge(@PathVariable Long id) {
 		JsonResponse res = new JsonResponse();
-		res.setStatus("success");
-		try {
-			BaseKnowledgeFile baseKnowledgeFile = baseKnowFileService.findById(id);
-			baseKnowFileService.deleteBaseKnowLedgeFile(baseKnowledgeFile);
-			File file = new File(baseKnowledgeFile.getPath());
-			if (file.exists()) {
-				file.delete();
+		if(profileActive().equals("oracle")) {
+			try {
+				BaseKnowledgeFile baseKnowledgeFile = baseKnowFileService.findById(id);
+				baseKnowFileService.deleteBaseKnowLedgeFile(baseKnowledgeFile);
+				File file = new File(baseKnowledgeFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(baseKnowledgeFile.getId() + "");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				res.setStatus("exception");
+				res.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			}
-			res.setData(baseKnowledgeFile.getId() + "");
-		} catch (Exception e) {
-			Sentry.capture(e, "files");
-			res.setStatus("exception");
-			res.setException(e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}else if(profileActive().equals("postgres")) {
+			try {
+				PBaseKnowledgeFile baseKnowledgeFile = pbaseKnowFileService.findById(id);
+				pbaseKnowFileService.deleteBaseKnowLedgeFile(baseKnowledgeFile);
+				File file = new File(baseKnowledgeFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(baseKnowledgeFile.getId() + "");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				res.setStatus("exception");
+				res.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			}
 		}
+	
+		res.setStatus("success");
+		
 		return res;
 	}
 
