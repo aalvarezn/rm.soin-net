@@ -71,6 +71,23 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.service.TypeObjectService;
 import com.soin.sgrm.service.UserInfoService;
+import com.soin.sgrm.service.pos.PActionEnvironmentService;
+import com.soin.sgrm.service.pos.PAmbientService;
+import com.soin.sgrm.service.pos.PConfigurationItemService;
+import com.soin.sgrm.service.pos.PDocTemplateService;
+import com.soin.sgrm.service.pos.PEmailTemplateService;
+import com.soin.sgrm.service.pos.PEnvironmentService;
+import com.soin.sgrm.service.pos.PErrorReleaseService;
+import com.soin.sgrm.service.pos.PImpactService;
+import com.soin.sgrm.service.pos.PModuleService;
+import com.soin.sgrm.service.pos.PParameterService;
+import com.soin.sgrm.service.pos.PPriorityService;
+import com.soin.sgrm.service.pos.PRiskService;
+import com.soin.sgrm.service.pos.PStatusService;
+import com.soin.sgrm.service.pos.PSystemConfigurationService;
+import com.soin.sgrm.service.pos.PSystemService;
+import com.soin.sgrm.service.pos.PTypeObjectService;
+import com.soin.sgrm.service.pos.PUserInfoService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
@@ -132,6 +149,52 @@ public class ReleaseController extends BaseController {
 	ReleaseObjectService releaseObjectService;
 	@Autowired
 	private ErrorReleaseService errorService;
+	
+	
+	@Autowired
+	private PUserInfoService ploginService;
+	@Autowired
+	private PSystemConfigurationService psystemConfigurationService;
+	@Autowired
+	private PImpactService pimpactService;
+	@Autowired
+	private PPriorityService ppriorityService;
+	@Autowired
+	private PStatusService pstatusService;
+	@Autowired
+	private PReleaseService preleaseService;
+	@Autowired
+	private PRiskService priskService;
+	@Autowired
+	private PModuleService pmoduleService;
+	@Autowired
+	private PAmbientService pambientService;
+	@Autowired
+	private PModifiedComponentService pmodifiedComponentService;
+	@Autowired
+	private PSystemService psystemService;
+	@Autowired
+	private PDocTemplateService pdocsTemplateService;
+	@Autowired
+	private PTypeObjectService ptypeObjectService;
+	@Autowired
+	private PEnvironmentService penvironmentService;
+	@Autowired
+	private PConfigurationItemService pconfigurationItemService;
+	@Autowired
+	private PActionEnvironmentService pactionService;
+	@Autowired
+	private PTypeDetailService ptypeDetail;
+	@Autowired
+	private PEmailTemplateService pemailService;
+	@Autowired
+	private PParameterService pparamService;
+	@Autowired
+	private PNodeService pnodeService;
+	@Autowired 
+	PReleaseObjectService preleaseObjectService;
+	@Autowired
+	private PErrorReleaseService perrorService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,

@@ -1,4 +1,4 @@
-package com.soin.sgrm.model.wf;
+package com.soin.sgrm.model.pos.wf;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,16 +32,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.pos.PStatus;
 import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "TRAMITES_NODO")
-public class Node implements Serializable {
+public class PNode implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAMITES_NODO_SQ")
-	@SequenceGenerator(name = "TRAMITES_NODO_SQ", sequenceName = "TRAMITES_NODO_SQ", allocationSize = 1)
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
 	private int id;
 
@@ -51,17 +53,17 @@ public class Node implements Serializable {
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "TRAMITE_ID", nullable = false)
-	private WorkFlow workFlow;
+	@JoinColumn(name = "\"TRAMITE_ID\"", nullable = false)
+	private PWorkFlow workFlow;
 
 	@Fetch(value = FetchMode.SUBSELECT)
 	//@JsonManagedReference
 	@OneToMany(mappedBy = "nodeFrom", fetch = FetchType.EAGER, orphanRemoval = true)
-	private List<Edge> edges = new ArrayList<Edge>();
+	private List<PEdge> edges = new ArrayList<PEdge>();
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ESTADO_ID", nullable = true)
-	private Status status;
+	@JoinColumn(name = "\"ESTADO_ID\"", nullable = true)
+	private PStatus status;
 
 	@Column(name = "X")
 	private Float x;
@@ -83,15 +85,15 @@ public class Node implements Serializable {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "TRAMITES_NODO_NOTIFY", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
-			@JoinColumn(name = "CUSTOMUSER_ID") })
-	private Set<WFUser> users = new HashSet<WFUser>();
+	@JoinTable(name = "TRAMITES_NODO_NOTIFY", joinColumns = { @JoinColumn(name = "\"NODO_ID\"") }, inverseJoinColumns = {
+			@JoinColumn(name = "\"CUSTOMUSER_ID\"") })
+	private Set<PWFUser> users = new HashSet<PWFUser>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "TRAMITES_NODO_ACTOR", joinColumns = { @JoinColumn(name = "NODO_ID") }, inverseJoinColumns = {
-			@JoinColumn(name = "CUSTOMUSER_ID") })
-	private Set<WFUser> actors = new HashSet<WFUser>();
+	@JoinTable(name = "TRAMITES_NODO_ACTOR", joinColumns = { @JoinColumn(name = "\"NODO_ID\"") }, inverseJoinColumns = {
+			@JoinColumn(name = "\"CUSTOMUSER_ID\"") })
+	private Set<PWFUser> actors = new HashSet<PWFUser>();
 
 	@Transient
 	private List<Integer> usersIds;
@@ -99,11 +101,11 @@ public class Node implements Serializable {
 	@Transient
 	private List<Integer> actorsIds;
 
-	public Node() {
+	public PNode() {
 		super();
 	}
 
-	public Node(int id) {
+	public PNode(int id) {
 		super();
 		this.id = id;
 	}
@@ -124,11 +126,11 @@ public class Node implements Serializable {
 		this.label = label;
 	}
 
-	public WorkFlow getWorkFlow() {
+	public PWorkFlow getWorkFlow() {
 		return workFlow;
 	}
 
-	public void setWorkFlow(WorkFlow workFlow) {
+	public void setWorkFlow(PWorkFlow workFlow) {
 		this.workFlow = workFlow;
 	}
 
@@ -164,19 +166,19 @@ public class Node implements Serializable {
 		this.workFlowId = workFlowId;
 	}
 
-	public List<Edge> getEdges() {
+	public List<PEdge> getEdges() {
 		return edges;
 	}
 
-	public void setEdges(List<Edge> edges) {
+	public void setEdges(List<PEdge> edges) {
 		this.edges = edges;
 	}
 
-	public Status getStatus() {
+	public PStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(PStatus status) {
 		this.status = status;
 	}
 
@@ -196,11 +198,11 @@ public class Node implements Serializable {
 		this.sendEmail = sendEmail;
 	}
 
-	public Set<WFUser> getUsers() {
+	public Set<PWFUser> getUsers() {
 		return users;
 	}
 
-	public void setUsers(Set<WFUser> users) {
+	public void setUsers(Set<PWFUser> users) {
 		this.users = users;
 	}
 
@@ -221,20 +223,20 @@ public class Node implements Serializable {
 	}
 
 	public void clearUsers() {
-		for (WFUser user : this.users) {
+		for (PWFUser user : this.users) {
 			this.users.remove(user);
 		}
 	}
 
-	public void addUser(WFUser user) {
+	public void addUser(PWFUser user) {
 		this.users.add(user);
 	}
 
-	public Set<WFUser> getActors() {
+	public Set<PWFUser> getActors() {
 		return actors;
 	}
 
-	public void setActors(Set<WFUser> actors) {
+	public void setActors(Set<PWFUser> actors) {
 		this.actors = actors;
 	}
 
@@ -255,12 +257,12 @@ public class Node implements Serializable {
 	}
 	
 	public void clearActors() {
-		for (WFUser user : this.actors) {
+		for (PWFUser user : this.actors) {
 			this.actors.remove(user);
 		}
 	}
 
-	public void addActor(WFUser user) {
+	public void addActor(PWFUser user) {
 		this.actors.add(user);
 	}
 
