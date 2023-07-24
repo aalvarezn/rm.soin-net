@@ -15,12 +15,40 @@ $(function() {
 		var files = $('#files')[0].files;
 
 		for (var i = 0, f; f = files[i]; i++) {
-			if (!existFile(f.name)) {
-				appendRowTableFile(f);
+			console.log(f.name);
+			if(verifyWord(f.name)){
+				if (!existFile(f.name)) {
+					appendRowTableFile(f);
+				}
+			}else{
+				alert("El archivo "+f.name+" tiene caracteres no permitidos"+prueba+"!!");
 			}
 		}
 	});
 });
+
+function verifyWord(word) {
+	  characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890.-/";
+	  specials = "95";
+
+	  for (var i = 0; i < word.length; i++) {
+	    var keyboard = word.charAt(i);
+	    var special_keyboard = false;
+
+	    for (var j in specials) {
+	      if (keyboard.charCodeAt(0) == specials[j].charCodeAt(0)) {
+	        special_keyboard = true;
+	        break;
+	      }
+	    }
+
+	    if (characters.indexOf(keyboard) === -1 && !special_keyboard) {
+	      return false;
+	    }
+	  }
+
+	  return true;
+	}
 
 function existFile(nameFile) {
 	var exist = false;
@@ -136,7 +164,7 @@ function upload() {
 
 function uploadInputFile(f, idRow,index) {
 	var cont = getCont()
-	//console.log($('#addFileModal table #file_' + idRow)[0].files[index]);
+	// console.log($('#addFileModal table #file_' + idRow)[0].files[index]);
 	var formData = new FormData();
 	if($('#addFileModal table #file_' + idRow)[0].files[index]===undefined){
 		formData

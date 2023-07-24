@@ -33,6 +33,28 @@ function existFile(nameFile) {
 
 }
 
+function verifyWord(word) {
+	  characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890.-/";
+	  specials = "95";
+
+	  for (var i = 0; i < word.length; i++) {
+	    var keyboard = word.charAt(i);
+	    var special_keyboard = false;
+
+	    for (var j in specials) {
+	      if (keyboard.charCodeAt(0) == specials[j].charCodeAt(0)) {
+	        special_keyboard = true;
+	        break;
+	      }
+	    }
+
+	    if (characters.indexOf(keyboard) === -1 && !special_keyboard) {
+	      return false;
+	    }
+	  }
+
+	  return true;
+	}
 function appendRowTableFile(f) {
 	ift++;
 	var tableFile = $('#tableFiles tbody');
