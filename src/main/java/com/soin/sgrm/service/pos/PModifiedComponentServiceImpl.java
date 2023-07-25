@@ -1,4 +1,4 @@
-package com.soin.sgrm.service;
+package com.soin.sgrm.service.pos;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -12,20 +12,20 @@ import com.soin.sgrm.dao.pos.PModifiedComponentDao;
 import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.pos.PModifiedComponent;
 
-@Transactional("transactionManager")
-@Service("ModifiedComponentService")
-public class ModifiedComponentServiceImpl implements ModifiedComponentService {
+@Transactional("transactionManagerPos")
+@Service("PModifiedComponentService")
+public class PModifiedComponentServiceImpl implements PModifiedComponentService {
 
 	@Autowired
-	ModifiedComponentDao dao;
+	PModifiedComponentDao dao;
 
 	@Override
-	public List<ModifiedComponent> list() throws SQLException {
+	public List<PModifiedComponent> list() throws SQLException {
 		return dao.list();
 	}
 
 	@Override
-	public ModifiedComponent findById(Integer id) {
+	public PModifiedComponent findById(Integer id) {
 		return dao.findById(id);
 	}
 

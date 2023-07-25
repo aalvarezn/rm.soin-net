@@ -199,7 +199,7 @@ public class PReleaseEdit implements Serializable, Cloneable {
 	private PUserInfo user;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SISTEMA_ID", nullable = true)
+	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
 	private PSystemInfo system;
 
 	@ManyToOne(fetch = FetchType.EAGER)

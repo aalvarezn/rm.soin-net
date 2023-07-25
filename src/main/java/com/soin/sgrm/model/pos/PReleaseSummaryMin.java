@@ -77,15 +77,15 @@ public class PReleaseSummaryMin implements Serializable {
 	private Timestamp createDate;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ESTADO_ID", nullable = true)
+	@JoinColumn(name = "\"ESTADO_ID\"", nullable = true)
 	private PStatus status;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SOLICITADO_POR_ID", nullable = true)
+	@JoinColumn(name = "\"SOLICITADO_POR_ID\"", nullable = true)
 	private PUser user;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SISTEMA_ID", nullable = true)
+	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
 	private PSystemInfo system;
 
 	@Column(name = "PRE_CONDICIONES")

@@ -33,8 +33,8 @@ public class PReleaseSummaryFile implements Serializable {
 
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SISTEMA_ID", nullable = true)
-	private SystemInfo system;
+	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
+	private PSystemInfo system;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "RELEASES_RELEASE_REQUERIMIENTO", joinColumns = {
@@ -60,11 +60,11 @@ public class PReleaseSummaryFile implements Serializable {
 	}
 
 
-	public SystemInfo getSystem() {
+	public PSystemInfo getSystem() {
 		return system;
 	}
 
-	public void setSystem(SystemInfo system) {
+	public void setSystem(PSystemInfo system) {
 		this.system = system;
 	}
 

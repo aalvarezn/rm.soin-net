@@ -79,15 +79,20 @@ import com.soin.sgrm.service.pos.PEmailTemplateService;
 import com.soin.sgrm.service.pos.PEnvironmentService;
 import com.soin.sgrm.service.pos.PErrorReleaseService;
 import com.soin.sgrm.service.pos.PImpactService;
+import com.soin.sgrm.service.pos.PModifiedComponentService;
 import com.soin.sgrm.service.pos.PModuleService;
 import com.soin.sgrm.service.pos.PParameterService;
 import com.soin.sgrm.service.pos.PPriorityService;
+import com.soin.sgrm.service.pos.PReleaseObjectService;
+import com.soin.sgrm.service.pos.PReleaseService;
 import com.soin.sgrm.service.pos.PRiskService;
 import com.soin.sgrm.service.pos.PStatusService;
 import com.soin.sgrm.service.pos.PSystemConfigurationService;
 import com.soin.sgrm.service.pos.PSystemService;
+import com.soin.sgrm.service.pos.PTypeDetailService;
 import com.soin.sgrm.service.pos.PTypeObjectService;
 import com.soin.sgrm.service.pos.PUserInfoService;
+import com.soin.sgrm.service.pos.wf.PNodeService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
@@ -146,7 +151,7 @@ public class ReleaseController extends BaseController {
 	@Autowired
 	private NodeService nodeService;
 	@Autowired 
-	ReleaseObjectService releaseObjectService;
+	private ReleaseObjectService releaseObjectService;
 	@Autowired
 	private ErrorReleaseService errorService;
 	
@@ -192,7 +197,7 @@ public class ReleaseController extends BaseController {
 	@Autowired
 	private PNodeService pnodeService;
 	@Autowired 
-	PReleaseObjectService preleaseObjectService;
+	private PReleaseObjectService preleaseObjectService;
 	@Autowired
 	private PErrorReleaseService perrorService;
 
