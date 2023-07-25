@@ -15,8 +15,12 @@ $(function() {
 		var files = $('#files')[0].files;
 
 		for (var i = 0, f; f = files[i]; i++) {
-			if (!existFile(f.name)) {
-				appendRowTableFile(f);
+			if(verifyWord(f.name)){
+				if (!existFile(f.name)) {
+					appendRowTableFile(f);
+				}
+			}else{
+				alert("El archivo "+f.name+" tiene caracteres no permitidos (solo se permiten numeros, letras sin acentuar,- ,_ ,. y que no hayan espacios)");
 			}
 		}
 	});
@@ -34,7 +38,7 @@ function existFile(nameFile) {
 }
 
 function verifyWord(word) {
-	  characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890.-/";
+	  characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890.-";
 	  specials = "95";
 
 	  for (var i = 0; i < word.length; i++) {

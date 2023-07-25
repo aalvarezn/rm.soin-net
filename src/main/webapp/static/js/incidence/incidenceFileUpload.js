@@ -20,14 +20,14 @@ $(function() {
 					appendRowTableFile(f);
 				}
 			}else{
-				alert("El archivo "+f.name+" tiene caracteres no permitidos"+prueba+"!!");
+				alert("El archivo "+f.name+" tiene caracteres no permitidos (solo se permiten numeros, letras sin acentuar,- ,_ ,. y que no hayan espacios)");
 			}
 		}
 	});
 });
 
 function verifyWord(word) {
-	  characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890.-/";
+	  characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890.-";
 	  specials = "95";
 
 	  for (var i = 0; i < word.length; i++) {
