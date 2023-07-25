@@ -56,12 +56,12 @@
 		<env-entry-type>java.lang.String</env-entry-type>
 		<env-entry-value>szsjucdeicalgbek</env-entry-value>
 	</env-entry>
-
+	
 	<env-entry>
 		<description>Email Properties</description>
 		<env-entry-name>mailProperties</env-entry-name>
 		<env-entry-type>java.lang.String</env-entry-type>
-		<env-entry-value>mail.transport.protocol=smtp;mail.smtp.auth=true;mail.smtp.starttls.enable=true;mail.smtp.ssl.trust=smtp.gmail.com;mail.debug=true;mail.smtp.ssl.protocols=TLSv1.2</env-entry-value>
+		<env-entry-value>mail.transport.protocol=smtp; mail.smtp.auth=true; mail.smtp.starttls.enable=true; mail.smtp.ssl.trust=smtp.gmail.com; mail.debug= true</env-entry-value>
 	</env-entry>
 
 </web-app>
