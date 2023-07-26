@@ -85,7 +85,7 @@ public class PReleaseTinySummary implements Serializable {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
-	private SystemInfo system;
+	private PSystemInfo system;
 
 	@Column(name = "PRE_CONDICIONES")
 	private String preConditions;
@@ -118,15 +118,15 @@ public class PReleaseTinySummary implements Serializable {
 	private String minimal_evidence;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "PRIORIDAD_ID", nullable = true)
+	@JoinColumn(name = "\"PRIORIDAD_ID\"", nullable = true)
 	private PPriority priority;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "RIESGO_ID", nullable = true)
+	@JoinColumn(name = "\"RIESGO_ID\"", nullable = true)
 	private PRisk risk;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "IMPACTO_ID", nullable = true)
+	@JoinColumn(name = "\"IMPACTO_ID\"", nullable = true)
 	private PImpact impact;
 
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -359,11 +359,11 @@ public class PReleaseTinySummary implements Serializable {
 		this.user = user;
 	}
 
-	public SystemInfo getSystem() {
+	public PSystemInfo getSystem() {
 		return system;
 	}
 
-	public void setSystem(SystemInfo system) {
+	public void setSystem(PSystemInfo system) {
 		this.system = system;
 	}
 

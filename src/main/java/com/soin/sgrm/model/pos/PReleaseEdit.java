@@ -73,15 +73,15 @@ public class PReleaseEdit implements Serializable, Cloneable {
 
 	// Informacion General
 	@Value("${priority:0}")
-	@Column(name = "PRIORIDAD_ID", nullable = true)
+	@Column(name = "\"PRIORIDAD_ID\"", nullable = true)
 	private Integer priority;
 
 	@Value("${risk:0}")
-	@Column(name = "RIESGO_ID", nullable = true)
+	@Column(name = "\"RIESGO_ID\"", nullable = true)
 	private Integer risk;
 
 	@Value("${impact:0}")
-	@Column(name = "IMPACTO_ID", nullable = true)
+	@Column(name = "\"IMPACTO_ID\"", nullable = true)
 	private Integer impact;
 
 	// Informacion de la solucion
