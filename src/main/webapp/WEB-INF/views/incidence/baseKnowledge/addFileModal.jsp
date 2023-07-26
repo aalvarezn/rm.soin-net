@@ -66,7 +66,7 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
 					onclick="closeAddFileModal()">CANCELAR</button>
-				<button type="button" class="btn btn-primary waves-effect"
+				<button type="button" id="uploadButton" class="btn btn-primary waves-effect"
 					onclick="upload()">GUARDAR</button>
 			</div>
 		</div>
