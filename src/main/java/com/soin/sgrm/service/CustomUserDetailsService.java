@@ -46,14 +46,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
 		String profile = profileActive();
-		if (profile.equals("postgres")) {
+		if (profile.equals("oracle")) {
 			UserInfo user = userService.getUserByUsername(username);
 			if (user == null) {
 				throw new BadCredentialsException("Usuario o contraseña incorrecto");
 			}
 			return new UserLogin(user.getId(), user.getUsername(), user.getPassword(), user.getEmailAddress(),
 					user.getFullName(), getGrantedAuthorities(user));
-		} else if (profile.equals("oracle")) {
+		} else if (profile.equals("postgres")) {
 			PUserInfo puser = puserService.getUserByUsername(username);
 			if (puser == null) {
 				throw new BadCredentialsException("Usuario o contraseña incorrecto");

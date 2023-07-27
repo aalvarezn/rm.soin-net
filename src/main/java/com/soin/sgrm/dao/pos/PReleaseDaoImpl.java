@@ -97,12 +97,12 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		JsonSheet json = new JsonSheet();
 
 		Criteria crit = criteriaByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,
-				statusId);
+				statusId,false);
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,
-				statusId);
+				statusId,true);
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
@@ -121,12 +121,12 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			Object[] ids, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch, ids, dateRange, systemId,
-				statusId);
+				statusId,false);
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch, ids, dateRange,
-				systemId, statusId);
+				systemId, statusId,true);
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
@@ -146,13 +146,13 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId);
+				systemId, statusId,false);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId);
+				systemId, statusId,true);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -173,13 +173,13 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId);
+				systemId, statusId,false);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId);
+				systemId, statusId,true);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -489,7 +489,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 	@SuppressWarnings("deprecation")
 	public Criteria criteriaByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] dateRange, Integer systemId, Integer statusId) throws ParseException {
+			String[] dateRange, Integer systemId, Integer statusId,boolean count) throws ParseException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleaseUser.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "status");
@@ -523,14 +523,18 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (statusId != 0) {
 			crit.add(Restrictions.eq("status.id", statusId));
 		}
-		crit.addOrder(Order.desc("createDate"));
+		if(!count) {
+			crit.addOrder(Order.desc("createDate"));
+			
+		}
+		
 
 		return crit;
 	}
 
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaByTeams(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			Object[] ids, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException {
+			Object[] ids, String[] dateRange, Integer systemId, Integer statusId,boolean count) throws SQLException, ParseException {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleaseUser.class);
 		crit.createAlias("system", "system");
@@ -565,14 +569,17 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (statusId != 0) {
 			crit.add(Restrictions.eq("status.id", statusId));
 		}
-		crit.addOrder(Order.desc("createDate"));
+		if(!count) {
+			crit.addOrder(Order.desc("createDate"));
+		}
+		
 
 		return crit;
 	}
 
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaBySystems(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,boolean count)
 			throws SQLException, ParseException {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleaseUser.class);
@@ -609,8 +616,9 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (statusId != 0) {
 			crit.add(Restrictions.eq("status.id", statusId));
 		}
-		crit.addOrder(Order.desc("createDate"));
-
+		if(!count) {
+			crit.addOrder(Order.desc("createDate"));
+		}
 		return crit;
 	}
 	

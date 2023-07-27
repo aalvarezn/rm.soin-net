@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.soin.sgrm.dao.BaseDao;
 import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PRelease;
+import com.soin.sgrm.model.pos.PUserInfo;
+import com.soin.sgrm.model.pos.wf.PWFRelease;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
@@ -30,24 +33,24 @@ public interface PEmailTemplateService extends BaseDao<Integer, PEmailTemplate> 
 
 	void deleteEmail(Integer id);
 
-	void sendMail(Release release, PEmailTemplate email) throws Exception;
+	void sendMail(PRelease release, PEmailTemplate email) throws Exception;
 
-	void sendMail(UserInfo user, String password, PEmailTemplate email) throws Exception;
+	void sendMail(PUserInfo user, String password, PEmailTemplate email) throws Exception;
 
 	boolean existEmailTemplate(String name);
 
 	boolean existEmailTemplate(String name, Integer id);
 
-	void sendMail(WFRelease releaseEmail, PEmailTemplate email, String motive);
+	void sendMail(PWFRelease releaseEmail, PEmailTemplate email, String motive);
 
-	void sendMailActor(WFRelease releaseEmail, PEmailTemplate email);
+	void sendMailActor(PWFRelease releaseEmail, PEmailTemplate email);
 
 	void sendMailRFC(RFC rfcEmail, PEmailTemplate email) throws Exception;
 	
 	void sendMailRequestR4(RequestBaseR1 requestEmail, PEmailTemplate email) throws Exception;
 	
 
-	void sendMailNotify(WFRelease releaseEmail, PEmailTemplate email,String user);
+	void sendMailNotify(PWFRelease releaseEmail, PEmailTemplate email,String user);
 
 	void sendMailActorRFC(WFRFC rfcEmail, PEmailTemplate emailActor);
 

@@ -211,7 +211,7 @@ public class PRelease implements Serializable, Cloneable {
 	@SuppressWarnings("deprecation")
 	@Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.DETACH, CascadeType.EVICT })
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "RELEASES_RELEASE_REQUERIMI6CEB", joinColumns = {
+	@JoinTable(name = "RELEASES_RELEASE_REQUERIMIENTO", joinColumns = {
 			@JoinColumn(name = "\"RELEASE_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"REQUERIMIENTO_ID\"") })
 	private Set<PRequest> requirements = new HashSet<PRequest>();
 

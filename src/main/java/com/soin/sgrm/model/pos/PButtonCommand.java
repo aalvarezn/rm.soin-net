@@ -50,7 +50,7 @@ public class PButtonCommand implements Serializable {
 	@SuppressWarnings("deprecation")
 	@Cascade({ CascadeType.MERGE, CascadeType.DETACH, CascadeType.EVICT })
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "RELEASE_ID", nullable = false)
+	@JoinColumn(name = "\"RELEASE_ID\"", nullable = false)
 	private PReleaseUser release;
 
 	@Column(name = "NOMBRE")

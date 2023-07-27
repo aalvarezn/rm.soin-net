@@ -38,7 +38,15 @@ import com.soin.sgrm.model.Ambient;
 import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.Dependency;
 import com.soin.sgrm.model.EmailIncidence;
+import com.soin.sgrm.model.pos.PAmbient;
+import com.soin.sgrm.model.pos.PDependency;
 import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PRelease;
+import com.soin.sgrm.model.pos.PReleaseObject;
+import com.soin.sgrm.model.pos.PRequest;
+import com.soin.sgrm.model.pos.PUserInfo;
+import com.soin.sgrm.model.pos.wf.PWFRelease;
+import com.soin.sgrm.model.pos.wf.PWFUser;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
@@ -109,10 +117,19 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	@Autowired
 
 	private EmailIncidenceService emailIncidenceService;
-	
-  @Autowired
-	RequestService requestService;
 
+	@Autowired
+	PRequestService prequestService;
+
+	@Autowired
+	PSigesService psigeService;
+
+	@Autowired
+
+	private EmailIncidenceService pemailIncidenceService;
+
+	@Autowired
+	RequestService requestService;
 
 	EnviromentConfig envConfig = new EnviromentConfig();
 
@@ -194,7 +211,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMail(Release release, PEmailTemplate email) throws Exception {
+	public void sendMail(PRelease release, PEmailTemplate email) throws Exception {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 		email = fillEmail(email, release);
@@ -323,7 +340,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		return mmp;
 	}
 
-	public PEmailTemplate fillEmail(PEmailTemplate email, Release release) {
+	public PEmailTemplate fillEmail(PEmailTemplate email, PRelease release) {
 		String temp = "";
 		String releaseNumber = release.getReleaseNumber();
 		String[] parts = releaseNumber.split("\\.");
@@ -337,9 +354,9 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			}
 		}
 
-		Request request = new Request();
+		PRequest request = new PRequest();
 		if (tpo != "") {
-			request = requestService.findByNameCode(tpo);
+			request = prequestService.findByNameCode(tpo);
 		}
 
 		/* ------ body ------ */
@@ -384,10 +401,9 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			email.setHtml(email.getHtml().replace("{{message}}",
 					(release.getMessage() != null ? release.getMessage() : "NA")));
 		}
-		
+
 		if (email.getHtml().contains("{{tpoNumber}}")) {
-			email.setHtml(email.getHtml().replace("{{tpoNumber}}",
-					(tpo != null ? tpo : "NA")));
+			email.setHtml(email.getHtml().replace("{{tpoNumber}}", (tpo != null ? tpo : "NA")));
 		}
 
 		if (email.getHtml().contains("{{tpoDescription}}")) {
@@ -403,7 +419,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 		if (email.getHtml().contains("{{ambient}}")) {
 			temp = "";
-			for (Ambient amb : release.getAmbients()) {
+			for (PAmbient amb : release.getAmbients()) {
 				temp += amb.getName() + "<br>";
 			}
 			email.setHtml(email.getHtml().replace("{{ambient}}", (temp.equals("") ? "Sin ambientes definidos" : temp)));
@@ -412,7 +428,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		if (email.getHtml().contains("{{dependencies}}")) {
 			temp = "";
 			int i = 1;
-			for (Dependency dep : release.getDependencies()) {
+			for (PDependency dep : release.getDependencies()) {
 				temp += i + ": " + dep.getTo_release().getReleaseNumber() + "<br>";
 				i++;
 			}
@@ -423,7 +439,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		if (email.getHtml().contains("{{objects}}")) {
 			temp = "<ul>";
 
-			for (ReleaseObject obj : release.getObjects()) {
+			for (PReleaseObject obj : release.getObjects()) {
 				temp += "<li> " + obj.getName() + "</li>";
 			}
 			temp += "</ul>";
@@ -481,7 +497,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMail(UserInfo user, String password, PEmailTemplate email) throws Exception {
+	public void sendMail(PUserInfo user, String password, PEmailTemplate email) throws Exception {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 		try {
@@ -533,7 +549,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMail(WFRelease releaseEmail, PEmailTemplate email, String motive) {
+	public void sendMail(PWFRelease releaseEmail, PEmailTemplate email, String motive) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -584,7 +600,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (WFUser toUser : releaseEmail.getNode().getUsers()) {
+			for (PWFUser toUser : releaseEmail.getNode().getUsers()) {
 				mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 			}
 			// Se notifica el usuario que lo solicito
@@ -601,7 +617,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailActor(WFRelease releaseEmail, PEmailTemplate email) {
+	public void sendMailActor(PWFRelease releaseEmail, PEmailTemplate email) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -637,7 +653,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (WFUser toUser : releaseEmail.getNode().getActors()) {
+			for (PWFUser toUser : releaseEmail.getNode().getActors()) {
 				mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 			}
 			mailSender.send(mimeMessage);
@@ -652,7 +668,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailNotify(WFRelease releaseEmail, PEmailTemplate email, String user) {
+	public void sendMailNotify(PWFRelease releaseEmail, PEmailTemplate email, String user) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -696,7 +712,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			if (email.getHtml().contains("{{actors}}")) {
 				temp = "<ul>";
 
-				for (WFUser obj : releaseEmail.getNode().getActors()) {
+				for (PWFUser obj : releaseEmail.getNode().getActors()) {
 					temp += "<li><b> " + obj.getFullName() + "</b></li>";
 				}
 				temp += "</ul>";
@@ -711,7 +727,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (WFUser toUser : releaseEmail.getNode().getUsers()) {
+			for (PWFUser toUser : releaseEmail.getNode().getUsers()) {
 				mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 			}
 			mailSender.send(mimeMessage);
@@ -1621,11 +1637,11 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			}
 
 			if (email.getHtml().contains("{{updateAt}}")) {
-				
+
 				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
 
 				String strDate = dateFormat.format(rfcEmail.getRequestDate());
-				
+
 				email.setHtml(email.getHtml().replace("{{updateAt}}", strDate));
 			}
 
@@ -1694,13 +1710,13 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			
-			for (AttentionGroup toUserAttention :  incidenceEmail.getNode().getActors()) {
-				for(User toUser:toUserAttention.getUserAttention()) {
+
+			for (AttentionGroup toUserAttention : incidenceEmail.getNode().getActors()) {
+				for (User toUser : toUserAttention.getUserAttention()) {
 					mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 				}
-				
-			}	
+
+			}
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
@@ -1754,12 +1770,12 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			String temp;
 			if (email.getHtml().contains("{{actors}}")) {
 				temp = "<ul>";
-				for (AttentionGroup obj : incidenceEmail.getNode().getActors()) {	
+				for (AttentionGroup obj : incidenceEmail.getNode().getActors()) {
 					for (User objUser : obj.getUserAttention()) {
 						temp += "<li><b> " + objUser.getFullName() + "</b></li>";
 					}
 				}
-				
+
 				temp += "</ul>";
 				email.setHtml(
 						email.getHtml().replace("{{actors}}", (temp.equals("") ? "Sin actores definidos" : temp)));
@@ -1772,11 +1788,11 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (AttentionGroup toUserAttention :  incidenceEmail.getNode().getUsers()) {
-				for(User toUser:toUserAttention.getUserAttention()) {
+			for (AttentionGroup toUserAttention : incidenceEmail.getNode().getUsers()) {
+				for (User toUser : toUserAttention.getUserAttention()) {
 					mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 				}
-			}	
+			}
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
@@ -1787,7 +1803,6 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		}
 
 	}
-	
 
 	@Override
 	public void sendMailIncidence(Incidence incidenceEmail, PEmailTemplate email) throws Exception {
@@ -1874,6 +1889,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 		mailSender.send(mimeMessage);
 	}
+
 	private PEmailTemplate fillEmail(PEmailTemplate email, Incidence incidenceEmail) {
 		String temp = "";
 		/* ------ body ------ */
@@ -1988,11 +2004,11 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (AttentionGroup toUserAttention :  incidenceEmail.getNode().getUsers()) {
-				for(User toUser:toUserAttention.getUserAttention()) {
+			for (AttentionGroup toUserAttention : incidenceEmail.getNode().getUsers()) {
+				for (User toUser : toUserAttention.getUserAttention()) {
 					mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 				}
-			}	
+			}
 			// Se notifica el usuario que lo solicito
 			mimeMessage.addRecipient(Message.RecipientType.CC,
 					new InternetAddress(incidenceEmail.getUser().getEmail()));
@@ -2006,9 +2022,10 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			e.printStackTrace();
 		}
 	}
+
 	@Override
 	public void sendMailNotifyChangeStatus(String numRequest, String type, String name, String operator,
-			Timestamp requestDate, UserLogin user, String senders, PEmailTemplate email,String subject, String motive,
+			Timestamp requestDate, UserLogin user, String senders, PEmailTemplate email, String subject, String motive,
 			String note, String title) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -2016,43 +2033,34 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			// ------------------Seccion del asunto del correo -------------------------- //
 			// Se agrega el nombre del sistema
 			if (email.getSubject().contains("{{subject}}")) {
-				email.setSubject(email.getSubject().replace("{{subject}}",
-						(subject != null ? subject : "")));
+				email.setSubject(email.getSubject().replace("{{subject}}", (subject != null ? subject : "")));
 			}
 			if (email.getHtml().contains("{{number}}")) {
-				email.setHtml(email.getHtml().replace("{{number}}",
-						(numRequest != null ? numRequest : "")));
+				email.setHtml(email.getHtml().replace("{{number}}", (numRequest != null ? numRequest : "")));
 			}
 			// ------------------Seccion del cuerpo del correo -------------------------- //
 			if (email.getHtml().contains("{{operator}}")) {
-				email.setHtml(email.getHtml().replace("{{operator}}",
-						(operator != null ? operator : "")));
+				email.setHtml(email.getHtml().replace("{{operator}}", (operator != null ? operator : "")));
 			}
 
 			if (email.getHtml().contains("{{status}}")) {
-				email.setHtml(email.getHtml().replace("{{status}}",
-						(name != null ? name : "")));
-			}
-			
-			if (email.getHtml().contains("{{type}}")) {
-				email.setHtml(email.getHtml().replace("{{type}}",
-						(type != null ? type : "")));
-			}
-			
-			if (email.getHtml().contains("{{userName}}")) {
-				email.setHtml(email.getHtml().replace("{{userName}}",
-						(user != null ?user.getFullName(): "")));
-			}
-			if (email.getHtml().contains("{{note}}")) {
-				email.setHtml(email.getHtml().replace("{{note}}",
-						(note != "" ?note: "NA")));
-			}
-			
-			if (email.getHtml().contains("{{title}}")) {
-				email.setHtml(email.getHtml().replace("{{title}}",
-						(title != "" ?title: "NA")));
+				email.setHtml(email.getHtml().replace("{{status}}", (name != null ? name : "")));
 			}
 
+			if (email.getHtml().contains("{{type}}")) {
+				email.setHtml(email.getHtml().replace("{{type}}", (type != null ? type : "")));
+			}
+
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}", (user != null ? user.getFullName() : "")));
+			}
+			if (email.getHtml().contains("{{note}}")) {
+				email.setHtml(email.getHtml().replace("{{note}}", (note != "" ? note : "NA")));
+			}
+
+			if (email.getHtml().contains("{{title}}")) {
+				email.setHtml(email.getHtml().replace("{{title}}", (title != "" ? title : "NA")));
+			}
 
 			if (email.getHtml().contains("{{updateAt}}")) {
 				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
@@ -2071,7 +2079,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			
+
 			String[] split = senders.split(",");
 
 			boolean verify = ArrayUtils.contains(split, user.getEmail());
@@ -2083,13 +2091,11 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 			}
 
-			if(email.getCc()!=null) {
-				mimeMessage.addRecipient(Message.RecipientType.CC,
-						new InternetAddress(email.getCc()));
+			if (email.getCc() != null) {
+				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(email.getCc()));
 			}
-		
-			mimeMessage.addRecipient(Message.RecipientType.TO,
-					new InternetAddress(email.getTo()));
+
+			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email.getTo()));
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
@@ -2098,51 +2104,44 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
 	public void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
-			String operator, Timestamp requestDate, UserLogin userLogin, String senders, PEmailTemplate email,String subject,
-			String motive, String note, String title) {
+			String operator, Timestamp requestDate, UserLogin userLogin, String senders, PEmailTemplate email,
+			String subject, String motive, String note, String title) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 			// ------------------Seccion del asunto del correo -------------------------- //
 			if (email.getSubject().contains("{{subject}}")) {
-				email.setSubject(email.getSubject().replace("{{subject}}",
-						(subject != null ? subject : "")));
+				email.setSubject(email.getSubject().replace("{{subject}}", (subject != null ? subject : "")));
 			}
-			
+
 			if (email.getHtml().contains("{{number}}")) {
-				email.setHtml(email.getHtml().replace("{{number}}",
-						(numRequest != null ? numRequest : "")));
+				email.setHtml(email.getHtml().replace("{{number}}", (numRequest != null ? numRequest : "")));
 			}
 			// ------------------Seccion del cuerpo del correo -------------------------- //
 			if (email.getHtml().contains("{{operator}}")) {
-				email.setHtml(email.getHtml().replace("{{operator}}",
-						(operator != null ? operator : "")));
+				email.setHtml(email.getHtml().replace("{{operator}}", (operator != null ? operator : "")));
 			}
 
 			if (email.getHtml().contains("{{status}}")) {
-				email.setHtml(email.getHtml().replace("{{status}}",
-						(statusName != null ? statusName : "")));
-			}
-			
-			if (email.getHtml().contains("{{type}}")) {
-				email.setHtml(email.getHtml().replace("{{type}}",
-						(type != null ? type : "")));
-			}
-			
-			if (email.getHtml().contains("{{userName}}")) {
-				email.setHtml(email.getHtml().replace("{{userName}}",
-						(userLogin != null ?userLogin.getFullName(): "")));
-			}
-			if (email.getHtml().contains("{{error}}")) {
-				email.setHtml(email.getHtml().replace("{{error}}",
-						(typeError != null ?typeError: "")));
+				email.setHtml(email.getHtml().replace("{{status}}", (statusName != null ? statusName : "")));
 			}
 
+			if (email.getHtml().contains("{{type}}")) {
+				email.setHtml(email.getHtml().replace("{{type}}", (type != null ? type : "")));
+			}
+
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(
+						email.getHtml().replace("{{userName}}", (userLogin != null ? userLogin.getFullName() : "")));
+			}
+			if (email.getHtml().contains("{{error}}")) {
+				email.setHtml(email.getHtml().replace("{{error}}", (typeError != null ? typeError : "")));
+			}
 
 			if (email.getHtml().contains("{{updateAt}}")) {
 				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
@@ -2153,17 +2152,14 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			if (email.getHtml().contains("{{motive}}")) {
 				email.setHtml(email.getHtml().replace("{{motive}}", (motive != null ? motive : "")));
 			}
-			
+
 			if (email.getHtml().contains("{{note}}")) {
-				email.setHtml(email.getHtml().replace("{{note}}",
-						(note != "" ?note: "NA")));
-			}
-			
-			if (email.getHtml().contains("{{title}}")) {
-				email.setHtml(email.getHtml().replace("{{title}}",
-						(title != "" ?title: "NA")));
+				email.setHtml(email.getHtml().replace("{{note}}", (note != "" ? note : "NA")));
 			}
 
+			if (email.getHtml().contains("{{title}}")) {
+				email.setHtml(email.getHtml().replace("{{title}}", (title != "" ? title : "NA")));
+			}
 
 			String body = email.getHtml();
 			body = Constant.getCharacterEmail(body);
@@ -2172,25 +2168,23 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			
+
 			String[] split = senders.split(",");
 
 			boolean verify = ArrayUtils.contains(split, userLogin.getEmail());
 			if (!verify) {
 				senders = senders + "," + userLogin.getEmail();
 			}
-			
+
 			for (String ccUser : senders.split(",")) {
-				
+
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 
 			}
-			if(email.getCc()!=null) {
-				mimeMessage.addRecipient(Message.RecipientType.CC,
-						new InternetAddress(email.getCc()));
+			if (email.getCc() != null) {
+				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(email.getCc()));
 			}
-			mimeMessage.addRecipient(Message.RecipientType.TO,
-					new InternetAddress(email.getTo()));
+			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email.getTo()));
 
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
@@ -2210,13 +2204,11 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 			// ------------------Seccion del asunto del correo -------------------------- //
 			if (email.getSubject().contains("{{ticket}}")) {
-				email.setSubject(email.getSubject().replace("{{ticket}}",
-						(numTicket != null ? numTicket : "")));
+				email.setSubject(email.getSubject().replace("{{ticket}}", (numTicket != null ? numTicket : "")));
 			}
-			
+
 			if (email.getHtml().contains("{{ticket}}")) {
-				email.setHtml(email.getHtml().replace("{{ticket}}",
-						(numTicket != null ? numTicket : "")));
+				email.setHtml(email.getHtml().replace("{{ticket}}", (numTicket != null ? numTicket : "")));
 			}
 			// ------------------Seccion del cuerpo del correo -------------------------- //
 			if (email.getHtml().contains("{{operator}}")) {
@@ -2224,17 +2216,14 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 						(userOperator.getFullName() != null ? userOperator.getFullName() : "")));
 			}
 
-			
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
-						(newUser.getFullName() != null ?newUser.getFullName(): "")));
-			}
-			
-			if (email.getHtml().contains("{{motive}}")) {
-				email.setHtml(email.getHtml().replace("{{motive}}",
-						(motive != null ?motive: "")));
+						(newUser.getFullName() != null ? newUser.getFullName() : "")));
 			}
 
+			if (email.getHtml().contains("{{motive}}")) {
+				email.setHtml(email.getHtml().replace("{{motive}}", (motive != null ? motive : "")));
+			}
 
 			if (email.getHtml().contains("{{updateAt}}")) {
 				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
@@ -2249,11 +2238,9 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			
 
 			// Se notifica el usuario que lo solicito
-			mimeMessage.addRecipient(Message.RecipientType.CC,
-					new InternetAddress(newUser.getEmail()));
+			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(newUser.getEmail()));
 
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
@@ -2278,4 +2265,3 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		return null;
 	}
 }
-

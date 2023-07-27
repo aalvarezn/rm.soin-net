@@ -174,12 +174,12 @@ public class PReleaseEditWithOutObjects implements Serializable, Cloneable {
 	// Definición de Ambientes
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "RELEASES_RELEASE_AMBIENTES", joinColumns = {
-			@JoinColumn(name = "\"RELEASE_ID") }, inverseJoinColumns = { @JoinColumn(name = "\"AMBIENTE_ID\"") })
+			@JoinColumn(name = "\"RELEASE_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"AMBIENTE_ID\"") })
 	private Set<PAmbient> ambients = new HashSet<PAmbient>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "RELEASES_RELEASE_COMPONENTE", joinColumns = {
-			@JoinColumn(name = "\"RELEASE_ID") }, inverseJoinColumns = { @JoinColumn(name = "\"COMPONENTEMODIFICADO_ID\"") })
+			@JoinColumn(name = "\"RELEASE_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"COMPONENTEMODIFICADO_ID\"") })
 	private Set<PModifiedComponent> modifiedComponents = new HashSet<PModifiedComponent>();
 
 	// Observaciones
