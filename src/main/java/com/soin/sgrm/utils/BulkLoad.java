@@ -7,22 +7,22 @@ import com.soin.sgrm.model.ReleaseObjectEdit;
 
 public class BulkLoad {
 
-	private ArrayList<ReleaseObjectEdit> objects;
-	private ArrayList<Dependency> dependencies;
+	private ArrayList<?> objects;
+	private ArrayList<?> dependencies;
 
-	public ArrayList<ReleaseObjectEdit> getObjects() {
+	public ArrayList<?> getObjects() {
 		return objects;
 	}
 
-	public void setObjects(ArrayList<ReleaseObjectEdit> objects) {
+	public void setObjects(ArrayList<?> objects) {
 		this.objects = objects;
 	}
 
-	public ArrayList<Dependency> getDependencies() {
+	public ArrayList<?> getDependencies() {
 		return dependencies;
 	}
 
-	public void setDependencies(ArrayList<Dependency> dependencies) {
+	public void setDependencies(ArrayList<?> dependencies) {
 		this.dependencies = dependencies;
 	}
 

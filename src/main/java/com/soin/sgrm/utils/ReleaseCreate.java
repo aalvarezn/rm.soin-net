@@ -532,6 +532,7 @@ public class ReleaseCreate {
 
 	// Se valida observations
 	public ArrayList<MyError> validObservations(ReleaseCreate rc, ArrayList<MyError> errors) {
+
 		if (rc.getObservations().equals(""))
 			errors.add(new MyError("observations", "Valor requerido."));
 

@@ -33,6 +33,7 @@ import org.springframework.core.annotation.Order;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.DetailButtonCommand;
 import com.soin.sgrm.utils.Constant;
 
 @Entity
@@ -314,6 +315,10 @@ public class PButtonCommand implements Serializable {
 			this.detailsButtonCommands = null;
 			Sentry.capture(e, "buttonCommand");
 		}
+	}
+
+	public void setDetailsButtonCommands(List<PDetailButtonCommand> detailsButtonCommands) {
+		 this.detailsButtonCommands=detailsButtonCommands;	
 	}
 
 	public Boolean existDetail(int id) {

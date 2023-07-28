@@ -152,6 +152,7 @@ public class SystemConfigurationController extends BaseController {
 				psystemConfig.setDependencies(sys.getDependencies());
 				psystemConfig.setAttachmentFiles(sys.getAttachmentFiles());
 				psystemConfig.setApplicationVersion(sys.isApplicationVersion());
+				psystemConfig.setGeneralInfo(true);
 				psystemConfig = psystemConfigurationService.update(psystemConfig);
 				res.setObj(psystemConfig);
 			}
@@ -224,6 +225,7 @@ public class SystemConfigurationController extends BaseController {
 					psystemConfig.setDependencies(sys.getDependencies());
 					psystemConfig.setAttachmentFiles(sys.getAttachmentFiles());
 					psystemConfig.setApplicationVersion(sys.isApplicationVersion());
+					psystemConfig.setGeneralInfo(true);
 					PSystemInfo psystem = new PSystemInfo();
 					psystem.setId(sys.getSystemId());
 					psystemConfig.setSystem(psystem);

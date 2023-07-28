@@ -22,6 +22,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.ButtonCommand;
 import com.soin.sgrm.utils.Constant;
 
 
@@ -201,15 +202,9 @@ public class PCrontab implements Serializable {
 		return button;
 	}
 
-	public void setButton(String button) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			PButtonCommand jsonObj = mapper.readValue(button, PButtonCommand.class);
-			this.button = jsonObj;
-		} catch (Exception e) {
-			this.button = null;
-			Sentry.capture(e, "button");
-		}
+	public void setButton(PButtonCommand button) {
+		
+		this.button=button;
 	}
 
 	public void updateButton(PButtonCommand button) {
