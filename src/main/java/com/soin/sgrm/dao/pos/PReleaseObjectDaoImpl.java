@@ -16,6 +16,7 @@ import org.hibernate.type.DateType;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.google.gdata.util.ParseException;
@@ -33,7 +34,8 @@ import com.soin.sgrm.utils.JsonSheet;
 public class PReleaseObjectDaoImpl implements PReleaseObjectDao {
 
 	@Autowired
-	SessionFactory sessionFactory;
+	@Qualifier("sessionFactoryPos")
+	private SessionFactory sessionFactory;
 
 	@Override
 	public PReleaseObjectEdit saveObject(PReleaseObjectEdit rObj, PRelease release) throws Exception {
@@ -46,7 +48,7 @@ public class PReleaseObjectDaoImpl implements PReleaseObjectDao {
 			transObj = sessionObj.beginTransaction();
 			sessionObj.save(rObj);
 			sql = String.format(
-					"INSERT INTO \"RELEASES_RELEASE_OBJETOS\" ( \"ID\", \"RELEASE_ID\", \"OBJETO_ID\") VALUES ( null, %s, %s ) ",
+					"INSERT INTO \"RELEASES_RELEASE_OBJETOS\" ( \"RELEASE_ID\", \"OBJETO_ID\") VALUES (  %s, %s ) ",
 					release.getId(), rObj.getId());
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();
@@ -108,7 +110,7 @@ public class PReleaseObjectDaoImpl implements PReleaseObjectDao {
 						"inner join \"SISTEMAS_OBJETO\" obj on rob.\"OBJETO_ID\" = obj.\"ID\" " + 
 						"where r.\"ID\" <> :id and  e.\"NOMBRE\" <> 'Anulado' and  e.\"NOMBRE\" <> 'Borrador' and obj.\"NOMBRE\" = :nombre and obj.\"ITEM_DE_CONFIGURACION_ID\" = :tipoItem " + 
 						"and obj.\"TIPO_OBJETO_ID\" = :tipoObjeto and r.\"FECHA_CREACION\" < :fechaRelease " + 
-				"order by r.\"FECHA_CREACION\" desc ) where rownum <= 1");
+				"order by r.\"FECHA_CREACION\" desc ) as test LIMIT 1");
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql).addScalar("\"ID\"", new IntegerType())
 				.addScalar("\"NUMERO_RELEASE\"", new StringType());
@@ -132,14 +134,15 @@ public class PReleaseObjectDaoImpl implements PReleaseObjectDao {
 		
 		String sql = String.format(
 				"select * from (  " + 
-						"select r.\"ID\", r.\"NUMERO_RELEASE\", s.\"ID\" as sistema, r.\"FECHA_CREACION\" from \"RELEASES_RELEASE\" r  " + 
+						"select r.\"ID\", r.\"NUMERO_RELEASE\", s.\"ID\" as \"SISTEMA\", r.\"FECHA_CREACION\" from \"RELEASES_RELEASE\" r  " + 
 						"inner join \"RELEASES_ESTADO\" e on e.\"ID\" = r.\"ESTADO_ID\" " + 
-						"inner join \"SISTEMAS_SISTEMA\" s on s.\"ID\" = r.\"SISTEMAS_ID\" " + 
+						"inner join \"SISTEMAS_SISTEMA\" s on s.\"ID\" = r.\"SISTEMA"
+						+ "_ID\" " + 
 						"inner join \"RELEASES_RELEASE_OBJETOS\" rob on rob.\"RELEASE_ID\" = r.\"ID\" " + 
 						"inner join \"SISTEMAS_OBJETO\" obj on rob.\"OBJETO_ID\" = obj.\"ID\" " + 
 						"where r.\"ID\" <> :id and  e.\"NOMBRE\" <> 'Anulado' and obj.\"NOMBRE\" = :nombre and obj.\"ITEM_DE_CONFIGURACION_ID\" = :tipoItem " + 
-						"and obj.tipo_objeto_id = :tipoObjeto and r.fecha_creacion < :fechaRelease " + 
-				"order by r.\"FECHA_CREACION\" desc ) where rownum <= 1");
+						"and obj.\"TIPO_OBJETO_ID\" = :tipoObjeto and r.\"FECHA_CREACION\" < :fechaRelease " + 
+				"order by r.\"FECHA_CREACION\" desc ) as test LIMIT 1");
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql).addScalar("\"ID\"", new IntegerType())
 				.addScalar("\"NUMERO_RELEASE\"", new StringType()).addScalar("\"SISTEMA\"", new IntegerType())
@@ -174,7 +177,7 @@ public class PReleaseObjectDaoImpl implements PReleaseObjectDao {
 		
  		String sql = String.format(
 				"select DISTINCT(d.\"ID\") , r1.\"NUMERO_RELEASE\" from \"RELEASES_RELEASE\" r1 " + "inner join "
-						+ "(select \"NOMBRE\", max(\"ID\") id from  ( "
+						+ "(select \"NOMBRE\", max(\"ID\") \"ID\" from  ( "
 						+ "select DISTINCT(r.\"ID\"), r.\"NUMERO_RELEASE\", o.\"NOMBRE\", o.\"FECHA_REVISION\" from \"RELEASES_RELEASE\" r "
 						+ "inner join \"RELEASES_RELEASE_OBJETOS\" ro " 
 						+ "	on ro.\"RELEASE_ID\" = r.\"ID\" "
@@ -183,8 +186,8 @@ public class PReleaseObjectDaoImpl implements PReleaseObjectDao {
 						+ "inner join \"RELEASES_ESTADO\" e " 
 						+ "	on e.\"ID\" = r.\"ESTADO_ID\"  where r.\"ID\" != :id and "
 						+ "o.\"NOMBRE\" || ',' || o.\"ITEM_DE_CONFIGURACION_ID\" || ',' || o.\"TIPO_OBJETO_ID\" in ( %s ) "
-						+ "and r.\"SISTEMA_ID\" = :system and r.fecha_creacion < :fecha and e.\"NOMBRE\" <> 'Anulado' and e.\"NOMBRE\" <> 'Borrador'  ) " 
-						+ "group by \"NOMBRE\") d " 
+						+ "and r.\"SISTEMA_ID\" = :system and r.\"FECHA_CREACION\" < :fecha and e.\"NOMBRE\" <> 'Anulado' and e.\"NOMBRE\" <> 'Borrador'  ) " 
+						+ " as test group by \"NOMBRE\") d " 
 						+ "on r1.\"ID\" = d.\"ID\" ", concatObjet);
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql).addScalar("\"ID\"", new IntegerType())

@@ -130,7 +130,7 @@ public class PReleaseTinySummary implements Serializable {
 	private PImpact impact;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "RELEASES_RELEASE_REQUERIMI6CEB", joinColumns = {
+	@JoinTable(name = "RELEASES_RELEASE_REQUERIMIENTO", joinColumns = {
 			@JoinColumn(name = "\"RELEASE_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"REQUERIMIENTO_ID\"") })
 	private Set<PRequest> requestList = new HashSet<PRequest>();
 

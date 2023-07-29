@@ -274,7 +274,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 			String dateChange = (release.getDateChange() != null && !release.getDateChange().equals("")
 					? "to_date('" + release.getDateChange() + "', 'DD-MM-YYYY HH:MI PM')"
-					: "sysdate");
+					: "CURRENT_TIMESTAMP");
 			sql = String.format(
 					"update \"RELEASES_RELEASE\" set \"ESTADO_ID\" = %s , \"REINTENTOS\" = %s , \"OPERADOR\" = '%s' , \"MOTIVO\" = '%s' , \"FECHA_CREACION\" = "
 							+ dateChange + "  where \"ID\" = %s",
@@ -307,7 +307,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 			String dateChange = (release.getErrorDate() != null && !release.getErrorDate().equals("")
 					? "to_date('" + release.getErrorDate() + "', 'DD-MM-YYYY HH:MI PM')"
-					: "sysdate");
+					: "CURRENT_TIMESTAMP");
 			/*
 			 * sql = String.format( "INSERT INTO RELEASE_ERROR (ID, RELEASE_ID, ERROR_ID,
 			 * FECHA_ERROR, OBSERVACIONES, PROYECTO_ID, SISTEMA_ID) VALUES(0, 0, 0, '', '',
@@ -384,7 +384,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 			sql = String.format(
-					"update \"RELEASES_RELEASE\" set \"ESTADO_ID\" = %s , \"NODO_ID\" = %s , \"OPERADOR\" = '%s' , \"MOTIVO\" = '%s' , \"FECHA_CREACION\" = sysdate where 	\"ID\" = %s",
+					"update \"RELEASES_RELEASE\" set \"ESTADO_ID\" = %s , \"NODO_ID\" = %s , \"OPERADOR\" = '%s' , \"MOTIVO\" = '%s' , \"FECHA_CREACION\" = CURRENT_TIMESTAMP where 	\"ID\" = %s",
 					release.getStatus().getId(), (release.getNode() != null ? release.getNode().getId() : null),
 					release.getOperator(), release.getMotive(), release.getId());
 			query = sessionObj.createSQLQuery(sql);
@@ -802,7 +802,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 			sql = String.format(
-					"update  \"RELEASES_RELEASE\" set \"ESTADO_ID\" = %s ,\"ESTADO_ANTERIOR\" = %s, \"OPERADOR\" = '%s' , \"MOTIVO\" = '%s' , \"FECHA_CREACION\" = sysdate where \"ID\" = %s",
+					"update  \"RELEASES_RELEASE\" set \"ESTADO_ID\" = %s ,\"ESTADO_ANTERIOR\" = %s, \"OPERADOR\" = '%s' , \"MOTIVO\" = '%s' , \"FECHA_CREACION\" = CURRENT_TIMESTAMP where \"ID\" = %s",
 					release.getStatus().getId(), release.getStatusBefore().getId(), operator, release.getMotive(),
 					release.getId());
 			query = sessionObj.createSQLQuery(sql);
