@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,8 +64,11 @@ import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.TypeChange;
 import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.pos.PStatus;
+import com.soin.sgrm.model.pos.PSystemUser;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.NodeRFC;
 import com.soin.sgrm.model.wf.WFRFC;
@@ -78,6 +82,8 @@ import com.soin.sgrm.service.pos.PErrorRFCService;
 import com.soin.sgrm.service.pos.PImpactService;
 import com.soin.sgrm.service.pos.PParameterService;
 import com.soin.sgrm.service.pos.PPriorityService;
+import com.soin.sgrm.service.pos.PRFCService;
+import com.soin.sgrm.service.pos.PRFCWithoutReleaseService;
 import com.soin.sgrm.service.pos.PReleaseService;
 import com.soin.sgrm.service.pos.PSigesService;
 import com.soin.sgrm.service.pos.PStatusRFCService;
@@ -199,20 +205,47 @@ public class RFCController extends BaseController {
 
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 
+	private final Environment environment;
+
+	@Autowired
+	public RFCController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
-			List<System> systems = systemService.listProjects(getUserLogin().getId());
-			List<Priority> priorities = priorityService.list();
-			List<StatusRFC> statuses = statusService.findAll();
-			List<Impact> impacts = impactService.list();
-			model.addAttribute("priorities", priorities);
-			model.addAttribute("impacts", impacts);
-			model.addAttribute("statuses", statuses);
-			model.addAttribute("systems", systems);
+			
+			if (profileActive().equals("oracle")) {
+				List<System> systems = systemService.listProjects(getUserLogin().getId());
+				List<Priority> priorities = priorityService.list();
+				List<StatusRFC> statuses = statusService.findAll();
+				List<Impact> impacts = impactService.list();
+				model.addAttribute("priorities", priorities);
+				model.addAttribute("impacts", impacts);
+				model.addAttribute("statuses", statuses);
+				model.addAttribute("systems", systems);
+			} else if (profileActive().equals("postgres")) {
+				List<System> systems = systemService.listProjects(getUserLogin().getId());
+				List<Priority> priorities = priorityService.list();
+				List<StatusRFC> statuses = statusService.findAll();
+				List<Impact> impacts = impactService.list();
+				model.addAttribute("priorities", priorities);
+				model.addAttribute("impacts", impacts);
+				model.addAttribute("statuses", statuses);
+				model.addAttribute("systems", systems);
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
 			e.printStackTrace();
