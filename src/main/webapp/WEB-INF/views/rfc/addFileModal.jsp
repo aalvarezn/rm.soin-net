@@ -107,7 +107,8 @@ deg
 								</tbody>
 							</table>
 						</div>
-
+						<div style="padding-left: 3%;">*Solo se permiten n&uacute;meros, letras sin acentuar,- ,_ ,.
+							y que no hayan espacios en blanco</div>
 					</form>
 					<br>
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"

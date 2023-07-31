@@ -120,7 +120,7 @@ deg
 
 						</div>
 						<div style="padding-left: 3%;">*Solo se permiten n&uacute;meros, letras sin acentuar,- ,_ ,.
-							y que no hayan espacios</div>
+							y que no hayan espacios en blanco</div>
 
 					</form>
 					<br>
