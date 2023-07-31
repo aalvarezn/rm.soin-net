@@ -73,6 +73,20 @@ import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
+import com.soin.sgrm.service.pos.PEmailTemplateService;
+import com.soin.sgrm.service.pos.PErrorRFCService;
+import com.soin.sgrm.service.pos.PImpactService;
+import com.soin.sgrm.service.pos.PParameterService;
+import com.soin.sgrm.service.pos.PPriorityService;
+import com.soin.sgrm.service.pos.PReleaseService;
+import com.soin.sgrm.service.pos.PSigesService;
+import com.soin.sgrm.service.pos.PStatusRFCService;
+import com.soin.sgrm.service.pos.PStatusService;
+import com.soin.sgrm.service.pos.PSystemService;
+import com.soin.sgrm.service.pos.PTreeService;
+import com.soin.sgrm.service.pos.PTypeChangeService;
+import com.soin.sgrm.service.pos.PUserService;
+import com.soin.sgrm.service.pos.wf.PNodeService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
@@ -134,6 +148,55 @@ public class RFCController extends BaseController {
 	private NodeService nodeService;
 	@Autowired
 	private ParameterService paramService;
+	
+	@Autowired
+	PPriorityService ppriorityService;
+
+	@Autowired
+	PRFCService prfcService;
+
+	@Autowired
+	PRFCWithoutReleaseService prfcWRService;
+
+	@Autowired
+	PStatusRFCService pstatusService;
+
+	@Autowired
+	PStatusService pstatusReleaseService;
+
+	@Autowired
+	PSystemService psystemService;
+
+	@Autowired
+	PSigesService psigeService;
+
+	@Autowired
+	PImpactService pimpactService;
+
+	@Autowired
+	PTypeChangeService ptypeChangeService;
+
+	@Autowired
+	PReleaseService preleaseService;
+
+	@Autowired
+	PParameterService pparameterService;
+
+	@Autowired
+	PEmailTemplateService pemailService;
+
+	@Autowired
+	PTreeService ptreeService;
+
+	@Autowired
+	PErrorRFCService perrorService;
+
+	@Autowired
+	PUserService puserService;
+
+	@Autowired
+	private PNodeService pnodeService;
+
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)

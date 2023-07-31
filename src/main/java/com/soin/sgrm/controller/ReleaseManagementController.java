@@ -1,11 +1,8 @@
 package com.soin.sgrm.controller;
 
-import java.awt.print.Printable;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -26,7 +23,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_Release;
-import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -38,6 +34,7 @@ import com.soin.sgrm.model.pos.PErrors_Release;
 import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseError;
 import com.soin.sgrm.model.pos.PReleases_WithoutObj;
+import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.model.pos.PStatus;
 import com.soin.sgrm.model.pos.PSystemUser;
 import com.soin.sgrm.security.UserLogin;
@@ -412,7 +409,7 @@ public class ReleaseManagementController extends BaseController {
 
 					if (!errorVer) {
 						 
-						Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+						Integer idTemplate = Integer.parseInt(pparameterService.findByCode(30).getParamValue());
 						PEmailTemplate emailNotify = pemailService.findById(idTemplate);
 						PEmailTemplate email=new PEmailTemplate();
 						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
@@ -435,7 +432,7 @@ public class ReleaseManagementController extends BaseController {
 						});
 						newThread.start();
 					} else {
-						Integer idTemplate = Integer.parseInt(parameterService.findByCode(31).getParamValue());
+						Integer idTemplate = Integer.parseInt(pparameterService.findByCode(31).getParamValue());
 						PEmailTemplate emailNotify = pemailService.findById(idTemplate);
 						String statusName = status.getName();
 						PEmailTemplate email=new PEmailTemplate();
@@ -497,6 +494,7 @@ public class ReleaseManagementController extends BaseController {
 		}
 		
 	}
+	@SuppressWarnings("unused")
 	public String getSubject(EmailTemplate emailNotify,ReleaseEdit release) {
 		
 	
@@ -530,6 +528,7 @@ public class ReleaseManagementController extends BaseController {
 		return emailNotify.getSubject();
 	}
 	
+	@SuppressWarnings("unused")
 	public String getSubject(PEmailTemplate emailNotify,PReleaseEdit release) {
 		
 		
@@ -544,9 +543,9 @@ public class ReleaseManagementController extends BaseController {
 			}
 		}
 
-		Request requestNew = new Request();
+		PRequest requestNew = new PRequest();
 		if (tpo != "") {
-			requestNew = requestService.findByNameCode(tpo);
+			requestNew = prequestService.findByNameCode(tpo);
 		}
 		/* ------ Subject ------ */
 		if (emailNotify.getSubject().contains("{{tpoNumber}}")) {
