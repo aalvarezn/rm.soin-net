@@ -76,5 +76,9 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	void sendMailNotifyChangeUserIncidence(String numTicket, User userOperator, String motive, Timestamp timestamp,
 			User newUser, EmailTemplate emailNotify);
 
+	void sendMailNotifyChangeStatusWebService(String releaseNumber, String type, String statusName, String operator,
+			Timestamp convertStringToTimestamp, UserInfo user, String senders, EmailTemplate emailNotify,
+			String subject, String motive, String link, String title);
+
 }
 

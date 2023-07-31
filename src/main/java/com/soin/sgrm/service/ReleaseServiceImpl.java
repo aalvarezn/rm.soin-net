@@ -356,4 +356,9 @@ public class ReleaseServiceImpl implements ReleaseService {
 
 	}
 
+@Override
+public ReleaseEdit findEditByName(String numRelease) {
+	return dao.findEditByName(numRelease);
+}
+
 }

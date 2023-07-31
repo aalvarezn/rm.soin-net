@@ -4,13 +4,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,20 +30,26 @@ import com.google.gson.JsonParser;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ConfigurationItem;
 import com.soin.sgrm.model.Dependency;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Module;
 import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.ReleaseWS;
+import com.soin.sgrm.model.Releases_WithoutObj;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.TypeObject;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.ActionEnvironmentService;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.ConfigurationItemService;
@@ -54,6 +66,7 @@ import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.RiskService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
@@ -66,6 +79,7 @@ import com.soin.sgrm.utils.BulkLoad;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
+import com.soin.sgrm.utils.MyLevel;
 
 @RestController
 @RequestMapping("/ws")
@@ -119,8 +133,11 @@ public class WebServiceController extends BaseController {
 	private NodeService nodeService;
 	@Autowired
 	ReleaseObjectService releaseObjectService;
+	@Autowired
+	private ParameterService parameterService;
 
-	
+	@Autowired
+	private RequestService requestService;
 	@Autowired
 	private DependencyService dependencyService;
 
@@ -144,63 +161,67 @@ public class WebServiceController extends BaseController {
 	}
 
 	@RequestMapping(value = "/release-generate", method = RequestMethod.POST)
-	public @ResponseBody String createRelease( @RequestParam("file") MultipartFile file) throws SQLException, IOException {
+	public @ResponseBody String createRelease(@RequestParam("file") MultipartFile file)
+			throws SQLException, IOException {
 		// Se genera la estructura base del release para su posterior creacion completa.
 		JsonResponse res = new JsonResponse();
 		String number_release = "";
 		Release release = new Release();
 		Module module = new Module();
-		InputStream fileData= file.getInputStream();
+		InputStream fileData = file.getInputStream();
 		JsonParser jsonParser = new JsonParser();
-		JsonObject jsonObject = (JsonObject)jsonParser.parse(
-		      new InputStreamReader(fileData, "UTF-8"));
+		JsonObject jsonObject = (JsonObject) jsonParser.parse(new InputStreamReader(fileData, "UTF-8"));
 		System.out.print(jsonObject);
-		ReleaseWS releaseWs=new ReleaseWS();
-		releaseWs.setDesc(jsonObject.get("desc").toString().replace("\\r\\n","\n").replace("\"", ""));
-		releaseWs.setObservations(jsonObject.get("observacion").toString().replace("\\r\\n","\n").replace("\"", ""));
+		ReleaseWS releaseWs = new ReleaseWS();
+		releaseWs.setDesc(jsonObject.get("desc").toString().replace("\\r\\n", "\n").replace("\"", ""));
+		releaseWs.setObservations(jsonObject.get("observacion").toString().replace("\\r\\n", "\n").replace("\"", ""));
 		releaseWs.setSystem(jsonObject.get("system").toString().replace("\"", ""));
 		releaseWs.setRequirementName(jsonObject.get("requirementName").toString().replace("\"", ""));
-		if(jsonObject.get("versionNumber")==null) {
+		if (jsonObject.get("versionNumber") == null) {
 			releaseWs.setVersionNumber("Sin version");
-		}else {
+		} else {
 			releaseWs.setVersionNumber(jsonObject.get("versionNumber").toString().replace("\"", ""));
 		}
-		
+
 		releaseWs.setRequirement(jsonObject.get("requirement").toString().replace("\"", ""));
 		releaseWs.setUserId(jsonObject.get("userId").toString().replace("\"", ""));
-		String objects=jsonObject.get("objects").toString();
-		objects=objects.replace("Base Datos", "Base_Datos");
-		objects=objects.replace(" ", "\n");
-		objects=objects.replace("\"", "");
-		objects=objects.replace("Base_Datos", "Base Datos");
+		String objects = jsonObject.get("objects").toString();
+		objects = objects.replace("Base Datos", "Base_Datos");
+		objects = objects.replace(" ", "\n");
+		objects = objects.replace("\"", "");
+		objects = objects.replace("Base_Datos", "Base Datos");
 		releaseWs.setObjects(objects);
 		releaseWs.setAuto(jsonObject.get("auto").toString().replace("\"", ""));
-		releaseWs.setSolTecnic(jsonObject.get("solTecnic").toString().replace("\\r\\n","\n").replace("\"", "").replace("--From", "\n"));
-		releaseWs.setSoluFunc(jsonObject.get("soluFunc").toString().replace("\\r\\n","\n").replace("\"", ""));
-		releaseWs.setConsecNoInstala(jsonObject.get("consecNoInstala").toString().replace("\\r\\n","\n").replace("\"", ""));
+		releaseWs.setSolTecnic(jsonObject.get("solTecnic").toString().replace("\\r\\n", "\n").replace("\"", "")
+				.replace("--From", "\n"));
+		releaseWs.setSoluFunc(jsonObject.get("soluFunc").toString().replace("\\r\\n", "\n").replace("\"", ""));
+		releaseWs.setConsecNoInstala(
+				jsonObject.get("consecNoInstala").toString().replace("\\r\\n", "\n").replace("\"", ""));
 		releaseWs.setRiesgo(Integer.parseInt((jsonObject.get("riesgo").toString().replace("\"", ""))));
 		releaseWs.setImpacto(Integer.parseInt((jsonObject.get("impacto").toString().replace("\"", ""))));
 		releaseWs.setPrioridad(Integer.parseInt((jsonObject.get("prioridad").toString().replace("\"", ""))));
 		UserInfo userInfo = loginService.getUserByUsername(releaseWs.getUserId());
-		User user=new User();
-		if(userInfo==null) {
+		User user = new User();
+		if (userInfo == null) {
 			userInfo = loginService.getUserByGitUsername(releaseWs.getUserId());
 		}
-		if(userInfo==null) {
+		if (userInfo == null) {
 			userInfo = loginService.getUserByUsername("admin");
 		}
 		user.setId(userInfo.getId());
-	
+
 		try {
 			res.setStatus("success");
-			
+
 			if (!releaseWs.getRequirement().equals("TPO/BT")) {
-				number_release = releaseService.generateReleaseNumber(releaseWs.getRequirement(), releaseWs.getRequirementName().toUpperCase(), releaseWs.getSystem());
+				number_release = releaseService.generateReleaseNumber(releaseWs.getRequirement(),
+						releaseWs.getRequirementName().toUpperCase(), releaseWs.getSystem());
 			} else {
-				number_release = releaseService.generateTPO_BT_ReleaseNumber(releaseWs.getSystem(),  releaseWs.getRequirementName().toUpperCase());
+				number_release = releaseService.generateTPO_BT_ReleaseNumber(releaseWs.getSystem(),
+						releaseWs.getRequirementName().toUpperCase());
 			}
 			Status status = statusService.findByName("Borrador");
-			String systemModule=releaseWs.getSystem();
+			String systemModule = releaseWs.getSystem();
 			module = moduleService.findBySystemId(systemModule.trim());
 			if (module == null) {
 				res.setStatus("fail");
@@ -208,24 +229,24 @@ public class WebServiceController extends BaseController {
 				return "fallo";
 			}
 			release.setSystem(module.getSystem());
-			//release.setDescription(releaseWs.getDescription());
-			//release.setObservations(releaseWs.getObservations());
+			// release.setDescription(releaseWs.getDescription());
+			// release.setObservations(releaseWs.getObservations());
 			release.setReleaseNumber(number_release);
 			release.setUser(user);
-			//Status status = statusService.findByName("Borrador");
+			// Status status = statusService.findByName("Borrador");
 			release.setStatus(status);
 			release.setModule(module);
-		
+
 			release.setCreateDate(CommonUtils.getSystemTimestamp());
-			Risk risk=new Risk();
+			Risk risk = new Risk();
 			risk.setId(releaseWs.getRiesgo());
 			release.setRisk(risk);
-			Impact impact=new Impact();
+			Impact impact = new Impact();
 			impact.setId(releaseWs.getImpacto());
 			release.setImpact(impact);
-			Priority priority=new Priority();
+			Priority priority = new Priority();
 			priority.setId(releaseWs.getImpacto());
-			release.setPriority(priority);	
+			release.setPriority(priority);
 			release.setTechnicalSolution(releaseWs.getSolTecnic());
 			release.setFunctionalSolution(releaseWs.getSoluFunc());
 			release.setNotInstalling(releaseWs.getConsecNoInstala());
@@ -240,24 +261,27 @@ public class WebServiceController extends BaseController {
 			release.setObservations(releaseWs.getObservations());
 			release.setBilledCalls(false);
 			release.setNotBilledCalls(false);
-			
+
 			release.setMotive("Inicio de release");
 			release.setOperator(userInfo.getFullName());
 
 			if (releaseWs.getRequirement().equals("IN"))
-				release.setIncident((!releaseWs.getRequirementName().substring(0, 2).toString().toUpperCase().equals("IN"))
-						? "IN" + releaseWs.getRequirementName()
-						: releaseWs.getRequirementName());
+				release.setIncident(
+						(!releaseWs.getRequirementName().substring(0, 2).toString().toUpperCase().equals("IN"))
+								? "IN" + releaseWs.getRequirementName()
+								: releaseWs.getRequirementName());
 
 			if (releaseWs.getRequirement().equals("PR"))
-				release.setProblem((!releaseWs.getRequirementName().substring(0, 2).toString().toUpperCase().equals("PR"))
-						? "PR" + releaseWs.getRequirementName()
-						: releaseWs.getRequirementName());
+				release.setProblem(
+						(!releaseWs.getRequirementName().substring(0, 2).toString().toUpperCase().equals("PR"))
+								? "PR" + releaseWs.getRequirementName()
+								: releaseWs.getRequirementName());
 
 			if (releaseWs.getRequirement().equals("SS"))
-				release.setService_requests((!releaseWs.getRequirementName().substring(0, 2).toString().toUpperCase().equals("SS"))
-						? "SS" + releaseWs.getRequirementName()
-						: releaseWs.getRequirementName());
+				release.setService_requests(
+						(!releaseWs.getRequirementName().substring(0, 2).toString().toUpperCase().equals("SS"))
+								? "SS" + releaseWs.getRequirementName()
+								: releaseWs.getRequirementName());
 
 			if (releaseWs.getRequirement().equals("SO-ICE"))
 				release.setOperative_support("SO-ICE" + releaseWs.getRequirementName());
@@ -268,10 +292,10 @@ public class WebServiceController extends BaseController {
 				releaseService.save(release, releaseWs.getRequirementName());
 			}
 			res.setData(release.getReleaseNumber() + "");
-			
-			if(addObjects( releaseWs.getObjects(),  release.getId())) {
-			System.out.print("si");
-			}else {
+
+			if (addObjects(releaseWs.getObjects(), release.getId())) {
+				System.out.print("si");
+			} else {
 				System.out.print("no");
 			}
 			return release.getReleaseNumber();
@@ -283,13 +307,11 @@ public class WebServiceController extends BaseController {
 			Sentry.capture(e, "release");
 			res.setStatus("exception");
 			res.setException(e.getMessage());
-			//logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			// logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return release.getReleaseNumber();
 	}
-	
-	
-	
+
 	public boolean addObjects(String csvLines, Integer id) {
 		JsonResponse res = new JsonResponse();
 		try {
@@ -303,7 +325,7 @@ public class WebServiceController extends BaseController {
 			String[] line = null;
 			String infoErrors = "";
 			BulkLoad bl = new BulkLoad();
-			
+
 			res.setData(csvLines);
 			lines = csvLines.split("\n");
 			Map<String, Integer> duplicates = new HashMap<String, Integer>();
@@ -388,12 +410,11 @@ public class WebServiceController extends BaseController {
 			Sentry.capture(e, "releaseCSV");
 			res.setStatus("exception");
 			res.setException("Error al cargar csv: " + e);
-		
+
 		}
 		return true;
 	}
 
-	
 	public ArrayList<MyError> validLine(ArrayList<MyError> errors, String[] line, int i, ReleaseEdit release,
 			List<ConfigurationItem> configurationItemList, List<TypeObject> typeObjectList) {
 		if (CommonUtils.isSqlDate(line[3].trim()) == null) {
@@ -423,7 +444,7 @@ public class WebServiceController extends BaseController {
 		}
 		return errors;
 	}
-	
+
 	public ArrayList<ReleaseObjectEdit> createObjects(String csv, ReleaseEdit release,
 			List<ConfigurationItem> configurationItemList, List<TypeObject> typeObjectList) throws Exception {
 
@@ -453,6 +474,93 @@ public class WebServiceController extends BaseController {
 		}
 		return objects;
 	}
-	
-	
+
+	@RequestMapping(value = "/statusChangeRelease", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse changeStatusRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "numRelease", required = true) String numRelease,
+			@RequestParam(value = "idStatus", required = true) Integer idStatus,
+			@RequestParam(value = "motive", required = true) String motive,
+			@RequestParam(value = "senders", required = false) String senders,
+			@RequestParam(value = "link", required = false) String link) {
+		JsonResponse res = new JsonResponse();
+		try {
+			ReleaseEdit release = releaseService.findEditByName(numRelease);
+			Status status = statusService.findById(idStatus);
+			UserLogin userLogin = getUserLogin();
+
+			release.setStatus(status);
+			release.setOperator("Automatico");
+			release.setDateChange("");
+			release.setMotive(motive);
+			releaseService.updateStatusRelease(release);
+			res.setStatus("success");
+
+			Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+			EmailTemplate emailNotify = emailService.findById(idTemplate);
+			EmailTemplate email = new EmailTemplate();
+			if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+				email = release.getSystem().getEmailTemplate().iterator().next();
+			}
+			String subject = getSubject(email, release);
+
+			String statusName = status.getName();
+
+			Thread newThread = new Thread(() -> {
+				try {
+					emailService.sendMailNotifyChangeStatusWebService(release.getReleaseNumber(), " del Release", statusName,
+							release.getOperator(),
+							CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
+							release.getUser(), senders, emailNotify, subject, release.getMotive(), link,
+							"RM-P2-R5|Registro evidencia de instalación");
+				} catch (Exception e) {
+					Sentry.capture(e, "release");
+				}
+
+			});
+			newThread.start();
+
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseManagement");
+			res.setStatus("exception");
+			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "releaseManagement");
+			res.setStatus("exception");
+			res.setException("Error al cambiar estado del release: " + e.getMessage());
+
+		}
+		return res;
+	}
+
+	public String getSubject(EmailTemplate emailNotify, ReleaseEdit release) {
+
+		String tpo = "";
+		String releaseNumber = release.getReleaseNumber();
+		String[] parts = releaseNumber.split("\\.");
+		for (String part : parts) {
+			if (part.contains("TPO")) {
+				String[] partsTPO = part.split("TPO");
+				String[] partsNumber = part.split(partsTPO[1]);
+				tpo = partsNumber[0] + "-" + partsTPO[1];
+			}
+		}
+
+		Request requestNew = new Request();
+		if (tpo != "") {
+			requestNew = requestService.findByNameCode(tpo);
+		}
+		/* ------ Subject ------ */
+		if (emailNotify.getSubject().contains("{{tpoNumber}}")) {
+			emailNotify.setSubject(emailNotify.getSubject().replace("{{tpoNumber}}", (tpo != "" ? tpo : "")));
+		}
+		if (emailNotify.getSubject().contains("{{releaseNumber}}")) {
+			emailNotify.setSubject(emailNotify.getSubject().replace("{{releaseNumber}}",
+					(release.getReleaseNumber() != null ? release.getReleaseNumber() : "")));
+		}
+		if (emailNotify.getSubject().contains("{{version}}")) {
+			emailNotify.setSubject(emailNotify.getSubject().replace("{{version}}",
+					(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
+		}
+		return emailNotify.getSubject();
+	}
 }
