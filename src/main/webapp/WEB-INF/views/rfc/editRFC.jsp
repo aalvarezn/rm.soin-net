@@ -410,7 +410,7 @@ tr.selected {
 	<script src="<c:url value='/static/js/rfc/rfcFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
-	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.js'/>"></script>
+	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.min.js'/>"></script>
 
 
 </body>
