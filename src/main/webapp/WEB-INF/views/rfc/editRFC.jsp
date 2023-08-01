@@ -66,7 +66,7 @@
 
 <!-- Linearicons -->
 <link rel="stylesheet"
-	href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
+	href="<c:url value='/static/plugins/linearicons/css/linearicon.min.css'/>" />
 
 <link rel="stylesheet"
 	href="<c:url value='/static/plugins/jquery-file-upload/css/jquery.fileupload.css'/>" />
@@ -410,7 +410,7 @@ tr.selected {
 	<script src="<c:url value='/static/js/rfc/rfcFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
-	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>
+	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.js'/>"></script>
 
 
 </body>

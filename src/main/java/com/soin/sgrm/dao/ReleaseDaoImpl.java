@@ -1000,4 +1000,11 @@ public class ReleaseDaoImpl implements ReleaseDao {
 
 	}
 
+	@Override
+	public ReleaseEdit findEditByName(String numRelease) {
+		ReleaseEdit release = (ReleaseEdit) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseEdit.class).add(Restrictions.eq("releaseNumber", numRelease)).uniqueResult();
+		return release;
+	}
+
 }
