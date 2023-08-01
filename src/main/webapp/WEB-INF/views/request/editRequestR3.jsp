@@ -50,7 +50,7 @@
 <!-- 	rel="stylesheet" type="text/css"> -->
 <!-- Linearicons -->
 <link rel="stylesheet"
-	href="<c:url value='/static/plugins/linearicons/css/linearicon.min.css'/>" />
+	href="<c:url value='/static/plugins/linearicons/webfont/style.css'/>" />
 <link rel="stylesheet"
 	href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
 
@@ -368,9 +368,6 @@ tr.selected {
 	<script src="<c:url value='/static/js/newRequest/editRequestR3.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/newRequest/requestFileUpload.js'/>"></script>
-
-	<!-- Linearicons -->
-	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.min.js'/>"></script>
 
 
 
