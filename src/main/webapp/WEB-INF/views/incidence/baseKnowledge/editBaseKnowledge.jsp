@@ -66,7 +66,7 @@
 
 <!-- Linearicons -->
 <link rel="stylesheet"
-	href="<c:url value='/static/plugins/linearicons/css/linearicon.min.css'/>" />
+	href="<c:url value='/static/plugins/linearicons/webfont/style.css'/>" />
 
 <link rel="stylesheet"
 	href="<c:url value='/static/plugins/jquery-file-upload/css/jquery.fileupload.css'/>" />
@@ -372,8 +372,6 @@ tr.selected {
 	<script src="<c:url value='/static/js/baseKnowledge/editBaseKnowledge.js'/>"></script>
 	<script src="<c:url value='/static/js/baseKnowledge/baseKnowledgeFileUpload.js'/>"></script>
 
-	<!-- Linearicons -->
-	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.min.js'/>"></script>
 
 
 
