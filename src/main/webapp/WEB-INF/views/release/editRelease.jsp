@@ -530,7 +530,7 @@
 	<script
 		src="<c:url value='/static/js/release/releaseCronTab_Button.js'/>"></script>
 	<!-- Linearicons -->
-	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.js'/>"></script>
+	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.min.js'/>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" ></script>
 </body>
 

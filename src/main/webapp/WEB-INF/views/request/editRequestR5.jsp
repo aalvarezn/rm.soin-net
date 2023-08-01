@@ -365,7 +365,8 @@ tr.selected {
 		src="<c:url value='/static/js/newRequest/requestFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
-	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.js'/>"></script>
+	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.min.js'/>"></script>
+
 
 
 </body>

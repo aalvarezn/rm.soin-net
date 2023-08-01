@@ -373,7 +373,8 @@ tr.selected {
 	<script src="<c:url value='/static/js/baseKnowledge/baseKnowledgeFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
-	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.js'/>"></script>
+	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.min.js'/>"></script>
+
 
 
 </body>
