@@ -370,7 +370,8 @@ tr.selected {
 		src="<c:url value='/static/js/newRequest/requestFileUpload.js'/>"></script>
 
 	<!-- Linearicons -->
-	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>
+	<script src="<c:url value='/static/plugins/linearicons/js/linearicons.min.js'/>"></script>
+
 
 
 </body>
