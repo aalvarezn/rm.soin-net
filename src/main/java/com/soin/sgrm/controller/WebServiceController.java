@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,9 @@ import com.soin.sgrm.model.ReleaseWS;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Risk;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.TypeObject;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
@@ -68,6 +71,8 @@ import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.RiskService;
+import com.soin.sgrm.service.SigesService;
+import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
 import com.soin.sgrm.service.SystemService;
@@ -89,57 +94,34 @@ public class WebServiceController extends BaseController {
 	RFCService rfcService;
 	@Autowired
 	EmailReadService emailReadService;
-
 	@Autowired
 	ReleaseService releaseService;
-
 	@Autowired
-	private UserInfoService loginService;
+	UserInfoService loginService;
 	@Autowired
-	private SystemConfigurationService systemConfigurationService;
+	StatusService statusService;
 	@Autowired
-	private ImpactService impactService;
+	ModuleService moduleService;
 	@Autowired
-	private PriorityService priorityService;
+	TypeObjectService typeObjectService;
 	@Autowired
-	private StatusService statusService;
+	ConfigurationItemService configurationItemService;
 	@Autowired
-	private RiskService riskService;
-	@Autowired
-	private ModuleService moduleService;
-	@Autowired
-	private AmbientService ambientService;
-	@Autowired
-	private ModifiedComponentService modifiedComponentService;
-	@Autowired
-	private SystemService systemService;
-	@Autowired
-	private DocTemplateService docsTemplateService;
-	@Autowired
-	private TypeObjectService typeObjectService;
-	@Autowired
-	private EnvironmentService environmentService;
-	@Autowired
-	private ConfigurationItemService configurationItemService;
-	@Autowired
-	private ActionEnvironmentService actionService;
-	@Autowired
-	private TypeDetailService typeDetail;
-	@Autowired
-	private EmailTemplateService emailService;
-	@Autowired
-	private ParameterService paramService;
-	@Autowired
-	private NodeService nodeService;
+	EmailTemplateService emailService;
 	@Autowired
 	ReleaseObjectService releaseObjectService;
 	@Autowired
-	private ParameterService parameterService;
-
+	ParameterService parameterService;
 	@Autowired
-	private RequestService requestService;
+	StatusRFCService statusRFCService;
 	@Autowired
-	private DependencyService dependencyService;
+	RequestService requestService;
+	@Autowired
+	DependencyService dependencyService;
+	@Autowired
+	SigesService sigesService;
+	@Autowired
+	UserInfoService userInfoService;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
@@ -477,47 +459,79 @@ public class WebServiceController extends BaseController {
 
 	@RequestMapping(value = "/statusChangeRelease", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse changeStatusRelease(HttpServletRequest request, Model model,
-			@RequestParam(value = "numRelease", required = true) String numRelease,
+			@RequestParam(value = "numRequest", required = true) String numRequest,
 			@RequestParam(value = "idStatus", required = true) Integer idStatus,
+			@RequestParam(value = "type", required = true) Integer type,
 			@RequestParam(value = "motive", required = true) String motive,
 			@RequestParam(value = "senders", required = false) String senders,
 			@RequestParam(value = "link", required = false) String link) {
 		JsonResponse res = new JsonResponse();
 		try {
-			ReleaseEdit release = releaseService.findEditByName(numRelease);
-			Status status = statusService.findById(idStatus);
-			UserLogin userLogin = getUserLogin();
+			if (type == 0) {
+				ReleaseEdit release = releaseService.findEditByName(numRequest);
+				Status status = statusService.findById(idStatus);
+				release.setStatus(status);
+				release.setOperator("Automatico");
+				release.setDateChange("");
+				release.setMotive(motive);
+				releaseService.updateStatusRelease(release);
+				res.setStatus("success");
 
-			release.setStatus(status);
-			release.setOperator("Automatico");
-			release.setDateChange("");
-			release.setMotive(motive);
-			releaseService.updateStatusRelease(release);
-			res.setStatus("success");
-
-			Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
-			EmailTemplate emailNotify = emailService.findById(idTemplate);
-			EmailTemplate email = new EmailTemplate();
-			if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
-				email = release.getSystem().getEmailTemplate().iterator().next();
-			}
-			String subject = getSubject(email, release);
-
-			String statusName = status.getName();
-
-			Thread newThread = new Thread(() -> {
-				try {
-					emailService.sendMailNotifyChangeStatusWebService(release.getReleaseNumber(), " del Release", statusName,
-							release.getOperator(),
-							CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
-							release.getUser(), senders, emailNotify, subject, release.getMotive(), link,
-							"RM-P2-R5|Registro evidencia de instalación");
-				} catch (Exception e) {
-					Sentry.capture(e, "release");
+				Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				EmailTemplate email = new EmailTemplate();
+				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+					email = release.getSystem().getEmailTemplate().iterator().next();
 				}
+				String subject = getSubject(email, release);
 
-			});
-			newThread.start();
+				String statusName = status.getName();
+
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotifyChangeStatusWebService(release.getReleaseNumber(), " del Release",
+								statusName, release.getOperator(),
+								CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
+								release.getUser(), senders, emailNotify, subject, release.getMotive(), link,
+								"RM-P2-R5|Registro evidencia de instalación");
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			} else if (type == 1) {
+				RFC rfc = rfcService.findByKey("numRequest",numRequest.trim());
+				StatusRFC status = statusRFCService.findById((long) idStatus);
+				rfc.setStatus(status);
+				rfc.setOperator("Automatico");
+				Date currentDate = new Date();
+				
+	
+	            Timestamp timestamp = new Timestamp(currentDate.getTime());
+				rfc.setRequestDate(timestamp);
+				rfc.setMotive(motive);
+				rfcService.update(rfc);
+				res.setStatus("success");
+
+				Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				String statusName = status.getName();
+				UserInfo user = userInfoService.findUserInfoById(rfc.getUser().getId());
+				String subject = getSubject(rfc.getSiges().getEmailTemplate(), rfc);
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotifyChangeStatusWebService(rfc.getNumRequest(), " del RFC", statusName,
+								rfc.getOperator(), rfc.getRequestDate(), user, senders, emailNotify, subject,
+								rfc.getMotive(), link, "RM-P2-R5|Registro evidencia de instalación");
+
+					} catch (Exception e) {
+						Sentry.capture(e, "rfc");
+					}
+
+				});
+				newThread.start();
+			}
 
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "releaseManagement");
@@ -530,6 +544,44 @@ public class WebServiceController extends BaseController {
 
 		}
 		return res;
+	}
+
+	private String getSubject(EmailTemplate email, RFC rfc) {
+		String temp = "";
+		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{rfcNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{rfcNumber}}",
+					(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
+		}
+
+		if (email.getSubject().contains("{{priority}}")) {
+			email.setSubject(email.getSubject().replace("{{priority}}",
+					(rfc.getPriority().getName() != null ? rfc.getPriority().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{impact}}")) {
+			email.setSubject(email.getSubject().replace("{{impact}}",
+					(rfc.getImpact().getName() != null ? rfc.getImpact().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{typeChange}}")) {
+			email.setSubject(email.getSubject().replace("{{typeChange}}",
+					(rfc.getTypeChange().getName() != null ? rfc.getTypeChange().getName() : "")));
+		}
+
+		if (email.getHtml().contains("{{message}}")) {
+			email.setHtml(email.getHtml().replace("{{message}}", (rfc.getMessage() != null ? rfc.getMessage() : "NA")));
+		}
+
+		if (email.getSubject().contains("{{systemMain}}")) {
+			temp = "";
+			Siges codeSiges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
+
+			temp += codeSiges.getSystem().getName();
+
+			email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+		}
+		return email.getSubject();
 	}
 
 	public String getSubject(EmailTemplate emailNotify, ReleaseEdit release) {
@@ -545,9 +597,9 @@ public class WebServiceController extends BaseController {
 			}
 		}
 
-		Request requestNew = new Request();
+		new Request();
 		if (tpo != "") {
-			requestNew = requestService.findByNameCode(tpo);
+			requestService.findByNameCode(tpo);
 		}
 		/* ------ Subject ------ */
 		if (emailNotify.getSubject().contains("{{tpoNumber}}")) {

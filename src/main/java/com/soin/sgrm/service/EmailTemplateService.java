@@ -80,5 +80,7 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 			Timestamp convertStringToTimestamp, UserInfo user, String senders, EmailTemplate emailNotify,
 			String subject, String motive, String link, String title);
 
+
+
 }
 
