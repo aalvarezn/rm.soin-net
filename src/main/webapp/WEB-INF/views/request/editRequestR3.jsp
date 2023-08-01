@@ -48,7 +48,9 @@
 <!-- <link -->
 <%-- 	href="<c:url value='/static/plugins/bootstrap-select/css/bootstrap-select.css'/>" --%>
 <!-- 	rel="stylesheet" type="text/css"> -->
-
+<!-- Linearicons -->
+<link rel="stylesheet"
+	href="<c:url value='/static/plugins/linearicons/css/linearicon.min.css'/>" />
 <link rel="stylesheet"
 	href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
 

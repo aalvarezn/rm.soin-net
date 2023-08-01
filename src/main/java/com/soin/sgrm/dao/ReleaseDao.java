@@ -107,6 +107,8 @@ public interface ReleaseDao {
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId) throws SQLException, ParseException;
 	ReleaseSummaryFile findByIdSummaryFile(Integer id);
 
+	ReleaseEdit findEditByName(String numRelease);
+
 	
 
 }
