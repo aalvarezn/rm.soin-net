@@ -100,7 +100,9 @@ private static final long serialVersionUID = 1L;
 	
 	@Transient
 	private String codeOpportunity;
-
+	
+	@Transient
+	private Long codeSigesId;
 
 	public Long getId() {
 		return id;
@@ -244,6 +246,14 @@ private static final long serialVersionUID = 1L;
 
 	public void setCodeOpportunity(String codeOpportunity) {
 		this.codeOpportunity = codeOpportunity;
+	}
+
+	public Long getCodeSigesId() {
+		return codeSigesId;
+	}
+
+	public void setCodeSigesId(Long codeSigesId) {
+		this.codeSigesId = codeSigesId;
 	}
 
 	

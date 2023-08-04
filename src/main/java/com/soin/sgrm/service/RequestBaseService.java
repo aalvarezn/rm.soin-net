@@ -2,7 +2,6 @@ package com.soin.sgrm.service;
 
 import java.util.List;
 
-import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestBaseTrackingToError;
@@ -14,7 +13,7 @@ public interface RequestBaseService extends BaseService<Long, RequestBase>{
 	JsonSheet<RequestBase> findAllRequest(Integer name, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			String sSearch, Long statusId, String dateRange,Integer systemId,Long typePetitionId);
 
-	String generateRequestNumber(String codeProyect,String description);
+	String generateRequestNumber(String codeProyect,String description,String codeSystem);
 
 	JsonSheet<RequestBase> findAllRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
 			Long statusId, String dateRange, Integer systemId, Long typePetitionId);

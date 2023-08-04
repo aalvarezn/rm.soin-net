@@ -15,7 +15,7 @@ import com.soin.sgrm.response.JsonSheet;
 public interface RFCService extends BaseService<Long, RFC>{
 	public Integer existNumRFC(String number_release) throws SQLException;
 	
-	String generateRFCNumber(String codeProject);
+	String generateRFCNumber(String codeProject, String codeSystem);
 	JsonSheet<RFC> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch, Long statusId,
 			String dateRange, int priorityId,int systemId);
 
@@ -41,5 +41,6 @@ public interface RFCService extends BaseService<Long, RFC>{
 	public List<RFCReport> listRFCReportFilter(int projectId, int systemId, Long sigesId, String dateRange) throws ParseException;
 
 	public RFCReportComplete findByIdRFCReport(Long id);
+
 
 }

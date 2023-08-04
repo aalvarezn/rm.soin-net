@@ -166,6 +166,9 @@ public class RFC implements Serializable {
 	@Transient
 	private Integer isRequest;
 
+	@Transient
+	private Long codeSigesId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -452,6 +455,14 @@ public class RFC implements Serializable {
 
 	public void setRequest(Integer isRequest) {
 		this.isRequest = isRequest;
+	}
+
+	public Long getCodeSigesId() {
+		return codeSigesId;
+	}
+
+	public void setCodeSigesId(Long codeSigesId) {
+		this.codeSigesId = codeSigesId;
 	}
 	
 	

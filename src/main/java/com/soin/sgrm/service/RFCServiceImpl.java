@@ -47,8 +47,7 @@ public class RFCServiceImpl implements RFCService {
 
 	@Override
 	public RFC findByKey(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getByKey(name,value);
 	}
 
 	@Override
@@ -162,12 +161,12 @@ public class RFCServiceImpl implements RFCService {
 		return "Sin Asignar";
 	}
 
-	public String generateRFCNumber(String codeProject) {
+	public String generateRFCNumber(String codeProject,String codeSystem) {
 		String numRFC = "";
 		String partCode = "";
 		try {
 
-			partCode = "RFC_" + codeProject + "_SC";
+			partCode = "RFC_" + codeProject.toUpperCase() +"_"+codeSystem.toUpperCase()+ "_SC";
 
 			numRFC = verifySecuence(partCode);
 
@@ -312,5 +311,7 @@ public class RFCServiceImpl implements RFCService {
 	public RFCReportComplete findByIdRFCReport(Long id) {
 		return dao.findByIdRFCReport(id);
 	}
+
+
 
 }

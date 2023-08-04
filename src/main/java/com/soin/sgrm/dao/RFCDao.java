@@ -36,4 +36,5 @@ public interface RFCDao extends BaseDao<Long, RFC>{
 	public List<RFCReport> listRFCReportFilter(int projectId, int systemId, Long sigesId, String dateRange) throws ParseException;
 
 	public RFCReportComplete findByIdRFCReport(Long id);
+
 }
