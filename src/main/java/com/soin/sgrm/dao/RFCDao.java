@@ -37,8 +37,5 @@ public interface RFCDao extends BaseDao<Long, RFC>{
 
 	public RFCReportComplete findByIdRFCReport(Long id);
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 0eca0ccc0bccbc97b14e4ebfc180529444f68714
+
