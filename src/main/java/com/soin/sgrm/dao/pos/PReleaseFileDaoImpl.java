@@ -1,11 +1,7 @@
 package com.soin.sgrm.dao.pos;
 
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.poi.hslf.record.Sound;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -13,29 +9,28 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
 import org.hibernate.type.StandardBasicTypes;
-import org.springframework.asm.Type;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.ReleaseFile;
+import com.soin.sgrm.model.pos.PReleaseFile;
 
 @Repository
 public class PReleaseFileDaoImpl implements PReleaseFileDao {
 
 	@Autowired
-	SessionFactory sessionFactory;
+	@Qualifier("sessionFactoryPos")
+	private SessionFactory sessionFactory;
 
 	@Override
-	public void save(Integer id, ReleaseFile releaseFile) throws Exception {
+	public void save(Integer id, PReleaseFile releaseFile) throws Exception {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		String sql = "";
 		Query query = null;
-		ReleaseFile file = null;
+		PReleaseFile file = null;
 		try {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
@@ -51,7 +46,7 @@ public class PReleaseFileDaoImpl implements PReleaseFileDao {
 				sessionObj.saveOrUpdate(releaseFile);
 
 				sql = String.format(
-						"INSERT INTO releases_release_archivos ( id, release_id, archivo_id) VALUES ( null, %s, %s ) ",
+						"INSERT INTO \"RELEASES_RELEASE_ARCHIVOS\" ( \"RELEASE_ID\", \"ARCHIVO_ID\") VALUES (  %s, %s ) ",
 						id, releaseFile.getId());
 				query = sessionObj.createSQLQuery(sql);
 				query.executeUpdate();
@@ -67,33 +62,32 @@ public class PReleaseFileDaoImpl implements PReleaseFileDao {
 	}
 
 	@Override
-	public ReleaseFile findReleaseFile(String path) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseFile.class);
+	public PReleaseFile findReleaseFile(String path) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleaseFile.class);
 		crit.add(Restrictions.eq("path", path));
-		ReleaseFile releaseFile = (ReleaseFile) crit.uniqueResult();
+		PReleaseFile releaseFile = (PReleaseFile) crit.uniqueResult();
 		return releaseFile;
 	}
 
 	@Override
-	public ReleaseFile findReleaseFileById(Integer id) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseFile.class);
+	public PReleaseFile findReleaseFileById(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleaseFile.class);
 		crit.add(Restrictions.eq("id", id));
-		ReleaseFile releaseFile = (ReleaseFile) crit.uniqueResult();
+		PReleaseFile releaseFile = (PReleaseFile) crit.uniqueResult();
 		return releaseFile;
 	}
 
 	@Override
-	public void deleteReleaseFile(ReleaseFile releaseFile) throws Exception {
+	public void deleteReleaseFile(PReleaseFile releaseFile) throws Exception {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		String sql = "";
 		Query query = null;
-		ReleaseFile file = null;
 		try {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 
-			sql = String.format("DELETE FROM releases_release_archivos WHERE archivo_id = %s ", releaseFile.getId());
+			sql = String.format("DELETE FROM \"RELEASES_RELEASE_ARCHIVOS\" WHERE \"ARCHIVO_ID\" = %s ", releaseFile.getId());
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();
 
@@ -117,18 +111,18 @@ public class PReleaseFileDaoImpl implements PReleaseFileDao {
 		try {
 			sessionObj = sessionFactory.openSession();
 			sql = String.format(
-					" SELECT concat(concat(concat(top.nombre, '^'), concat(so.nombre, '^')), concat(concat(so.revision_respositorio,'^'), "
-							+ " concat((CASE (SELECT 1 FROM releases_release r1 "
-							+ " INNER JOIN releases_release_objetos ro1 " + "    ON ro1.release_id = r1.id "
-							+ " INNER JOIN sistemas_objeto so1 " + "    ON ro1.objeto_id = so1.id "
-							+ " INNER JOIN releases_estado e1 " + "    on r.estado_id = e1.id "
-							+ " WHERE r1.id <> %s AND so.item_de_configuracion_id = so1.item_de_configuracion_id "
-							+ " AND so.tipo_objeto_id = so1.tipo_objeto_id AND r1.sistema_id = r.sistema_id AND so1.nombre = so.nombre AND e1.nombre <> 'Anulado' "
-							+ " AND r1.fecha_creacion < r.fecha_creacion AND ROWNUM = 1) WHEN 1 THEN 'MODIFICADO' ELSE 'NUEVO' END),'^'))) item "
-							+ " FROM releases_release r " + " INNER JOIN releases_release_objetos ro "
-							+ "    ON ro.release_id = r.id " + " INNER JOIN sistemas_objeto so "
-							+ "    ON ro.objeto_id = so.id " + " INNER JOIN sistemas_tipoobjecto top "
-							+ "    ON so.tipo_objeto_id = top.id " + " WHERE r.id = %s ",
+					" SELECT concat(concat(concat(top.\"NOMBRE\", '^'), concat(so.\"NOMBRE\", '^')), concat(concat(so.\"REVISION_RESPOSITORIO\",'^'), "
+							+ " concat((CASE (SELECT 1 FROM \"RELEASES_RELEASE\" r1 "
+							+ " INNER JOIN \"RELEASES_RELEASE_OBJETOS\" ro1 " + "    ON ro1.\"RELEASE_ID\" = r1.\"ID\" "
+							+ " INNER JOIN \"SISTEMAS_OBJETO\" so1 " + "    ON ro1.\"OBJETO_ID\" = so1.\"ID\" "
+							+ " INNER JOIN \"RELEASES_ESTADO\" e1 " + "    on r.estado_id = e1.\"ID\" "
+							+ " WHERE r1.\"ID\" <> %s AND so.\"ITEM_DE_CONFIGURACION_ID\" = so1.\"ITEM_DE_CONFIGURACION_ID\" "
+							+ " AND so.\"TIPO_OBJETO_ID\" = so1.\"TIPO_OBJETO_ID\"\"TIPO_OBJETO_ID\" AND r1.\"SISTEMA_ID\" = r.\"SISTEMA_ID\" AND so1.\"NOMBRE\" = so.\"NOMBRE\" AND e1.\"NOMBRE\" <> 'Anulado' "
+							+ " AND r1.\"FECHA_CREACION\" < r.\"FECHA_CREACION\" AND ROWNUM = 1) WHEN 1 THEN 'MODIFICADO' ELSE 'NUEVO' END),'^'))) item "
+							+ " FROM \"RELEASES_RELEASE\" r " + " INNER JOIN \"RELEASES_RELEASE_OBJETOS\" ro "
+							+ "    ON ro.\"RELEASE_ID\" = r.\"ID\" " + " INNER JOIN \"SISTEMAS_OBJETO\" so "
+							+ "    ON ro.\"OBJETO_ID\" = so.\"ID\" " + " INNER JOIN \"SISTEMAS_TIPOOBJECTO\" top "
+							+ "    ON so.\"TIPO_OBJETO_ID\" = top.\"ID\" " + " WHERE r.\"ID\" = %s ",
 					release_id, release_id);
 
 			SQLQuery query = (SQLQuery) sessionObj.createSQLQuery(sql).addScalar("item", StandardBasicTypes.STRING);

@@ -12,8 +12,10 @@ import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 //import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
+import com.soin.sgrm.model.pos.wf.PNodeRFC;
 import com.soin.sgrm.model.wf.NodeIncidence;
 //import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
@@ -98,22 +100,22 @@ public class PNodeServiceImpl implements PNodeService {
 	}
 
 	@Override
-	public NodeRFC saveNodeRFC(NodeRFC node) {
+	public PNodeRFC saveNodeRFC(PNodeRFC node) {
 		return dao.saveNodeRFC(node);
 	}
 
 	@Override
-	public NodeRFC updateNodeRFC(NodeRFC node) {
+	public PNodeRFC updateNodeRFC(PNodeRFC node) {
 		return dao.updateNodeRFC(node);
 	}
 
 	@Override
-	public List<NodeRFC> listNodeRFC() {
+	public List<PNodeRFC> listNodeRFC() {
 		return dao.listNodeRFC();
 	}
 
 	@Override
-	public NodeRFC findByIdNoRFC(Integer id) {
+	public PNodeRFC findByIdNoRFC(Integer id) {
 		
 		return dao.findByIdNoRFC(id);
 	}
@@ -124,13 +126,13 @@ public class PNodeServiceImpl implements PNodeService {
 	}
 
 	@Override
-	public NodeRFC existWorkFlowNodeRFC(RFC rfc) {
+	public PNodeRFC existWorkFlowNodeRFC(PRFC rfc) {
 		// TODO Auto-generated method stub
 		return dao.existWorkFlowNodeRFC(rfc);
 	}
 
 	@Override
-	public boolean verifyStartNodeRFC(NodeRFC node) {
+	public boolean verifyStartNodeRFC(PNodeRFC node) {
 		return dao.verifyStartNodeRFC(node);
 	}
 

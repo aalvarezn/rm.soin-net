@@ -1,8 +1,8 @@
 package com.soin.sgrm.service.pos;
 
-import com.soin.sgrm.model.RFCFile;
+import com.soin.sgrm.model.pos.PRFCFile;
 
-public interface PRFCFileService extends BaseService<Long, RFCFile> {
-	void saveRFCFile(Long id, RFCFile rfcFile) throws Exception;
-	void deleteRFC(RFCFile rfcFile) throws Exception;
+public interface PRFCFileService extends BaseService<Long, PRFCFile> {
+	void saveRFCFile(Long id, PRFCFile rfcFile) throws Exception;
+	void deleteRFC(PRFCFile rfcFile) throws Exception;
 }

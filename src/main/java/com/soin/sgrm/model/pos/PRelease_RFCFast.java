@@ -61,7 +61,7 @@ public class PRelease_RFCFast implements Serializable, Cloneable {
 	private PStatus status;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ESTADO_ANTERIOR", nullable = true)
+	@JoinColumn(name = "\"ESTADO_ANTERIOR\"", nullable = true)
 	private PStatus statusBefore;
 
 	@DateTimeFormat(pattern = "dd-MM-yyyy")

@@ -4,10 +4,11 @@ import java.util.List;
 
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
 import com.soin.sgrm.model.wf.NodeIncidence;
-import com.soin.sgrm.model.wf.NodeRFC;
+import com.soin.sgrm.model.pos.wf.PNodeRFC;
 
 public interface PNodeDao {
 
@@ -25,19 +26,19 @@ public interface PNodeDao {
 
 	boolean verifyStartNode(PNode node);
 
-	NodeRFC saveNodeRFC(NodeRFC node);
+	PNodeRFC saveNodeRFC(PNodeRFC node);
 
-	NodeRFC updateNodeRFC(NodeRFC node);
+	PNodeRFC updateNodeRFC(PNodeRFC node);
 
-	List<NodeRFC> listNodeRFC();
+	List<PNodeRFC> listNodeRFC();
 
-	NodeRFC findByIdNoRFC(Integer id);
+	PNodeRFC findByIdNoRFC(Integer id);
 
 	void deleteNodeRFC(Integer id) throws Exception;
 
-	NodeRFC existWorkFlowNodeRFC(RFC rfc);
+	PNodeRFC existWorkFlowNodeRFC(PRFC rfc);
 
-	boolean verifyStartNodeRFC(NodeRFC node);
+	boolean verifyStartNodeRFC(PNodeRFC node);
 
 	NodeIncidence saveNodeIncidence(NodeIncidence node);
 

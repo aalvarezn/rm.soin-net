@@ -1,14 +1,14 @@
 package com.soin.sgrm.service.pos;
 
-import com.soin.sgrm.model.RFC_WithoutRelease;
+import com.soin.sgrm.model.pos.PRFC_WithoutRelease;
 import com.soin.sgrm.response.JsonSheet;
 
-public interface PRFCWithoutReleaseService extends BaseService<Long, RFC_WithoutRelease>{
+public interface PRFCWithoutReleaseService extends BaseService<Long, PRFC_WithoutRelease>{
 	
-	JsonSheet<RFC_WithoutRelease> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch, Long statusId,
+	JsonSheet<PRFC_WithoutRelease> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch, Long statusId,
 			String dateRange, int priorityId,int systemId);
 
-	public JsonSheet<RFC_WithoutRelease> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+	public JsonSheet<PRFC_WithoutRelease> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			String sSearch, Long statusId, String dateRange, int priorityId, int systemId);
 
 

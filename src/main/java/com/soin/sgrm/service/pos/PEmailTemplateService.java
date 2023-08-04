@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.soin.sgrm.dao.BaseDao;
 import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PUserInfo;
+import com.soin.sgrm.model.pos.wf.PWFRFC;
 import com.soin.sgrm.model.pos.wf.PWFRelease;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
@@ -45,16 +47,16 @@ public interface PEmailTemplateService extends BaseDao<Integer, PEmailTemplate> 
 
 	void sendMailActor(PWFRelease releaseEmail, PEmailTemplate email);
 
-	void sendMailRFC(RFC rfcEmail, PEmailTemplate email) throws Exception;
+	void sendMailRFC(PRFC rfcEmail, PEmailTemplate email) throws Exception;
 	
 	void sendMailRequestR4(RequestBaseR1 requestEmail, PEmailTemplate email) throws Exception;
 	
 
 	void sendMailNotify(PWFRelease releaseEmail, PEmailTemplate email,String user);
 
-	void sendMailActorRFC(WFRFC rfcEmail, PEmailTemplate emailActor);
+	void sendMailActorRFC(PWFRFC rfcEmail, PEmailTemplate emailActor);
 
-	void sendMailNotifyRFC(WFRFC rfcEmail, PEmailTemplate emailNotify, String user);
+	void sendMailNotifyRFC(PWFRFC rfcEmail, PEmailTemplate emailNotify, String user);
 
 	void sendMailRFC(WFRFC rfcEmail, PEmailTemplate email, String motive);
 

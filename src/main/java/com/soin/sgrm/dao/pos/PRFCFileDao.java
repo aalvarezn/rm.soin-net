@@ -1,12 +1,12 @@
 package com.soin.sgrm.dao.pos;
 
-import com.soin.sgrm.model.RFCFile;
+import com.soin.sgrm.model.pos.PRFCFile;
 
-public interface PRFCFileDao extends BaseDao<Long, RFCFile> {
+public interface PRFCFileDao extends BaseDao<Long, PRFCFile> {
 
-	RFCFile findRFCFile(String path);
+	PRFCFile findRFCFile(String path);
 
-	void saveRFCFile(Long id, RFCFile rfcFile) throws Exception;
+	void saveRFCFile(Long id, PRFCFile rfcFile) throws Exception;
 
-	void deleteRFC(RFCFile rfcFile) throws Exception;
+	void deleteRFC(PRFCFile rfcFile) throws Exception;
 }

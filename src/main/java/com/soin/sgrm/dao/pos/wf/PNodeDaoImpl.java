@@ -15,13 +15,11 @@ import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Incidence;
-import com.soin.sgrm.model.RFC;
-//import com.soin.sgrm.model.Incidence;
-import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
 import com.soin.sgrm.model.wf.NodeIncidence;
-import com.soin.sgrm.model.wf.NodeRFC;
+import com.soin.sgrm.model.pos.wf.PNodeRFC;
 
 @Repository
 public class PNodeDaoImpl implements PNodeDao {
@@ -118,7 +116,7 @@ public class PNodeDaoImpl implements PNodeDao {
 		return (PNode) crit.uniqueResult();
 	}
 	@Override
-	public NodeRFC saveNodeRFC(NodeRFC node) {
+	public PNodeRFC saveNodeRFC(PNodeRFC node) {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		try {
@@ -128,7 +126,7 @@ public class PNodeDaoImpl implements PNodeDao {
 			transObj.commit();
 			return node;
 		} catch (Exception e) {
-			Sentry.capture(e, "NodeRFC");
+			Sentry.capture(e, "PNodeRFC");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -137,8 +135,8 @@ public class PNodeDaoImpl implements PNodeDao {
 	}
 
 	@Override
-	public NodeRFC existWorkFlowNodeRFC(RFC rfc) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(NodeRFC.class);
+	public PNodeRFC existWorkFlowNodeRFC(PRFC rfc) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PNodeRFC.class);
 		crit.createAlias("workFlow", "workFlow");
 		crit.createAlias("workFlow.system", "system");
 		crit.createAlias("workFlow.type", "type");
@@ -148,7 +146,7 @@ public class PNodeDaoImpl implements PNodeDao {
 		crit.add(Restrictions.eq("type.id", 3));
 		// Que sea del mismo sistema
 		crit.add(Restrictions.eq("system.id", rfc.getSystemInfo().getId()));
-		return (NodeRFC) crit.uniqueResult();
+		return (PNodeRFC) crit.uniqueResult();
 	}
 
 	@Override
@@ -165,7 +163,7 @@ public class PNodeDaoImpl implements PNodeDao {
 			query.executeUpdate();
 			transObj.commit();
 		} catch (Exception e) {
-			Sentry.capture(e, "NodeRFC");
+			Sentry.capture(e, "PNodeRFC");
 			transObj.rollback();
 			throw new Exception("Error al procesar la solicitud de eliminar.", e);
 		} finally {
@@ -174,7 +172,7 @@ public class PNodeDaoImpl implements PNodeDao {
 	}
 
 	@Override
-	public NodeRFC updateNodeRFC(NodeRFC node) {
+	public PNodeRFC updateNodeRFC(PNodeRFC node) {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		try {
@@ -184,7 +182,7 @@ public class PNodeDaoImpl implements PNodeDao {
 			transObj.commit();
 			return node;
 		} catch (Exception e) {
-			Sentry.capture(e, "NodeRFC");
+			Sentry.capture(e, "PNodeRFC");
 			transObj.rollback();
 			throw e;
 		} finally {
@@ -193,21 +191,21 @@ public class PNodeDaoImpl implements PNodeDao {
 	}
 
 	@Override
-	public NodeRFC findByIdNoRFC(Integer id) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(NodeRFC.class);
+	public PNodeRFC findByIdNoRFC(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PNodeRFC.class);
 		crit.add(Restrictions.eq("id", id));
-		return (NodeRFC) crit.uniqueResult();
+		return (PNodeRFC) crit.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<NodeRFC> listNodeRFC() {
+	public List<PNodeRFC> listNodeRFC() {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PNode.class);
 		return crit.list();
 	}
 	@Override
-	public boolean verifyStartNodeRFC(NodeRFC node) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(NodeRFC.class);
+	public boolean verifyStartNodeRFC(PNodeRFC node) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PNodeRFC.class);
 		crit.createAlias("workFlow", "workFlow");
 		crit.add(Restrictions.eq("workFlow.id", node.getWorkFlowId()));
 		crit.add(Restrictions.eq("group","start"));

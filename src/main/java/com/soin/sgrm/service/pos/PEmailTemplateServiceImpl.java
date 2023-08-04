@@ -41,10 +41,14 @@ import com.soin.sgrm.model.EmailIncidence;
 import com.soin.sgrm.model.pos.PAmbient;
 import com.soin.sgrm.model.pos.PDependency;
 import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseObject;
+import com.soin.sgrm.model.pos.PRelease_RFCFast;
 import com.soin.sgrm.model.pos.PRequest;
+import com.soin.sgrm.model.pos.PSiges;
 import com.soin.sgrm.model.pos.PUserInfo;
+import com.soin.sgrm.model.pos.wf.PWFRFC;
 import com.soin.sgrm.model.pos.wf.PWFRelease;
 import com.soin.sgrm.model.pos.wf.PWFUser;
 import com.soin.sgrm.model.Incidence;
@@ -742,7 +746,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailRFC(RFC rfc, PEmailTemplate email) throws Exception {
+	public void sendMailRFC(PRFC rfc, PEmailTemplate email) throws Exception {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 		email = fillEmail(email, rfc);
@@ -836,7 +840,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		mailSender.send(mimeMessage);
 	}
 
-	public PEmailTemplate fillEmail(PEmailTemplate email, RFC rfc) {
+	public PEmailTemplate fillEmail(PEmailTemplate email, PRFC rfc) {
 		String temp = "";
 		/* ------ body ------ */
 		if (email.getHtml().contains("{{userName}}")) {
@@ -882,7 +886,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		if (email.getHtml().contains("{{releases}}")) {
 			temp = "<table border=1>";
 			temp += "<tr>" + "<th>Numero release</th>" + "<th>Detalle</th>" + "</tr>";
-			for (Release_RFCFast release : rfc.getReleases()) {
+			for (PRelease_RFCFast release : rfc.getReleases()) {
 				temp += "<tr>";
 
 				temp += "<td>" + release.getReleaseNumber() + "</td>";
@@ -901,17 +905,17 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 		if (email.getHtml().contains("{{systemsInvolved}}")) {
 			temp = "";
-			Siges codeSiges = sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+			PSiges codeSiges = psigeService.findByKey("codeSiges", rfc.getCodeProyect());
 
 			List<String> systemsInvolved = new ArrayList<String>();
 
 			systemsInvolved.add(codeSiges.getSystem().getName());
 			String nameSystem = "";
 			boolean validate = true;
-			Set<Release_RFCFast> releases = rfc.getReleases();
+			Set<PRelease_RFCFast> releases = rfc.getReleases();
 			if (releases != null) {
 				if (releases.size() != 0) {
-					for (Release_RFCFast release : releases) {
+					for (PRelease_RFCFast release : releases) {
 						nameSystem = release.getSystem().getName();
 						for (String system : systemsInvolved) {
 							if (system.equals(nameSystem)) {
@@ -1478,7 +1482,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailActorRFC(WFRFC rfcEmail, PEmailTemplate email) {
+	public void sendMailActorRFC(PWFRFC rfcEmail, PEmailTemplate email) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -1514,7 +1518,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (WFUser toUser : rfcEmail.getNode().getActors()) {
+			for (PWFUser toUser : rfcEmail.getNode().getActors()) {
 				mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 			}
 			mailSender.send(mimeMessage);
@@ -1528,7 +1532,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailNotifyRFC(WFRFC rfcEmail, PEmailTemplate email, String user) {
+	public void sendMailNotifyRFC(PWFRFC rfcEmail, PEmailTemplate email, String user) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -1572,7 +1576,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			if (email.getHtml().contains("{{actors}}")) {
 				temp = "<ul>";
 
-				for (WFUser obj : rfcEmail.getNode().getActors()) {
+				for (PWFUser obj : rfcEmail.getNode().getActors()) {
 					temp += "<li><b> " + obj.getFullName() + "</b></li>";
 				}
 				temp += "</ul>";
@@ -1587,7 +1591,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (WFUser toUser : rfcEmail.getNode().getUsers()) {
+			for (PWFUser toUser : rfcEmail.getNode().getUsers()) {
 				mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 			}
 			mailSender.send(mimeMessage);

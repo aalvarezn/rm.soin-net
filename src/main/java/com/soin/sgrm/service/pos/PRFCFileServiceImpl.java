@@ -5,57 +5,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.dao.RFCFileDao;
-import com.soin.sgrm.model.RFCFile;
+import com.soin.sgrm.dao.pos.PRFCFileDao;
+import com.soin.sgrm.model.pos.PRFCFile;
 
-@Service("RFCFileService")
-@Transactional("transactionManager")
+@Service("PRFCFileService")
+@Transactional("transactionManagerPos")
 public class PRFCFileServiceImpl implements PRFCFileService {
 	
 	@Autowired
-	RFCFileDao dao;
+	PRFCFileDao dao;
 	@Override
-	public RFCFile findById(Long id) {
+	public PRFCFile findById(Long id) {
 		
 		return dao.getById(id);
 	}
 
 	@Override
-	public RFCFile findByKey(String name, String value) {
+	public PRFCFile findByKey(String name, String value) {
 		
 		return dao.getByKey(name, value);
 	}
 
 	@Override
-	public List<RFCFile> findAll() {
+	public List<PRFCFile> findAll() {
 		
 		return dao.findAll();
 	}
 
 	@Override
-	public void save(RFCFile model) {
+	public void save(PRFCFile model) {
 		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		RFCFile model= findById(id);
+		PRFCFile model= findById(id);
 		dao.delete(model);
 	}
 
 	@Override
-	public void update(RFCFile model) {
+	public void update(PRFCFile model) {
 		dao.update(model);
 	}
 
 	
 	@Override
-	public void saveRFCFile(Long id, RFCFile rfcFile) throws Exception{
+	public void saveRFCFile(Long id, PRFCFile rfcFile) throws Exception{
 		dao.saveRFCFile(id,rfcFile);
 	}
 
 	@Override
-	public void deleteRFC(RFCFile rfcFile) throws Exception {
+	public void deleteRFC(PRFCFile rfcFile) throws Exception {
 		dao.deleteRFC(rfcFile);
 	}
 

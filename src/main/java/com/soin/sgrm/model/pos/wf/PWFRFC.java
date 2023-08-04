@@ -1,4 +1,4 @@
-package com.soin.sgrm.model.pos;
+package com.soin.sgrm.model.pos.wf;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -25,11 +25,21 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.soin.sgrm.model.pos.wf.PNodeRFC;
+
+import com.soin.sgrm.model.pos.PImpact;
+import com.soin.sgrm.model.pos.PPriority;
+import com.soin.sgrm.model.pos.PRFC;
+import com.soin.sgrm.model.pos.PRFCTracking;
+import com.soin.sgrm.model.pos.PRelease_RFCFast;
+import com.soin.sgrm.model.pos.PSiges;
+import com.soin.sgrm.model.pos.PStatusRFC;
+import com.soin.sgrm.model.pos.PSystemInfo;
+import com.soin.sgrm.model.pos.PTypeChange;
+import com.soin.sgrm.model.pos.PUser;
 
 @Entity
 @Table(name = "RFC")
-public class PRFC implements Serializable {
+public class PWFRFC implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -109,7 +119,6 @@ public class PRFC implements Serializable {
 	@JoinColumn(name = "\"ID_SISTEMA\"", nullable = false)
 	private PSystemInfo systemInfo;
 
-
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
@@ -119,29 +128,23 @@ public class PRFC implements Serializable {
 
 	@Column(name = "FECHA_EJECUCION_FINAL")
 	private String requestDateFinish;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "\"NODO_ID\"", nullable = true)
-	private PNodeRFC node;
-	
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "RFC_RELEASE", joinColumns = { @JoinColumn(name = "\"ID_RFC\"") }, inverseJoinColumns = {
-			@JoinColumn(name = "\"ID_RELEASE\"") })
-	private Set<PRelease_RFCFast> releases = new HashSet<>();
-
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	@Fetch(value = FetchMode.SUBSELECT)
-	@JoinTable(name = "RFC_ARCHIVORFC", joinColumns = { @JoinColumn(name = "\"RFC_ID\"") }, inverseJoinColumns = {
-			@JoinColumn(name = "\"ARCHIVORFC_ID\"") })
-	private Set<PRFCFile> files = new HashSet<>();
 
 	@OrderBy("trackingDate ASC")
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "rfc")
 	private Set<PRFCTracking> tracking = new HashSet<PRFCTracking>();
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "\"NODO_ID\"", nullable = true)
+	private PNodeRFC node;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@Fetch(value = FetchMode.SUBSELECT)
+	@JoinTable(name = "RFC_RELEASE", joinColumns = { @JoinColumn(name = "\"ID_RFC\"") }, inverseJoinColumns = {
+			@JoinColumn(name = "\"ID_RELEASE\"") })
+	private Set<PRelease_RFCFast> releases = new HashSet<>();
+	
 	// Agregar Motivo
 	// Agregar Usuario que lo cambio
 	@Transient
@@ -161,13 +164,7 @@ public class PRFC implements Serializable {
 
 	@Transient
 	private String releasesList;
-	
-	@Transient
-	private Integer isRequest;
 
-	@Transient
-	private Long codeSigesId;
-	
 	public Long getId() {
 		return id;
 	}
@@ -296,13 +293,7 @@ public class PRFC implements Serializable {
 		this.requestDate = requestDate;
 	}
 
-	public Set<PRelease_RFCFast> getReleases() {
-		return releases;
-	}
-
-	public void setReleases(Set<PRelease_RFCFast> releases) {
-		this.releases = releases;
-	}
+	
 
 	public String[] getStrReleases() {
 		return strReleases;
@@ -360,12 +351,12 @@ public class PRFC implements Serializable {
 		this.requestDateFinish = requestDateFinish;
 	}
 
-	public Set<PRFCFile> getFiles() {
-		return files;
+	public PNodeRFC getNode() {
+		return node;
 	}
 
-	public void setFiles(Set<PRFCFile> files) {
-		this.files = files;
+	public void setNode(PNodeRFC node) {
+		this.node = node;
 	}
 
 	public String getMotive() {
@@ -440,28 +431,21 @@ public class PRFC implements Serializable {
 		this.systemId = systemId;
 	}
 
-	public PNodeRFC getNode() {
-		return node;
+	public void convertRFCToWFRFC(PRFC rfc) {
+		this.node = rfc.getNode();
+		this.requestDate=rfc.getRequestDate();
+		this.numRequest = rfc.getNumRequest();
+		this.systemInfo = rfc.getSystemInfo();
+		this.status = rfc.getStatus();
+		this.user = rfc.getUser();
 	}
 
-	public void setNode(PNodeRFC node) {
-		this.node = node;
+	public Set<PRelease_RFCFast> getReleases() {
+		return releases;
 	}
 
-	public Integer getIsRequest() {
-		return isRequest;
-	}
-
-	public void setRequest(Integer isRequest) {
-		this.isRequest = isRequest;
-	}
-
-	public Long getCodeSigesId() {
-		return codeSigesId;
-	}
-
-	public void setCodeSigesId(Long codeSigesId) {
-		this.codeSigesId = codeSigesId;
+	public void setReleases(Set<PRelease_RFCFast> releases) {
+		this.releases = releases;
 	}
 	
 	

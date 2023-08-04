@@ -6,21 +6,22 @@ import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RFCFile;
+import com.soin.sgrm.model.pos.PRFCFile;
 
 @Repository
-public class PRFCFileDaoImpl extends AbstractDao<Long, RFCFile> implements PRFCFileDao    {
+public class PRFCFileDaoImpl extends AbstractDao<Long, PRFCFile> implements PRFCFileDao    {
 
 	@Override
-	public RFCFile findRFCFile(String path) {
-		RFCFile rfcFile=(RFCFile) getSession().createCriteria(RFCFile.class).add(Restrictions.eq("path", path)).uniqueResult();
+	public PRFCFile findRFCFile(String path) {
+		PRFCFile rfcFile=(PRFCFile) getSession().createCriteria(PRFCFile.class).add(Restrictions.eq("path", path)).uniqueResult();
 		return rfcFile;
 	}
 
 	@Override
-	public void saveRFCFile(Long id, RFCFile rfcFile) throws Exception {
+	public void saveRFCFile(Long id, PRFCFile rfcFile) throws Exception {
 		String sql = "";
 		Query query = null;
-		RFCFile file = null;
+		PRFCFile file = null;
 		try {
 			
 		
@@ -48,7 +49,7 @@ public class PRFCFileDaoImpl extends AbstractDao<Long, RFCFile> implements PRFCF
 	}
 
 	@Override
-	public void deleteRFC(RFCFile rfcFile) throws Exception {
+	public void deleteRFC(PRFCFile rfcFile) throws Exception {
 		String sql = "";
 		Query query = null;
 		try {

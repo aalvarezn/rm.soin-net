@@ -14,40 +14,44 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.RFCWithOutReleaseDao;
+import com.soin.sgrm.dao.pos.PRFCWithOutReleaseDao;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.pos.PRFC_WithoutRelease;
+import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.Constant;
 
-@Service("RFCWithoutReleaseService")
-@Transactional("transactionManager")
+@Service("PRFCWithoutReleaseService")
+@Transactional("transactionManagerPos")
 public class PRFCWithoutReleaseServiceImpl implements PRFCWithoutReleaseService {
 
 	@Autowired
-	RFCWithOutReleaseDao dao;
+	PRFCWithOutReleaseDao dao;
 
 	@Autowired
+	@Qualifier("sessionFactoryPos")
 	private SessionFactory sessionFactory;
 
 	public static final Logger logger = Logger.getLogger(PRFCWithoutReleaseServiceImpl.class);
 
 	@Override
-	public RFC_WithoutRelease findByKey(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+	public PRFC_WithoutRelease findByKey(String name, String value) {
+		return dao.getByKey(name, value);
 	}
 
 	@Override
-	public List<RFC_WithoutRelease> findAll() {
+	public List<PRFC_WithoutRelease> findAll() {
 		return dao.findAll();
 	}
 
 	@Override
-	public void save(RFC_WithoutRelease model) {
+	public void save(PRFC_WithoutRelease model) {
 		dao.save(model);
 
 	}
@@ -59,20 +63,20 @@ public class PRFCWithoutReleaseServiceImpl implements PRFCWithoutReleaseService 
 	}
 
 	@Override
-	public void update(RFC_WithoutRelease model) {
+	public void update(PRFC_WithoutRelease model) {
 		dao.update(model);
 
 	}
 
 	@Override
-	public RFC_WithoutRelease findById(Long id) {
+	public PRFC_WithoutRelease findById(Long id) {
 
 		return dao.getById(id);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public JsonSheet<RFC_WithoutRelease> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
+	public JsonSheet<PRFC_WithoutRelease> findAll1(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
 			Long sStatus, String dateRange, int sPriority, int systemId) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
@@ -128,13 +132,13 @@ public class PRFCWithoutReleaseServiceImpl implements PRFCWithoutReleaseService 
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public JsonSheet<RFC_WithoutRelease> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+	public JsonSheet<PRFC_WithoutRelease> findAll2(Integer id, Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			String sSearch, Long sStatus, String dateRange, int sPriority, int systemId) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
 
-		List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
+		List<PSystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(PSystemInfo.class)
 				.createAlias("managers", "managers").add(Restrictions.eq("managers.id", id)).list();
 		alias.put("status", "status");
 
@@ -186,7 +190,7 @@ public class PRFCWithoutReleaseServiceImpl implements PRFCWithoutReleaseService 
 
 		} else {
 			List<Integer> listaId = new ArrayList<Integer>();
-			for (SystemInfo system : systems) {
+			for (PSystemInfo system : systems) {
 				listaId.add(system.getId());
 			}
 			alias.put("systemInfo", "systemInfo");

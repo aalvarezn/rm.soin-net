@@ -2,6 +2,7 @@ package com.soin.sgrm.dao.pos;
 
 import java.util.Date;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -718,12 +719,12 @@ public class PReleaseDaoImpl implements PReleaseDao {
 	public JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			Integer systemId) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
-		Criteria crit = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
+		Criteria crit = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId,false);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
-		Criteria critCount = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId);
+		Criteria critCount = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId,true);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -737,12 +738,13 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			String sql = "";
 			Query query = null;
 			sql = String.format(
-					"SELECT COUNT(rr.\"ID\") FROM \"RELEASES_RELEASE\" rr WHERE rr.\"ID\" IN (SELECT rrd.\"TO_RELEASE_ID\"  FROM \"RELEASES_RELEASE_DEPENDENCIAS\" rrd WHERE \"FROM_RELEASE_ID\" =%s) AND rr.\"ESTADO_ID\" IN(SELECT re.ID FROM \"RELEASES_ESTADO\" re WHERE re.\"NOMBRE\" IN('Borrador', 'Solicitado')) ",
+					"SELECT COUNT(rr.\"ID\") FROM \"RELEASES_RELEASE\" rr WHERE rr.\"ID\" IN (SELECT rrd.\"TO_RELEASE_ID\"  FROM \"RELEASES_RELEASE_DEPENDENCIAS\" rrd WHERE \"FROM_RELEASE_ID\" =%s) AND rr.\"ESTADO_ID\" IN(SELECT re.\"ID\" FROM \"RELEASES_ESTADO\" re WHERE re.\"NOMBRE\" IN('Borrador', 'Solicitado')) ",
 					release.getId());
 			query = getSession().createSQLQuery(sql);
 
-			BigDecimal test = (BigDecimal) query.uniqueResult();
-
+			BigInteger result  = (BigInteger) query.uniqueResult();
+			long num = result.longValue();
+			BigDecimal test = BigDecimal.valueOf(num);
 			release.setHaveDependecy(test.intValueExact());
 
 		}
@@ -770,7 +772,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 	}
 
 	public Criteria criteriaBySystems1(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			Integer systemId) throws SQLException, ParseException {
+			Integer systemId,boolean count) throws SQLException, ParseException {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleases_WithoutObj.class);
 		crit.createAlias("system", "system");
@@ -783,7 +785,10 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (systemId != 0) {
 			crit.add(Restrictions.eq("system.id", systemId));
 		}
-		crit.addOrder(Order.desc("createDate"));
+		if(!count) {
+			crit.addOrder(Order.desc("createDate"));
+		}
+		
 
 		return crit;
 	}

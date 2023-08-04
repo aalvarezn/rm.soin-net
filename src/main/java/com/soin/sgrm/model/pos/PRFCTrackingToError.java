@@ -31,7 +31,7 @@ public class PRFCTrackingToError implements Serializable{
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "RFC_ID", nullable = true)
+	@JoinColumn(name = "\"RFC_ID\"", nullable = true)
 	private PRFCReferenceToError rfc;
 
 	@Column(name = "ACTUALIZACION")

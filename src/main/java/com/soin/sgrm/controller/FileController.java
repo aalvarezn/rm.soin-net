@@ -49,6 +49,7 @@ import com.soin.sgrm.model.IncidenceFile;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.RFCFile;
+import com.soin.sgrm.model.RFCTrackingShow;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseFile;
 import com.soin.sgrm.model.ReleaseSummary;
@@ -62,6 +63,15 @@ import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.pos.PBaseKnowledge;
 import com.soin.sgrm.model.pos.PBaseKnowledgeFile;
+import com.soin.sgrm.model.pos.PRFC;
+import com.soin.sgrm.model.pos.PRFCFile;
+import com.soin.sgrm.model.pos.PRFCTrackingShow;
+import com.soin.sgrm.model.pos.PReleaseFile;
+import com.soin.sgrm.model.pos.PReleaseSummary;
+import com.soin.sgrm.model.pos.PReleaseSummaryFile;
+import com.soin.sgrm.model.pos.PRequest;
+import com.soin.sgrm.model.pos.PSiges;
+import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.service.BaseKnowledgeFileService;
 import com.soin.sgrm.service.BaseKnowledgeService;
 import com.soin.sgrm.service.DocTemplateService;
@@ -80,11 +90,22 @@ import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.pos.PBaseKnowledgeFileService;
 import com.soin.sgrm.service.pos.PBaseKnowledgeService;
+import com.soin.sgrm.service.pos.PDocTemplateService;
+import com.soin.sgrm.service.pos.PProjectService;
+import com.soin.sgrm.service.pos.PRFCFileService;
+import com.soin.sgrm.service.pos.PRFCService;
+import com.soin.sgrm.service.pos.PReleaseFileService;
+import com.soin.sgrm.service.pos.PReleaseService;
+import com.soin.sgrm.service.pos.PRequestService;
+import com.soin.sgrm.service.pos.PSigesService;
+import com.soin.sgrm.service.pos.PSystemService;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.DocxContext;
 import com.soin.sgrm.utils.DocxVariables;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.utils.PDocxContext;
+import com.soin.sgrm.utils.PDocxVariables;
 import com.soin.sgrm.exception.Sentry;
 
 import pl.jsolve.templ4docx.core.Docx;
@@ -120,7 +141,6 @@ public class FileController extends BaseController {
 	@Autowired
 	IncidenceService incidenceService;
 
-	
 	@Autowired
 	RequestBaseService requestBaseService;
 
@@ -147,12 +167,37 @@ public class FileController extends BaseController {
 	
 	@Autowired
 	PBaseKnowledgeService pbaseKnowledgeService;
-	
+
 	@Autowired 
 	PBaseKnowledgeFileService pbaseKnowFileService;
+	
+	@Autowired
+	PReleaseFileService preleaseFileService;
+	
+	@Autowired 
+	PRFCFileService prfcFileService;
+	@Autowired
+	PSigesService psigesService;
+	@Autowired
+    PDocTemplateService pdocsTemplateService;
+	@Autowired
+	PReleaseService preleaseService;
+	@Autowired
+	PRequestService prequestService;
+	@Autowired
+	PProjectService pprojectService;
+	@Autowired
+	PSystemService psystemService;
+	@Autowired
+	PRFCService prfcService;
+
 	DocxVariables docxVariables = null;
+	
+	PDocxVariables pdocxVariables = null;
 
 	DocxContext context = null;
+	
+	PDocxContext pcontext = null;
 
 	Map<String, String> replacedElementsMap;
 	
@@ -176,36 +221,71 @@ public class FileController extends BaseController {
 	 **/
 	@RequestMapping(value = "/impactObject-{id}", method = RequestMethod.GET)
 	public void impactObject(HttpServletResponse response, @PathVariable Integer id) throws IOException, SQLException {
-		String basePath = env.getProperty("fileStore.path");
-		ReleaseSummaryFile release = releaseService.findByIdSummaryFile(id); // se obtiene el release
-		String path = basePath + createPath(release, basePath) + "documentos/";
-		new File(path).mkdirs();
-		File temp = new File(path + release.getReleaseNumber() + ".csv");
-		List<String> list = releaseFileService.ImpactObjects(id); // lista de objetos
-		FileWriter fileWriter = null;
-		try {
-			fileWriter = new FileWriter(temp);
-			for (String string : list) {
-				fileWriter.append(
-						((string == null || string.length() == 0) ? "" : (string.substring(0, string.length() - 1))));
-				fileWriter.append("\n");
-			}
-		} catch (Exception e) {
-			Sentry.capture(e, "files");
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-		} finally {
+		
+		if (profileActive().equals("oracle")) {
+			String basePath = env.getProperty("fileStore.path");
+			ReleaseSummaryFile release = releaseService.findByIdSummaryFile(id); // se obtiene el release
+			String path = basePath + createPath(release, basePath) + "documentos/";
+			new File(path).mkdirs();
+			File temp = new File(path + release.getReleaseNumber() + ".csv");
+			List<String> list = releaseFileService.ImpactObjects(id); // lista de objetos
+			FileWriter fileWriter = null;
 			try {
-				fileWriter.flush();
-				fileWriter.close();
-			} catch (IOException e) {
+				fileWriter = new FileWriter(temp);
+				for (String string : list) {
+					fileWriter.append(
+							((string == null || string.length() == 0) ? "" : (string.substring(0, string.length() - 1))));
+					fileWriter.append("\n");
+				}
+			} catch (Exception e) {
 				Sentry.capture(e, "files");
 				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			} finally {
+				try {
+					fileWriter.flush();
+					fileWriter.close();
+				} catch (IOException e) {
+					Sentry.capture(e, "files");
+					logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				}
 			}
-		}
 
-		prepareFile(response, temp, temp.getName());
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(temp));
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
+			prepareFile(response, temp, temp.getName());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(temp));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
+		} else if (profileActive().equals("postgres")) {
+			String basePath = env.getProperty("fileStore.path");
+			PReleaseSummaryFile release = preleaseService.findByIdSummaryFile(id); // se obtiene el release
+			String path = basePath + createPath(release, basePath) + "documentos/";
+			new File(path).mkdirs();
+			File temp = new File(path + release.getReleaseNumber() + ".csv");
+			List<String> list = preleaseFileService.ImpactObjects(id); // lista de objetos
+			FileWriter fileWriter = null;
+			try {
+				fileWriter = new FileWriter(temp);
+				for (String string : list) {
+					fileWriter.append(
+							((string == null || string.length() == 0) ? "" : (string.substring(0, string.length() - 1))));
+					fileWriter.append("\n");
+				}
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+			} finally {
+				try {
+					fileWriter.flush();
+					fileWriter.close();
+				} catch (IOException e) {
+					Sentry.capture(e, "files");
+					logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				}
+			}
+
+			prepareFile(response, temp, temp.getName());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(temp));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
+		}
+		
 	}
 
 	/**
@@ -226,39 +306,76 @@ public class FileController extends BaseController {
 			return json;
 		}
 
-		// Direccion del archivo a guardar
-		String basePath = env.getProperty("fileStore.path");
-		ReleaseSummaryFile release=releaseService.findByIdSummaryFile(id);
-		String path = createPath(release, basePath);
-		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+		if (profileActive().equals("oracle")) {
+			// Direccion del archivo a guardar
+			String basePath = env.getProperty("fileStore.path");
+			ReleaseSummaryFile release=releaseService.findByIdSummaryFile(id);
+			String path = createPath(release, basePath);
+			String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
 
-		// Referencia del archivo
-		ReleaseFile releaseFile = new ReleaseFile();
-		releaseFile.setName(fileName);
-		releaseFile.setPath(basePath + path + fileName);
-		long time = System.currentTimeMillis();
-		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
-		releaseFile.setRevisionDate(revisionDate);
-		try {
-			// Se carga el archivo y se guarda la referencia
-			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
-			releaseFileService.save(id, releaseFile);
-			releaseFile = releaseFileService.findReleaseFile(releaseFile.getPath());
-			json.setStatus("success");
-			json.setObj(releaseFile);
-		} catch (SQLException ex) {
-			Sentry.capture(ex, "files");
-			json.setStatus("exception");
-			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
-		} catch (Exception e) {
-			Sentry.capture(e, "files");
-			json.setStatus("exception");
-			json.setException(e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			if (e instanceof MaxUploadSizeExceededException) {
-				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			// Referencia del archivo
+			ReleaseFile releaseFile = new ReleaseFile();
+			releaseFile.setName(fileName);
+			releaseFile.setPath(basePath + path + fileName);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			releaseFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				releaseFileService.save(id, releaseFile);
+				releaseFile = releaseFileService.findReleaseFile(releaseFile.getPath());
+				json.setStatus("success");
+				json.setObj(releaseFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
+			}
+		} else if (profileActive().equals("postgres")) {
+			// Direccion del archivo a guardar
+			String basePath = env.getProperty("fileStore.path");
+			PReleaseSummaryFile release=preleaseService.findByIdSummaryFile(id);
+			String path = createPath(release, basePath);
+			String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+			// Referencia del archivo
+			PReleaseFile releaseFile = new PReleaseFile();
+			releaseFile.setName(fileName);
+			releaseFile.setPath(basePath + path + fileName);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			releaseFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				preleaseFileService.save(id, releaseFile);
+				releaseFile = preleaseFileService.findReleaseFile(releaseFile.getPath());
+				json.setStatus("success");
+				json.setObj(releaseFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
 			}
 		}
+		
 		return json;
 	}
 
@@ -269,22 +386,40 @@ public class FileController extends BaseController {
 	 **/
 	@RequestMapping(value = "/singleDownload-{id}", method = RequestMethod.GET)
 	public void downloadFile(HttpServletResponse response, @PathVariable Integer id) throws IOException {
+		if (profileActive().equals("oracle")) {
+			ReleaseFile releaseFile = releaseFileService.findReleaseFileById(id);
+			File file = new File(releaseFile.getPath());
 
-		ReleaseFile releaseFile = releaseFileService.findReleaseFileById(id);
-		File file = new File(releaseFile.getPath());
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + releaseFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
+		} else if (profileActive().equals("postgres")) {
+			PReleaseFile releaseFile = preleaseFileService.findReleaseFileById(id);
+			File file = new File(releaseFile.getPath());
 
-		// Se modifica la respuesta para descargar el archivo
-		response.setContentType("text/plain");
-		response.setHeader("Content-Disposition", "attachment;filename=" + releaseFile.getName());
-		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-		if (mimeType == null) {
-			mimeType = "application/octet-stream";
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + releaseFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
 		}
-		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-		response.setContentLength((int) file.length());
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
+		
 	}
 
 	/**
@@ -297,13 +432,25 @@ public class FileController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		res.setStatus("success");
 		try {
-			ReleaseFile releaseFile = releaseFileService.findReleaseFileById(id);
-			releaseFileService.deleteReleaseFile(releaseFile);
-			File file = new File(releaseFile.getPath());
-			if (file.exists()) {
-				file.delete();
+			
+			if (profileActive().equals("oracle")) {
+				ReleaseFile releaseFile = releaseFileService.findReleaseFileById(id);
+				releaseFileService.deleteReleaseFile(releaseFile);
+				File file = new File(releaseFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(releaseFile.getId() + "");
+			} else if (profileActive().equals("postgres")) {
+				PReleaseFile releaseFile = preleaseFileService.findReleaseFileById(id);
+				preleaseFileService.deleteReleaseFile(releaseFile);
+				File file = new File(releaseFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(releaseFile.getId() + "");
 			}
-			res.setData(releaseFile.getId() + "");
+		
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "files");
 			res.setStatus("exception");
@@ -349,12 +496,62 @@ public class FileController extends BaseController {
 	 * @return: Base path del release.
 	 * @throws SQLException
 	 **/
+	public String createPath(PReleaseSummaryFile release, String basePath) throws SQLException {
+
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
+			if (release.getRequestList().size() != 0) {
+				PRequest request = release.getRequestList().iterator().next();
+				if (request.getCode_ice() != null) {
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
+				} else {
+					path += request.getCode_soin().replace(" ","") + "/";
+				}
+			}
+			path += release.getReleaseNumber() + "/";
+			path=path.trim();
+			new File(basePath + path).mkdirs();
+			return path;
+		
+
+	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del release.
+	 * @author: Esteban Bogantes H.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
 	public String createPathDownload(ReleaseSummary release, String basePath) throws SQLException {
 
 			Project project = projectService.findById(release.getSystem().getProyectId());
 			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
 			if (release.getRequestList().size() != 0) {
 				Request request = release.getRequestList().iterator().next();
+				if (request.getCode_ice() != null) {
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
+				} else {
+					path += request.getCode_soin().replace(" ","") + "/";
+				}
+			}
+			path += release.getReleaseNumber() + "/";
+			path=path.trim();
+			new File(basePath + path).mkdirs();
+			return path;
+	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del release.
+	 * @author: Esteban Bogantes H.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathDownload(PReleaseSummary release, String basePath) throws SQLException {
+
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
+			if (release.getRequestList().size() != 0) {
+				PRequest request = release.getRequestList().iterator().next();
 				if (request.getCode_ice() != null) {
 					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
 				} else {
@@ -402,64 +599,127 @@ public class FileController extends BaseController {
 
 		String basePath = env.getProperty("fileStore.path");
 		try {
-			DocTemplate docFile = docsTemplateService.findById(docId);
-			ReleaseSummary release = releaseService.findById(releaseId);
+			
+			if (profileActive().equals("oracle")) {
+				DocTemplate docFile = docsTemplateService.findById(docId);
+				ReleaseSummary release = releaseService.findById(releaseId);
 
-			if (docFile != null) {
-				// Se obtiene el archivo plantilla
-				File fileTemplate = new File(env.getProperty("fileStore.templates") + docFile.getTemplateName());
-				String path = basePath + createPathDownload(release, basePath) + "documentos/";
-				new File(path).mkdirs();
-				String sufix = (docFile.getSufix() == null) ? "" : docFile.getSufix();
-				// Se genera el archivo de salida
-				File outFile = new File(path + release.getReleaseNumber() + sufix + ".docx");
+				if (docFile != null) {
+					// Se obtiene el archivo plantilla
+					File fileTemplate = new File(env.getProperty("fileStore.templates") + docFile.getTemplateName());
+					String path = basePath + createPathDownload(release, basePath) + "documentos/";
+					new File(path).mkdirs();
+					String sufix = (docFile.getSufix() == null) ? "" : docFile.getSufix();
+					// Se genera el archivo de salida
+					File outFile = new File(path + release.getReleaseNumber() + sufix + ".docx");
 
-				// TODO Descomentear esta linea
-				// if (!outFile.exists()) {
-				FileUtils.copyFile(fileTemplate, outFile);
+					// TODO Descomentear esta linea
+					// if (!outFile.exists()) {
+					FileUtils.copyFile(fileTemplate, outFile);
 
-				if (docFile.getComponentGenerator().equals("GenerarDocumentoBRM_IFW_BO")) {
-					preloadCommands(release, fileTemplate, outFile);
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoBRM_IFW_BO")) {
+						preloadCommands(release, fileTemplate, outFile);
+					}
+
+					Docx docx = new Docx(outFile.getPath());
+					docx.setVariablePattern(new VariablePattern("{{", "}}"));
+					// preparing variables
+					docxVariables = new DocxVariables();
+
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoAIA")) {
+						generateAIADocument(release, docFile.getTemplateName());
+					}
+
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoSBLRFT")) {
+						generateSBLRFTDocument(release, docFile.getTemplateName());
+					}
+
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoCorpCBO")) {
+						generateCorpCBO(release, docFile.getTemplateName());
+					}
+
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoKomercialICE")) {
+						generateKMIDocument(release, docFile.getTemplateName());
+					}
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoATV")) {
+						generateATVDocument(release, docFile.getTemplateName());
+					}
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoAGILE")) {
+						generateAGILEDocument(release, docFile.getTemplateName());
+					}
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoBRM_IFW_BO")) {
+						generateBRM_IFW_BODocument(release, docFile.getTemplateName());
+					}
+
+					docx.fillTemplate(docxVariables.getVariables());
+					docx.save(outFile.getPath());
+					XWPFDocument document = docx.getXWPFDocument();
+					lineBreak(document, outFile);
+					response = prepareFile(response, outFile, outFile.getName());
+					InputStream inputStream = new BufferedInputStream(new FileInputStream(outFile));
+					FileCopyUtils.copy(inputStream, response.getOutputStream());
 				}
+			} else if (profileActive().equals("postgres")) {
+				DocTemplate docFile = docsTemplateService.findById(docId);
+				PReleaseSummary release = preleaseService.findById(releaseId);
 
-				Docx docx = new Docx(outFile.getPath());
-				docx.setVariablePattern(new VariablePattern("{{", "}}"));
-				// preparing variables
-				docxVariables = new DocxVariables();
+				if (docFile != null) {
+					// Se obtiene el archivo plantilla
+					File fileTemplate = new File(env.getProperty("fileStore.templates") + docFile.getTemplateName());
+					String path = basePath + createPathDownload(release, basePath) + "documentos/";
+					new File(path).mkdirs();
+					String sufix = (docFile.getSufix() == null) ? "" : docFile.getSufix();
+					// Se genera el archivo de salida
+					File outFile = new File(path + release.getReleaseNumber() + sufix + ".docx");
 
-				if (docFile.getComponentGenerator().equals("GenerarDocumentoAIA")) {
-					generateAIADocument(release, docFile.getTemplateName());
-				}
+					// TODO Descomentear esta linea
+					// if (!outFile.exists()) {
+					FileUtils.copyFile(fileTemplate, outFile);
 
-				if (docFile.getComponentGenerator().equals("GenerarDocumentoSBLRFT")) {
-					generateSBLRFTDocument(release, docFile.getTemplateName());
-				}
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoBRM_IFW_BO")) {
+						preloadCommands(release, fileTemplate, outFile);
+					}
 
-				if (docFile.getComponentGenerator().equals("GenerarDocumentoCorpCBO")) {
-					generateCorpCBO(release, docFile.getTemplateName());
-				}
+					Docx docx = new Docx(outFile.getPath());
+					docx.setVariablePattern(new VariablePattern("{{", "}}"));
+					// preparing variables
+					docxVariables = new DocxVariables();
 
-				if (docFile.getComponentGenerator().equals("GenerarDocumentoKomercialICE")) {
-					generateKMIDocument(release, docFile.getTemplateName());
-				}
-				if (docFile.getComponentGenerator().equals("GenerarDocumentoATV")) {
-					generateATVDocument(release, docFile.getTemplateName());
-				}
-				if (docFile.getComponentGenerator().equals("GenerarDocumentoAGILE")) {
-					generateAGILEDocument(release, docFile.getTemplateName());
-				}
-				if (docFile.getComponentGenerator().equals("GenerarDocumentoBRM_IFW_BO")) {
-					generateBRM_IFW_BODocument(release, docFile.getTemplateName());
-				}
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoAIA")) {
+						generateAIADocument(release, docFile.getTemplateName());
+					}
 
-				docx.fillTemplate(docxVariables.getVariables());
-				docx.save(outFile.getPath());
-				XWPFDocument document = docx.getXWPFDocument();
-				lineBreak(document, outFile);
-				response = prepareFile(response, outFile, outFile.getName());
-				InputStream inputStream = new BufferedInputStream(new FileInputStream(outFile));
-				FileCopyUtils.copy(inputStream, response.getOutputStream());
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoSBLRFT")) {
+						generateSBLRFTDocument(release, docFile.getTemplateName());
+					}
+
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoCorpCBO")) {
+						generateCorpCBO(release, docFile.getTemplateName());
+					}
+
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoKomercialICE")) {
+						generateKMIDocument(release, docFile.getTemplateName());
+					}
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoATV")) {
+						generateATVDocument(release, docFile.getTemplateName());
+					}
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoAGILE")) {
+						generateAGILEDocument(release, docFile.getTemplateName());
+					}
+					if (docFile.getComponentGenerator().equals("GenerarDocumentoBRM_IFW_BO")) {
+						generateBRM_IFW_BODocument(release, docFile.getTemplateName());
+					}
+
+					docx.fillTemplate(docxVariables.getVariables());
+					docx.save(outFile.getPath());
+					XWPFDocument document = docx.getXWPFDocument();
+					lineBreak(document, outFile);
+					response = prepareFile(response, outFile, outFile.getName());
+					InputStream inputStream = new BufferedInputStream(new FileInputStream(outFile));
+					FileCopyUtils.copy(inputStream, response.getOutputStream());
+				}
 			}
+
 
 		} catch (Exception e) {
 			Sentry.capture(e, "files");
@@ -524,6 +784,25 @@ public class FileController extends BaseController {
 	}
 
 	/**
+	 * @description: Completa variables para el documento de AIA.
+	 * @author: Esteban Bogantes H.
+	 * @return: Variables para el documento de AIA.
+	 **/
+	public void generateAIADocument(PReleaseSummary release, String fileNameDoc) throws Exception {
+		pdocxVariables.generalInfo(release, psystemService);
+		pdocxVariables.releaseSolutionInformation(release);
+		pdocxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
+		pdocxVariables.releaseAmbientInformation(release);
+		pdocxVariables.releaseAmbients(release);
+		pdocxVariables.releaseDataBaseInstructions(release);
+		pdocxVariables.releaseInstalationInstructions(release);
+		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
+		pdocxVariables.releaseEnvironment(release);
+		pdocxVariables.releaseActions(release);
+		pdocxVariables.releaseModifiedComponents(release);
+	}
+	/**
 	 * @description: Completa variables para el documento de ATV.
 	 * @author: Esteban Bogantes H.
 	 * @return: Variables para el documento de ATV.
@@ -540,6 +819,23 @@ public class FileController extends BaseController {
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 	}
 
+	
+	/**
+	 * @description: Completa variables para el documento de ATV.
+	 * @author: Esteban Bogantes H.
+	 * @return: Variables para el documento de ATV.
+	 **/
+	public void generateKMIDocument(PReleaseSummary release, String fileNameDoc) throws Exception {
+		pdocxVariables.generalInfo(release, psystemService);
+		pdocxVariables.releaseSolutionInformation(release);
+		pdocxVariables.releaseInstalationInstructions(release);
+		pdocxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
+		pdocxVariables.releaseActions(release);
+		pdocxVariables.releaseAmbientInformation(release);
+		pdocxVariables.releaseAmbients(release);
+		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
+	}
 	/**
 	 * @description: Completa variables para el documento de ATV.
 	 * @author: Esteban Bogantes H.
@@ -555,6 +851,24 @@ public class FileController extends BaseController {
 		docxVariables.releaseDataBaseInstructions(release);
 		docxVariables.releaseInstalationInstructions(release);
 		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
+	}
+	
+	/**
+	 * @description: Completa variables para el documento de ATV.
+	 * @author: Esteban Bogantes H.
+	 * @return: Variables para el documento de ATV.
+	 **/
+	public void generateATVDocument(PReleaseSummary release, String fileNameDoc) throws Exception {
+		pdocxVariables.generalInfo(release, psystemService);
+		pdocxVariables.releaseSolutionInformation(release);
+		pdocxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
+		pdocxVariables.releaseAmbientInformation(release);
+		pdocxVariables.releaseAmbients(release);
+		pdocxVariables.releaseActions(release);
+		pdocxVariables.releaseDataBaseInstructions(release);
+		pdocxVariables.releaseInstalationInstructions(release);
+		pdocxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 	}
 
@@ -574,6 +888,20 @@ public class FileController extends BaseController {
 	}
 
 	/**
+	 * @description: Completa variables para el documento de AGILE.
+	 * @author: Esteban Bogantes H.
+	 * @return: Variables para el documento de AGILE.
+	 **/
+	public void generateAGILEDocument(PReleaseSummary release, String fileNameDoc) throws Exception {
+		pdocxVariables.generalInfo(release, psystemService);
+		pdocxVariables.releaseSolutionInformation(release);
+		pdocxVariables.releaseInstalationInstructions(release);
+		pdocxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
+		pdocxVariables.releaseActions(release);
+		pdocxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
+	}
+	/**
 	 * @description: Completa variables para el documento de CorpCBO.
 	 * @author: Esteban Bogantes H.
 	 * @return: Variables para el documento de CorpCBO.
@@ -587,6 +915,24 @@ public class FileController extends BaseController {
 		docxVariables.releaseActions(release);
 		docxVariables.releaseDataBaseInstructions(release);
 		docxVariables.releaseInstalationInstructions(release);
+		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
+	}
+	
+	/**
+	 * @description: Completa variables para el documento de CorpCBO.
+	 * @author: Esteban Bogantes H.
+	 * @return: Variables para el documento de CorpCBO.
+	 **/
+	public void generateCorpCBO(PReleaseSummary release, String fileNameDoc) throws Exception {
+		pdocxVariables.generalInfo(release, psystemService);
+		pdocxVariables.releaseSolutionInformation(release);
+		pdocxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
+		pdocxVariables.releaseAmbientInformation(release);
+		pdocxVariables.releaseAmbients(release);
+		pdocxVariables.releaseActions(release);
+		pdocxVariables.releaseDataBaseInstructions(release);
+		pdocxVariables.releaseInstalationInstructions(release);
 		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 	}
@@ -605,6 +951,24 @@ public class FileController extends BaseController {
 		docxVariables.releaseActions(release);
 		docxVariables.releaseDataBaseInstructions(release);
 		docxVariables.releaseInstalationInstructions(release);
+		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
+	}
+	
+	/**
+	 * @description: Completa variables para el documento de SBLRFT.
+	 * @author: Esteban Bogantes H.
+	 * @return: Variables para el documento de SBLRFT
+	 **/
+	public void generateSBLRFTDocument(PReleaseSummary release, String fileNameDoc) throws Exception {
+		pdocxVariables.generalInfo(release, psystemService);
+		pdocxVariables.releaseSolutionInformation(release);
+		pdocxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
+		pdocxVariables.releaseAmbientInformation(release);
+		pdocxVariables.releaseAmbients(release);
+		pdocxVariables.releaseActions(release);
+		pdocxVariables.releaseDataBaseInstructions(release);
+		pdocxVariables.releaseInstalationInstructions(release);
 		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 	}
@@ -629,6 +993,26 @@ public class FileController extends BaseController {
 		docxVariables.releaseEnvironment(release);
 		docxVariables.releaseActions(release);
 	}
+	/**
+	 * @description: Completa variables para el documento de BRM_IFW_BO.
+	 * @author: Esteban Bogantes H.
+	 * @return: Variables para el documento de BRM_IFW_BO
+	 **/
+	public void generateBRM_IFW_BODocument(PReleaseSummary release, String fileNameDoc) throws Exception {
+		pdocxVariables.generalInfo(release, psystemService);
+		pdocxVariables.releaseSolutionInformation(release);
+		pdocxVariables.releaseObjects(release, (fileNameDoc.contains("BD") || fileNameDoc.contains("DB")));
+		pdocxVariables.releaseAmbientInformation(release);
+		pdocxVariables.releaseAmbients(release);
+		pdocxVariables.releaseDataBaseInstructions(release);
+		pdocxVariables.releaseInstalationInstructions(release);
+		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
+		pdocxVariables.releaseButtonCommandDetails(release);
+		pdocxVariables.releaseButtonFileDetails(release);
+		pdocxVariables.releaseEnvironment(release);
+		pdocxVariables.releaseActions(release);
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void preloadCommands(ReleaseSummary release, File fileTemplate, File outFile) throws Exception {
@@ -644,6 +1028,21 @@ public class FileController extends BaseController {
 		os.close();
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void preloadCommands(PReleaseSummary release, File fileTemplate, File outFile) throws Exception {
+		pcontext = new PDocxContext();
+		pcontext.loadCrontabs(release, systemService);
+		pcontext.loadButtonCommands(release, systemService);
+		pcontext.loadButtonFiles(release, systemService);
+		pcontext.definedReports(release);
+		DocxStamper stamper = new DocxStamperConfiguration().build();
+		InputStream inputstream = new FileInputStream(fileTemplate);
+		OutputStream os = new FileOutputStream(outFile);
+		stamper.stamp(inputstream, context, os);
+		os.close();
+	}
+	
+	
 
 	/**
 	 * @description: Se crea la direccion donde se guardan los archivos del rfc.
@@ -657,6 +1056,30 @@ public class FileController extends BaseController {
 			rfc = rfcService.findById(id);
 			Siges siges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
 			SystemInfo system= siges.getSystem();
+			String path = system.getName() + "/" +siges.getCodeSiges()  + "/";
+
+			path += rfc.getNumRequest() + "/";
+			new File(basePath + path).mkdirs();
+			return path;
+		} catch (Exception e) {
+			Sentry.capture(e, "files");
+			throw e;
+		}
+
+	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del rfc.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathPRFC(Long id, String basePath) throws SQLException {
+		PRFC rfc;
+		try {
+			rfc = prfcService.findById(id);
+			PSiges siges = psigesService.findByKey("codeSiges", rfc.getCodeProyect());
+			PSystemInfo system= siges.getSystem();
 			String path = system.getName() + "/" +siges.getCodeSiges()  + "/";
 
 			path += rfc.getNumRequest() + "/";
@@ -688,38 +1111,74 @@ public class FileController extends BaseController {
 			return json;
 		}
 		
-		// Direccion del archivo a guardar
-		String basePath = env.getProperty("fileStore.path");
-		String path = createPathRFC(id, basePath);
-		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+		if (profileActive().equals("oracle")) {
+			// Direccion del archivo a guardar
+			String basePath = env.getProperty("fileStore.path");
+			String path = createPathRFC(id, basePath);
+			String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
 
-		// Referencia del archivo
-		RFCFile rfcFile = new RFCFile();
-		rfcFile.setName(fileName);
-		rfcFile.setPath(basePath + path + fileName);
-		long time = System.currentTimeMillis();
-		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
-		rfcFile.setRevisionDate(revisionDate);
-		try {
-			// Se carga el archivo y se guarda la referencia
-			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
-			rfcFileService.saveRFCFile(id, rfcFile);
-			rfcFile = rfcFileService.findByKey("path", rfcFile.getPath());
-			json.setStatus("success");
-			json.setObj(rfcFile);
-		} catch (SQLException ex) {
-			Sentry.capture(ex, "files");
-			json.setStatus("exception");
-			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
-		} catch (Exception e) {
-			Sentry.capture(e, "files");
-			json.setStatus("exception");
-			json.setException(e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			if (e instanceof MaxUploadSizeExceededException) {
-				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			// Referencia del archivo
+			RFCFile rfcFile = new RFCFile();
+			rfcFile.setName(fileName);
+			rfcFile.setPath(basePath + path + fileName);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			rfcFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				rfcFileService.saveRFCFile(id, rfcFile);
+				rfcFile = rfcFileService.findByKey("path", rfcFile.getPath());
+				json.setStatus("success");
+				json.setObj(rfcFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
 			}
-		}
+		} else if (profileActive().equals("postgres")) {
+			// Direccion del archivo a guardar
+			String basePath = env.getProperty("fileStore.path");
+			String path = createPathPRFC(id, basePath);
+			String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+			// Referencia del archivo
+			PRFCFile rfcFile = new PRFCFile();
+			rfcFile.setName(fileName);
+			rfcFile.setPath(basePath + path + fileName);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			rfcFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				prfcFileService.saveRFCFile(id, rfcFile);
+				rfcFile = prfcFileService.findByKey("path", rfcFile.getPath());
+				json.setStatus("success");
+				json.setObj(rfcFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
+			}
+			}
+		
 		return json;
 	}
 	
@@ -731,21 +1190,39 @@ public class FileController extends BaseController {
 	@RequestMapping(value = "/singleDownloadRFC-{id}", method = RequestMethod.GET)
 	public void downloadFileRFC(HttpServletResponse response, @PathVariable Long id) throws IOException {
 
-		RFCFile rfcFile = rfcFileService.findById(id);
-		File file = new File(rfcFile.getPath());
+		if (profileActive().equals("oracle")) {
+			RFCFile rfcFile = rfcFileService.findById(id);
+			File file = new File(rfcFile.getPath());
 
-		// Se modifica la respuesta para descargar el archivo
-		response.setContentType("text/plain");
-		response.setHeader("Content-Disposition", "attachment;filename=" + rfcFile.getName());
-		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-		if (mimeType == null) {
-			mimeType = "application/octet-stream";
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + rfcFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
+		} else if (profileActive().equals("postgres")) {
+			PRFCFile rfcFile = prfcFileService.findById(id);
+			File file = new File(rfcFile.getPath());
+
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + rfcFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
 		}
-		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-		response.setContentLength((int) file.length());
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
 	}
 	
 	/**
@@ -758,13 +1235,26 @@ public class FileController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		res.setStatus("success");
 		try {
-			RFCFile rfcFile = rfcFileService.findById(id);
-			rfcFileService.deleteRFC(rfcFile);
-			File file = new File(rfcFile.getPath());
-			if (file.exists()) {
-				file.delete();
+			
+			
+			if (profileActive().equals("oracle")) {
+				RFCFile rfcFile = rfcFileService.findById(id);
+				rfcFileService.deleteRFC(rfcFile);
+				File file = new File(rfcFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(rfcFile.getId() + "");
+			} else if (profileActive().equals("postgres")) {
+				PRFCFile rfcFile = prfcFileService.findById(id);
+				prfcFileService.deleteRFC(rfcFile);
+				File file = new File(rfcFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(rfcFile.getId() + "");
 			}
-			res.setData(rfcFile.getId() + "");
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "files");
 			res.setStatus("exception");
