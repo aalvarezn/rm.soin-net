@@ -47,8 +47,7 @@ public class RFCServiceImpl implements RFCService {
 
 	@Override
 	public RFC findByKey(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getByKey(name,value);
 	}
 
 	@Override
@@ -312,5 +311,7 @@ public class RFCServiceImpl implements RFCService {
 	public RFCReportComplete findByIdRFCReport(Long id) {
 		return dao.findByIdRFCReport(id);
 	}
+
+
 
 }

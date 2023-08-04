@@ -13,5 +13,4 @@ public interface SigesService extends BaseService<Long, Siges>{
 
 	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges);
 
-
 }

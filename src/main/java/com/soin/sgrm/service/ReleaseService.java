@@ -118,6 +118,8 @@ public interface ReleaseService {
 
 	ReleaseSummaryFile findByIdSummaryFile(Integer id);
 
+	ReleaseEdit findEditByName(String numRelease);
+
 	
 
 
