@@ -58,13 +58,12 @@
 
 <!-- Linearicons -->
 <link rel="stylesheet"
-	href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css">
-
+	href="<c:url value='/static/plugins/linearicons/webfont/style.css'/>" />
 <link rel="stylesheet"
 	href="<c:url value='/static/plugins/jquery-file-upload/css/jquery.fileupload.css'/>" />
 <link rel="stylesheet"
 	href="<c:url value='/static/plugins/jquery-file-upload/css/jquery.fileupload-ui.css'/>" />
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
 <style type="text/css">
 .alert {
 	width: 20%;
@@ -530,9 +529,8 @@
 	<script src="<c:url value='/static/js/release/releaseCSV.js'/>"></script>
 	<script
 		src="<c:url value='/static/js/release/releaseCronTab_Button.js'/>"></script>
-	<!-- Linearicons -->
-	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" ></script>
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 var ifc = 0;
 var ift = 0;
+var arrayFiles=[];
 $(function() {
 	var table2 = $('#attachedFilesTable').DataTable({
 		"language" : {
@@ -13,15 +14,38 @@ $(function() {
 	$("input[type=file]").change(function() {
 		var fileName = $(this).val();
 		var files = $('#files')[0].files;
-
 		for (var i = 0, f; f = files[i]; i++) {
 			if (!existFile(f.name)) {
 				appendRowTableFile(f);
+				f.i=ift;
+				arrayFiles.push(f);
 			}
-		}
+	}
 	});
 });
 
+function verifyWord(word) {
+	  characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890.-";
+	  specials = "95";
+
+	  for (var i = 0; i < word.length; i++) {
+	    var keyboard = word.charAt(i);
+	    var special_keyboard = false;
+
+	    for (var j in specials) {
+	      if (keyboard.charCodeAt(0) == specials[j].charCodeAt(0)) {
+	        special_keyboard = true;
+	        break;
+	      }
+	    }
+
+	    if (characters.indexOf(keyboard) === -1 && !special_keyboard) {
+	      return false;
+	    }
+	  }
+
+	  return true;
+	}
 function existFile(nameFile) {
 	var exist = false;
 	var tableRow = $("#tableFiles tbody td").filter(function() {
@@ -36,10 +60,18 @@ function existFile(nameFile) {
 function appendRowTableFile(f) {
 	ift++;
 	var tableFile = $('#tableFiles tbody');
+	var name="";
+	if (verifyWord(f.name)) {
+		  name += '<span class="green-text">' + f.name + '</span>';
+		} else {
+			name += '<span class="red-text">' + f.name + '</span>';
+			 const uploadButton = $('#uploadButton');
+			 uploadButton.prop('disabled', true);
+		}
 	var newRowContent = '<tr id="'
 			+ ift
 			+ '"><td>'
-			+ f.name
+			+	name
 			+ '<div id="plcI_'
 			+ ift
 			+ '"></div></td><td>'
@@ -65,7 +97,22 @@ function appendRowTableFile(f) {
 }
 
 function deleteFile(num) {
+	arrayFiles = arrayFiles.filter(item => item.i !== num);
 	$('#tableFiles tbody tr#' + num).remove();
+
+	 // Verificar si hay algún nombre no permitido en el arrayFiles
+	  const hasInvalidFileName = arrayFiles.some(file => !verifyWord(file.name));
+
+	  // Obtener el botón por su ID o clase (ajusta el selector según sea necesario)
+	  const uploadButton = $('#uploadButton');
+
+	  if (hasInvalidFileName) {
+	    // Si hay algún nombre no permitido, desactivar el botón
+	    uploadButton.prop('disabled', true);
+	  } else {
+	    // Si todos los nombres son válidos, activar el botón
+	    uploadButton.prop('disabled', false);
+	  }
 }
 
 function kFormatter(num) {
@@ -85,6 +132,12 @@ function kFormatter(num) {
 
 function openAddFileModal() {
 	$('#addFileModal').modal('show');
+	arrayFiles=[];
+	// Obtén el elemento del campo de entrada de archivos por su id
+	var filesInput = document.getElementById("files");
+
+	// Limpia el campo de entrada de archivos asignando una cadena vacía a su valor
+	filesInput.value = "";
 }
 
 function closeAddFileModal() {
@@ -104,28 +157,12 @@ function uploads() {
 }
 
 function upload() {
-	var verification=null;
-	var num=0;
-	$('#addFileModal table input[type=file]').each(function(index, value) {
-		var idRow = $(this).closest('tr').prop('id');
-		var f = $(this)[0].files;
-		if(verification===null){
-			verification=f.length;
-			uploadInputFile(f, idRow,num);
-			num++;
-			if(verification===num){
-				num=0;
-				verification=null;
-			}
-		}else{
-			uploadInputFile(f, idRow,num);
-			num++;
-			if(verification===num){
-				num=0;
-				verification=null;
-			}
-		}
-	});
+	var arrayFilesCopy=arrayFiles.slice()
+	for(x=0;x<arrayFilesCopy.length;x++){
+		
+		 uploadInputFile(arrayFilesCopy[x], arrayFilesCopy[x].i);
+	}
+	
 
 	if ($('#addFileModal table input[type=file]').length == 0) {
 		closeAddFileModal();
@@ -134,17 +171,15 @@ function upload() {
 
 }
 
-function uploadInputFile(f, idRow,index) {
+function uploadInputFile(f, idRow) {
 	var cont = getCont()
+	// console.log($('#addFileModal table #file_' + idRow)[0].files[index]);
 	var formData = new FormData();
+	
+		formData
+		.append('file',f);
 
-	if($('#addFileModal table #file_' + idRow)[0].files[index]===undefined){
-		formData
-		.append('file', $('#addFileModal table #file_' + idRow)[0].files[0]);
-	}else{
-		formData
-		.append('file', $('#addFileModal table #file_' + idRow)[0].files[index]);
-	} 
+
 	// Ajax call for file uploaling
 	var ajaxReq = $.ajax({
 		url : cont + "file/" + "singleUploadIncidence-" + $('#rfcId').val(),
@@ -154,7 +189,7 @@ function uploadInputFile(f, idRow,index) {
 		cache : false,
 		contentType : false,
 		processData : false,
-		async : false,
+		async : true,
 		success : function(response) {
 			responseFileUpload(response, idRow);
 		},
@@ -183,6 +218,10 @@ function responseFileUpload(response, idRow) {
 		deleteFile(idRow);
 		addReleaseFileRow(response.obj);
 		reloadPreview();
+		if ($('#addFileModal table input[type=file]').length == 0) {
+			closeAddFileModal();
+			swal("Correcto!", "Archivos agregado correctamente.", "success", 2000)
+		}
 		break;
 	case 'fail':
 		swal("Error!", response.exception, "error")

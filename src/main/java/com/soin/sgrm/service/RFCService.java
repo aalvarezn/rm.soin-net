@@ -42,4 +42,5 @@ public interface RFCService extends BaseService<Long, RFC>{
 
 	public RFCReportComplete findByIdRFCReport(Long id);
 
+
 }
