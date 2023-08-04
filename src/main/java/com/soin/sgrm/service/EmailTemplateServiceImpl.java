@@ -2065,15 +2065,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
 			
-			String[] split = senders.split(",");
-
-			boolean verify = ArrayUtils.contains(split, user.getEmail());
-			if (!verify) {
-				senders = senders + "," + user.getEmail();
-			}
+			
 			for (String ccUser : senders.split(",")) {
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
-
 			}
 
 			if(email.getCc()!=null) {
@@ -2082,7 +2076,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 		
 			mimeMessage.addRecipient(Message.RecipientType.TO,
-					new InternetAddress(email.getTo()));
+					new InternetAddress(user.getEmail()));
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
@@ -2269,6 +2263,95 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	public EmailTemplate getById(Integer id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void sendMailNotifyChangeStatusWebService(String numRequest, String type, String name,
+			String operator, Timestamp convertStringToTimestamp, UserInfo user, String senders,
+			EmailTemplate email, String subject, String motive, String link, String title) {
+		try {
+			MimeMessage mimeMessage = mailSender.createMimeMessage();
+			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
+			// ------------------Seccion del asunto del correo -------------------------- //
+			// Se agrega el nombre del sistema
+			if (email.getSubject().contains("{{subject}}")) {
+				email.setSubject(email.getSubject().replace("{{subject}}",
+						(subject != null ? subject : "")));
+			}
+			if (email.getHtml().contains("{{number}}")) {
+				email.setHtml(email.getHtml().replace("{{number}}",
+						(numRequest != null ? numRequest : "")));
+			}
+			// ------------------Seccion del cuerpo del correo -------------------------- //
+			if (email.getHtml().contains("{{operator}}")) {
+				email.setHtml(email.getHtml().replace("{{operator}}",
+						(operator != null ? operator : "")));
+			}
+
+			if (email.getHtml().contains("{{status}}")) {
+				email.setHtml(email.getHtml().replace("{{status}}",
+						(name != null ? name : "")));
+			}
+			
+			if (email.getHtml().contains("{{type}}")) {
+				email.setHtml(email.getHtml().replace("{{type}}",
+						(type != null ? type : "")));
+			}
+			
+			if (email.getHtml().contains("{{userName}}")) {
+				email.setHtml(email.getHtml().replace("{{userName}}",
+						(user != null ?user.getFullName(): "")));
+			}
+			if (email.getHtml().contains("{{note}}")) {
+				email.setHtml(email.getHtml().replace("{{note}}",
+						(link != "" ?link: "NA")));
+			}
+			
+			if (email.getHtml().contains("{{title}}")) {
+				email.setHtml(email.getHtml().replace("{{title}}",
+						(title != "" ?title: "NA")));
+			}
+
+
+			if (email.getHtml().contains("{{updateAt}}")) {
+				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+				String strDate = dateFormat.format(CommonUtils.getSqlDate());
+				email.setHtml(email.getHtml().replace("{{updateAt}}", strDate));
+			}
+
+			if (email.getHtml().contains("{{motive}}")) {
+				email.setHtml(email.getHtml().replace("{{motive}}", (motive != null ? motive : "")));
+			}
+
+			String body = email.getHtml();
+			body = Constant.getCharacterEmail(body);
+			MimeMultipart mmp = MimeMultipart(body);
+			mimeMessage.setContent(mmp);
+			mimeMessage.setSubject(email.getSubject());
+			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
+			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
+			
+			
+			for (String ccUser : senders.split(",")) {
+				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			}
+
+			if(email.getCc()!=null) {
+				mimeMessage.addRecipient(Message.RecipientType.CC,
+						new InternetAddress(email.getCc()));
+			}
+		
+			mimeMessage.addRecipient(Message.RecipientType.TO,
+					new InternetAddress(user.getEmailAddress()));
+			mailSender.send(mimeMessage);
+		} catch (AddressException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }
 

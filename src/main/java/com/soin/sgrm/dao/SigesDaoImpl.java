@@ -48,6 +48,10 @@ public class SigesDaoImpl extends  AbstractDao<Long, Siges> implements SigesDao{
 	    Long count = (Long) crit.uniqueResult();
 	    return count > 0;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0eca0ccc0bccbc97b14e4ebfc180529444f68714
 
 
 

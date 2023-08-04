@@ -13,4 +13,8 @@ public interface SigesDao extends BaseDao<Long, Siges> {
 
 	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges);
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 0eca0ccc0bccbc97b14e4ebfc180529444f68714

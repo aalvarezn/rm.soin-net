@@ -48,7 +48,8 @@
 								</tbody>
 							</table>
 						</div>
-
+						<div style="padding-left: 3%;">*Solo se permiten n&uacute;meros, letras sin acentuar,- ,_ ,.
+							y que no hayan espacios en blanco</div>
 					</form>
 					<br>
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="display: none">
@@ -66,7 +67,7 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
 					onclick="closeAddFileModal()">CANCELAR</button>
-				<button type="button" class="btn btn-primary waves-effect"
+				<button type="button" id="uploadButton" class="btn btn-primary waves-effect"
 					onclick="upload()">GUARDAR</button>
 			</div>
 		</div>

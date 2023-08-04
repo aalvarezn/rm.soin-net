@@ -63,6 +63,14 @@ public class SigesServiceImpl implements SigesService{
 		
 		return dao.veryUpdateSigesCode(id,codeSiges);
 	}
+<<<<<<< HEAD
+=======
+
+	@Override
+	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges) {
+		return dao.veryUpdateSigesCodeDif(id,codeSiges);
+	}
+>>>>>>> 0eca0ccc0bccbc97b14e4ebfc180529444f68714
 
 	@Override
 	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges) {

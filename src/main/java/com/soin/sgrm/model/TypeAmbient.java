@@ -5,9 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -22,8 +20,6 @@ import com.soin.sgrm.utils.Constant;
 public class TypeAmbient implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AMBIENTES_TIPOAMBIENTE_SQ")
-	@SequenceGenerator(name = "AMBIENTES_TIPOAMBIENTE_SQ", sequenceName = "AMBIENTES_TIPOAMBIENTE_SQ", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 

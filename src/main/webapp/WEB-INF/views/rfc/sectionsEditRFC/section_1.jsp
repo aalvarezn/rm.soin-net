@@ -11,7 +11,7 @@
 		<h5 class="titulares">Detalles del cambio</h5>
 	</div>
 	<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-		<label for="email_address">C&oacute;digo de RFC</label>
+		<label for="email_address">C&oacute;digo de Proyecto</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line disabled">
 				<input type="text" disabled id="rfcCode" name="rfcCode"
