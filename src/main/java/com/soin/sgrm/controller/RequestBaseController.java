@@ -59,6 +59,24 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypePetitionR4Service;
 import com.soin.sgrm.service.TypePetitionService;
 import com.soin.sgrm.service.UserInfoService;
+import com.soin.sgrm.service.pos.PAmbientService;
+import com.soin.sgrm.service.pos.PEmailTemplateService;
+import com.soin.sgrm.service.pos.PErrorRequestService;
+import com.soin.sgrm.service.pos.PParameterService;
+import com.soin.sgrm.service.pos.PProjectService;
+import com.soin.sgrm.service.pos.PRequestBaseR1Service;
+import com.soin.sgrm.service.pos.PRequestBaseService;
+import com.soin.sgrm.service.pos.PRequestRM_P1_R1Service;
+import com.soin.sgrm.service.pos.PRequestRM_P1_R2Service;
+import com.soin.sgrm.service.pos.PRequestRM_P1_R3Service;
+import com.soin.sgrm.service.pos.PRequestRM_P1_R4Service;
+import com.soin.sgrm.service.pos.PSigesService;
+import com.soin.sgrm.service.pos.PStatusRequestService;
+import com.soin.sgrm.service.pos.PSystemService;
+import com.soin.sgrm.service.pos.PTypePetitionR4Service;
+import com.soin.sgrm.service.pos.PTypePetitionService;
+import com.soin.sgrm.service.pos.PUserInfoService;
+import com.soin.sgrm.service.pos.PUserService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
@@ -124,6 +142,64 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	UserInfoService userInfoService;
+	
+	@Autowired
+	PSystemService psystemService;
+
+	@Autowired
+	PProjectService pprojectService;
+
+	@Autowired
+	PSigesService psigeService;
+
+	@Autowired
+	PStatusRequestService pstatusService;
+
+	@Autowired
+	PRequestBaseService prequestBaseService;
+
+	@Autowired
+	PRequestBaseR1Service prequestBaseR1Service;
+
+	@Autowired
+	PTypePetitionService ptypePetitionService;
+
+	@Autowired
+	PTypePetitionR4Service ptypePetitionR4Service;
+
+	@Autowired
+	PUserService puserService;
+
+	@Autowired
+	PRequestRM_P1_R1Service prequestServiceRm1;
+
+	@Autowired
+	PRequestRM_P1_R2Service prequestServiceRm2;
+
+	@Autowired
+	PRequestRM_P1_R3Service prequestServiceRm3;
+
+	@Autowired
+	PRequestRM_P1_R4Service prequestServiceRm4;
+
+	@Autowired
+	PRequestRM_P1_R5Service prequestServiceRm5;
+
+	@Autowired
+	PAmbientService pambientService;
+
+	@Autowired
+	PEmailTemplateService pemailService;
+
+	@Autowired
+	PParameterService pparameterService;
+
+	@Autowired
+	PErrorRequestService perrorService;
+
+	@Autowired
+	PUserInfoService puserInfoService;
+
 
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 
