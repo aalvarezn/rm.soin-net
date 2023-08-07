@@ -135,15 +135,23 @@ public class PSystem implements Serializable {
 	@Transient
 	List<Long> attentionGroupId;
 
+	
 	@Transient
 	Integer leaderId;
 
 	@Transient
 	Integer proyectId;
+	
+	@Transient
+	Long typePetitionId;
 
 	@Transient
 	Integer emailId;
 
+	@Transient
+	String sigesCode;
+	
+	
 	public int getId() {
 		return id;
 	}
@@ -497,5 +505,23 @@ public class PSystem implements Serializable {
 			this.emailTemplate.add(email);
 		}
 	}
+
+	public Long getTypePetitionId() {
+		return typePetitionId;
+	}
+
+	public void setTypePetitionId(Long typePetitionId) {
+		this.typePetitionId = typePetitionId;
+	}
+
+	public String getSigesCode() {
+		return sigesCode;
+	}
+
+	public void setSigesCode(String sigesCode) {
+		this.sigesCode = sigesCode;
+	}
+	
+	
 
 }

@@ -3,6 +3,7 @@ package com.soin.sgrm.dao.pos;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -12,6 +13,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.utils.JsonSheet;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Siges;
+import com.soin.sgrm.model.System;
+import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PSiges;
 import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.model.pos.PSystemModule;
@@ -254,5 +261,44 @@ public class PSystemDaoImpl implements PSystemDao {
 		List<PSystem> systemList = crit.list();
 
 		return systemList;
+	}
+
+	@Override
+	public void saveAndSiges(PSystem addSystem) {
+		Session session = sessionFactory.getCurrentSession();
+
+		try {
+
+			Criteria crit = sessionFactory.getCurrentSession().createCriteria(PEmailTemplate.class);
+			crit.add(Restrictions.eq("name", "RFC Solicitado"));
+			PEmailTemplate emailTemplate = (PEmailTemplate) crit.uniqueResult();
+			session.save(addSystem);
+			PSiges siges = new PSiges();
+			PSystemInfo system = new PSystemInfo();
+			system.setId(addSystem.getId());
+			siges.setSystem(system);
+			siges.setCodeSiges(addSystem.getSigesCode());
+			siges.setEmailTemplate(emailTemplate);
+			session.save(siges);
+		} catch (Exception e) {
+
+			throw e;
+		}
+	}
+
+	@Override
+	public boolean checkUniqueCode(String sCode, Integer proyectId, Integer typeCheck) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PSystem.class);
+		crit.createAlias("proyect", "proyect");
+		crit.add(Restrictions.eq("proyect.id", proyectId));
+		if (typeCheck == 1) {
+			crit.add(Restrictions.eq("code", sCode));
+		} else if (typeCheck == 0) {
+			crit.add(Restrictions.eq("name", sCode));
+		}
+
+		crit.setProjection(Projections.rowCount());
+		Long count = (Long) crit.uniqueResult();
+		return count == 0;
 	}
 }

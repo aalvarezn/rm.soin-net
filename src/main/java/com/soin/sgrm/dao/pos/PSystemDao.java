@@ -2,6 +2,7 @@ package com.soin.sgrm.dao.pos;
 
 import java.util.List;
 
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.model.pos.PSystemModule;
@@ -57,5 +58,9 @@ public interface PSystemDao {
 	List<PSystem> findByManagerIncidence(Integer idUser);
 
 	List<PSystem> getSystemByProject(Integer projectId);
+
+	void saveAndSiges(PSystem addSystem);
+
+	boolean checkUniqueCode(String sCode, Integer proyectId, Integer typeCheck);
 
 }

@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.pos.PRequestBaseR1Dao;
 
 import com.soin.sgrm.model.pos.PRequestReport;
-import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.model.pos.PRequestBaseR1;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.Constant;
@@ -82,7 +82,7 @@ public class PRequestBaseR1ServiceImpl implements PRequestBaseR1Service {
 
 		Map<String, String> alias = new HashMap<String, String>();
 
-		List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
+		List<PSystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(PSystemInfo.class)
 				.createAlias("managers", "managers").add(Restrictions.eq("managers.id", id)).list();
 		alias.put("status", "status");
 		alias.put("user", "user");
@@ -136,7 +136,7 @@ public class PRequestBaseR1ServiceImpl implements PRequestBaseR1Service {
 
 		} else {
 			List<Integer> listaId = new ArrayList<Integer>();
-			for (SystemInfo system : systems) {
+			for (PSystemInfo system : systems) {
 				listaId.add(system.getId());
 			}
 			alias.put("systemInfo", "systemInfo");

@@ -739,7 +739,7 @@ function saveSystem(){
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "/request/savesys" ,
+				url : getCont() + "request/savesys" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
@@ -791,6 +791,7 @@ function saveSystem(){
 					}
 				},
 				error : function(x, t, m) {
+					console.log(response);
 					unblockUI();
 					notifyMs(response.message, response.status);
 				}

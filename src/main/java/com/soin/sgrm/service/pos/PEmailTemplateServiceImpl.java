@@ -46,6 +46,12 @@ import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseObject;
 import com.soin.sgrm.model.pos.PRelease_RFCFast;
 import com.soin.sgrm.model.pos.PRequest;
+import com.soin.sgrm.model.pos.PRequestBaseR1;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R1;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R2;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R3;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R4;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R5;
 import com.soin.sgrm.model.pos.PSiges;
 import com.soin.sgrm.model.pos.PUserInfo;
 import com.soin.sgrm.model.pos.wf.PWFRFC;
@@ -100,18 +106,18 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	private Environment env;
 
 	@Autowired
-	RequestRM_P1_R1Service requestServiceR1;
+	PRequestRM_P1_R1Service requestServiceR1;
 
 	@Autowired
-	RequestRM_P1_R2Service requestServiceR2;
+	PRequestRM_P1_R2Service requestServiceR2;
 	@Autowired
-	RequestRM_P1_R3Service requestServiceR3;
+	PRequestRM_P1_R3Service requestServiceR3;
 
 	@Autowired
-	RequestRM_P1_R4Service requestServiceR4;
+	PRequestRM_P1_R4Service requestServiceR4;
 
 	@Autowired
-	RequestRM_P1_R5Service requestServiceR5;
+	PRequestRM_P1_R5Service requestServiceR5;
 	@Autowired
 	private JavaMailSender mailSender;
 
@@ -1062,7 +1068,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailRequestR4(RequestBaseR1 requestEmail, PEmailTemplate email) throws Exception {
+	public void sendMailRequestR4(PRequestBaseR1 requestEmail, PEmailTemplate email) throws Exception {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 		email = fillEmail(email, requestEmail);
@@ -1156,7 +1162,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		mailSender.send(mimeMessage);
 	}
 
-	public PEmailTemplate fillEmail(PEmailTemplate email, RequestBaseR1 request) {
+	public PEmailTemplate fillEmail(PEmailTemplate email, PRequestBaseR1 request) {
 		String temp = "";
 
 		if (request.getTypePetition().getCode().equals("RM-P1-R4")) {
@@ -1192,8 +1198,8 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 				temp = "<table border=1>";
 				temp += "<tr>" + "<th>Nombre</th>" + "<th>Correo</th>" + "<th>Tipo</th>" + "<th>Permisos</th>"
 						+ "<th>Ambiente</th>" + "<th>Espec</th>" + "</tr>";
-				List<RequestRM_P1_R4> users = requestServiceR4.listRequestRm4(request.getId());
-				for (RequestRM_P1_R4 user : users) {
+				List<PRequestRM_P1_R4> users = requestServiceR4.listRequestRm4(request.getId());
+				for (PRequestRM_P1_R4 user : users) {
 					temp += "<tr>";
 
 					temp += "<td>" + user.getName() + "</td>";
@@ -1233,7 +1239,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			}
 			return email;
 		} else if (request.getTypePetition().getCode().equals("RM-P1-R5")) {
-			RequestRM_P1_R5 requestRM5 = requestServiceR5.requestRm5(request.getId());
+			PRequestRM_P1_R5 requestRM5 = requestServiceR5.requestRm5(request.getId());
 			/* ------ body ------ */
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
@@ -1299,7 +1305,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 			}
 		} else if (request.getTypePetition().getCode().equals("RM-P1-R2")) {
-			RequestRM_P1_R2 requestRM2 = requestServiceR2.requestRm2(request.getId());
+			PRequestRM_P1_R2 requestRM2 = requestServiceR2.requestRm2(request.getId());
 			/* ------ body ------ */
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
@@ -1365,7 +1371,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 			}
 		} else if (request.getTypePetition().getCode().equals("RM-P1-R3")) {
-			RequestRM_P1_R3 requestRM3 = requestServiceR3.requestRm3(request.getId());
+			PRequestRM_P1_R3 requestRM3 = requestServiceR3.requestRm3(request.getId());
 			/* ------ body ------ */
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",
@@ -1423,7 +1429,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 						email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
 			}
 		} else if (request.getTypePetition().getCode().equals("RM-P1-R1")) {
-			RequestRM_P1_R1 requestRM1 = requestServiceR1.requestRm1(request.getId());
+			PRequestRM_P1_R1 requestRM1 = requestServiceR1.requestRm1(request.getId());
 			/* ------ body ------ */
 			if (email.getHtml().contains("{{userName}}")) {
 				email.setHtml(email.getHtml().replace("{{userName}}",

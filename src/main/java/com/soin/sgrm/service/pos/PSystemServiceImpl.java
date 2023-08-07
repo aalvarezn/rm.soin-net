@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.soin.sgrm.dao.pos.PSystemDao;
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.model.pos.PSystemModule;
@@ -135,5 +136,15 @@ public class PSystemServiceImpl implements PSystemService {
 	public List<PSystem> getSystemByProject(Integer projectId) {
 		// TODO Auto-generated method stub
 		return dao.getSystemByProject(projectId);
+	}
+
+	@Override
+	public boolean checkUniqueCode(String sCode, Integer proyectId, Integer typeCheck) {
+		return dao.checkUniqueCode(sCode,proyectId,typeCheck);
+	}
+
+	@Override
+	public void saveAndSiges(PSystem addSystem) {
+		dao.saveAndSiges(addSystem);
 	}
 }

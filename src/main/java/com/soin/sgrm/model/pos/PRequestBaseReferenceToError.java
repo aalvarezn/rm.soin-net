@@ -26,7 +26,7 @@ public class PRequestBaseReferenceToError implements Serializable,Cloneable {
 	@Column(name = "NUM_SOLICITUD")
 	private String numRequest;
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_SISTEMA", nullable = false)
+	@JoinColumn(name = "\"ID_SISTEMA\"", nullable = false)
 	private PSystemInfo system;
 	public Long getId() {
 		return id;

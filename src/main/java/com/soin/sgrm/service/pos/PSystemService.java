@@ -2,6 +2,7 @@ package com.soin.sgrm.service.pos;
 
 import java.util.List;
 
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.model.pos.PSystemModule;
@@ -59,5 +60,9 @@ public interface PSystemService {
 	List<PSystem> findByManagerIncidence(Integer idUser);
 
 	List<PSystem> getSystemByProject(Integer projectId);
+
+	boolean checkUniqueCode(String sCode, Integer proyectId,Integer typeCheck);
+
+	void saveAndSiges(PSystem addSystem);
 
 }

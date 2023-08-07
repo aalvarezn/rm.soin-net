@@ -62,6 +62,18 @@ import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRequestService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypePetitionService;
+import com.soin.sgrm.service.pos.PAmbientService;
+import com.soin.sgrm.service.pos.PEmailTemplateService;
+import com.soin.sgrm.service.pos.PErrorRequestService;
+import com.soin.sgrm.service.pos.PParameterService;
+import com.soin.sgrm.service.pos.PRequestBaseR1Service;
+import com.soin.sgrm.service.pos.PRequestBaseService;
+import com.soin.sgrm.service.pos.PRequestRM_P1_R4Service;
+import com.soin.sgrm.service.pos.PSigesService;
+import com.soin.sgrm.service.pos.PStatusRequestService;
+import com.soin.sgrm.service.pos.PSystemService;
+import com.soin.sgrm.service.pos.PTypePetitionService;
+import com.soin.sgrm.service.pos.PUserService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -112,6 +124,49 @@ public class RequestBaseManagementController extends BaseController {
 	
 	@Autowired
 	Request_EstimateService requestEstimateService;
+	
+	
+	@Autowired
+	PSystemService psystemService;
+
+	@Autowired
+	PSigesService psigeService;
+
+	@Autowired
+	PStatusRequestService pstatusService;
+
+	@Autowired
+	PRequestBaseService prequestBaseService;
+
+	@Autowired
+	PRequestBaseR1Service prequestBaseR1Service;
+
+	@Autowired
+	PTypePetitionService ptypePetitionService;
+
+	@Autowired
+	PUserService puserService;
+
+	@Autowired
+	PRequestRM_P1_R4Service prequestServiceRm4;
+
+	@Autowired
+	PAmbientService pambientService;
+
+	@Autowired
+	PEmailTemplateService pemailService;
+
+	@Autowired
+	PParameterService pparameterService;
+
+	@Autowired
+	PErrorRequestService perrorService;
+
+	@Autowired
+	PRequestErrorService prequestErrorService;
+	
+	@Autowired
+	PRequest_EstimateService prequestEstimateService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,

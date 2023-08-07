@@ -7,6 +7,7 @@ import com.soin.sgrm.dao.BaseDao;
 import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
+import com.soin.sgrm.model.pos.PRequestBaseR1;
 import com.soin.sgrm.model.pos.PUserInfo;
 import com.soin.sgrm.model.pos.wf.PWFRFC;
 import com.soin.sgrm.model.pos.wf.PWFRelease;
@@ -49,7 +50,7 @@ public interface PEmailTemplateService extends BaseDao<Integer, PEmailTemplate> 
 
 	void sendMailRFC(PRFC rfcEmail, PEmailTemplate email) throws Exception;
 	
-	void sendMailRequestR4(RequestBaseR1 requestEmail, PEmailTemplate email) throws Exception;
+	void sendMailRequestR4(PRequestBaseR1 requestEmail, PEmailTemplate email) throws Exception;
 	
 
 	void sendMailNotify(PWFRelease releaseEmail, PEmailTemplate email,String user);

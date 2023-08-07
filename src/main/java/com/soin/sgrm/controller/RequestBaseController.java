@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +26,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.Errors_Requests;
+import com.soin.sgrm.model.Impact;
+import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
@@ -35,11 +39,32 @@ import com.soin.sgrm.model.RequestRM_P1_R3;
 import com.soin.sgrm.model.RequestRM_P1_R4;
 import com.soin.sgrm.model.RequestRM_P1_R5;
 import com.soin.sgrm.model.Siges;
+import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.StatusRequest;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PErrors_RFC;
+import com.soin.sgrm.model.pos.PErrors_Requests;
+import com.soin.sgrm.model.pos.PImpact;
+import com.soin.sgrm.model.pos.PPriority;
+import com.soin.sgrm.model.pos.PProject;
+import com.soin.sgrm.model.pos.PRequestBase;
+import com.soin.sgrm.model.pos.PRequestBaseR1;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R1;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R2;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R3;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R4;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R5;
+import com.soin.sgrm.model.pos.PSiges;
+import com.soin.sgrm.model.pos.PStatusRFC;
+import com.soin.sgrm.model.pos.PStatusRequest;
+import com.soin.sgrm.model.pos.PSystem;
+import com.soin.sgrm.model.pos.PTypePetition;
+import com.soin.sgrm.model.pos.PUser;
+import com.soin.sgrm.model.pos.PUserInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.EmailTemplateService;
@@ -70,6 +95,7 @@ import com.soin.sgrm.service.pos.PRequestRM_P1_R1Service;
 import com.soin.sgrm.service.pos.PRequestRM_P1_R2Service;
 import com.soin.sgrm.service.pos.PRequestRM_P1_R3Service;
 import com.soin.sgrm.service.pos.PRequestRM_P1_R4Service;
+import com.soin.sgrm.service.pos.PRequestRM_P1_R5Service;
 import com.soin.sgrm.service.pos.PSigesService;
 import com.soin.sgrm.service.pos.PStatusRequestService;
 import com.soin.sgrm.service.pos.PSystemService;
@@ -142,7 +168,7 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	UserInfoService userInfoService;
-	
+
 	@Autowired
 	PSystemService psystemService;
 
@@ -200,6 +226,20 @@ public class RequestBaseController extends BaseController {
 	@Autowired
 	PUserInfoService puserInfoService;
 
+	private final Environment environment;
+
+	@Autowired
+	public RequestBaseController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
 
 	public static final Logger logger = Logger.getLogger(RFCController.class);
 
@@ -209,18 +249,34 @@ public class RequestBaseController extends BaseController {
 		try {
 			Integer userLogin = getUserLogin().getId();
 			loadCountsRelease(request, userLogin);
-			List<System> systems = systemService.listProjects(getUserLogin().getId());
-			List<StatusRequest> statuses = statusService.findAll();
-			List<TypePetition> typePetitionsFilter = typePetitionService.listTypePetition();
-			List<TypePetition> typePetitions = typePetitionService.findAll();
-			List<Project> proyects = projectService.listAll();
-			model.addAttribute("users", userInfoService.list());
-			model.addAttribute("user", new UserInfo());
-			model.addAttribute("statuses", statuses);
-			model.addAttribute("typePetitionsFilter", typePetitionsFilter);
-			model.addAttribute("typePetitions", typePetitions);
-			model.addAttribute("systems", systems);
-			model.addAttribute("proyects", proyects);
+			if (profileActive().equals("oracle")) {
+				List<System> systems = systemService.listProjects(getUserLogin().getId());
+				List<StatusRequest> statuses = statusService.findAll();
+				List<TypePetition> typePetitionsFilter = typePetitionService.listTypePetition();
+				List<TypePetition> typePetitions = typePetitionService.findAll();
+				List<Project> proyects = projectService.listAll();
+				model.addAttribute("users", userInfoService.list());
+				model.addAttribute("user", new UserInfo());
+				model.addAttribute("statuses", statuses);
+				model.addAttribute("typePetitionsFilter", typePetitionsFilter);
+				model.addAttribute("typePetitions", typePetitions);
+				model.addAttribute("systems", systems);
+				model.addAttribute("proyects", proyects);
+			} else if (profileActive().equals("postgres")) {
+				List<PSystem> systems = psystemService.listProjects(getUserLogin().getId());
+				List<PStatusRequest> statuses = pstatusService.findAll();
+				List<PTypePetition> typePetitionsFilter = ptypePetitionService.listTypePetition();
+				List<PTypePetition> typePetitions = ptypePetitionService.findAll();
+				List<PProject> proyects = pprojectService.listAll();
+				model.addAttribute("users", puserInfoService.list());
+				model.addAttribute("user", new PUserInfo());
+				model.addAttribute("statuses", statuses);
+				model.addAttribute("typePetitionsFilter", typePetitionsFilter);
+				model.addAttribute("typePetitions", typePetitions);
+				model.addAttribute("systems", systems);
+				model.addAttribute("proyects", proyects);
+			}
+
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
 			e.printStackTrace();
@@ -231,7 +287,7 @@ public class RequestBaseController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<RequestBaseR1> requests = new JsonSheet<>();
+
 		try {
 
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
@@ -263,29 +319,63 @@ public class RequestBaseController extends BaseController {
 			}
 
 			String dateRange = request.getParameter("dateRange");
+			if (profileActive().equals("oracle")) {
+				JsonSheet<RequestBaseR1> requests = new JsonSheet<>();
+				requests = requestBaseR1Service.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
+						statusId, dateRange, systemId, typePetitionId);
+				return requests;
+			} else if (profileActive().equals("postgres")) {
+				JsonSheet<PRequestBaseR1> requests = new JsonSheet<>();
+				requests = prequestBaseR1Service.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
+						statusId, dateRange, systemId, typePetitionId);
+				return requests;
+			}
 
-			requests = requestBaseR1Service.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
-					statusId, dateRange, systemId, typePetitionId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		return requests;
+		return null;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody RequestBase addRequest) {
 		JsonResponse res = new JsonResponse();
 		try {
-			User user = userService.getUserByUsername(getUserLogin().getUsername());
-			StatusRequest status = statusService.findByKey("code", "draft");
-			addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
-			if (status != null) {
 
-				if (addRequest.getTypePetition().getCode().equals("RM-P1-R1")) {
-					RequestBase verifyRequest = requestBaseService.findByKey("numRequest",
-							addRequest.getCodeOpportunity());
-					if (verifyRequest == null) {
+			if (profileActive().equals("oracle")) {
+				User user = userService.getUserByUsername(getUserLogin().getUsername());
+				StatusRequest status = statusService.findByKey("code", "draft");
+				addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
+				if (status != null) {
+
+					if (addRequest.getTypePetition().getCode().equals("RM-P1-R1")) {
+						RequestBase verifyRequest = requestBaseService.findByKey("numRequest",
+								addRequest.getCodeOpportunity());
+						if (verifyRequest == null) {
+							addRequest.setStatus(status);
+							addRequest.setUser(user);
+							addRequest.setRequestDate(CommonUtils.getSystemTimestamp());
+							res.setStatus("success");
+							addRequest.setMotive("Inicio de Solicitud");
+							addRequest.setOperator(user.getFullName());
+							Siges codeSiges = sigeService.findById(addRequest.getCodeSigesId());
+							addRequest.setSiges(codeSiges);
+
+							addRequest.setNumRequest(addRequest.getCodeOpportunity());
+							addRequest.setCodeProyect((addRequest.getCodeOpportunity()));
+							addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
+							requestBaseService.save(addRequest);
+							RequestRM_P1_R1 requestR1 = new RequestRM_P1_R1();
+							requestR1.setRequestBase(addRequest);
+							requestServiceRm1.save(requestR1);
+
+							res.setData(addRequest.getId().toString());
+							res.setMessage("Se creo correctamente la solicitud!");
+						} else {
+							res.setStatus("exception");
+							res.setMessage("Error al crear el codigo con los administradores!");
+						}
+					} else {
 						addRequest.setStatus(status);
 						addRequest.setUser(user);
 						addRequest.setRequestDate(CommonUtils.getSystemTimestamp());
@@ -294,59 +384,114 @@ public class RequestBaseController extends BaseController {
 						addRequest.setOperator(user.getFullName());
 						Siges codeSiges = sigeService.findById(addRequest.getCodeSigesId());
 						addRequest.setSiges(codeSiges);
-
-						addRequest.setNumRequest(addRequest.getCodeOpportunity());
-						addRequest.setCodeProyect((addRequest.getCodeOpportunity()));
 						addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
-						requestBaseService.save(addRequest);
-						RequestRM_P1_R1 requestR1 = new RequestRM_P1_R1();
-						requestR1.setRequestBase(addRequest);
-						requestServiceRm1.save(requestR1);
+						addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
+						addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),
+								addRequest.getTypePetition().getCode(), addRequest.getSystemInfo().getCode()));
 
+						requestBaseService.save(addRequest);
+						if (addRequest.getTypePetition().getCode().equals("RM-P1-R5")) {
+							RequestRM_P1_R5 requestR5 = new RequestRM_P1_R5();
+							requestR5.setRequestBase(addRequest);
+							requestServiceRm5.save(requestR5);
+						}
+						if (addRequest.getTypePetition().getCode().equals("RM-P1-R3")) {
+							RequestRM_P1_R3 requestR3 = new RequestRM_P1_R3();
+							requestR3.setRequestBase(addRequest);
+							requestServiceRm3.save(requestR3);
+						}
+						if (addRequest.getTypePetition().getCode().equals("RM-P1-R2")) {
+							RequestRM_P1_R2 requestR2 = new RequestRM_P1_R2();
+							requestR2.setRequestBase(addRequest);
+							requestServiceRm2.save(requestR2);
+						}
 						res.setData(addRequest.getId().toString());
 						res.setMessage("Se creo correctamente la solicitud!");
-					} else {
-						res.setStatus("exception");
-						res.setMessage("Error al crear el codigo con los administradores!");
 					}
+
 				} else {
-					addRequest.setStatus(status);
-					addRequest.setUser(user);
-					addRequest.setRequestDate(CommonUtils.getSystemTimestamp());
-					res.setStatus("success");
-					addRequest.setMotive("Inicio de Solicitud");
-					addRequest.setOperator(user.getFullName());
-					Siges codeSiges = sigeService.findById(addRequest.getCodeSigesId());
-					addRequest.setSiges(codeSiges);
-					addRequest.setSystemInfo(systemService.findById(addRequest.getSystemId()));
-					addRequest.setTypePetition(typePetitionService.findById(addRequest.getTypePetitionId()));
-					addRequest.setNumRequest(requestBaseService.generateRequestNumber(addRequest.getCodeProyect(),
-							addRequest.getTypePetition().getCode(),addRequest.getSystemInfo().getCode()));
-					
-					requestBaseService.save(addRequest);
-					if (addRequest.getTypePetition().getCode().equals("RM-P1-R5")) {
-						RequestRM_P1_R5 requestR5 = new RequestRM_P1_R5();
-						requestR5.setRequestBase(addRequest);
-						requestServiceRm5.save(requestR5);
-					}
-					if (addRequest.getTypePetition().getCode().equals("RM-P1-R3")) {
-						RequestRM_P1_R3 requestR3 = new RequestRM_P1_R3();
-						requestR3.setRequestBase(addRequest);
-						requestServiceRm3.save(requestR3);
-					}
-					if (addRequest.getTypePetition().getCode().equals("RM-P1-R2")) {
-						RequestRM_P1_R2 requestR2 = new RequestRM_P1_R2();
-						requestR2.setRequestBase(addRequest);
-						requestServiceRm2.save(requestR2);
-					}
-					res.setData(addRequest.getId().toString());
-					res.setMessage("Se creo correctamente la solicitud!");
+
+					res.setStatus("exception");
+					res.setMessage("Error al crear la solicitud comunicarse con los administradores!");
 				}
+			} else if (profileActive().equals("postgres")) {
+				PUser user = puserService.getUserByUsername(getUserLogin().getUsername());
+				PStatusRequest status = pstatusService.findByKey("code", "draft");
+				PRequestBase paddRequest = new PRequestBase();
+				paddRequest.setTypePetition(ptypePetitionService.findById(addRequest.getTypePetitionId()));
+				paddRequest.setId(addRequest.getId());
+				if (status != null) {
 
-			} else {
+					if (paddRequest.getTypePetition().getCode().equals("RM-P1-R1")) {
+						RequestBase verifyRequest = requestBaseService.findByKey("numRequest",
+								addRequest.getCodeOpportunity());
+						if (verifyRequest == null) {
+							paddRequest.setStatus(status);
+							paddRequest.setUser(user);
+							paddRequest.setRequestDate(CommonUtils.getSystemTimestamp());
+							res.setStatus("success");
+							paddRequest.setMotive("Inicio de Solicitud");
+							paddRequest.setOperator(user.getFullName());
+							PSiges codeSiges = psigeService.findById(addRequest.getCodeSigesId());
+							paddRequest.setSiges(codeSiges);
 
-				res.setStatus("exception");
-				res.setMessage("Error al crear la solicitud comunicarse con los administradores!");
+							paddRequest.setNumRequest(addRequest.getCodeOpportunity());
+							paddRequest.setCodeProyect((codeSiges.getCodeSiges()));
+							paddRequest.setSystemInfo(psystemService.findById(addRequest.getSystemId()));
+							prequestBaseService.save(paddRequest);
+							PRequestRM_P1_R1 requestR1 = new PRequestRM_P1_R1();
+							requestR1.setRequestBase(paddRequest);
+							prequestServiceRm1.save(requestR1);
+
+							res.setData(addRequest.getId().toString());
+							res.setMessage("Se creo correctamente la solicitud!");
+						} else {
+							res.setStatus("exception");
+							res.setMessage("Error al crear el codigo con los administradores!");
+						}
+					} else {
+						paddRequest.setStatus(status);
+						paddRequest.setUser(user);
+						paddRequest.setRequestDate(CommonUtils.getSystemTimestamp());
+						res.setStatus("success");
+						paddRequest.setMotive("Inicio de Solicitud");
+						paddRequest.setOperator(user.getFullName());
+						PSiges codeSiges = psigeService.findById(addRequest.getCodeSigesId());
+						if(codeSiges==null) {
+							codeSiges=psigeService.findByKey("codeSiges", addRequest.getCodeProyect());
+						}
+						paddRequest.setSiges(codeSiges);
+						paddRequest.setCodeProyect(codeSiges.getCodeSiges());
+						paddRequest.setSystemInfo(psystemService.findById(addRequest.getSystemId()));
+						paddRequest.setTypePetition(ptypePetitionService.findById(addRequest.getTypePetitionId()));
+						paddRequest.setNumRequest(prequestBaseService.generateRequestNumber(paddRequest.getCodeProyect(),
+								paddRequest.getTypePetition().getCode(), paddRequest.getSystemInfo().getCode()));
+
+						prequestBaseService.save(paddRequest);
+						if (paddRequest.getTypePetition().getCode().equals("RM-P1-R5")) {
+							PRequestRM_P1_R5 requestR5 = new PRequestRM_P1_R5();
+							requestR5.setRequestBase(paddRequest);
+							prequestServiceRm5.save(requestR5);
+						}
+						if (paddRequest.getTypePetition().getCode().equals("RM-P1-R3")) {
+							PRequestRM_P1_R3 requestR3 = new PRequestRM_P1_R3();
+							requestR3.setRequestBase(paddRequest);
+							prequestServiceRm3.save(requestR3);
+						}
+						if (paddRequest.getTypePetition().getCode().equals("RM-P1-R2")) {
+							PRequestRM_P1_R2 requestR2 = new PRequestRM_P1_R2();
+							requestR2.setRequestBase(paddRequest);
+							prequestServiceRm2.save(requestR2);
+						}
+						res.setData(paddRequest.getId().toString());
+						res.setMessage("Se creo correctamente la solicitud!");
+					}
+
+				} else {
+
+					res.setStatus("exception");
+					res.setMessage("Error al crear la solicitud comunicarse con los administradores!");
+				}
 			}
 
 		} catch (Exception e) {
@@ -362,46 +507,99 @@ public class RequestBaseController extends BaseController {
 	public @ResponseBody JsonResponse saveSystemRequest(HttpServletRequest request, @RequestBody System addSystem) {
 		JsonResponse res = new JsonResponse();
 		try {
-			User user = userService.getUserByUsername(getUserLogin().getUsername());
-			Project proyect = projectService.findById(addSystem.getProyectId());
-			if (!systemService.checkUniqueCode(addSystem.getCode(), addSystem.getProyectId(), 1)) {
-				res.setStatus("error");
+			if (profileActive().equals("oracle")) {
 
-				res.setMessage("Error al crear sistema codigo ya utilizado para un mismo proyecto!");
-			} else if (!systemService.checkUniqueCode(addSystem.getName(), addSystem.getProyectId(), 0)) {
-				res.setStatus("error");
-				res.setMessage("Error al crear sistema nombre ya utilizado para un mismo proyecto!");
-			} else if (!proyect.getAllowRepeat() && !sigeService.checkUniqueCode(addSystem.getSigesCode())) {
-				res.setStatus("error");
-				res.setMessage(
-						"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
-			} else {
-				res.setStatus("success");
-				addSystem.setProyect(projectService.findById(addSystem.getProyectId()));
-				TypePetition typePetition = typePetitionService.findByKey("code", "RM-P1-R2");
+				Project proyect = projectService.findById(addSystem.getProyectId());
+				if (!systemService.checkUniqueCode(addSystem.getCode(), addSystem.getProyectId(), 1)) {
+					res.setStatus("error");
 
-				User leader = new User();
-				leader.setId(addSystem.getLeaderId());
-				addSystem.setLeader(leader);
-				addSystem.setTypePetitionId(typePetition.getId());
-				addSystem.setAdditionalObservations(false);
-				addSystem.changeEmail(null);
-				addSystem.setIsAIA(false);
-				addSystem.setIsBO(false);
-				addSystem.setImportObjects(false);
-				addSystem.setNomenclature(false);
-				addSystem.setCustomCommands(false);
-				addSystem.setImportObjects(false);
-				addSystem.setInstallationInstructions(false);
-				addSystem.setName(addSystem.getCode());
-				Set<User> managersNews = new HashSet<>();
-				User manager= new User();
-				manager.setId(getUserLogin().getId());
-				managersNews.add(leader);
-				
-				addSystem.checkManagersExists(managersNews);
-				systemService.saveAndSiges(addSystem);
-				res.setObj(addSystem);
+					res.setMessage("Error al crear sistema codigo ya utilizado para un mismo proyecto!");
+				} else if (!systemService.checkUniqueCode(addSystem.getName(), addSystem.getProyectId(), 0)) {
+					res.setStatus("error");
+					res.setMessage("Error al crear sistema nombre ya utilizado para un mismo proyecto!");
+				} else if (!proyect.getAllowRepeat() && !sigeService.checkUniqueCode(addSystem.getSigesCode())) {
+					res.setStatus("error");
+					res.setMessage(
+							"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
+				} else {
+					res.setStatus("success");
+					addSystem.setProyect(projectService.findById(addSystem.getProyectId()));
+					TypePetition typePetition = typePetitionService.findByKey("code", "RM-P1-R2");
+
+					User leader = new User();
+					leader.setId(addSystem.getLeaderId());
+					addSystem.setLeader(leader);
+					addSystem.setTypePetitionId(typePetition.getId());
+					addSystem.setAdditionalObservations(false);
+					addSystem.changeEmail(null);
+					addSystem.setIsAIA(false);
+					addSystem.setIsBO(false);
+					addSystem.setImportObjects(false);
+					addSystem.setNomenclature(false);
+					addSystem.setCustomCommands(false);
+					addSystem.setImportObjects(false);
+					addSystem.setInstallationInstructions(false);
+					addSystem.setName(addSystem.getCode());
+					Set<User> managersNews = new HashSet<>();
+					User manager = new User();
+					manager.setId(getUserLogin().getId());
+					managersNews.add(leader);
+
+					addSystem.checkManagersExists(managersNews);
+					systemService.saveAndSiges(addSystem);
+					res.setObj(addSystem);
+				}
+
+			} else if (profileActive().equals("postgres")) {
+				PSystem paddSystem = new PSystem();
+				paddSystem.setCode(addSystem.getCode());
+				paddSystem.setProyectId(addSystem.getProyectId());
+				paddSystem.setName(addSystem.getName());
+				paddSystem.setSigesCode(addSystem.getSigesCode());
+
+				PProject proyect = pprojectService.findById(paddSystem.getProyectId());
+				if (!psystemService.checkUniqueCode(paddSystem.getCode(), paddSystem.getProyectId(), 1)) {
+					res.setStatus("error");
+
+					res.setMessage("Error al crear sistema codigo ya utilizado para un mismo proyecto!");
+				} else if (!psystemService.checkUniqueCode(paddSystem.getName(), paddSystem.getProyectId(), 0)) {
+					res.setStatus("error");
+					res.setMessage("Error al crear sistema nombre ya utilizado para un mismo proyecto!");
+				} else if (!proyect.getAllowRepeat() && !psigeService.checkUniqueCode(paddSystem.getSigesCode())) {
+					res.setStatus("error");
+					res.setMessage(
+							"Error al crear sistema,codigo proyecto ya utilizado para un mismo proyecto,este proyecto no permite codigo repetido!");
+				} else {
+					res.setStatus("success");
+					paddSystem.setProyect(pprojectService.findById(addSystem.getProyectId()));
+					PTypePetition typePetition = ptypePetitionService.findByKey("code", "RM-P1-R2");
+					paddSystem.setSigesCode(addSystem.getSigesCode());
+					paddSystem.setName(addSystem.getName());
+					PUser leader = new PUser();
+					leader= puserInfoService.findUserById(addSystem.getLeaderId());
+			
+					paddSystem.setLeader(leader);
+					paddSystem.setTypePetitionId(typePetition.getId());
+					paddSystem.setAdditionalObservations(false);
+					paddSystem.changeEmail(null);
+					paddSystem.setIsAIA(false);
+					paddSystem.setIsBO(false);
+					paddSystem.setImportObjects(false);
+					paddSystem.setNomenclature(false);
+					paddSystem.setCustomCommands(false);
+					paddSystem.setImportObjects(false);
+					paddSystem.setInstallationInstructions(false);
+					paddSystem.setName(addSystem.getCode());
+					Set<PUser> managersNews = new HashSet<>();
+					PUser manager = new PUser();
+					manager=puserInfoService.findUserById(getUserLogin().getId());
+					managersNews.add(manager);
+
+					paddSystem.checkManagersExists(managersNews);
+					psystemService.saveAndSiges(paddSystem);
+					res.setObj(paddSystem);
+				}
+
 			}
 
 		} catch (Exception e) {
@@ -418,7 +616,12 @@ public class RequestBaseController extends BaseController {
 			@RequestParam("proyectId") Integer proyectId, @RequestParam("typeCheck") Integer typeCheck) {
 
 		try {
-			return systemService.checkUniqueCode(sCode, proyectId, typeCheck);
+			if (profileActive().equals("oracle")) {
+				return systemService.checkUniqueCode(sCode, proyectId, typeCheck);
+			} else if (profileActive().equals("postgres")) {
+				return psystemService.checkUniqueCode(sCode, proyectId, typeCheck);
+			}
+
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
 
@@ -430,73 +633,143 @@ public class RequestBaseController extends BaseController {
 	@RequestMapping(value = "/editRequest-{id}", method = RequestMethod.GET)
 	public String editRelease(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) {
-		RequestBaseR1 requestEdit = new RequestBaseR1();
-		User user = userService.getUserByUsername(getUserLogin().getUsername());
-		List<System> systems = systemService.listProjects(user.getId());
+
 		try {
-			if (id == null) {
-				return "redirect:/";
-			}
 
-			requestEdit = requestBaseService.findByR1(id);
-
-			if (requestEdit == null) {
-				return "/plantilla/404";
-			}
-
-			if (!requestEdit.getStatus().getName().equals("Borrador")) {
-				redirectAttributes.addFlashAttribute("data", "Solicitud no disponible para editar.");
-				String referer = request.getHeader("Referer");
-				return "redirect:" + referer;
-			}
-			model.addAttribute("request", requestEdit);
-			model.addAttribute("senders", requestEdit.getSenders());
-			model.addAttribute("message", requestEdit.getMessage());
-			model.addAttribute("ccs", getCC(requestEdit.getTypePetition().getEmailTemplate().getCc()));
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
-				List<User> usersRM = userService.getUsersRM();
-				RequestRM_P1_R3 requestR3 = requestServiceRm3.requestRm3(requestEdit.getId());
-				model.addAttribute("requestR3", requestR3);
-				model.addAttribute("usersRM", usersRM);
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/editRequestR3";
-			}
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
-				Project project = projectService.findById(requestEdit.getSystemInfo().getProyectId());
-				boolean verifySos = false;
-				if (project.getCode().equals("Sostenibilidad")) {
-					verifySos = true;
-				} else {
-					verifySos = false;
+			if (profileActive().equals("oracle")) {
+				RequestBaseR1 requestEdit = new RequestBaseR1();
+				if (id == null) {
+					return "redirect:/";
 				}
-				model.addAttribute("typesPetition", typePetitionR4Service.listTypePetition());
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				model.addAttribute("SGRMList", ambientService.list("", "SGRM"));
-				model.addAttribute("verifySos", verifySos);
-				return "/request/editRequestR4";
-			}
 
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
-				RequestRM_P1_R5 requestR5 = requestServiceRm5.requestRm5(requestEdit.getId());
-				model.addAttribute("requestR5", requestR5);
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/editRequestR5";
-			}
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
-				RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(requestEdit.getId());
-				model.addAttribute("requestR2", requestR2);
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/editRequestR2";
-			}
+				requestEdit = requestBaseService.findByR1(id);
 
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
-				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
-				model.addAttribute("requestR1", requestR1);
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/editRequestR1";
-			}
+				if (requestEdit == null) {
+					return "/plantilla/404";
+				}
 
-			return "redirect:/homeRequest";
+				if (!requestEdit.getStatus().getName().equals("Borrador")) {
+					redirectAttributes.addFlashAttribute("data", "Solicitud no disponible para editar.");
+					String referer = request.getHeader("Referer");
+					return "redirect:" + referer;
+				}
+				model.addAttribute("request", requestEdit);
+				model.addAttribute("senders", requestEdit.getSenders());
+				model.addAttribute("message", requestEdit.getMessage());
+				model.addAttribute("ccs", getCC(requestEdit.getTypePetition().getEmailTemplate().getCc()));
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
+					List<User> usersRM = userService.getUsersRM();
+					RequestRM_P1_R3 requestR3 = requestServiceRm3.requestRm3(requestEdit.getId());
+					model.addAttribute("requestR3", requestR3);
+					model.addAttribute("usersRM", usersRM);
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/editRequestR3";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+					Project project = projectService.findById(requestEdit.getSystemInfo().getProyectId());
+					boolean verifySos = false;
+					if (project.getCode().equals("Sostenibilidad")) {
+						verifySos = true;
+					} else {
+						verifySos = false;
+					}
+					model.addAttribute("typesPetition", typePetitionR4Service.listTypePetition());
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					model.addAttribute("SGRMList", ambientService.list("", "SGRM"));
+					model.addAttribute("verifySos", verifySos);
+					return "/request/editRequestR4";
+				}
+
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
+					RequestRM_P1_R5 requestR5 = requestServiceRm5.requestRm5(requestEdit.getId());
+					model.addAttribute("requestR5", requestR5);
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/editRequestR5";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
+					RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(requestEdit.getId());
+					model.addAttribute("requestR2", requestR2);
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/editRequestR2";
+				}
+
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
+					RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
+					model.addAttribute("requestR1", requestR1);
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/editRequestR1";
+				}
+
+				return "redirect:/homeRequest";
+
+			} else if (profileActive().equals("postgres")) {
+				PRequestBaseR1 requestEdit = new PRequestBaseR1();
+
+				if (id == null) {
+					return "redirect:/";
+				}
+
+				requestEdit = prequestBaseService.findByR1(id);
+
+				if (requestEdit == null) {
+					return "/plantilla/404";
+				}
+
+				if (!requestEdit.getStatus().getName().equals("Borrador")) {
+					redirectAttributes.addFlashAttribute("data", "Solicitud no disponible para editar.");
+					String referer = request.getHeader("Referer");
+					return "redirect:" + referer;
+				}
+				model.addAttribute("request", requestEdit);
+				model.addAttribute("senders", requestEdit.getSenders());
+				model.addAttribute("message", requestEdit.getMessage());
+				model.addAttribute("ccs", getCC(requestEdit.getTypePetition().getEmailTemplate().getCc()));
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
+					List<PUser> usersRM = puserService.getUsersRM();
+					PRequestRM_P1_R3 requestR3 = prequestServiceRm3.requestRm3(requestEdit.getId());
+					model.addAttribute("requestR3", requestR3);
+					model.addAttribute("usersRM", usersRM);
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/editRequestR3";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+					PProject project = pprojectService.findById(requestEdit.getSystemInfo().getProyectId());
+					boolean verifySos = false;
+					if (project.getCode().equals("Sostenibilidad")) {
+						verifySos = true;
+					} else {
+						verifySos = false;
+					}
+					model.addAttribute("typesPetition", ptypePetitionR4Service.listTypePetition());
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					model.addAttribute("SGRMList", pambientService.list("", "SGRM"));
+					model.addAttribute("verifySos", verifySos);
+					return "/request/editRequestR4";
+				}
+
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
+					PRequestRM_P1_R5 requestR5 = prequestServiceRm5.requestRm5(requestEdit.getId());
+					model.addAttribute("requestR5", requestR5);
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/editRequestR5";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
+					PRequestRM_P1_R2 requestR2 = prequestServiceRm2.requestRm2(requestEdit.getId());
+					model.addAttribute("requestR2", requestR2);
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/editRequestR2";
+				}
+
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
+					PRequestRM_P1_R1 requestR1 = prequestServiceRm1.requestRm1(requestEdit.getId());
+					model.addAttribute("requestR1", requestR1);
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/editRequestR1";
+				}
+
+				return "redirect:/homeRequest";
+
+			}
 
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
@@ -508,17 +781,26 @@ public class RequestBaseController extends BaseController {
 	}
 
 	@RequestMapping(value = { "/listUser/{id}" }, method = RequestMethod.GET)
-	public @ResponseBody JsonSheet<RequestRM_P1_R4> changeProject(@PathVariable Long id, Locale locale, Model model) {
-		JsonSheet<RequestRM_P1_R4> requestsRM = new JsonSheet<>();
+	public @ResponseBody JsonSheet<?> changeProject(@PathVariable Long id, Locale locale, Model model) {
+
 		try {
-			requestsRM.setData(requestServiceRm4.listRequestRm4(id));
+			if (profileActive().equals("oracle")) {
+				JsonSheet<RequestRM_P1_R4> requestsRM = new JsonSheet<>();
+				requestsRM.setData(requestServiceRm4.listRequestRm4(id));
+				return requestsRM;
+			} else if (profileActive().equals("postgres")) {
+				JsonSheet<PRequestRM_P1_R4> requestsRM = new JsonSheet<>();
+				requestsRM.setData(prequestServiceRm4.listRequestRm4(id));
+				return requestsRM;
+			}
+
 		} catch (Exception e) {
 			Sentry.capture(e, "requestUser");
 
 			e.printStackTrace();
 		}
 
-		return requestsRM;
+		return null;
 	}
 
 	@RequestMapping(path = "/addUser", method = RequestMethod.POST)
@@ -526,13 +808,27 @@ public class RequestBaseController extends BaseController {
 			@RequestBody RequestRM_P1_R4 userRequestAdd) {
 		JsonResponse res = new JsonResponse();
 		try {
-
-			userRequestAdd.setAmbient(ambientService.findById(userRequestAdd.getAmbientId()));
-			userRequestAdd.setType(typePetitionR4Service.findById(userRequestAdd.getTypeId()));
-			userRequestAdd.setRequestBase(requestBaseService.findById(userRequestAdd.getRequestBaseId()));
-			requestServiceRm4.save(userRequestAdd);
-			res.setStatus("success");
-			res.setMessage("Se guardo correctamente el usuario!");
+			if (profileActive().equals("oracle")) {
+				userRequestAdd.setAmbient(ambientService.findById(userRequestAdd.getAmbientId()));
+				userRequestAdd.setType(typePetitionR4Service.findById(userRequestAdd.getTypeId()));
+				userRequestAdd.setRequestBase(requestBaseService.findById(userRequestAdd.getRequestBaseId()));
+				requestServiceRm4.save(userRequestAdd);
+				res.setStatus("success");
+				res.setMessage("Se guardo correctamente el usuario!");
+			} else if (profileActive().equals("postgres")) {
+				PRequestRM_P1_R4 puserRequestAdd = new PRequestRM_P1_R4();
+				puserRequestAdd.setEspec(userRequestAdd.getEspec());
+				puserRequestAdd.setName(userRequestAdd.getName());
+				puserRequestAdd.setPermissions(userRequestAdd.getPermissions());
+				puserRequestAdd.setEmail(userRequestAdd.getEmail());
+				puserRequestAdd.setUserGit(userRequestAdd.getUserGit());
+				puserRequestAdd.setAmbient(pambientService.findById(userRequestAdd.getAmbientId()));
+				puserRequestAdd.setType(ptypePetitionR4Service.findById(userRequestAdd.getTypeId()));
+				puserRequestAdd.setRequestBase(prequestBaseService.findById(userRequestAdd.getRequestBaseId()));
+				prequestServiceRm4.save(puserRequestAdd);
+				res.setStatus("success");
+				res.setMessage("Se guardo correctamente el usuario!");
+			}
 
 		} catch (Exception e) {
 			Sentry.capture(e, "usuario");
@@ -548,11 +844,25 @@ public class RequestBaseController extends BaseController {
 			@RequestBody RequestRM_P1_R4 userRequestAdd) {
 		JsonResponse res = new JsonResponse();
 		try {
+			if (profileActive().equals("oracle")) {
+				userRequestAdd.setAmbient(ambientService.findById(userRequestAdd.getAmbientId()));
+				userRequestAdd.setType(typePetitionR4Service.findById(userRequestAdd.getTypeId()));
+				userRequestAdd.setRequestBase(requestBaseService.findById(userRequestAdd.getRequestBaseId()));
+				requestServiceRm4.update(userRequestAdd);
+			} else if (profileActive().equals("postgres")) {
+				PRequestRM_P1_R4 puserRequestAdd = new PRequestRM_P1_R4();
+				puserRequestAdd.setId(userRequestAdd.getId());
+				puserRequestAdd.setEspec(userRequestAdd.getEspec());
+				puserRequestAdd.setName(userRequestAdd.getName());
+				puserRequestAdd.setPermissions(userRequestAdd.getPermissions());
+				puserRequestAdd.setEmail(userRequestAdd.getEmail());
+				puserRequestAdd.setUserGit(userRequestAdd.getUserGit());
+				puserRequestAdd.setAmbient(pambientService.findById(userRequestAdd.getAmbientId()));
+				puserRequestAdd.setType(ptypePetitionR4Service.findById(userRequestAdd.getTypeId()));
+				puserRequestAdd.setRequestBase(prequestBaseService.findById(userRequestAdd.getRequestBaseId()));
+				prequestServiceRm4.update(puserRequestAdd);
+			}
 
-			userRequestAdd.setAmbient(ambientService.findById(userRequestAdd.getAmbientId()));
-			userRequestAdd.setType(typePetitionR4Service.findById(userRequestAdd.getTypeId()));
-			userRequestAdd.setRequestBase(requestBaseService.findById(userRequestAdd.getRequestBaseId()));
-			requestServiceRm4.update(userRequestAdd);
 			res.setStatus("success");
 			res.setMessage("Se modifico correctamente el usuario!");
 
@@ -569,8 +879,13 @@ public class RequestBaseController extends BaseController {
 	public @ResponseBody JsonResponse deleteUserRM4(@PathVariable Long id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
+			if (profileActive().equals("oracle")) {
+				requestServiceRm4.delete(id);
+			} else if (profileActive().equals("postgres")) {
+				prequestServiceRm4.delete(id);
+			}
+
 			res.setStatus("success");
-			requestServiceRm4.delete(id);
 			res.setMessage("Usuario eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "rm4");
@@ -584,57 +899,113 @@ public class RequestBaseController extends BaseController {
 	@RequestMapping(value = "/tiny/{id}", method = RequestMethod.GET)
 	public String indexSumm(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) {
-		RequestBaseR1 requestEdit = new RequestBaseR1();
+
 		try {
-			if (id == null) {
-				return "redirect:/";
+
+			if (profileActive().equals("oracle")) {
+				RequestBaseR1 requestEdit = new RequestBaseR1();
+				if (id == null) {
+					return "redirect:/";
+				}
+
+				requestEdit = requestBaseService.findByR1(id);
+
+				if (requestEdit == null) {
+					return "/plantilla/404";
+				}
+
+				if (!requestEdit.getStatus().getName().equals("Borrador")) {
+					redirectAttributes.addFlashAttribute("data", "Solicitud no disponible para editar.");
+					String referer = request.getHeader("Referer");
+					return "redirect:" + referer;
+				}
+
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
+					model.addAttribute("request", requestEdit);
+					RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
+					model.addAttribute("requestR1", requestR1);
+					return "/request/sectionsEditR1/tinySummaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
+					model.addAttribute("request", requestEdit);
+					RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(requestEdit.getId());
+					model.addAttribute("requestR2", requestR2);
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR2/tinySummaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
+					model.addAttribute("request", requestEdit);
+					RequestRM_P1_R3 requestR3 = requestServiceRm3.requestRm3(requestEdit.getId());
+					model.addAttribute("requestR3", requestR3);
+					return "/request/sectionsEditR3/tinySummaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+					model.addAttribute("request", requestEdit);
+					List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(requestEdit.getId());
+					model.addAttribute("listUsers", listUser);
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR4/tinySummaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
+					model.addAttribute("request", requestEdit);
+					RequestRM_P1_R5 requestR5 = requestServiceRm5.requestRm5(requestEdit.getId());
+					model.addAttribute("requestR5", requestR5);
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR5/tinySummaryRequest";
+				}
+			} else if (profileActive().equals("postgres")) {
+				PRequestBaseR1 requestEdit = new PRequestBaseR1();
+				if (id == null) {
+					return "redirect:/";
+				}
+
+				requestEdit = prequestBaseService.findByR1(id);
+
+				if (requestEdit == null) {
+					return "/plantilla/404";
+				}
+
+				if (!requestEdit.getStatus().getName().equals("Borrador")) {
+					redirectAttributes.addFlashAttribute("data", "Solicitud no disponible para editar.");
+					String referer = request.getHeader("Referer");
+					return "redirect:" + referer;
+				}
+
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
+					model.addAttribute("request", requestEdit);
+					PRequestRM_P1_R1 requestR1 = prequestServiceRm1.requestRm1(requestEdit.getId());
+					model.addAttribute("requestR1", requestR1);
+					return "/request/sectionsEditR1/tinySummaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
+					model.addAttribute("request", requestEdit);
+					PRequestRM_P1_R2 requestR2 = prequestServiceRm2.requestRm2(requestEdit.getId());
+					model.addAttribute("requestR2", requestR2);
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR2/tinySummaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
+					model.addAttribute("request", requestEdit);
+					PRequestRM_P1_R3 requestR3 = prequestServiceRm3.requestRm3(requestEdit.getId());
+					model.addAttribute("requestR3", requestR3);
+					return "/request/sectionsEditR3/tinySummaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+					model.addAttribute("request", requestEdit);
+					List<PRequestRM_P1_R4> listUser = prequestServiceRm4.listRequestRm4(requestEdit.getId());
+					model.addAttribute("listUsers", listUser);
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR4/tinySummaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
+					model.addAttribute("request", requestEdit);
+					PRequestRM_P1_R5 requestR5 = prequestServiceRm5.requestRm5(requestEdit.getId());
+					model.addAttribute("requestR5", requestR5);
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR5/tinySummaryRequest";
+				}
 			}
 
-			requestEdit = requestBaseService.findByR1(id);
-
-			if (requestEdit == null) {
-				return "/plantilla/404";
-			}
-
-			if (!requestEdit.getStatus().getName().equals("Borrador")) {
-				redirectAttributes.addFlashAttribute("data", "Solicitud no disponible para editar.");
-				String referer = request.getHeader("Referer");
-				return "redirect:" + referer;
-			}
-
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
-				model.addAttribute("request", requestEdit);
-				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
-				model.addAttribute("requestR1", requestR1);
-				return "/request/sectionsEditR1/tinySummaryRequest";
-			}
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
-				model.addAttribute("request", requestEdit);
-				RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(requestEdit.getId());
-				model.addAttribute("requestR2", requestR2);
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/sectionsEditR2/tinySummaryRequest";
-			}
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
-				model.addAttribute("request", requestEdit);
-				RequestRM_P1_R3 requestR3 = requestServiceRm3.requestRm3(requestEdit.getId());
-				model.addAttribute("requestR3", requestR3);
-				return "/request/sectionsEditR3/tinySummaryRequest";
-			}
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
-				model.addAttribute("request", requestEdit);
-				List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(requestEdit.getId());
-				model.addAttribute("listUsers", listUser);
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/sectionsEditR4/tinySummaryRequest";
-			}
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
-				model.addAttribute("request", requestEdit);
-				RequestRM_P1_R5 requestR5 = requestServiceRm5.requestRm5(requestEdit.getId());
-				model.addAttribute("requestR5", requestR5);
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/sectionsEditR5/tinySummaryRequest";
-			}
 		} catch (Exception e) {
 			Sentry.capture(e, "requestSummary");
 			redirectAttributes.addFlashAttribute("data", e.toString());
@@ -645,43 +1016,79 @@ public class RequestBaseController extends BaseController {
 
 	}
 
-	@SuppressWarnings("null")
 	@RequestMapping(value = "/saveRequest", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse saveRelease(HttpServletRequest request, @RequestBody RequestBase addRequest) {
-		User user = userService.getUserByUsername(getUserLogin().getUsername());
 		JsonResponse res = new JsonResponse();
-		ArrayList<MyError> errors = new ArrayList<MyError>();
-
 		try {
-			RequestBase requestMod = requestBaseService.findById(addRequest.getId());
-			addRequest.setTypePetition(requestMod.getTypePetition());
-			errors = validSections(addRequest, errors);
 
-			addRequest.setUser(requestMod.getUser());
-			addRequest.setNumRequest(requestMod.getNumRequest());
-			addRequest.setCodeProyect(requestMod.getCodeProyect());
-			addRequest.setSiges(requestMod.getSiges());
-			addRequest.setOperator(user.getFullName());
-			addRequest.setStatus(requestMod.getStatus());
-			addRequest.setUser(requestMod.getUser());
-			addRequest.setRequestDate(requestMod.getRequestDate());
-			if (addRequest.getSenders().length() < 256) {
-				addRequest.setSenders(addRequest.getSenders());
-			} else {
-				addRequest.setSenders(requestMod.getSenders());
-			}
-			if (addRequest.getMessage().length() < 256) {
-				addRequest.setMessage(addRequest.getMessage());
-			} else {
-				addRequest.setMessage(requestMod.getMessage());
-			}
-			addRequest.setSystemInfo(requestMod.getSystemInfo());
-			requestBaseService.update(addRequest);
-			res.setStatus("success");
-			if (errors.size() > 0) {
-				// Se adjunta lista de errores
-				res.setStatus("fail");
-				res.setErrors(errors);
+			if (profileActive().equals("oracle")) {
+				User user = userService.getUserByUsername(getUserLogin().getUsername());
+				ArrayList<MyError> errors = new ArrayList<MyError>();
+				RequestBase requestMod = requestBaseService.findById(addRequest.getId());
+				addRequest.setTypePetition(requestMod.getTypePetition());
+				errors = validSections(addRequest, errors);
+
+				addRequest.setUser(requestMod.getUser());
+				addRequest.setNumRequest(requestMod.getNumRequest());
+				addRequest.setCodeProyect(requestMod.getCodeProyect());
+				addRequest.setSiges(requestMod.getSiges());
+				addRequest.setOperator(user.getFullName());
+				addRequest.setStatus(requestMod.getStatus());
+				addRequest.setUser(requestMod.getUser());
+				addRequest.setRequestDate(requestMod.getRequestDate());
+				if (addRequest.getSenders().length() < 256) {
+					addRequest.setSenders(addRequest.getSenders());
+				} else {
+					addRequest.setSenders(requestMod.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					addRequest.setMessage(addRequest.getMessage());
+				} else {
+					addRequest.setMessage(requestMod.getMessage());
+				}
+				addRequest.setSystemInfo(requestMod.getSystemInfo());
+				requestBaseService.update(addRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
+			} else if (profileActive().equals("postgres")) {
+				PRequestBase paddRequest = new PRequestBase();
+				PUser user = puserService.getUserByUsername(getUserLogin().getUsername());
+				ArrayList<MyError> errors = new ArrayList<MyError>();
+				PRequestBase requestMod = prequestBaseService.findById(addRequest.getId());
+				paddRequest.setTypePetition(requestMod.getTypePetition());
+				errors = validSections(addRequest, errors);
+				paddRequest.setId(addRequest.getId());
+				paddRequest.setCodeOpportunity(requestMod.getCodeOpportunity());
+				paddRequest.setUser(requestMod.getUser());
+				paddRequest.setNumRequest(requestMod.getNumRequest());
+				paddRequest.setCodeProyect(requestMod.getCodeProyect());
+				paddRequest.setSiges(requestMod.getSiges());
+				paddRequest.setOperator(user.getFullName());
+				paddRequest.setStatus(requestMod.getStatus());
+				paddRequest.setUser(requestMod.getUser());
+				paddRequest.setRequestDate(requestMod.getRequestDate());
+				if (addRequest.getSenders().length() < 256) {
+					paddRequest.setSenders(addRequest.getSenders());
+				} else {
+					paddRequest.setSenders(requestMod.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					paddRequest.setMessage(addRequest.getMessage());
+				} else {
+					paddRequest.setMessage(requestMod.getMessage());
+				}
+				paddRequest.setSystemInfo(requestMod.getSystemInfo());
+				prequestBaseService.update(paddRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
 			}
 
 		} catch (Exception e) {
@@ -700,25 +1107,52 @@ public class RequestBaseController extends BaseController {
 		ArrayList<MyError> errors = new ArrayList<MyError>();
 
 		try {
-			RequestRM_P1_R5 requestMod = requestServiceRm5.findById(addRequest.getId());
+			if (profileActive().equals("oracle")) {
+				RequestRM_P1_R5 requestMod = requestServiceRm5.findById(addRequest.getId());
+				errors = validSections(addRequest, errors);
+				addRequest.setRequestBase(requestMod.getRequestBase());
+				RequestBase requestBase = requestBaseService.findById(addRequest.getRequestBase().getId());
+				if (addRequest.getSenders().length() < 256) {
+					requestBase.setSenders(addRequest.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					requestBase.setMessage(addRequest.getMessage());
+				}
+				requestBaseService.update(requestBase);
+				requestServiceRm5.update(addRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
+			} else if (profileActive().equals("postgres")) {
+				PRequestRM_P1_R5 paddRequest=new PRequestRM_P1_R5();
+				PRequestRM_P1_R5 requestMod = prequestServiceRm5.findById(addRequest.getId());
 
-			errors = validSections(addRequest, errors);
-
-			addRequest.setRequestBase(requestMod.getRequestBase());
-			RequestBase requestBase = requestBaseService.findById(addRequest.getRequestBase().getId());
-			if (addRequest.getSenders().length() < 256) {
-				requestBase.setSenders(addRequest.getSenders());
-			}
-			if (addRequest.getMessage().length() < 256) {
-				requestBase.setMessage(addRequest.getMessage());
-			}
-			requestBaseService.update(requestBase);
-			requestServiceRm5.update(addRequest);
-			res.setStatus("success");
-			if (errors.size() > 0) {
-				// Se adjunta lista de errores
-				res.setStatus("fail");
-				res.setErrors(errors);
+				errors = validSections(addRequest, errors);
+				paddRequest.setId(addRequest.getId());
+				paddRequest.setRequestBase(requestMod.getRequestBase());
+				PRequestBase requestBase = prequestBaseService.findById(paddRequest.getRequestBase().getId());
+				if (addRequest.getSenders().length() < 256) {
+					paddRequest.setSenders(addRequest.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					paddRequest.setMessage(addRequest.getMessage());
+				}
+				
+				paddRequest.setChangeService(addRequest.getChangeService());
+				paddRequest.setJustify(addRequest.getJustify());
+				paddRequest.setAmbient(addRequest.getAmbient());
+				paddRequest.setTypeChange(addRequest.getTypeChange());
+				prequestBaseService.update(requestBase);
+				prequestServiceRm5.update(paddRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
 			}
 
 		} catch (Exception e) {
@@ -733,47 +1167,93 @@ public class RequestBaseController extends BaseController {
 	@RequestMapping(value = "/saveRequestR1", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse saveRequestR1(HttpServletRequest request,
 			@RequestBody RequestRM_P1_R1 addRequest) {
-		User user = userService.getUserByUsername(getUserLogin().getUsername());
+
 		JsonResponse res = new JsonResponse();
 		ArrayList<MyError> errors = new ArrayList<MyError>();
 
 		try {
-			RequestRM_P1_R1 requestMod = requestServiceRm1.findById(addRequest.getId());
+			
+			if (profileActive().equals("oracle")) {
+				RequestRM_P1_R1 requestMod = requestServiceRm1.findById(addRequest.getId());
 
-			errors = validSections(addRequest, errors);
+				errors = validSections(addRequest, errors);
 
-			addRequest.setRequestBase(requestMod.getRequestBase());
-			RequestBaseR1 requestBaseR1 = requestBaseService.findByR1(addRequest.getRequestBase().getId());
-			if (addRequest.getSenders().length() < 256) {
-				requestBaseR1.setSenders(addRequest.getSenders());
-			}
-			if (addRequest.getMessage().length() < 256) {
-				requestBaseR1.setMessage(addRequest.getMessage());
-			}
-			RequestBase requestBase = new RequestBase();
-			requestBase.setCodeProyect(requestBaseR1.getCodeProyect());
-			requestBase.setFiles(requestBaseR1.getFiles());
-			requestBase.setId(requestBaseR1.getId());
-			requestBase.setTypePetition(requestBaseR1.getTypePetition());
-			requestBase.setMessage(requestBaseR1.getMessage());
-			requestBase.setSenders(requestBaseR1.getSenders());
-			requestBase.setStatus(requestBaseR1.getStatus());
-			requestBase.setSystemInfo(requestBaseR1.getSystemInfo());
-			requestBase.setNumRequest(requestBaseR1.getNumRequest());
-			requestBase.setMotive(requestBaseR1.getMotive());
-			requestBase.setOperator(requestBaseR1.getOperator());
-			requestBase.setUser(requestBaseR1.getUser());
-			requestBase.setTracking(requestBaseR1.getTracking());
-			requestBase.setRequestDate(requestBaseR1.getRequestDate());
-			requestBaseService.update(requestBase);
-			requestServiceRm1.update(addRequest);
-			res.setStatus("success");
-			if (errors.size() > 0) {
-				// Se adjunta lista de errores
-				res.setStatus("fail");
-				res.setErrors(errors);
-			}
+				addRequest.setRequestBase(requestMod.getRequestBase());
+				RequestBaseR1 requestBaseR1 = requestBaseService.findByR1(addRequest.getRequestBase().getId());
+				if (addRequest.getSenders().length() < 256) {
+					requestBaseR1.setSenders(addRequest.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					requestBaseR1.setMessage(addRequest.getMessage());
+				}
+				RequestBase requestBase = new RequestBase();
+				requestBase.setCodeProyect(requestBaseR1.getCodeProyect());
+				requestBase.setFiles(requestBaseR1.getFiles());
+				requestBase.setId(requestBaseR1.getId());
+				requestBase.setTypePetition(requestBaseR1.getTypePetition());
+				requestBase.setMessage(requestBaseR1.getMessage());
+				requestBase.setSenders(requestBaseR1.getSenders());
+				requestBase.setStatus(requestBaseR1.getStatus());
+				requestBase.setSystemInfo(requestBaseR1.getSystemInfo());
+				requestBase.setNumRequest(requestBaseR1.getNumRequest());
+				requestBase.setMotive(requestBaseR1.getMotive());
+				requestBase.setOperator(requestBaseR1.getOperator());
+				requestBase.setUser(requestBaseR1.getUser());
+				requestBase.setTracking(requestBaseR1.getTracking());
+				requestBase.setRequestDate(requestBaseR1.getRequestDate());
+				requestBaseService.update(requestBase);
+				requestServiceRm1.update(addRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
 
+			} else if (profileActive().equals("postgres")) {
+				PRequestRM_P1_R1 requestMod = prequestServiceRm1.findById(addRequest.getId());
+				PRequestRM_P1_R1 paddRequest=new PRequestRM_P1_R1();
+				errors = validSections(addRequest, errors);
+				paddRequest.setId(addRequest.getId());
+				paddRequest.setTimeAnswer(addRequest.getTimeAnswer());
+				paddRequest.setInitialRequeriments(addRequest.getInitialRequeriments());
+				paddRequest.setObservations(addRequest.getObservations());
+				paddRequest.setSenders(addRequest.getSenders());
+				paddRequest.setMessage(addRequest.getMessage());
+				paddRequest.setRequestBase(requestMod.getRequestBase());
+				PRequestBaseR1 requestBaseR1 = prequestBaseService.findByR1(paddRequest.getRequestBase().getId());
+				if (addRequest.getSenders().length() < 256) {
+					requestBaseR1.setSenders(addRequest.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					requestBaseR1.setMessage(addRequest.getMessage());
+				}
+				PRequestBase prequestBase = new PRequestBase();
+				prequestBase.setCodeProyect(requestBaseR1.getCodeProyect());
+				prequestBase.setFiles(requestBaseR1.getFiles());
+				prequestBase.setId(requestBaseR1.getId());
+				prequestBase.setTypePetition(requestBaseR1.getTypePetition());
+				prequestBase.setMessage(requestBaseR1.getMessage());
+				prequestBase.setSenders(requestBaseR1.getSenders());
+				prequestBase.setStatus(requestBaseR1.getStatus());
+				prequestBase.setSystemInfo(requestBaseR1.getSystemInfo());
+				prequestBase.setNumRequest(requestBaseR1.getNumRequest());
+				prequestBase.setMotive(requestBaseR1.getMotive());
+				prequestBase.setOperator(requestBaseR1.getOperator());
+				prequestBase.setUser(requestBaseR1.getUser());
+				prequestBase.setTracking(requestBaseR1.getTracking());
+				prequestBase.setRequestDate(requestBaseR1.getRequestDate());
+				prequestBaseService.update(prequestBase);
+				prequestServiceRm1.update(paddRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
+
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
 			res.setStatus("exception");
@@ -786,36 +1266,70 @@ public class RequestBaseController extends BaseController {
 	@RequestMapping(value = "/saveRequestR2", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse saveRequestR2(HttpServletRequest request,
 			@RequestBody RequestRM_P1_R2 addRequest) {
-		User user = userService.getUserByUsername(getUserLogin().getUsername());
+		
 		JsonResponse res = new JsonResponse();
 		ArrayList<MyError> errors = new ArrayList<MyError>();
 
 		try {
-			RequestRM_P1_R2 requestMod = requestServiceRm2.findById(addRequest.getId());
+			
+			if (profileActive().equals("oracle")) {
+				RequestRM_P1_R2 requestMod = requestServiceRm2.findById(addRequest.getId());
 
-			errors = validSections(addRequest, errors);
+				errors = validSections(addRequest, errors);
 
-			addRequest.setRequestBase(requestMod.getRequestBase());
-			RequestBase requestBase = requestBaseService.findById(addRequest.getRequestBase().getId());
-			if (addRequest.getSenders().length() < 256) {
-				requestBase.setSenders(addRequest.getSenders());
+				addRequest.setRequestBase(requestMod.getRequestBase());
+				RequestBase requestBase = requestBaseService.findById(addRequest.getRequestBase().getId());
+				if (addRequest.getSenders().length() < 256) {
+					requestBase.setSenders(addRequest.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					requestBase.setMessage(addRequest.getMessage());
+				}
+				if (addRequest.getHierarchy().length() < 256) {
+					addRequest.setHierarchy(addRequest.getHierarchy());
+				} else {
+					addRequest.setHierarchy(requestMod.getHierarchy());
+				}
+				requestBaseService.update(requestBase);
+				requestServiceRm2.update(addRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
+			} else if (profileActive().equals("postgres")) {
+				PRequestRM_P1_R2 requestMod = prequestServiceRm2.findById(addRequest.getId());
+				PRequestRM_P1_R2 paddRequest=new PRequestRM_P1_R2();
+				paddRequest.setId(addRequest.getId());
+				errors = validSections(addRequest, errors);
+
+				paddRequest.setRequestBase(requestMod.getRequestBase());
+				PRequestBase requestBase = prequestBaseService.findById(paddRequest.getRequestBase().getId());
+				if (addRequest.getSenders().length() < 256) {
+					requestBase.setSenders(addRequest.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					requestBase.setMessage(addRequest.getMessage());
+				}
+				if (addRequest.getHierarchy().length() < 256) {
+					paddRequest.setHierarchy(addRequest.getHierarchy());
+				} else {
+					paddRequest.setHierarchy(requestMod.getHierarchy());
+				}
+				paddRequest.setRequeriments(addRequest.getRequeriments());
+				paddRequest.setAmbient(addRequest.getAmbient());
+				paddRequest.setTypeService(addRequest.getTypeService());
+				prequestBaseService.update(requestBase);
+				prequestServiceRm2.update(paddRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
 			}
-			if (addRequest.getMessage().length() < 256) {
-				requestBase.setMessage(addRequest.getMessage());
-			}
-			if (addRequest.getHierarchy().length() < 256) {
-				addRequest.setHierarchy(addRequest.getHierarchy());
-			} else {
-				addRequest.setHierarchy(requestMod.getHierarchy());
-			}
-			requestBaseService.update(requestBase);
-			requestServiceRm2.update(addRequest);
-			res.setStatus("success");
-			if (errors.size() > 0) {
-				// Se adjunta lista de errores
-				res.setStatus("fail");
-				res.setErrors(errors);
-			}
+			
 
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
@@ -829,40 +1343,76 @@ public class RequestBaseController extends BaseController {
 	@RequestMapping(value = "/saveRequestR3", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse saveRequestR3(HttpServletRequest request,
 			@RequestBody RequestRM_P1_R3 addRequest) {
-		User user = userService.getUserByUsername(getUserLogin().getUsername());
+
 		JsonResponse res = new JsonResponse();
 		ArrayList<MyError> errors = new ArrayList<MyError>();
 
 		try {
-			RequestRM_P1_R3 requestMod = requestServiceRm3.findById(addRequest.getId());
-			addRequest.setRequestBase(requestMod.getRequestBase());
-			User temp = null;
-			Set<User> authsUser = new HashSet<>();
-			for (Integer index : addRequest.getUsersRMId()) {
-				temp = userService.findUserById(index);
-				if (temp != null) {
-					authsUser.add(temp);
+			if (profileActive().equals("oracle")) {
+				RequestRM_P1_R3 requestMod = requestServiceRm3.findById(addRequest.getId());
+				addRequest.setRequestBase(requestMod.getRequestBase());
+				User temp = null;
+				Set<User> authsUser = new HashSet<>();
+				for (Integer index : addRequest.getUsersRMId()) {
+					temp = userService.findUserById(index);
+					if (temp != null) {
+						authsUser.add(temp);
+					}
 				}
-			}
-			addRequest.checkUserRmExists(authsUser);
-			errors = validSections(addRequest, errors);
-			RequestBase requestBase = requestBaseService.findById(addRequest.getRequestBase().getId());
-			if (addRequest.getSenders().length() < 256) {
-				requestBase.setSenders(addRequest.getSenders());
-			}
-			if (addRequest.getMessage().length() < 256) {
-				requestBase.setMessage(addRequest.getMessage());
-			}
+				addRequest.checkUserRmExists(authsUser);
+				errors = validSections(addRequest, errors);
+				RequestBase requestBase = requestBaseService.findById(addRequest.getRequestBase().getId());
+				if (addRequest.getSenders().length() < 256) {
+					requestBase.setSenders(addRequest.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					requestBase.setMessage(addRequest.getMessage());
+				}
 
-			requestBaseService.update(requestBase);
-			requestServiceRm3.update(addRequest);
-			res.setStatus("success");
-			if (errors.size() > 0) {
-				// Se adjunta lista de errores
-				res.setStatus("fail");
-				res.setErrors(errors);
-			}
+				requestBaseService.update(requestBase);
+				requestServiceRm3.update(addRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
 
+			} else if (profileActive().equals("postgres")) {
+				PRequestRM_P1_R3 requestMod = prequestServiceRm3.findById(addRequest.getId());
+				PRequestRM_P1_R3 paddRequest = new PRequestRM_P1_R3();
+				paddRequest.setId(addRequest.getId());
+				paddRequest.setRequestBase(requestMod.getRequestBase());
+				PUser temp = null;
+				Set<PUser> authsUser = new HashSet<>();
+				for (Integer index : addRequest.getUsersRMId()) {
+					temp = puserService.findUserById(index);
+					if (temp != null) {
+						authsUser.add(temp);
+					}
+				}
+				paddRequest.checkUserRmExists(authsUser);
+				errors = validSections(addRequest, errors);
+				PRequestBase requestBase = prequestBaseService.findById(paddRequest.getRequestBase().getId());
+				if (addRequest.getSenders().length() < 256) {
+					requestBase.setSenders(addRequest.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					requestBase.setMessage(addRequest.getMessage());
+				}
+				paddRequest.setConnectionMethod(addRequest.getConnectionMethod());
+				prequestBaseService.update(requestBase);
+				prequestServiceRm3.update(paddRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
+
+			}
+			
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
 			res.setStatus("exception");
@@ -873,15 +1423,22 @@ public class RequestBaseController extends BaseController {
 	}
 
 	@RequestMapping(value = "/getR3-{id}", method = RequestMethod.GET)
-	public @ResponseBody RequestRM_P1_R3 getRequestR3(@PathVariable Long id, HttpServletRequest request, Locale locale,
+	public @ResponseBody Object getRequestR3(@PathVariable Long id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-		RequestRM_P1_R3 requestRM_P1_R3 = new RequestRM_P1_R3();
+	
 
 		try {
-
-			requestRM_P1_R3 = requestServiceRm3.findById(id);
-
-			return requestRM_P1_R3;
+			
+			if (profileActive().equals("oracle")) {
+				RequestRM_P1_R3 requestRM_P1_R3 = new RequestRM_P1_R3();
+				requestRM_P1_R3 = requestServiceRm3.findById(id);
+				return requestRM_P1_R3;
+			} else if (profileActive().equals("postgres")) {
+				PRequestRM_P1_R3 requestRM_P1_R3 = new PRequestRM_P1_R3();
+				requestRM_P1_R3 = prequestServiceRm3.findById(id);
+				return requestRM_P1_R3;
+			}
+			
 
 		} catch (Exception e) {
 			Sentry.capture(e, "requestR3");
@@ -889,65 +1446,122 @@ public class RequestBaseController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 
-		return requestRM_P1_R3;
+		return null;
 	}
 
 	@RequestMapping(value = "/updateRequest/{id}", method = RequestMethod.GET)
 	public String updateRFC(@PathVariable Long id, HttpServletRequest request, Locale locale, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
-			RequestBaseR1 requestBase = new RequestBaseR1();
-			requestBase = requestBaseService.findByR1(id);
-			// Si la solicitud no existe se regresa al inicio.
-			if (request == null) {
-				return "redirect:/homeRequest";
-			}
-			// Verificar si existe un flujo para el sistema
-
-			StatusRequest status = statusService.findByKey("name", "Solicitado");
-
-			requestBase.setStatus(status);
-			requestBase.setMotive(status.getReason());
-			requestBase.setRequestDate((CommonUtils.getSystemTimestamp()));
-
-			requestBase.setOperator(getUserLogin().getFullName());
-			TypePetition typePettion = requestBase.getTypePetition();
-			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
-				if (typePettion.getEmailTemplate() != null) {
-					EmailTemplate email = typePettion.getEmailTemplate();
-					RequestBaseR1 requestEmail = requestBase;
-					Thread newThread = new Thread(() -> {
-						try {
-							emailService.sendMailRequestR4(requestEmail, email);
-						} catch (Exception e) {
-							Sentry.capture(e, "request");
-						}
-
-					});
-					newThread.start();
+			
+			if (profileActive().equals("oracle")) {
+				RequestBaseR1 requestBase = new RequestBaseR1();
+				requestBase = requestBaseService.findByR1(id);
+				// Si la solicitud no existe se regresa al inicio.
+				if (request == null) {
+					return "redirect:/homeRequest";
 				}
-			}
-			RequestBase requestBaseNew = new RequestBase();
-			requestBaseNew.setCodeProyect(requestBase.getCodeProyect());
-			requestBaseNew.setFiles(requestBase.getFiles());
-			requestBaseNew.setId(requestBase.getId());
-			requestBaseNew.setTypePetition(requestBase.getTypePetition());
-			requestBaseNew.setMessage(requestBase.getMessage());
-			requestBaseNew.setSenders(requestBase.getSenders());
-			requestBaseNew.setStatus(requestBase.getStatus());
-			requestBaseNew.setSystemInfo(requestBase.getSystemInfo());
-			requestBaseNew.setNumRequest(requestBase.getNumRequest());
-			requestBaseNew.setMotive(requestBase.getMotive());
-			requestBaseNew.setOperator(requestBase.getOperator());
-			requestBaseNew.setUser(requestBase.getUser());
-			requestBaseNew.setTracking(requestBase.getTracking());
-			requestBaseNew.setRequestDate(requestBase.getRequestDate());
-			if (!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
-				requestBaseNew.setSiges(requestBaseService.findById(id).getSiges());
-			}
-			requestBaseService.update(requestBaseNew);
+				// Verificar si existe un flujo para el sistema
 
-			return "redirect:/request/summaryRequest-" + requestBase.getId();
+				StatusRequest status = statusService.findByKey("name", "Solicitado");
+
+				requestBase.setStatus(status);
+				requestBase.setMotive(status.getReason());
+				requestBase.setRequestDate((CommonUtils.getSystemTimestamp()));
+
+				requestBase.setOperator(getUserLogin().getFullName());
+				TypePetition typePettion = requestBase.getTypePetition();
+				if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
+					if (typePettion.getEmailTemplate() != null) {
+						EmailTemplate email = typePettion.getEmailTemplate();
+						RequestBaseR1 requestEmail = requestBase;
+						Thread newThread = new Thread(() -> {
+							try {
+								emailService.sendMailRequestR4(requestEmail, email);
+							} catch (Exception e) {
+								Sentry.capture(e, "request");
+							}
+
+						});
+						newThread.start();
+					}
+				}
+				RequestBase requestBaseNew = new RequestBase();
+				requestBaseNew.setCodeProyect(requestBase.getCodeProyect());
+				requestBaseNew.setFiles(requestBase.getFiles());
+				requestBaseNew.setId(requestBase.getId());
+				requestBaseNew.setTypePetition(requestBase.getTypePetition());
+				requestBaseNew.setMessage(requestBase.getMessage());
+				requestBaseNew.setSenders(requestBase.getSenders());
+				requestBaseNew.setStatus(requestBase.getStatus());
+				requestBaseNew.setSystemInfo(requestBase.getSystemInfo());
+				requestBaseNew.setNumRequest(requestBase.getNumRequest());
+				requestBaseNew.setMotive(requestBase.getMotive());
+				requestBaseNew.setOperator(requestBase.getOperator());
+				requestBaseNew.setUser(requestBase.getUser());
+				requestBaseNew.setTracking(requestBase.getTracking());
+				requestBaseNew.setRequestDate(requestBase.getRequestDate());
+				if (!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
+					requestBaseNew.setSiges(requestBaseService.findById(id).getSiges());
+				}
+				requestBaseService.update(requestBaseNew);
+
+				return "redirect:/request/summaryRequest-" + requestBase.getId();
+			} else if (profileActive().equals("postgres")) {
+				PRequestBaseR1 requestBase = new PRequestBaseR1();
+				requestBase = prequestBaseService.findByR1(id);
+				// Si la solicitud no existe se regresa al inicio.
+				if (request == null) {
+					return "redirect:/homeRequest";
+				}
+				// Verificar si existe un flujo para el sistema
+
+				PStatusRequest status = pstatusService.findByKey("name", "Solicitado");
+
+				requestBase.setStatus(status);
+				requestBase.setMotive(status.getReason());
+				requestBase.setRequestDate((CommonUtils.getSystemTimestamp()));
+
+				requestBase.setOperator(getUserLogin().getFullName());
+				PTypePetition typePettion = requestBase.getTypePetition();
+				if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
+					if (typePettion.getEmailTemplate() != null) {
+						PEmailTemplate email = typePettion.getEmailTemplate();
+						PRequestBaseR1 requestEmail = requestBase;
+						Thread newThread = new Thread(() -> {
+							try {
+								pemailService.sendMailRequestR4(requestEmail, email);
+							} catch (Exception e) {
+								Sentry.capture(e, "request");
+							}
+
+						});
+						newThread.start();
+					}
+				}
+				PRequestBase requestBaseNew = new PRequestBase();
+				requestBaseNew.setCodeProyect(requestBase.getCodeProyect());
+				requestBaseNew.setFiles(requestBase.getFiles());
+				requestBaseNew.setId(requestBase.getId());
+				requestBaseNew.setTypePetition(requestBase.getTypePetition());
+				requestBaseNew.setMessage(requestBase.getMessage());
+				requestBaseNew.setSenders(requestBase.getSenders());
+				requestBaseNew.setStatus(requestBase.getStatus());
+				requestBaseNew.setSystemInfo(requestBase.getSystemInfo());
+				requestBaseNew.setNumRequest(requestBase.getNumRequest());
+				requestBaseNew.setMotive(requestBase.getMotive());
+				requestBaseNew.setOperator(requestBase.getOperator());
+				requestBaseNew.setUser(requestBase.getUser());
+				requestBaseNew.setTracking(requestBase.getTracking());
+				requestBaseNew.setRequestDate(requestBase.getRequestDate());
+				if (!requestBaseNew.getTypePetition().getCode().equals("RM-P1-R1")) {
+					requestBaseNew.setSiges(prequestBaseService.findById(id).getSiges());
+				}
+				prequestBaseService.update(requestBaseNew);
+
+				return "redirect:/request/summaryRequest-" + requestBase.getId();
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -959,70 +1573,136 @@ public class RequestBaseController extends BaseController {
 	@RequestMapping(value = "/summaryRequest-{id}", method = RequestMethod.GET)
 	public String summmary(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
-		User user = userService.getUserByUsername(getUserLogin().getUsername());
-		List<System> systems = systemService.listProjects(user.getId());
-		RequestBaseR1 requestEdit = new RequestBaseR1();
+
+	
 		try {
-			if (id == null) {
-				return "redirect:/";
-			}
-
-			requestEdit = requestBaseService.findByR1(id);
-
-			if (requestEdit == null) {
-				return "/plantilla/404";
-			}
-
-			List<Errors_Requests> errors = errorService.findAll();
-			model.addAttribute("errors", errors);
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
-				model.addAttribute("request", requestEdit);
-				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
-				model.addAttribute("requestR1", requestR1);
-				model.addAttribute("statuses", statusService.findAll());
-				return "/request/sectionsEditR1/summaryRequest";
-			}
-
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
-				model.addAttribute("request", requestEdit);
-				RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(requestEdit.getId());
-				model.addAttribute("requestR2", requestR2);
-				model.addAttribute("statuses", statusService.findAll());
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/sectionsEditR2/summaryRequest";
-			}
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
-				model.addAttribute("request", requestEdit);
-				RequestRM_P1_R3 requestR3 = requestServiceRm3.requestRm3(requestEdit.getId());
-				model.addAttribute("requestR3", requestR3);
-				model.addAttribute("statuses", statusService.findAll());
-				return "/request/sectionsEditR3/summaryRequest";
-			}
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
-				model.addAttribute("request", requestEdit);
-				Project project = projectService.findById(requestEdit.getSystemInfo().getProyectId());
-				boolean verifySos = false;
-				if (project.getCode().equals("Sostenibilidad")) {
-					verifySos = true;
-				} else {
-					verifySos = false;
+			
+			if (profileActive().equals("oracle")) {
+				RequestBaseR1 requestEdit = new RequestBaseR1();
+				if (id == null) {
+					return "redirect:/";
 				}
 
-				List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(requestEdit.getId());
-				model.addAttribute("listUsers", listUser);
-				model.addAttribute("statuses", statusService.findAll());
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				model.addAttribute("verifySos", verifySos);
-				return "/request/sectionsEditR4/summaryRequest";
+				requestEdit = requestBaseService.findByR1(id);
+
+				if (requestEdit == null) {
+					return "/plantilla/404";
+				}
+
+				List<Errors_Requests> errors = errorService.findAll();
+				model.addAttribute("errors", errors);
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
+					model.addAttribute("request", requestEdit);
+					RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
+					model.addAttribute("requestR1", requestR1);
+					model.addAttribute("statuses", statusService.findAll());
+					return "/request/sectionsEditR1/summaryRequest";
+				}
+
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
+					model.addAttribute("request", requestEdit);
+					RequestRM_P1_R2 requestR2 = requestServiceRm2.requestRm2(requestEdit.getId());
+					model.addAttribute("requestR2", requestR2);
+					model.addAttribute("statuses", statusService.findAll());
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR2/summaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
+					model.addAttribute("request", requestEdit);
+					RequestRM_P1_R3 requestR3 = requestServiceRm3.requestRm3(requestEdit.getId());
+					model.addAttribute("requestR3", requestR3);
+					model.addAttribute("statuses", statusService.findAll());
+					return "/request/sectionsEditR3/summaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+					model.addAttribute("request", requestEdit);
+					Project project = projectService.findById(requestEdit.getSystemInfo().getProyectId());
+					boolean verifySos = false;
+					if (project.getCode().equals("Sostenibilidad")) {
+						verifySos = true;
+					} else {
+						verifySos = false;
+					}
+
+					List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(requestEdit.getId());
+					model.addAttribute("listUsers", listUser);
+					model.addAttribute("statuses", statusService.findAll());
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					model.addAttribute("verifySos", verifySos);
+					return "/request/sectionsEditR4/summaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
+					model.addAttribute("request", requestEdit);
+					RequestRM_P1_R5 requestR5 = requestServiceRm5.requestRm5(requestEdit.getId());
+					model.addAttribute("requestR5", requestR5);
+					model.addAttribute("statuses", statusService.findAll());
+					model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR5/summaryRequest";
+				}
+			} else if (profileActive().equals("postgres")) {
+				PRequestBaseR1 requestEdit = new PRequestBaseR1();
+				if (id == null) {
+					return "redirect:/";
+				}
+
+				requestEdit = prequestBaseService.findByR1(id);
+
+				if (requestEdit == null) {
+					return "/plantilla/404";
+				}
+
+				List<PErrors_Requests> errors = perrorService.findAll();
+				model.addAttribute("errors", errors);
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
+					model.addAttribute("request", requestEdit);
+					PRequestRM_P1_R1 requestR1 = prequestServiceRm1.requestRm1(requestEdit.getId());
+					model.addAttribute("requestR1", requestR1);
+					model.addAttribute("statuses", pstatusService.findAll());
+					return "/request/sectionsEditR1/summaryRequest";
+				}
+
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R2")) {
+					model.addAttribute("request", requestEdit);
+					PRequestRM_P1_R2 requestR2 = prequestServiceRm2.requestRm2(requestEdit.getId());
+					model.addAttribute("requestR2", requestR2);
+					model.addAttribute("statuses", pstatusService.findAll());
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR2/summaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R3")) {
+					model.addAttribute("request", requestEdit);
+					PRequestRM_P1_R3 requestR3 = prequestServiceRm3.requestRm3(requestEdit.getId());
+					model.addAttribute("requestR3", requestR3);
+					model.addAttribute("statuses", pstatusService.findAll());
+					return "/request/sectionsEditR3/summaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R4")) {
+					model.addAttribute("request", requestEdit);
+					PProject project = pprojectService.findById(requestEdit.getSystemInfo().getProyectId());
+					boolean verifySos = false;
+					if (project.getCode().equals("Sostenibilidad")) {
+						verifySos = true;
+					} else {
+						verifySos = false;
+					}
+
+					List<PRequestRM_P1_R4> listUser = prequestServiceRm4.listRequestRm4(requestEdit.getId());
+					model.addAttribute("listUsers", listUser);
+					model.addAttribute("statuses", pstatusService.findAll());
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					model.addAttribute("verifySos", verifySos);
+					return "/request/sectionsEditR4/summaryRequest";
+				}
+				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
+					model.addAttribute("request", requestEdit);
+					PRequestRM_P1_R5 requestR5 = prequestServiceRm5.requestRm5(requestEdit.getId());
+					model.addAttribute("requestR5", requestR5);
+					model.addAttribute("statuses", pstatusService.findAll());
+					model.addAttribute("ambients", pambientService.list("", requestEdit.getSystemInfo().getCode()));
+					return "/request/sectionsEditR5/summaryRequest";
+				}
 			}
-			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R5")) {
-				model.addAttribute("request", requestEdit);
-				RequestRM_P1_R5 requestR5 = requestServiceRm5.requestRm5(requestEdit.getId());
-				model.addAttribute("requestR5", requestR5);
-				model.addAttribute("statuses", statusService.findAll());
-				model.addAttribute("ambients", ambientService.list("", requestEdit.getSystemInfo().getCode()));
-				return "/request/sectionsEditR5/summaryRequest";
-			}
+		
 
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
@@ -1069,11 +1749,17 @@ public class RequestBaseController extends BaseController {
 
 	public ArrayList<MyError> validSections(RequestBase request, ArrayList<MyError> errors) {
 		if (request.getTypePetition().getCode().equals("RM-P1-R4")) {
-			List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(request.getId());
-			if (listUser.size() == 0) {
-				errors.add(new MyError("requiredUser", "Se requiere al menos un usuario"));
+			if (profileActive().equals("oracle")) {
+				List<RequestRM_P1_R4> listUser = requestServiceRm4.listRequestRm4(request.getId());
+				if (listUser.size() == 0) {
+					errors.add(new MyError("requiredUser", "Se requiere al menos un usuario"));
+				}
+			} else if (profileActive().equals("postgres")) {
+				List<PRequestRM_P1_R4> listUser = prequestServiceRm4.listRequestRm4(request.getId());
+				if (listUser.size() == 0) {
+					errors.add(new MyError("requiredUser", "Se requiere al menos un usuario"));
+				}
 			}
-
 			if (request.getSenders() != null) {
 				if (request.getSenders().length() > 256) {
 					errors.add(new MyError("senders", "La cantidad de caracteres no puede ser mayor a 256"));
@@ -1197,13 +1883,21 @@ public class RequestBaseController extends BaseController {
 	}
 
 	public void loadCountsRelease(HttpServletRequest request, Integer id) {
-		Map<String, Integer> userC = new HashMap<String, Integer>();
-		userC.put("draft", requestBaseR1Service.countByType(id, "Borrador", 1, null));
-		userC.put("requested", requestBaseR1Service.countByType(id, "Solicitado", 1, null));
-		userC.put("completed", requestBaseR1Service.countByType(id, "Completado", 1, null));
-		userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
-		request.setAttribute("userC", userC);
-
+		if (profileActive().equals("oracle")) {
+			Map<String, Integer> userC = new HashMap<String, Integer>();
+			userC.put("draft", requestBaseR1Service.countByType(id, "Borrador", 1, null));
+			userC.put("requested", requestBaseR1Service.countByType(id, "Solicitado", 1, null));
+			userC.put("completed", requestBaseR1Service.countByType(id, "Completado", 1, null));
+			userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+			request.setAttribute("userC", userC);
+		} else if (profileActive().equals("postgres")) {
+			Map<String, Integer> userC = new HashMap<String, Integer>();
+			userC.put("draft", prequestBaseR1Service.countByType(id, "Borrador", 1, null));
+			userC.put("requested", prequestBaseR1Service.countByType(id, "Solicitado", 1, null));
+			userC.put("completed", prequestBaseR1Service.countByType(id, "Completado", 1, null));
+			userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+			request.setAttribute("userC", userC);
+		}
 	}
 
 	public MyError getErrorSenders(String senders) {
