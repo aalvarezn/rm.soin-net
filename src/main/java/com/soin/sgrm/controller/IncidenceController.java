@@ -1,7 +1,5 @@
 package com.soin.sgrm.controller;
 
-import java.awt.print.Printable;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -12,18 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,56 +23,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.collect.Sets;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.AttentionGroup;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.Priority;
-import com.soin.sgrm.model.PriorityIncidence;
-import com.soin.sgrm.model.RFC;
-import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.Release_RFC;
-import com.soin.sgrm.model.Siges;
-import com.soin.sgrm.model.Status;
-import com.soin.sgrm.model.StatusIncidence;
-import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.SystemTypeIncidence;
 import com.soin.sgrm.model.System_Priority;
 import com.soin.sgrm.model.System_StatusIn;
 import com.soin.sgrm.model.TypeChange;
-import com.soin.sgrm.model.TypeIncidence;
 import com.soin.sgrm.model.User;
-import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.WFIncidence;
-import com.soin.sgrm.model.wf.WFRelease;
-import com.soin.sgrm.model.wf.WFUser;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.AttentionGroupService;
-import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.IncidenceService;
 import com.soin.sgrm.service.ParameterService;
-import com.soin.sgrm.service.PriorityIncidenceService;
-import com.soin.sgrm.service.RFCService;
-import com.soin.sgrm.service.ReleaseService;
-import com.soin.sgrm.service.SigesService;
-import com.soin.sgrm.service.StatusIncidenceService;
-import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.SystemTypeIncidenceService;
 import com.soin.sgrm.service.System_PriorityService;
 import com.soin.sgrm.service.System_StatusInService;
-import com.soin.sgrm.service.TreeService;
 import com.soin.sgrm.service.TypeChangeService;
-import com.soin.sgrm.service.TypeIncidenceService;
+import com.soin.sgrm.service.pos.PEmailTemplateService;
+import com.soin.sgrm.service.pos.PParameterService;
+import com.soin.sgrm.service.pos.PSystemService;
+import com.soin.sgrm.service.pos.PUserService;
+import com.soin.sgrm.service.pos.wf.PNodeService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
@@ -91,42 +63,53 @@ import com.soin.sgrm.utils.MyLevel;
 @Controller
 @RequestMapping(value = "/incidence")
 public class IncidenceController extends BaseController {
-	@Autowired
-	RFCService rfcService;
+	
 	@Autowired
 	System_StatusInService statusService;
-	@Autowired
-	StatusService statusReleaseService;
+
 	@Autowired
 	SystemService systemService;
-	@Autowired
-	SigesService sigeService;
+
 	@Autowired
 	TypeChangeService typeChangeService;
 	@Autowired
-	ReleaseService releaseService;
-	@Autowired
 	ParameterService parameterService;
-	@Autowired
-	EmailTemplateService emailService;
-	@Autowired
-	TreeService treeService;
 	@Autowired
 	SystemTypeIncidenceService typeIncidenceService;
 	@Autowired
 	IncidenceService incidenceService;
 	@Autowired
 	System_PriorityService priorityIncidenceService;
-	@Autowired
-	EmailReadService emailReadService;
-	@Autowired
-	AttentionGroupService attentionGroupService;
+
 	@Autowired
 	com.soin.sgrm.service.UserService userService;
 	@Autowired
 	NodeService nodeService;
 	@Autowired
 	ParameterService paramService;
+	@Autowired
+	EmailTemplateService emailService;
+	/*
+	@Autowired
+	PSystem_StatusInService pstatusService;
+	@Autowired
+	PSystemTypeIncidenceService ptypeIncidenceService;
+	@Autowired
+	PIncidenceService pincidenceService;
+	@Autowired
+	PSystem_PriorityService ppriorityIncidenceService;*/
+	@Autowired
+	PSystemService psystemService;
+	@Autowired
+	PParameterService pparameterService;
+	@Autowired
+	PEmailTemplateService pemailService;
+	@Autowired
+	PUserService puserService;
+	@Autowired
+	PNodeService pnodeService;
+	@Autowired
+	PParameterService pparamService;
 	public static final Logger logger = Logger.getLogger(IncidenceController.class);
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)

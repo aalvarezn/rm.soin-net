@@ -70,6 +70,9 @@ import com.soin.sgrm.model.pos.PReleaseFile;
 import com.soin.sgrm.model.pos.PReleaseSummary;
 import com.soin.sgrm.model.pos.PReleaseSummaryFile;
 import com.soin.sgrm.model.pos.PRequest;
+import com.soin.sgrm.model.pos.PRequestBase;
+import com.soin.sgrm.model.pos.PRequestBaseFile;
+import com.soin.sgrm.model.pos.PRequestBaseR1;
 import com.soin.sgrm.model.pos.PSiges;
 import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.service.BaseKnowledgeFileService;
@@ -96,6 +99,8 @@ import com.soin.sgrm.service.pos.PRFCFileService;
 import com.soin.sgrm.service.pos.PRFCService;
 import com.soin.sgrm.service.pos.PReleaseFileService;
 import com.soin.sgrm.service.pos.PReleaseService;
+import com.soin.sgrm.service.pos.PRequestBaseService;
+import com.soin.sgrm.service.pos.PRequestFileService;
 import com.soin.sgrm.service.pos.PRequestService;
 import com.soin.sgrm.service.pos.PSigesService;
 import com.soin.sgrm.service.pos.PSystemService;
@@ -190,7 +195,10 @@ public class FileController extends BaseController {
 	PSystemService psystemService;
 	@Autowired
 	PRFCService prfcService;
-
+	@Autowired
+	PRequestBaseService prequestBaseService;
+	@Autowired 
+	PRequestFileService prequestFileService;
 	DocxVariables docxVariables = null;
 	
 	PDocxVariables pdocxVariables = null;
@@ -1271,28 +1279,51 @@ public class FileController extends BaseController {
 	 * @throws SQLException
 	 **/
 	public String createPathRequest(Long id, String basePath) throws SQLException {
-		RequestBaseR1  requestBase;
+		
 		try {
-			String path="";
-			requestBase = requestBaseService.findByR1(id);
-			if(!requestBase.getTypePetition().getCode().equals("RM-P1-R1")) {
-				RequestBase newRequestBase =requestBaseService.findById(id);
-				Siges siges = newRequestBase.getSiges();
-				SystemInfo system= siges.getSystem();
-				 path = system.getName() + "/" +siges.getCodeSiges()  + "/"+requestBase.getTypePetition().getCode()+"/";
-			}else {
-				SystemInfo system= requestBase.getSystemInfo();
-				path = system.getName() + "/"+requestBase.getTypePetition().getCode()+"/";
+			if (profileActive().equals("oracle")) {
+				RequestBaseR1  requestBase;
+				String path="";
+				requestBase = requestBaseService.findByR1(id);
+				if(!requestBase.getTypePetition().getCode().equals("RM-P1-R1")) {
+					RequestBase newRequestBase =requestBaseService.findById(id);
+					Siges siges = newRequestBase.getSiges();
+					SystemInfo system= siges.getSystem();
+					 path = system.getName() + "/" +siges.getCodeSiges()  + "/"+requestBase.getTypePetition().getCode()+"/";
+				}else {
+					SystemInfo system= requestBase.getSystemInfo();
+					path = system.getName() + "/"+requestBase.getTypePetition().getCode()+"/";
+				}
+				
+
+				path += requestBase.getNumRequest() + "/";
+				new File(basePath + path).mkdirs();
+				return path;
+			} else if (profileActive().equals("postgres")) {
+				PRequestBaseR1  requestBase;
+				String path="";
+				requestBase = prequestBaseService.findByR1(id);
+				if(!requestBase.getTypePetition().getCode().equals("RM-P1-R1")) {
+					PRequestBase newRequestBase =prequestBaseService.findById(id);
+					PSiges siges = newRequestBase.getSiges();
+					PSystemInfo system= siges.getSystem();
+					 path = system.getName() + "/" +siges.getCodeSiges()  + "/"+requestBase.getTypePetition().getCode()+"/";
+				}else {
+					PSystemInfo system= requestBase.getSystemInfo();
+					path = system.getName() + "/"+requestBase.getTypePetition().getCode()+"/";
+				}
+				
+
+				path += requestBase.getNumRequest() + "/";
+				new File(basePath + path).mkdirs();
+				return path;
 			}
 			
-
-			path += requestBase.getNumRequest() + "/";
-			new File(basePath + path).mkdirs();
-			return path;
 		} catch (Exception e) {
 			Sentry.capture(e, "files");
 			throw e;
 		}
+		return null;
 
 	}
 	
@@ -1319,34 +1350,64 @@ public class FileController extends BaseController {
 		String basePath = env.getProperty("fileStore.path");
 		String path = createPathRequest(id, basePath);
 		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
-
-		// Referencia del archivo
-		RequestBaseFile requestFile = new RequestBaseFile();
-		requestFile.setName(fileName);
-		requestFile.setPath(basePath + path + fileName);
-		long time = System.currentTimeMillis();
-		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
-		requestFile.setRevisionDate(revisionDate);
-		try {
-			// Se carga el archivo y se guarda la referencia
-			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
-			requestFileService.saveRequestFile(id, requestFile);
-			requestFile = requestFileService.findByKey("path", requestFile.getPath());
-			json.setStatus("success");
-			json.setObj(requestFile);
-		} catch (SQLException ex) {
-			Sentry.capture(ex, "files");
-			json.setStatus("exception");
-			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
-		} catch (Exception e) {
-			Sentry.capture(e, "files");
-			json.setStatus("exception");
-			json.setException(e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			if (e instanceof MaxUploadSizeExceededException) {
-				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+		if (profileActive().equals("oracle")) {
+			// Referencia del archivo
+			RequestBaseFile requestFile = new RequestBaseFile();
+			requestFile.setName(fileName);
+			requestFile.setPath(basePath + path + fileName);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			requestFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				requestFileService.saveRequestFile(id, requestFile);
+				requestFile = requestFileService.findByKey("path", requestFile.getPath());
+				json.setStatus("success");
+				json.setObj(requestFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
+			}
+		} else if (profileActive().equals("postgres")) {
+			// Referencia del archivo
+			PRequestBaseFile requestFile = new PRequestBaseFile();
+			requestFile.setName(fileName);
+			requestFile.setPath(basePath + path + fileName);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			requestFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				prequestFileService.saveRequestFile(id, requestFile);
+				requestFile = prequestFileService.findByKey("path", requestFile.getPath());
+				json.setStatus("success");
+				json.setObj(requestFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
 			}
 		}
+		
 		return json;
 	}
 	
@@ -1357,22 +1418,40 @@ public class FileController extends BaseController {
 	 **/
 	@RequestMapping(value = "/singleDownloadRequest-{id}", method = RequestMethod.GET)
 	public void downloadFileRequest(HttpServletResponse response, @PathVariable Long id) throws IOException {
+		if (profileActive().equals("oracle")) {
+			RequestBaseFile requestFile = requestFileService.findById(id);
+			File file = new File(requestFile.getPath());
 
-		RequestBaseFile requestFile = requestFileService.findById(id);
-		File file = new File(requestFile.getPath());
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + requestFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
+		} else if (profileActive().equals("postgres")) {
+			PRequestBaseFile requestFile = prequestFileService.findById(id);
+			File file = new File(requestFile.getPath());
 
-		// Se modifica la respuesta para descargar el archivo
-		response.setContentType("text/plain");
-		response.setHeader("Content-Disposition", "attachment;filename=" + requestFile.getName());
-		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-		if (mimeType == null) {
-			mimeType = "application/octet-stream";
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + requestFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
 		}
-		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-		response.setContentLength((int) file.length());
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
+		
 	}
 	
 	/**
@@ -1385,13 +1464,24 @@ public class FileController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		res.setStatus("success");
 		try {
-			RequestBaseFile requestFile = requestFileService.findById(id);
-			requestFileService.deleteRequest(requestFile);
-			File file = new File(requestFile.getPath());
-			if (file.exists()) {
-				file.delete();
+			if (profileActive().equals("oracle")) {
+				RequestBaseFile requestFile = requestFileService.findById(id);
+				requestFileService.deleteRequest(requestFile);
+				File file = new File(requestFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(requestFile.getId() + "");
+			} else if (profileActive().equals("postgres")) {
+				PRequestBaseFile requestFile = prequestFileService.findById(id);
+				prequestFileService.deleteRequest(requestFile);
+				File file = new File(requestFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(requestFile.getId() + "");
 			}
-			res.setData(requestFile.getId() + "");
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "files");
 			res.setStatus("exception");

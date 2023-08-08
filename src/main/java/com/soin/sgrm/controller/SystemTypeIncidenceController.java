@@ -40,6 +40,10 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.SystemTypeIncidenceService;
 import com.soin.sgrm.service.System_PriorityService;
 import com.soin.sgrm.service.TypeIncidenceService;
+import com.soin.sgrm.service.pos.PAttentionGroupService;
+import com.soin.sgrm.service.pos.PEmailTemplateService;
+import com.soin.sgrm.service.pos.PSystemService;
+import com.soin.sgrm.service.pos.PTypeIncidenceService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
@@ -62,6 +66,21 @@ public class SystemTypeIncidenceController extends BaseController {
 
 	@Autowired
 	AttentionGroupService attentionGroupService;
+	
+	@Autowired
+	PSystemTypeIncidenceService psystemTypeService;
+
+	@Autowired
+	PSystemService psystemService;
+
+	@Autowired
+	PTypeIncidenceService ptypeIncidenceService;
+	
+	@Autowired
+	PEmailTemplateService pemailTemplateService;
+
+	@Autowired
+	PAttentionGroupService pattentionGroupService;
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		Integer idUser = getUserLogin().getId();

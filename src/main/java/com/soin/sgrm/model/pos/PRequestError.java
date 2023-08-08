@@ -104,11 +104,11 @@ public class PRequestError implements Serializable {
 		this.system = system;
 	}
 
-	public PTypePetition getPTypePetition() {
+	public PTypePetition getTypePetition() {
 		return typePetition;
 	}
 
-	public void setPTypePetition(PTypePetition typePetition) {
+	public void setTypePetition(PTypePetition typePetition) {
 		this.typePetition = typePetition;
 	}
 
@@ -145,8 +145,8 @@ public class PRequestError implements Serializable {
 	}
 
 	public String getPTypePetitionName() {
-		if(getPTypePetition()!=null) {
-			return getPTypePetition().getCode();
+		if(getTypePetition()!=null) {
+			return getTypePetition().getCode();
 		}else {
 			return "No hay un tipo relacionado";
 		}	

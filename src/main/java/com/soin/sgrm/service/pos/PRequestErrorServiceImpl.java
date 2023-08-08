@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.dao.RequestErrorDao;
 import com.soin.sgrm.dao.pos.PRequestErrorDao;
 import com.soin.sgrm.model.pos.PRequestError;
 import com.soin.sgrm.response.JsonSheet;

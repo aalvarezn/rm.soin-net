@@ -226,6 +226,7 @@ public class RequestBaseController extends BaseController {
 	@Autowired
 	PUserInfoService puserInfoService;
 
+
 	private final Environment environment;
 
 	@Autowired
@@ -1060,6 +1061,9 @@ public class RequestBaseController extends BaseController {
 				ArrayList<MyError> errors = new ArrayList<MyError>();
 				PRequestBase requestMod = prequestBaseService.findById(addRequest.getId());
 				paddRequest.setTypePetition(requestMod.getTypePetition());
+				TypePetition typePetition=new TypePetition();
+				typePetition.setCode(paddRequest.getTypePetition().getCode());
+				addRequest.setTypePetition(typePetition);
 				errors = validSections(addRequest, errors);
 				paddRequest.setId(addRequest.getId());
 				paddRequest.setCodeOpportunity(requestMod.getCodeOpportunity());
@@ -1780,6 +1784,7 @@ public class RequestBaseController extends BaseController {
 
 		return errors;
 	}
+	
 
 	public ArrayList<MyError> validSections(RequestRM_P1_R3 request, ArrayList<MyError> errors) {
 
