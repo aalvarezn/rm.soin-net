@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,11 +22,16 @@ import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 
 import com.soin.sgrm.exception.Sentry;
-
+import com.soin.sgrm.model.BaseKnowledge;
 import com.soin.sgrm.model.Password;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.pos.PBaseKnowledge;
+import com.soin.sgrm.model.pos.PUserInfo;
+import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.service.UserService;
+import com.soin.sgrm.service.pos.PUserInfoService;
+import com.soin.sgrm.service.pos.PUserService;
 
 @Controller
 @RequestMapping("/profile")
@@ -41,11 +47,39 @@ public class ProfileController extends BaseController {
 
 	@Autowired
 	UserInfoService userInfoService;
+	
+	@Autowired
+	PUserService puserService;
+
+	@Autowired
+	PUserInfoService puserInfoService;
+
+	
+	private final Environment environment;
+
+	@Autowired
+	public ProfileController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(HttpServletRequest request, Locale locale, Model model) {
-		model.addAttribute("user", userService.getUserByUsername(getUserLogin().getUsername()));
-		model.addAttribute("details", userInfoService.getUserByUsername(getUserLogin().getUsername()));
+		if (profileActive().equals("oracle")) {
+			model.addAttribute("user", userService.getUserByUsername(getUserLogin().getUsername()));
+			model.addAttribute("details", userInfoService.getUserByUsername(getUserLogin().getUsername()));
+		} else if (profileActive().equals("postgres")) {
+			model.addAttribute("user", puserService.getUserByUsername(getUserLogin().getUsername()));
+			model.addAttribute("details", puserInfoService.getUserByUsername(getUserLogin().getUsername()));
+		}
+
 		return "/profile/profile";
 	}
 
@@ -54,31 +88,61 @@ public class ProfileController extends BaseController {
 			@ModelAttribute("Password") Password p, BindingResult errors, ModelMap model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			UserInfo user = userInfoService.findUserInfoById(getUserLogin().getId());
-			res.setStatus("success");
+			if (profileActive().equals("oracle")) {
+				UserInfo user = userInfoService.findUserInfoById(getUserLogin().getId());
+				res.setStatus("success");
 
-			if (!p.getNewPassword().equals(p.getConfirmPassword())) {
-				res.setStatus("fail");
-				res.setException("Las nuevas contraseñas no coinciden.");
-				return res;
-			}
+				if (!p.getNewPassword().equals(p.getConfirmPassword())) {
+					res.setStatus("fail");
+					res.setException("Las nuevas contraseñas no coinciden.");
+					return res;
+				}
 
-			if (!encoder.matches(p.getOldPassword(), user.getPassword())) {
-				res.setStatus("fail");
-				res.setException("La contraseña anterior es incorrecta.");
-				return res;
-			}
-			if (CommonUtils.isNumeric(p.getNewPassword())) {
-				res.setStatus("fail");
-				res.setException("La contraseña no puede contener sólo números.");
-				return res;
-			}
+				if (!encoder.matches(p.getOldPassword(), user.getPassword())) {
+					res.setStatus("fail");
+					res.setException("La contraseña anterior es incorrecta.");
+					return res;
+				}
+				if (CommonUtils.isNumeric(p.getNewPassword())) {
+					res.setStatus("fail");
+					res.setException("La contraseña no puede contener sólo números.");
+					return res;
+				}
 
-			if (res.getStatus().equals("success")) {
-				String newPassword = encoder.encode(p.getNewPassword());
-				user.setPassword(newPassword);
-				userInfoService.changePassword(user);
+				if (res.getStatus().equals("success")) {
+					String newPassword = encoder.encode(p.getNewPassword());
+					user.setPassword(newPassword);
+					userInfoService.changePassword(user);
+				}
+			} else if (profileActive().equals("postgres")) {
+				PUserInfo user = puserInfoService.findUserInfoById(getUserLogin().getId());
+				res.setStatus("success");
+
+				if (!p.getNewPassword().equals(p.getConfirmPassword())) {
+					res.setStatus("fail");
+					res.setException("Las nuevas contraseñas no coinciden.");
+					return res;
+				}
+
+				if (!encoder.matches(p.getOldPassword(), user.getPassword())) {
+					res.setStatus("fail");
+					res.setException("La contraseña anterior es incorrecta.");
+					return res;
+				}
+				if (CommonUtils.isNumeric(p.getNewPassword())) {
+					res.setStatus("fail");
+					res.setException("La contraseña no puede contener sólo números.");
+					return res;
+				}
+
+				if (res.getStatus().equals("success")) {
+					String newPassword = encoder.encode(p.getNewPassword());
+					user.setPassword(newPassword);
+					puserInfoService.changePassword(user);
+				}
 			}
+			
+			
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "profile");
 			res.setStatus("exception");

@@ -3,7 +3,6 @@ package com.soin.sgrm.service.pos;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.criterion.Criterion;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,13 +33,12 @@ import javax.mail.internet.PreencodedMimeBodyPart;
 
 import com.soin.sgrm.dao.pos.PEmailTemplateDao;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.Ambient;
-import com.soin.sgrm.model.AttentionGroup;
-import com.soin.sgrm.model.Dependency;
-import com.soin.sgrm.model.EmailIncidence;
 import com.soin.sgrm.model.pos.PAmbient;
+import com.soin.sgrm.model.pos.PAttentionGroup;
 import com.soin.sgrm.model.pos.PDependency;
+import com.soin.sgrm.model.pos.PEmailIncidence;
 import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PIncidence;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseObject;
@@ -53,40 +51,16 @@ import com.soin.sgrm.model.pos.PRequestRM_P1_R3;
 import com.soin.sgrm.model.pos.PRequestRM_P1_R4;
 import com.soin.sgrm.model.pos.PRequestRM_P1_R5;
 import com.soin.sgrm.model.pos.PSiges;
+import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.model.pos.PUserInfo;
+import com.soin.sgrm.model.pos.wf.PWFIncidence;
 import com.soin.sgrm.model.pos.wf.PWFRFC;
 import com.soin.sgrm.model.pos.wf.PWFRelease;
 import com.soin.sgrm.model.pos.wf.PWFUser;
-import com.soin.sgrm.model.Incidence;
-import com.soin.sgrm.model.RFC;
-import com.soin.sgrm.model.Release;
-import com.soin.sgrm.model.ReleaseObject;
-import com.soin.sgrm.model.Release_RFC;
-import com.soin.sgrm.model.Release_RFCFast;
-import com.soin.sgrm.model.Request;
-import com.soin.sgrm.model.RequestBase;
-import com.soin.sgrm.model.RequestBaseR1;
-import com.soin.sgrm.model.RequestRM_P1_R1;
-import com.soin.sgrm.model.RequestRM_P1_R2;
-import com.soin.sgrm.model.RequestRM_P1_R3;
-import com.soin.sgrm.model.RequestRM_P1_R4;
-import com.soin.sgrm.model.RequestRM_P1_R5;
-import com.soin.sgrm.model.Siges;
-import com.soin.sgrm.model.User;
-import com.soin.sgrm.model.UserInfo;
-import com.soin.sgrm.model.wf.WFIncidence;
-import com.soin.sgrm.model.wf.WFRFC;
-import com.soin.sgrm.model.wf.WFRelease;
-import com.soin.sgrm.model.wf.WFUser;
+
 import com.soin.sgrm.response.JsonSheet;
 
 import com.soin.sgrm.security.UserLogin;
-import com.soin.sgrm.service.EmailIncidenceService;
-import com.soin.sgrm.service.RequestRM_P1_R1Service;
-import com.soin.sgrm.service.RequestRM_P1_R2Service;
-import com.soin.sgrm.service.RequestRM_P1_R3Service;
-import com.soin.sgrm.service.RequestRM_P1_R4Service;
-import com.soin.sgrm.service.RequestRM_P1_R5Service;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.utils.CommonUtils;
@@ -101,9 +75,6 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 	@Autowired
 	PEmailTemplateDao dao;
-
-	@Autowired
-	private Environment env;
 
 	@Autowired
 	PRequestRM_P1_R1Service requestServiceR1;
@@ -125,10 +96,6 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	SigesService sigeService;
 
 	@Autowired
-
-	private EmailIncidenceService emailIncidenceService;
-
-	@Autowired
 	PRequestService prequestService;
 
 	@Autowired
@@ -136,7 +103,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 	@Autowired
 
-	private EmailIncidenceService pemailIncidenceService;
+	PEmailIncidenceService pemailIncidenceService;
 
 	@Autowired
 	RequestService requestService;
@@ -970,7 +937,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 		if (email.getSubject().contains("{{systemMain}}")) {
 			temp = "";
-			Siges codeSiges = sigeService.findByKey("codeSiges", rfc.getCodeProyect());
+			PSiges codeSiges = psigeService.findByKey("codeSiges", rfc.getCodeProyect());
 
 			temp += codeSiges.getSystem().getName();
 
@@ -1230,7 +1197,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 			if (email.getSubject().contains("{{systemMain}}")) {
 				temp = "";
-				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+				PSiges codeSiges = psigeService.findByKey("codeSiges", request.getCodeProyect());
 
 				temp += codeSiges.getSystem().getName();
 
@@ -1297,7 +1264,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 			if (email.getSubject().contains("{{systemMain}}")) {
 				temp = "";
-				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+				PSiges codeSiges = psigeService.findByKey("codeSiges", request.getCodeProyect());
 
 				temp += codeSiges.getSystem().getName();
 
@@ -1363,7 +1330,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 			if (email.getSubject().contains("{{systemMain}}")) {
 				temp = "";
-				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+				PSiges codeSiges = psigeService.findByKey("codeSiges", request.getCodeProyect());
 
 				temp += codeSiges.getSystem().getName();
 
@@ -1421,7 +1388,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			}
 			if (email.getSubject().contains("{{systemMain}}")) {
 				temp = "";
-				Siges codeSiges = sigeService.findByKey("codeSiges", request.getCodeProyect());
+				PSiges codeSiges = psigeService.findByKey("codeSiges", request.getCodeProyect());
 
 				temp += codeSiges.getSystem().getName();
 
@@ -1612,7 +1579,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailRFC(WFRFC rfcEmail, PEmailTemplate email, String motive) {
+	public void sendMailRFC(PWFRFC rfcEmail, PEmailTemplate email, String motive) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -1666,7 +1633,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (WFUser toUser : rfcEmail.getNode().getUsers()) {
+			for (PWFUser toUser : rfcEmail.getNode().getUsers()) {
 				mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 			}
 			// Se notifica el usuario que lo solicito
@@ -1684,7 +1651,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailActorIncidence(WFIncidence incidenceEmail, PEmailTemplate email) {
+	public void sendMailActorIncidence(PWFIncidence incidenceEmail, PEmailTemplate email) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -1721,8 +1688,8 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
 
-			for (AttentionGroup toUserAttention : incidenceEmail.getNode().getActors()) {
-				for (User toUser : toUserAttention.getUserAttention()) {
+			for (PAttentionGroup toUserAttention : incidenceEmail.getNode().getActors()) {
+				for (PUser toUser : toUserAttention.getUserAttention()) {
 					mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 				}
 
@@ -1739,7 +1706,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailNotify(WFIncidence incidenceEmail, PEmailTemplate email, String user) {
+	public void sendMailNotify(PWFIncidence incidenceEmail, PEmailTemplate email, String user) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -1780,8 +1747,8 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			String temp;
 			if (email.getHtml().contains("{{actors}}")) {
 				temp = "<ul>";
-				for (AttentionGroup obj : incidenceEmail.getNode().getActors()) {
-					for (User objUser : obj.getUserAttention()) {
+				for (PAttentionGroup obj : incidenceEmail.getNode().getActors()) {
+					for (PUser objUser : obj.getUserAttention()) {
 						temp += "<li><b> " + objUser.getFullName() + "</b></li>";
 					}
 				}
@@ -1798,8 +1765,8 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (AttentionGroup toUserAttention : incidenceEmail.getNode().getUsers()) {
-				for (User toUser : toUserAttention.getUserAttention()) {
+			for (PAttentionGroup toUserAttention : incidenceEmail.getNode().getUsers()) {
+				for (PUser toUser : toUserAttention.getUserAttention()) {
 					mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 				}
 			}
@@ -1815,16 +1782,16 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailIncidence(Incidence incidenceEmail, PEmailTemplate email) throws Exception {
+	public void sendMailIncidence(PIncidence incidenceEmail, PEmailTemplate email) throws Exception {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
 		email = fillEmail(email, incidenceEmail);
 		String body = email.getHtml();
-		EmailIncidence emailIncidence = new EmailIncidence();
+		PEmailIncidence emailIncidence = new PEmailIncidence();
 		emailIncidence.setMessage(body);
 		emailIncidence.setSendDate(CommonUtils.getSystemTimestamp());
 		emailIncidence.setIncidence(incidenceEmail);
-		emailIncidenceService.save(emailIncidence);
+		pemailIncidenceService.save(emailIncidence);
 		body = Constant.getCharacterEmail(body);
 		MimeMultipart mmp = MimeMultipart(body);
 		mimeMessage.setContent(mmp);
@@ -1900,8 +1867,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		mailSender.send(mimeMessage);
 	}
 
-	private PEmailTemplate fillEmail(PEmailTemplate email, Incidence incidenceEmail) {
-		String temp = "";
+	private PEmailTemplate fillEmail(PEmailTemplate email, PIncidence incidenceEmail) {
 		/* ------ body ------ */
 		if (email.getHtml().contains("{{numTicket}}")) {
 			email.setHtml(email.getHtml().replace("{{numTicket}}",
@@ -1961,7 +1927,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailIncidence(WFIncidence incidenceEmail, PEmailTemplate email, String motive) {
+	public void sendMailIncidence(PWFIncidence incidenceEmail, PEmailTemplate email, String motive) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -2014,8 +1980,8 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSubject(email.getSubject());
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
-			for (AttentionGroup toUserAttention : incidenceEmail.getNode().getUsers()) {
-				for (User toUser : toUserAttention.getUserAttention()) {
+			for (PAttentionGroup toUserAttention : incidenceEmail.getNode().getUsers()) {
+				for (PUser toUser : toUserAttention.getUserAttention()) {
 					mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser.getEmail()));
 				}
 			}
@@ -2207,8 +2173,8 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	}
 
 	@Override
-	public void sendMailNotifyChangeUserIncidence(String numTicket, User userOperator, String motive,
-			Timestamp systemDate, User newUser, PEmailTemplate email) {
+	public void sendMailNotifyChangeUserIncidence(String numTicket, PUser userOperator, String motive,
+			Timestamp systemDate, PUser newUser, PEmailTemplate email) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");

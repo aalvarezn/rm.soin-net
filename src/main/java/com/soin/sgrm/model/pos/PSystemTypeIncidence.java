@@ -30,7 +30,7 @@ public class PSystemTypeIncidence implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
-	private System system;
+	private PSystem system;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"EMAIL_ID\"")
@@ -61,11 +61,11 @@ public class PSystemTypeIncidence implements Serializable{
 		this.typeIncidenceId = typeIncidenceId;
 	}
 
-	public System getSystem() {
+	public PSystem getSystem() {
 		return system;
 	}
 
-	public void setSystem(System system) {
+	public void setSystem(PSystem system) {
 		this.system = system;
 	}
 	

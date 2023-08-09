@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.pos.PAttentionGroup;
 import com.soin.sgrm.model.pos.PSystem_StatusIn;
-import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
@@ -60,12 +60,12 @@ public class PNodeIncidence implements Serializable {
 	private List<PEdgeIncidence> edges = new ArrayList<PEdgeIncidence>();
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ESTADO_ID", nullable = true)
+	@JoinColumn(name = "\"ESTADO_ID\"", nullable = true)
 	private PSystem_StatusIn status;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "USERDEFAULT_ID", nullable = true)
-	private User userDefault;
+	@JoinColumn(name = "\"USERDEFAULT_ID\"", nullable = true)
+	private PUser userDefault;
 
 	@Column(name = "X")
 	private Float x;
@@ -270,11 +270,11 @@ public class PNodeIncidence implements Serializable {
 		this.actors.add(user);
 	}
 
-	public User getUserDefault() {
+	public PUser getUserDefault() {
 		return userDefault;
 	}
 
-	public void setUserDefault(User userDefault) {
+	public void setUserDefault(PUser userDefault) {
 		this.userDefault = userDefault;
 	}
 	

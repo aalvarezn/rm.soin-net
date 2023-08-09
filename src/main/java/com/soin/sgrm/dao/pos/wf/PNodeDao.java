@@ -3,11 +3,11 @@ package com.soin.sgrm.dao.pos.wf;
 import java.util.List;
 
 import com.soin.sgrm.model.Incidence;
-import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.pos.PIncidence;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
-import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.pos.wf.PNodeIncidence;
 import com.soin.sgrm.model.pos.wf.PNodeRFC;
 
 public interface PNodeDao {
@@ -40,17 +40,17 @@ public interface PNodeDao {
 
 	boolean verifyStartNodeRFC(PNodeRFC node);
 
-	NodeIncidence saveNodeIncidence(NodeIncidence node);
+	PNodeIncidence saveNodeIncidence(PNodeIncidence node);
 
-	List<NodeIncidence> listNodeIncidence();
+	List<PNodeIncidence> listNodeIncidence();
 
-	NodeIncidence findByIdNoInci(Integer id);
+	PNodeIncidence findByIdNoInci(Integer id);
 
-	NodeIncidence updateNodeIncidence(NodeIncidence node);
+	PNodeIncidence updateNodeIncidence(PNodeIncidence node);
 
 	void deleteNodeIncidence(Integer id);
 
-	boolean verifyStartNodeIncidence(NodeIncidence node);
+	boolean verifyStartNodeIncidence(PNodeIncidence node);
 
-	NodeIncidence existWorkFlowNodeIn(Incidence incidence);
+	PNodeIncidence existWorkFlowNodeIn(PIncidence incidence);
 }

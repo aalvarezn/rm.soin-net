@@ -20,18 +20,16 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.soin.sgrm.model.Incidence;
-import com.soin.sgrm.model.IncidenceTracking;
-import com.soin.sgrm.model.Release;
-import com.soin.sgrm.model.StatusIncidence;
-import com.soin.sgrm.model.SystemInfo;
-import com.soin.sgrm.model.System_StatusIn;
-import com.soin.sgrm.model.User;
-import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.pos.PIncidence;
+import com.soin.sgrm.model.pos.PIncidenceTracking;
+import com.soin.sgrm.model.pos.PSystemInfo;
+import com.soin.sgrm.model.pos.PSystem_StatusIn;
+import com.soin.sgrm.model.pos.PUser;
+
 
 @Entity
 @Table(name = "INCIDENCIA")
-public class WFIncidence   {
+public class PWFIncidence   {
 	
 	@Id
 	@Column(name = "ID")
@@ -65,26 +63,26 @@ public class WFIncidence   {
 	private Timestamp requestDate;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_USUARIO", nullable = false)
-	private User user;
+	@JoinColumn(name = "\"ID_USUARIO\"", nullable = false)
+	private PUser user;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_ESTADO", nullable = false)
-	private System_StatusIn status;
+	@JoinColumn(name = "\"ID_ESTADO\"", nullable = false)
+	private PSystem_StatusIn status;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ID_SISTEMA", nullable = false)
-	private SystemInfo  system;
+	@JoinColumn(name = "\"ID_SISTEMA\"", nullable = false)
+	private PSystemInfo  system;
 	
 
 	@OrderBy("trackingDate ASC")
 	@Fetch(value = FetchMode.SUBSELECT)
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "incidence")
-	private Set<IncidenceTracking> tracking = new HashSet<IncidenceTracking>();
+	private Set<PIncidenceTracking> tracking = new HashSet<PIncidenceTracking>();
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "NODO_ID", nullable = true)
-	private NodeIncidence node;
+	@JoinColumn(name = "\"NODO_ID\"", nullable = true)
+	private PNodeIncidence node;
 	
 	@Transient
 	private Long typeIncidenceId;
@@ -130,27 +128,27 @@ public class WFIncidence   {
 		this.requestDate = requestDate;
 	}
 	
-	public User getUser() {
+	public PUser getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(PUser user) {
 		this.user = user;
 	}
 
-	public SystemInfo getSystem() {
+	public PSystemInfo getSystem() {
 		return system;
 	}
 
-	public void setSystem(SystemInfo system) {
+	public void setSystem(PSystemInfo system) {
 		this.system = system;
 	}
 
-	public System_StatusIn getStatus() {
+	public PSystem_StatusIn getStatus() {
 		return status;
 	}
 
-	public void setStatus(System_StatusIn status) {
+	public void setStatus(PSystem_StatusIn status) {
 		this.status = status;
 	}
 
@@ -163,11 +161,11 @@ public class WFIncidence   {
 	}
 
 
-	public Set<IncidenceTracking> getTracking() {
+	public Set<PIncidenceTracking> getTracking() {
 		return tracking;
 	}
 
-	public void setTracking(Set<IncidenceTracking> tracking) {
+	public void setTracking(Set<PIncidenceTracking> tracking) {
 		this.tracking = tracking;
 	}
 
@@ -219,11 +217,11 @@ public class WFIncidence   {
 		this.email = email;
 	}
 
-	public NodeIncidence getNode() {
+	public PNodeIncidence getNode() {
 		return node;
 	}
 
-	public void setNode(NodeIncidence node) {
+	public void setNode(PNodeIncidence node) {
 		this.node = node;
 	}
 	
@@ -244,7 +242,7 @@ public class WFIncidence   {
 		this.updateDate = updateDate;
 	}
 
-	public void convertReleaseToWFIncidence(Incidence incidence) {
+	public void convertReleaseToWFIncidence(PIncidence incidence) {
 		this.node = incidence.getNode();
 		this.requestDate=incidence.getRequestDate();
 		this.updateDate=incidence.getUpdateDate();

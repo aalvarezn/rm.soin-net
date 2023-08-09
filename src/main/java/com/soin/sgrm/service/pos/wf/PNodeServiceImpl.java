@@ -12,12 +12,13 @@ import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 //import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.pos.PIncidence;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
+import com.soin.sgrm.model.pos.wf.PNodeIncidence;
 import com.soin.sgrm.model.pos.wf.PNodeRFC;
-import com.soin.sgrm.model.wf.NodeIncidence;
-//import com.soin.sgrm.model.wf.NodeIncidence;
+//import com.soin.sgrm.model.wf.PNodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
 
 @Transactional("transactionManagerPos")
@@ -58,23 +59,23 @@ public class PNodeServiceImpl implements PNodeService {
 	}
 
 	@Override
-	public NodeIncidence saveNodeIncidence(NodeIncidence node) {
+	public PNodeIncidence saveNodeIncidence(PNodeIncidence node) {
 		
 		return dao.saveNodeIncidence(node);
 	}
 
 	@Override
-	public List<NodeIncidence> listNodeIncidence() {
+	public List<PNodeIncidence> listNodeIncidence() {
 		return dao.listNodeIncidence();
 	}
 
 	@Override
-	public NodeIncidence findByIdNoInci(Integer id) {
+	public PNodeIncidence findByIdNoInci(Integer id) {
 		return dao.findByIdNoInci(id);
 	}
 
 	@Override
-	public NodeIncidence updateNodeIncidence(NodeIncidence node) {
+	public PNodeIncidence updateNodeIncidence(PNodeIncidence node) {
 		return dao.updateNodeIncidence(node);
 	}
 
@@ -84,11 +85,11 @@ public class PNodeServiceImpl implements PNodeService {
 	}
 
 	@Override
-	public NodeIncidence existWorkFlowNodeIn(Incidence incidence) {
+	public PNodeIncidence existWorkFlowNodeIn(PIncidence incidence) {
 		return dao.existWorkFlowNodeIn(incidence);
 	}
 		@Override
-	public boolean verifyStartNodeIncidence(NodeIncidence node) {
+	public boolean verifyStartNodeIncidence(PNodeIncidence node) {
 		// TODO Auto-generated method stub
 		return dao.verifyStartNodeIncidence(node);
 	}

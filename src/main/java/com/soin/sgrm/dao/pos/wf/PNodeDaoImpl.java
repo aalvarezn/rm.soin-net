@@ -15,10 +15,11 @@ import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Incidence;
+import com.soin.sgrm.model.pos.PIncidence;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
-import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.pos.wf.PNodeIncidence;
 import com.soin.sgrm.model.pos.wf.PNodeRFC;
 
 @Repository
@@ -221,7 +222,7 @@ public class PNodeDaoImpl implements PNodeDao {
 	}
 
 		@Override
-	public NodeIncidence saveNodeIncidence(NodeIncidence node) {
+	public PNodeIncidence saveNodeIncidence(PNodeIncidence node) {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		try {
@@ -240,8 +241,8 @@ public class PNodeDaoImpl implements PNodeDao {
 	}
 
 	@Override
-	public NodeIncidence existWorkFlowNodeIn(Incidence incidence) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(NodeIncidence.class);
+	public PNodeIncidence existWorkFlowNodeIn(PIncidence incidence) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PNodeIncidence.class);
 		crit.createAlias("workFlow", "workFlow");
 		crit.createAlias("workFlow.system", "system");
 		crit.createAlias("workFlow.type", "type");
@@ -251,7 +252,7 @@ public class PNodeDaoImpl implements PNodeDao {
 		crit.add(Restrictions.eq("type.id", 2));
 		// Que sea del mismo sistema
 		crit.add(Restrictions.eq("system.id", incidence.getSystem().getId()));
-		return (NodeIncidence) crit.uniqueResult();
+		return (PNodeIncidence) crit.uniqueResult();
 	}
 
 	@Override
@@ -276,7 +277,7 @@ public class PNodeDaoImpl implements PNodeDao {
 	}
 
 	@Override
-	public NodeIncidence updateNodeIncidence(NodeIncidence node) {
+	public PNodeIncidence updateNodeIncidence(PNodeIncidence node) {
 		Transaction transObj = null;
 		Session sessionObj = null;
 		try {
@@ -295,21 +296,21 @@ public class PNodeDaoImpl implements PNodeDao {
 	}
 
 	@Override
-	public NodeIncidence findByIdNoInci(Integer id) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(NodeIncidence.class);
+	public PNodeIncidence findByIdNoInci(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PNodeIncidence.class);
 		crit.add(Restrictions.eq("id", id));
-		return (NodeIncidence) crit.uniqueResult();
+		return (PNodeIncidence) crit.uniqueResult();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<NodeIncidence> listNodeIncidence() {
+	public List<PNodeIncidence> listNodeIncidence() {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PNode.class);
 		return crit.list();
 	}
 	@Override
-	public boolean verifyStartNodeIncidence(NodeIncidence node) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(NodeIncidence.class);
+	public boolean verifyStartNodeIncidence(PNodeIncidence node) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PNodeIncidence.class);
 		crit.createAlias("workFlow", "workFlow");
 		crit.add(Restrictions.eq("workFlow.id", node.getWorkFlowId()));
 		crit.add(Restrictions.eq("group","start"));

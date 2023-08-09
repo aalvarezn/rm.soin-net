@@ -43,7 +43,7 @@ public class PWorkFlowIncidence implements Serializable {
 	private String name;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SISTEMA_ID", nullable = true)
+	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
 	private PWFSystem system;
 
 	@Fetch(value = FetchMode.SUBSELECT)

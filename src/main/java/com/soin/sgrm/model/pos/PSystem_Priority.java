@@ -30,7 +30,7 @@ public class PSystem_Priority implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
-	private System system;
+	private PSystem system;
 
 	@Column(name = "TIME")
 	private String time;
@@ -53,11 +53,11 @@ public class PSystem_Priority implements Serializable{
 		this.priority = priority;
 	}
 
-	public System getSystem() {
+	public PSystem getSystem() {
 		return system;
 	}
 
-	public void setSystem(System system) {
+	public void setSystem(PSystem system) {
 		this.system = system;
 	}
 

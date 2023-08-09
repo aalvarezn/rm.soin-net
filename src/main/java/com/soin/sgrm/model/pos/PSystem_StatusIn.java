@@ -30,7 +30,7 @@ public class PSystem_StatusIn implements Serializable{
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
-	private System system;
+	private PSystem system;
 	
 	@Column(name = "SLA_ACTIVO")
 	private Integer slaActive;
@@ -50,11 +50,11 @@ public class PSystem_StatusIn implements Serializable{
 		this.status = status;
 	}
 
-	public System getSystem() {
+	public PSystem getSystem() {
 		return system;
 	}
 
-	public void setSystem(System system) {
+	public void setSystem(PSystem system) {
 		this.system = system;
 	}
 

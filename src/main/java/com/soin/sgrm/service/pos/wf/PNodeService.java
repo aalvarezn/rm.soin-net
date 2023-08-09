@@ -3,14 +3,12 @@ package com.soin.sgrm.service.pos.wf;
 import java.util.List;
 
 import com.soin.sgrm.model.Incidence;
-import com.soin.sgrm.model.RFC;
+import com.soin.sgrm.model.pos.PIncidence;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
 import com.soin.sgrm.model.pos.wf.PNodeRFC;
-import com.soin.sgrm.model.wf.NodeIncidence;
-//import com.soin.sgrm.model.wf.NodeIncidence;
-import com.soin.sgrm.model.wf.NodeRFC;
+import com.soin.sgrm.model.pos.wf.PNodeIncidence;
 
 public interface PNodeService {
 
@@ -42,20 +40,20 @@ public interface PNodeService {
 	
 	boolean verifyStartNodeRFC(PNodeRFC node);
 
-	List<NodeIncidence> listNodeIncidence();
+	List<PNodeIncidence> listNodeIncidence();
 	
-	NodeIncidence findByIdNoInci(Integer id);
+	PNodeIncidence findByIdNoInci(Integer id);
 	
-	NodeIncidence saveNodeIncidence(NodeIncidence node);
+	PNodeIncidence saveNodeIncidence(PNodeIncidence node);
 	
-	NodeIncidence updateNodeIncidence(NodeIncidence node);
+	PNodeIncidence updateNodeIncidence(PNodeIncidence node);
 
 	void deleteNodeIncidence(Integer id) throws Exception;
 	
-	NodeIncidence existWorkFlowNodeIn(Incidence incidence);
+	PNodeIncidence existWorkFlowNodeIn(PIncidence incidence);
 
 
-	boolean verifyStartNodeIncidence(NodeIncidence node);
+	boolean verifyStartNodeIncidence(PNodeIncidence node);
 
 	
 

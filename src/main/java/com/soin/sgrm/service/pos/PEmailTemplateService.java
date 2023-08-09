@@ -5,10 +5,13 @@ import java.util.List;
 
 import com.soin.sgrm.dao.BaseDao;
 import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PIncidence;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PRequestBaseR1;
+import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.model.pos.PUserInfo;
+import com.soin.sgrm.model.pos.wf.PWFIncidence;
 import com.soin.sgrm.model.pos.wf.PWFRFC;
 import com.soin.sgrm.model.pos.wf.PWFRelease;
 import com.soin.sgrm.model.Incidence;
@@ -59,15 +62,15 @@ public interface PEmailTemplateService extends BaseDao<Integer, PEmailTemplate> 
 
 	void sendMailNotifyRFC(PWFRFC rfcEmail, PEmailTemplate emailNotify, String user);
 
-	void sendMailRFC(WFRFC rfcEmail, PEmailTemplate email, String motive);
+	void sendMailRFC(PWFRFC rfcEmail, PEmailTemplate email, String motive);
 
-	void sendMailActorIncidence(WFIncidence incidenceEmail, PEmailTemplate emailActor);
+	void sendMailActorIncidence(PWFIncidence incidenceEmail, PEmailTemplate emailActor);
 
-	void sendMailNotify(WFIncidence incidenceEmail, PEmailTemplate emailNotify, String userS);
+	void sendMailNotify(PWFIncidence incidenceEmail, PEmailTemplate emailNotify, String userS);
 
-	void sendMailIncidence(Incidence incidenceEmail, PEmailTemplate email) throws Exception;
+	void sendMailIncidence(PIncidence incidenceEmail, PEmailTemplate email) throws Exception;
 
-	void sendMailIncidence(WFIncidence incidenceEmail, PEmailTemplate email, String motive);
+	void sendMailIncidence(PWFIncidence incidenceEmail, PEmailTemplate email, String motive);
 
 	void sendMailNotifyChangeStatus(String numRequest, String type, String statusName, String operator,
 			Timestamp requestDate, UserLogin userLogin, String senders, PEmailTemplate emailNotify,String subject, String motive, String note, String title);
@@ -76,8 +79,8 @@ public interface PEmailTemplateService extends BaseDao<Integer, PEmailTemplate> 
 			String operator, Timestamp requestDate, UserLogin userLogin, String senders, PEmailTemplate emailNotify,String subject,
 			String motive, String note, String title);
 
-	void sendMailNotifyChangeUserIncidence(String numTicket, User userOperator, String motive, Timestamp timestamp,
-			User newUser, PEmailTemplate emailNotify);
+	void sendMailNotifyChangeUserIncidence(String numTicket, PUser userOperator, String motive, Timestamp timestamp,
+			PUser newUser, PEmailTemplate emailNotify);
 
 }
 

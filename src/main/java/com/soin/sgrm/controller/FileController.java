@@ -63,6 +63,8 @@ import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.pos.PBaseKnowledge;
 import com.soin.sgrm.model.pos.PBaseKnowledgeFile;
+import com.soin.sgrm.model.pos.PIncidence;
+import com.soin.sgrm.model.pos.PIncidenceFile;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRFCFile;
 import com.soin.sgrm.model.pos.PRFCTrackingShow;
@@ -94,6 +96,8 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.pos.PBaseKnowledgeFileService;
 import com.soin.sgrm.service.pos.PBaseKnowledgeService;
 import com.soin.sgrm.service.pos.PDocTemplateService;
+import com.soin.sgrm.service.pos.PIncidenceFileService;
+import com.soin.sgrm.service.pos.PIncidenceService;
 import com.soin.sgrm.service.pos.PProjectService;
 import com.soin.sgrm.service.pos.PRFCFileService;
 import com.soin.sgrm.service.pos.PRFCService;
@@ -199,6 +203,10 @@ public class FileController extends BaseController {
 	PRequestBaseService prequestBaseService;
 	@Autowired 
 	PRequestFileService prequestFileService;
+	@Autowired
+	PIncidenceFileService pincidenceFileService;
+	@Autowired
+	PIncidenceService pincidenceService;
 	DocxVariables docxVariables = null;
 	
 	PDocxVariables pdocxVariables = null;
@@ -1732,22 +1740,40 @@ public class FileController extends BaseController {
 	 **/
 	@RequestMapping(value = "/singleDownloadIncidence-{id}", method = RequestMethod.GET)
 	public void downloadFileIncidence(HttpServletResponse response, @PathVariable Long id) throws IOException {
+		if (profileActive().equals("oracle")) {
+			IncidenceFile incidenceFile =incidenceFileService.findById(id);
+			File file = new File(incidenceFile.getPath());
 
-		IncidenceFile incidenceFile =incidenceFileService.findById(id);
-		File file = new File(incidenceFile.getPath());
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + incidenceFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
+		} else if (profileActive().equals("postgres")) {
+			PIncidenceFile incidenceFile =pincidenceFileService.findById(id);
+			File file = new File(incidenceFile.getPath());
 
-		// Se modifica la respuesta para descargar el archivo
-		response.setContentType("text/plain");
-		response.setHeader("Content-Disposition", "attachment;filename=" + incidenceFile.getName());
-		String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-		if (mimeType == null) {
-			mimeType = "application/octet-stream";
+			// Se modifica la respuesta para descargar el archivo
+			response.setContentType("text/plain");
+			response.setHeader("Content-Disposition", "attachment;filename=" + incidenceFile.getName());
+			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+			if (mimeType == null) {
+				mimeType = "application/octet-stream";
+			}
+			response.setContentType(mimeType);
+			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+			response.setContentLength((int) file.length());
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+			FileCopyUtils.copy(inputStream, response.getOutputStream());
 		}
-		response.setContentType(mimeType);
-		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-		response.setContentLength((int) file.length());
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
+
 	}
 	
 	/**
@@ -1760,13 +1786,24 @@ public class FileController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		res.setStatus("success");
 		try {
-			IncidenceFile incidenceFile = incidenceFileService.findById(id);
-			incidenceFileService.deleteIncidence(incidenceFile);
-			File file = new File(incidenceFile.getPath());
-			if (file.exists()) {
-				file.delete();
+			if (profileActive().equals("oracle")) {
+				IncidenceFile incidenceFile = incidenceFileService.findById(id);
+				incidenceFileService.deleteIncidence(incidenceFile);
+				File file = new File(incidenceFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(incidenceFile.getId() + "");
+			} else if (profileActive().equals("postgres")) {
+				PIncidenceFile incidenceFile = pincidenceFileService.findById(id);
+				pincidenceFileService.deleteIncidence(incidenceFile);
+				File file = new File(incidenceFile.getPath());
+				if (file.exists()) {
+					file.delete();
+				}
+				res.setData(incidenceFile.getId() + "");
 			}
-			res.setData(incidenceFile.getId() + "");
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "files");
 			res.setStatus("exception");
@@ -1783,19 +1820,31 @@ public class FileController extends BaseController {
 	 * @throws SQLException
 	 **/
 	public String createPathIncidence(Long id, String basePath) throws SQLException {
-		Incidence incidence;
+		
 		try {
-			incidence = incidenceService.getIncidences(id);
-			String path =  "tickets"+ "/" +incidence.getSystem().getName() + "/";
+			if (profileActive().equals("oracle")) {
+				Incidence incidence;
+				incidence = incidenceService.getIncidences(id);
+				String path =  "tickets"+ "/" +incidence.getSystem().getName() + "/";
 
-			path += incidence.getNumTicket() + "/";
-			new File(basePath + path).mkdirs();
-			return path;
+				path += incidence.getNumTicket() + "/";
+				new File(basePath + path).mkdirs();
+				return path;
+			} else if (profileActive().equals("postgres")) {
+				PIncidence incidence;
+				incidence = pincidenceService.getIncidences(id);
+				String path =  "tickets"+ "/" +incidence.getSystem().getName() + "/";
+
+				path += incidence.getNumTicket() + "/";
+				new File(basePath + path).mkdirs();
+				return path;
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "files");
 			throw e;
 		}
-
+		return "";
 	}
 	/**
 	 * @description: Adjunta el archivo al Incidence.
@@ -1814,37 +1863,70 @@ public class FileController extends BaseController {
 					json.setException("Archivo no seleccionado");
 					return json;
 				}
-				
-				String basePath = env.getProperty("fileStore.path");
-				String path = createPathIncidence(id, basePath);
-				String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
-				// Referencia del archivo
-				IncidenceFile incidenceFile = new IncidenceFile();
-				incidenceFile.setName(fileName);
-				incidenceFile.setPath(basePath + path + fileName);
-				long time = System.currentTimeMillis();
-				java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
-				incidenceFile.setRevisionDate(revisionDate);
-				try {
-					// Se carga el archivo y se guarda la referencia
-					FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
-					incidenceFileService.saveIncidenceFile(id, incidenceFile);
-					incidenceFile = incidenceFileService.findByKey("path", incidenceFile.getPath());
-					json.setStatus("success");
-					json.setObj(incidenceFile);
-				} catch (SQLException ex) {
-					Sentry.capture(ex, "files");
-					json.setStatus("exception");
-					json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
-				} catch (Exception e) {
-					Sentry.capture(e, "files");
-					json.setStatus("exception");
-					json.setException(e.getMessage());
-					logger.log(MyLevel.RELEASE_ERROR, e.toString());
-					if (e instanceof MaxUploadSizeExceededException) {
-						json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				if (profileActive().equals("oracle")) {
+					String basePath = env.getProperty("fileStore.path");
+					String path = createPathIncidence(id, basePath);
+					String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+					// Referencia del archivo
+					IncidenceFile incidenceFile = new IncidenceFile();
+					incidenceFile.setName(fileName);
+					incidenceFile.setPath(basePath + path + fileName);
+					long time = System.currentTimeMillis();
+					java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+					incidenceFile.setRevisionDate(revisionDate);
+					try {
+						// Se carga el archivo y se guarda la referencia
+						FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+						incidenceFileService.saveIncidenceFile(id, incidenceFile);
+						incidenceFile = incidenceFileService.findByKey("path", incidenceFile.getPath());
+						json.setStatus("success");
+						json.setObj(incidenceFile);
+					} catch (SQLException ex) {
+						Sentry.capture(ex, "files");
+						json.setStatus("exception");
+						json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+					} catch (Exception e) {
+						Sentry.capture(e, "files");
+						json.setStatus("exception");
+						json.setException(e.getMessage());
+						logger.log(MyLevel.RELEASE_ERROR, e.toString());
+						if (e instanceof MaxUploadSizeExceededException) {
+							json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+						}
+					}
+				} else if (profileActive().equals("postgres")) {
+					String basePath = env.getProperty("fileStore.path");
+					String path = createPathIncidence(id, basePath);
+					String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+					// Referencia del archivo
+					PIncidenceFile incidenceFile = new PIncidenceFile();
+					incidenceFile.setName(fileName);
+					incidenceFile.setPath(basePath + path + fileName);
+					long time = System.currentTimeMillis();
+					java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+					incidenceFile.setRevisionDate(revisionDate);
+					try {
+						// Se carga el archivo y se guarda la referencia
+						FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+						pincidenceFileService.saveIncidenceFile(id, incidenceFile);
+						incidenceFile = pincidenceFileService.findByKey("path", incidenceFile.getPath());
+						json.setStatus("success");
+						json.setObj(incidenceFile);
+					} catch (SQLException ex) {
+						Sentry.capture(ex, "files");
+						json.setStatus("exception");
+						json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+					} catch (Exception e) {
+						Sentry.capture(e, "files");
+						json.setStatus("exception");
+						json.setException(e.getMessage());
+						logger.log(MyLevel.RELEASE_ERROR, e.toString());
+						if (e instanceof MaxUploadSizeExceededException) {
+							json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+						}
 					}
 				}
+				
 				return json;
 				
 	}
