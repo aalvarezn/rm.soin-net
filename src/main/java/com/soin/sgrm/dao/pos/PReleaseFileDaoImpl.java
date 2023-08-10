@@ -104,10 +104,10 @@ public class PReleaseFileDaoImpl implements PReleaseFileDao {
 
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public List<String> ImpactObjects(Integer release_id) {
 		Session sessionObj = null;
-		String sql = "";
+		String sql = "ESTADO_ID";
 		try {
 			sessionObj = sessionFactory.openSession();
 			sql = String.format(
@@ -115,10 +115,10 @@ public class PReleaseFileDaoImpl implements PReleaseFileDao {
 							+ " concat((CASE (SELECT 1 FROM \"RELEASES_RELEASE\" r1 "
 							+ " INNER JOIN \"RELEASES_RELEASE_OBJETOS\" ro1 " + "    ON ro1.\"RELEASE_ID\" = r1.\"ID\" "
 							+ " INNER JOIN \"SISTEMAS_OBJETO\" so1 " + "    ON ro1.\"OBJETO_ID\" = so1.\"ID\" "
-							+ " INNER JOIN \"RELEASES_ESTADO\" e1 " + "    on r.estado_id = e1.\"ID\" "
+							+ " INNER JOIN \"RELEASES_ESTADO\" e1 " + "    on r.\"ESTADO_ID\" = e1.\"ID\" "
 							+ " WHERE r1.\"ID\" <> %s AND so.\"ITEM_DE_CONFIGURACION_ID\" = so1.\"ITEM_DE_CONFIGURACION_ID\" "
-							+ " AND so.\"TIPO_OBJETO_ID\" = so1.\"TIPO_OBJETO_ID\"\"TIPO_OBJETO_ID\" AND r1.\"SISTEMA_ID\" = r.\"SISTEMA_ID\" AND so1.\"NOMBRE\" = so.\"NOMBRE\" AND e1.\"NOMBRE\" <> 'Anulado' "
-							+ " AND r1.\"FECHA_CREACION\" < r.\"FECHA_CREACION\" AND ROWNUM = 1) WHEN 1 THEN 'MODIFICADO' ELSE 'NUEVO' END),'^'))) item "
+							+ " AND so.\"TIPO_OBJETO_ID\" = so1.\"TIPO_OBJETO_ID\" AND r1.\"SISTEMA_ID\" = r.\"SISTEMA_ID\" AND so1.\"NOMBRE\" = so.\"NOMBRE\" AND e1.\"NOMBRE\" <> 'Anulado' "
+							+ " AND r1.\"FECHA_CREACION\" < r.\"FECHA_CREACION\" LIMIT 1) WHEN 1 THEN 'MODIFICADO' ELSE 'NUEVO' END),'^'))) item "
 							+ " FROM \"RELEASES_RELEASE\" r " + " INNER JOIN \"RELEASES_RELEASE_OBJETOS\" ro "
 							+ "    ON ro.\"RELEASE_ID\" = r.\"ID\" " + " INNER JOIN \"SISTEMAS_OBJETO\" so "
 							+ "    ON ro.\"OBJETO_ID\" = so.\"ID\" " + " INNER JOIN \"SISTEMAS_TIPOOBJECTO\" top "

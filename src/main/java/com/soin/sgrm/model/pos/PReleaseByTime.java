@@ -1,4 +1,4 @@
-package com.soin.sgrm.utils;
+package com.soin.sgrm.model.pos;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
@@ -7,13 +7,13 @@ import javax.persistence.Table;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "RELEASES_RELEASE")
-public class ReleaseByTime implements Serializable {
+public class PReleaseByTime implements Serializable {
 
 	private String year;
 	private String status;
 	private String amount;
 
-	public ReleaseByTime() {
+	public PReleaseByTime() {
 		super();
 	}
 

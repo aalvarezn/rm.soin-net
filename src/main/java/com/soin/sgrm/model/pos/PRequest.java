@@ -71,6 +71,10 @@ public class PRequest implements Serializable {
 	@Column(name = "ACTIVO")
 	private boolean active;
 	
+	@Column(name = "AUTO")
+	private Integer auto;
+
+	
 
 	@Transient
 	Integer typeRequestId;
@@ -188,6 +192,14 @@ public class PRequest implements Serializable {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public Integer getAuto() {
+		return auto;
+	}
+
+	public void setAuto(Integer auto) {
+		this.auto = auto;
 	}
 
 

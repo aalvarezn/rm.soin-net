@@ -1065,7 +1065,7 @@ function responseAjaxSendRFC(response) {
 		case 'success':
 			resetErrors();
 			reloadPreview();
-			swal("Correcto!", "RFC guardado correctamente.",
+			swal("Correcto!", "Ticket guardado correctamente.",
 					"success", 2000)
 					$('#generateReleaseForm #applyFor').show();
 			break;

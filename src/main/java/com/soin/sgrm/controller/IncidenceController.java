@@ -221,8 +221,8 @@ public class IncidenceController extends BaseController {
 						dateRange, typeId, priorityId, userLogin, systemId);
 				return incidences;
 			} else if (profileActive().equals("postgres")) {
-				JsonSheet<Incidence> incidences = new JsonSheet<>();
-				incidences = incidenceService.findAllRequest(email, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
+				JsonSheet<PIncidence> incidences = new JsonSheet<>();
+				incidences = pincidenceService.findAllRequest(email, sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
 						dateRange, typeId, priorityId, userLogin, systemId);
 				return incidences;
 			}
@@ -401,6 +401,7 @@ public class IncidenceController extends BaseController {
 				PIncidence paddIncidence=new PIncidence();
 				if (status != null) {
 					paddIncidence.setStatus(status);
+					paddIncidence.setTitle(addIncidence.getTitle());
 					paddIncidence.setSlaActive(status.getSlaActive());
 					paddIncidence.setCreateFor(user.getFullName());
 					paddIncidence.setSystem(system);
@@ -952,6 +953,7 @@ public class IncidenceController extends BaseController {
 
 				Timestamp timestamp = new Timestamp(dayExit.getTimeInMillis());
 				incidence.setExitOptimalDate(timestamp);
+				
 				}
 				if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
 					if (incidence.getTypeIncidence().getEmailTemplate() != null) {
@@ -1009,7 +1011,7 @@ public class IncidenceController extends BaseController {
 						newThread.start();
 					}
 				} else {
-					PUser userNew = puserService.getUserByUsername(getUserLogin().getFullName());
+					PUser userNew = puserService.getUserByUsername(getUserLogin().getUsername());
 					incidence.setUser(userNew);
 					incidence.setAssigned(userNew.getFullName());
 				}

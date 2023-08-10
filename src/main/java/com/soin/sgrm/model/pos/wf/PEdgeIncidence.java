@@ -43,11 +43,11 @@ public class PEdgeIncidence implements Serializable {
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "FROM_NODE_ID", nullable = true)
+	@JoinColumn(name = "\"FROM_NODE_ID\"", nullable = true)
 	private PNodeIncidence nodeFrom;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "TO_NODE_ID", nullable = true)
+	@JoinColumn(name = "\"TO_NODE_ID\"", nullable = true)
 	private PNodeIncidence nodeTo;
 
 	@Transient

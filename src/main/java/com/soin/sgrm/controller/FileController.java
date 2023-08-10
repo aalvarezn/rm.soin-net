@@ -71,6 +71,7 @@ import com.soin.sgrm.model.pos.PRFCTrackingShow;
 import com.soin.sgrm.model.pos.PReleaseFile;
 import com.soin.sgrm.model.pos.PReleaseSummary;
 import com.soin.sgrm.model.pos.PReleaseSummaryFile;
+import com.soin.sgrm.model.pos.PReportFile;
 import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.model.pos.PRequestBase;
 import com.soin.sgrm.model.pos.PRequestBaseFile;
@@ -103,6 +104,7 @@ import com.soin.sgrm.service.pos.PRFCFileService;
 import com.soin.sgrm.service.pos.PRFCService;
 import com.soin.sgrm.service.pos.PReleaseFileService;
 import com.soin.sgrm.service.pos.PReleaseService;
+import com.soin.sgrm.service.pos.PReportFileService;
 import com.soin.sgrm.service.pos.PRequestBaseService;
 import com.soin.sgrm.service.pos.PRequestFileService;
 import com.soin.sgrm.service.pos.PRequestService;
@@ -207,6 +209,8 @@ public class FileController extends BaseController {
 	PIncidenceFileService pincidenceFileService;
 	@Autowired
 	PIncidenceService pincidenceService;
+	@Autowired
+	PReportFileService preportFileService;
 	DocxVariables docxVariables = null;
 	
 	PDocxVariables pdocxVariables = null;
@@ -812,7 +816,7 @@ public class FileController extends BaseController {
 		pdocxVariables.releaseAmbients(release);
 		pdocxVariables.releaseDataBaseInstructions(release);
 		pdocxVariables.releaseInstalationInstructions(release);
-		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+		pdocxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 		pdocxVariables.releaseEnvironment(release);
 		pdocxVariables.releaseActions(release);
@@ -849,7 +853,7 @@ public class FileController extends BaseController {
 		pdocxVariables.releaseActions(release);
 		pdocxVariables.releaseAmbientInformation(release);
 		pdocxVariables.releaseAmbients(release);
-		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+		pdocxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 	}
 	/**
@@ -949,7 +953,7 @@ public class FileController extends BaseController {
 		pdocxVariables.releaseActions(release);
 		pdocxVariables.releaseDataBaseInstructions(release);
 		pdocxVariables.releaseInstalationInstructions(release);
-		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+		pdocxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 	}
 
@@ -985,7 +989,7 @@ public class FileController extends BaseController {
 		pdocxVariables.releaseActions(release);
 		pdocxVariables.releaseDataBaseInstructions(release);
 		pdocxVariables.releaseInstalationInstructions(release);
-		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+		pdocxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 	}
 
@@ -1022,7 +1026,7 @@ public class FileController extends BaseController {
 		pdocxVariables.releaseAmbients(release);
 		pdocxVariables.releaseDataBaseInstructions(release);
 		pdocxVariables.releaseInstalationInstructions(release);
-		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
+		pdocxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 		pdocxVariables.releaseButtonCommandDetails(release);
 		pdocxVariables.releaseButtonFileDetails(release);
@@ -1949,40 +1953,76 @@ public class FileController extends BaseController {
 			json.setException("Archivo no seleccionado");
 			return json;
 		}
-		
-		// Direccion del archivo a guardar
-		String basePath = env.getProperty("fileStore.path");
-		String path = createPathReport(id, basePath);
-		String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+		if (profileActive().equals("oracle")) {
+			// Direccion del archivo a guardar
+			String basePath = env.getProperty("fileStore.path");
+			String path = createPathReport(id, basePath);
+			String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
 
-		// Referencia del archivo
-		ReportFile reportFile = new ReportFile();
-		reportFile.setName(fileName);
-		reportFile.setPath(basePath + path + fileName);
-		reportFile.setIdRelease(id);
-		long time = System.currentTimeMillis();
-		java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
-		reportFile.setRevisionDate(revisionDate);
-		try {
-			// Se carga el archivo y se guarda la referencia
-			FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
-			reportFileService.saveReportFile(id, reportFile);
-			reportFile = reportFileService.findByKey("path", reportFile.getPath());
-			json.setStatus("success");
-			json.setObj(reportFile);
-		} catch (SQLException ex) {
-			Sentry.capture(ex, "files");
-			json.setStatus("exception");
-			json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
-		} catch (Exception e) {
-			Sentry.capture(e, "files");
-			json.setStatus("exception");
-			json.setException(e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-			if (e instanceof MaxUploadSizeExceededException) {
-				json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+			// Referencia del archivo
+			ReportFile reportFile = new ReportFile();
+			reportFile.setName(fileName);
+			reportFile.setPath(basePath + path + fileName);
+			reportFile.setIdRelease(id);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			reportFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				reportFileService.saveReportFile(id, reportFile);
+				reportFile = reportFileService.findByKey("path", reportFile.getPath());
+				json.setStatus("success");
+				json.setObj(reportFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
+			}
+		} else if (profileActive().equals("postgres")) {
+			// Direccion del archivo a guardar
+			String basePath = env.getProperty("fileStore.path");
+			String path = createPathReport(id, basePath);
+			String fileName = file.getOriginalFilename().replaceAll("\\s", "_");
+
+			// Referencia del archivo
+			PReportFile reportFile = new PReportFile();
+			reportFile.setName(fileName);
+			reportFile.setPath(basePath + path + fileName);
+			reportFile.setIdRelease(id);
+			long time = System.currentTimeMillis();
+			java.sql.Timestamp revisionDate = new java.sql.Timestamp(time);
+			reportFile.setRevisionDate(revisionDate);
+			try {
+				// Se carga el archivo y se guarda la referencia
+				FileCopyUtils.copy(file.getBytes(), new File(basePath + path + fileName));
+				preportFileService.saveReportFile(id, reportFile);
+				reportFile = preportFileService.findByKey("path", reportFile.getPath());
+				json.setStatus("success");
+				json.setObj(reportFile);
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "files");
+				json.setStatus("exception");
+				json.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "files");
+				json.setStatus("exception");
+				json.setException(e.getMessage());
+				logger.log(MyLevel.RELEASE_ERROR, e.toString());
+				if (e instanceof MaxUploadSizeExceededException) {
+					json.setException("Tamaño máximo de" + Constant.MAXFILEUPLOADSIZE + "MB.");
+				}
 			}
 		}
+		
 		return json;
 	}
 	
