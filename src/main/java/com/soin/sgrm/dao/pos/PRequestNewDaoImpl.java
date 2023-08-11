@@ -78,7 +78,7 @@ public class PRequestNewDaoImpl extends AbstractDao<Integer,PRequest> implements
 
 	private Criteria criteriaList(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
 			int proyectId, int typeId, Integer userLogin) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Request.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PRequest.class);
 		crit.createAlias("proyect", "proyect");
 		crit.createAlias("typeRequest", "typeRequest");
 	

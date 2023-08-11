@@ -32,19 +32,19 @@ public class PRFCError implements Serializable {
 	private Timestamp errorDate;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SISTEMA_ID", nullable = true)
+	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
 	private PSystemInfo system;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SIGES_ID", nullable = true)
+	@JoinColumn(name = "\"SIGES_ID\"", nullable = true)
 	private PSiges siges;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "RFC_ID", nullable = true)
+	@JoinColumn(name = "\"RFC_ID\"", nullable = true)
 	private PRFC_WithoutRelease rfc;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ERROR_ID", nullable = true)
+	@JoinColumn(name = "\"ERROR_ID\"", nullable = true)
 	private PErrors_RFC error;
 	
 	@Column(name = "OBSERVACIONES")

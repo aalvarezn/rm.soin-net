@@ -54,13 +54,13 @@ public class PWFIncidenceDaoImpl implements PWFIncidenceDao {
 
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, null);
+				systemId, statusId, null,true);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, null);
+				systemId, statusId, null,false);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -76,7 +76,7 @@ public class PWFIncidenceDaoImpl implements PWFIncidenceDao {
 
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaByWorkFlow(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Long statusId, Object[] ids)
+			String[] filtred, String[] dateRange, Integer systemId, Long statusId, Object[] ids,boolean count)
 			throws SQLException, ParseException {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PWFIncidence.class);
@@ -117,7 +117,10 @@ public class PWFIncidenceDaoImpl implements PWFIncidenceDao {
 		}
 		crit.add(Restrictions.eq("type.id", 2));
 		crit.add(Restrictions.isNotNull("node"));
-		crit.addOrder(Order.desc("createDate"));
+		if(count) {
+			crit.addOrder(Order.desc("createDate"));
+		}
+		
 		
 		return crit;
 	}
@@ -156,13 +159,13 @@ public class PWFIncidenceDaoImpl implements PWFIncidenceDao {
 			Object[] systemsId) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, systemsId);
+				systemId, statusId, systemsId,true);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, systemsId);
+				systemId, statusId, systemsId,false);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
