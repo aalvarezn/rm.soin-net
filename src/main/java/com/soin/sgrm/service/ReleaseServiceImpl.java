@@ -10,18 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.controller.ReleaseController;
 import com.soin.sgrm.dao.ReleaseDao;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
-import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.ReleaseReportFast;
-import com.soin.sgrm.model.Risk;
-import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseSummaryMin;
@@ -80,13 +76,13 @@ public class ReleaseServiceImpl implements ReleaseService {
 		return dao.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
 				statusId);
 	}
-	
+
 	@Override
-	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId)
+	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength,
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
 			throws SQLException, ParseException {
-		return dao.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
-				statusId,projectId);
+		return dao.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId, projectId);
 	}
 
 	@Override
@@ -325,14 +321,14 @@ public class ReleaseServiceImpl implements ReleaseService {
 
 	@Override
 	public List<ReleaseReport> listReleaseReport() {
-		
+
 		return dao.listReleaseReport();
-				
+
 	}
 
 	@Override
 	public List<ReleaseReportFast> listReleaseReportFilter(int systemId, int projectId, String dateRange) {
-		return  dao.listReleaseReportFilter(systemId,projectId,dateRange);
+		return dao.listReleaseReportFilter(systemId, projectId, dateRange);
 	}
 
 	@Override
@@ -342,7 +338,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 
 	@Override
 	public ReleaseTrackingShow findReleaseTracking(int id) {
-	
+
 		return dao.findReleaseTracking(id);
 	}
 
@@ -350,13 +346,21 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
 		// TODO Auto-generated method stub
 		return dao.findByIdSummaryFile(id);
-}
-  @Override
+	}
+
+	@Override
+
 	public JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength,
 			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
 			throws SQLException, ParseException {
-		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
-				statusId,projectId);
+		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId, projectId);
+
+	}
+
+	@Override
+	public ReleaseEdit findEditByName(String numRelease) {
+		return dao.findEditByName(numRelease);
 	}
 
 }

@@ -4,12 +4,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,16 +31,24 @@ import com.google.gson.JsonParser;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.ConfigurationItem;
 import com.soin.sgrm.model.Dependency;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Module;
 import com.soin.sgrm.model.Priority;
+import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
+import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.ReleaseWS;
+import com.soin.sgrm.model.Releases_WithoutObj;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Risk;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.Status;
+import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.TypeObject;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
@@ -49,13 +66,22 @@ import com.soin.sgrm.model.pos.PStatus;
 import com.soin.sgrm.model.pos.PTypeObject;
 import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.model.pos.PUserInfo;
+import com.soin.sgrm.security.UserLogin;
+import com.soin.sgrm.service.ActionEnvironmentService;
+import com.soin.sgrm.service.AmbientService;
 import com.soin.sgrm.service.ConfigurationItemService;
 import com.soin.sgrm.service.DependencyService;
 import com.soin.sgrm.service.EmailReadService;
+import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ModuleService;
+import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestService;
+import com.soin.sgrm.service.RiskService;
+import com.soin.sgrm.service.SigesService;
+import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.TypeObjectService;
 import com.soin.sgrm.service.UserInfoService;
@@ -72,6 +98,7 @@ import com.soin.sgrm.utils.BulkLoad;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
+import com.soin.sgrm.utils.MyLevel;
 
 @RestController
 @RequestMapping("/ws")
@@ -97,9 +124,20 @@ public class WebServiceController extends BaseController {
 	ReleaseObjectService releaseObjectService;
 	@Autowired
 	DependencyService dependencyService;
-	
 	@Autowired
 	PRFCService prfcService;
+	@Autowired
+	EmailTemplateService emailService;
+	@Autowired
+	ParameterService parameterService;
+	@Autowired
+	StatusRFCService statusRFCService;
+	@Autowired
+	RequestService requestService;
+	@Autowired
+	SigesService sigesService;
+	@Autowired
+	UserInfoService userInfoService;
 
 	@Autowired
 	PReleaseService preleaseService;
@@ -138,7 +176,7 @@ public class WebServiceController extends BaseController {
 		// Se genera la estructura base del release para su posterior creacion completa.
 		JsonResponse res = new JsonResponse();
 		String number_release = "";
-		
+
 		if (profileActive().equals("oracle")) {
 			Release release = new Release();
 			Module module = new Module();
@@ -650,6 +688,7 @@ public class WebServiceController extends BaseController {
 		return errors;
 	}
 
+
 	public ArrayList<MyError> validLine(ArrayList<MyError> errors, String[] line, int i, PReleaseEdit release,
 			List<PConfigurationItem> configurationItemList, List<PTypeObject> typeObjectList) {
 		if (CommonUtils.isSqlDate(line[3].trim()) == null) {
@@ -679,6 +718,7 @@ public class WebServiceController extends BaseController {
 		}
 		return errors;
 	}
+
 	public ArrayList<ReleaseObjectEdit> createObjects(String csv, ReleaseEdit release,
 			List<ConfigurationItem> configurationItemList, List<TypeObject> typeObjectList) throws Exception {
 
@@ -708,7 +748,165 @@ public class WebServiceController extends BaseController {
 		}
 		return objects;
 	}
+
+	@RequestMapping(value = "/statusChangeRelease", method = RequestMethod.PUT)
+	public @ResponseBody JsonResponse changeStatusRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "numRequest", required = true) String numRequest,
+			@RequestParam(value = "idStatus", required = true) Integer idStatus,
+			@RequestParam(value = "type", required = true) Integer type,
+			@RequestParam(value = "motive", required = true) String motive,
+			@RequestParam(value = "senders", required = false) String senders,
+			@RequestParam(value = "link", required = false) String link) {
+		JsonResponse res = new JsonResponse();
+		try {
+			if (type == 0) {
+				ReleaseEdit release = releaseService.findEditByName(numRequest);
+				Status status = statusService.findById(idStatus);
+				release.setStatus(status);
+				release.setOperator("Automatico");
+				release.setDateChange("");
+				release.setMotive(motive);
+				releaseService.updateStatusRelease(release);
+				res.setStatus("success");
+
+				Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				EmailTemplate email = new EmailTemplate();
+				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+					email = release.getSystem().getEmailTemplate().iterator().next();
+				}
+				String subject = getSubject(email, release);
+
+				String statusName = status.getName();
+
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotifyChangeStatusWebService(release.getReleaseNumber(), " del Release",
+								statusName, release.getOperator(),
+								CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
+								release.getUser(), senders, emailNotify, subject, release.getMotive(), link,
+								"RM-P2-R5|Registro evidencia de instalación");
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			} else if (type == 1) {
+				RFC rfc = rfcService.findByKey("numRequest",numRequest.trim());
+				StatusRFC status = statusRFCService.findById((long) idStatus);
+				rfc.setStatus(status);
+				rfc.setOperator("Automatico");
+				Date currentDate = new Date();
+				  Timestamp timestamp = new Timestamp(currentDate.getTime());
+					rfc.setRequestDate(timestamp);
+					rfc.setMotive(motive);
+					rfcService.update(rfc);
+					res.setStatus("success");
+
+					Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					String statusName = status.getName();
+					UserInfo user = userInfoService.findUserInfoById(rfc.getUser().getId());
+					String subject = getSubject(rfc.getSiges().getEmailTemplate(), rfc);
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotifyChangeStatusWebService(rfc.getNumRequest(), " del RFC", statusName,
+									rfc.getOperator(), rfc.getRequestDate(), user, senders, emailNotify, subject,
+									rfc.getMotive(), link, "RM-P2-R5|Registro evidencia de instalación");
+
+						} catch (Exception e) {
+							Sentry.capture(e, "rfc");
+						}
+
+					});
+					newThread.start();
+				}
+
+			} catch (SQLException ex) {
+				Sentry.capture(ex, "releaseManagement");
+				res.setStatus("exception");
+				res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+			} catch (Exception e) {
+				Sentry.capture(e, "releaseManagement");
+				res.setStatus("exception");
+				res.setException("Error al cambiar estado del release: " + e.getMessage());
+
+			}
+			return res;
+		}
+
+		private String getSubject(EmailTemplate email, RFC rfc) {
+			String temp = "";
+			/* ------ Subject ------ */
+			if (email.getSubject().contains("{{rfcNumber}}")) {
+				email.setSubject(email.getSubject().replace("{{rfcNumber}}",
+						(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
+			}
+
+			if (email.getSubject().contains("{{priority}}")) {
+				email.setSubject(email.getSubject().replace("{{priority}}",
+						(rfc.getPriority().getName() != null ? rfc.getPriority().getName() : "")));
+			}
+
+			if (email.getSubject().contains("{{impact}}")) {
+				email.setSubject(email.getSubject().replace("{{impact}}",
+						(rfc.getImpact().getName() != null ? rfc.getImpact().getName() : "")));
+			}
+
+			if (email.getSubject().contains("{{typeChange}}")) {
+				email.setSubject(email.getSubject().replace("{{typeChange}}",
+						(rfc.getTypeChange().getName() != null ? rfc.getTypeChange().getName() : "")));
+			}
+
+			if (email.getHtml().contains("{{message}}")) {
+				email.setHtml(email.getHtml().replace("{{message}}", (rfc.getMessage() != null ? rfc.getMessage() : "NA")));
+			}
+
+			if (email.getSubject().contains("{{systemMain}}")) {
+				temp = "";
+				Siges codeSiges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
+
+				temp += codeSiges.getSystem().getName();
+
+				email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+			}
+			return email.getSubject();
+		}
+
+		public String getSubject(EmailTemplate emailNotify, ReleaseEdit release) {
+
+			String tpo = "";
+			String releaseNumber = release.getReleaseNumber();
+			String[] parts = releaseNumber.split("\\.");
+			for (String part : parts) {
+				if (part.contains("TPO")) {
+					String[] partsTPO = part.split("TPO");
+					String[] partsNumber = part.split(partsTPO[1]);
+					tpo = partsNumber[0] + "-" + partsTPO[1];
+				}
+			}
+
+			new Request();
+			if (tpo != "") {
+				requestService.findByNameCode(tpo);
+			}
+			/* ------ Subject ------ */
+			if (emailNotify.getSubject().contains("{{tpoNumber}}")) {
+				emailNotify.setSubject(emailNotify.getSubject().replace("{{tpoNumber}}", (tpo != "" ? tpo : "")));
+			}
+			if (emailNotify.getSubject().contains("{{releaseNumber}}")) {
+				emailNotify.setSubject(emailNotify.getSubject().replace("{{releaseNumber}}",
+						(release.getReleaseNumber() != null ? release.getReleaseNumber() : "")));
+			}
+			if (emailNotify.getSubject().contains("{{version}}")) {
+				emailNotify.setSubject(emailNotify.getSubject().replace("{{version}}",
+						(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
+			}
+			return emailNotify.getSubject();
+		}
 	
+
 	public ArrayList<PReleaseObjectEdit> createObjects(String csv, PReleaseEdit release,
 			List<PConfigurationItem> configurationItemList, List<PTypeObject> typeObjectList) throws Exception {
 
@@ -738,5 +936,6 @@ public class WebServiceController extends BaseController {
 		}
 		return objects;
 	}
+
 
 }

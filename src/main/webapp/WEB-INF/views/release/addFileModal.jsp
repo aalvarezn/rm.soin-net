@@ -20,19 +20,24 @@
 -webkit-transform
 
 
+
+
 :
 
+
  
+
 
 rotate
 
 
+
+
 (360
 deg
+
+
 );
-
- 
-
 }
 }
 @
@@ -45,19 +50,24 @@ keyframes spin { 0% {
 transform
 
 
+
+
 :
 
+
  
+
 
 rotate
 
 
+
+
 (360
 deg
+
+
 );
-
- 
-
 }
 }
 .dropzone {
@@ -90,13 +100,14 @@ deg
 
 					<!-- File Upload From -->
 					<form id="fileUploadForm" action="fileUpload"
-						onsubmit="return false;" method="post"
+						onsubmit="return false" method="post"
 						enctype="multipart/form-data">
 						<input type="hidden" name="${_csrf.parameterName}"
 							value="${_csrf.token}" />
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center" >
-							<span class="btn btn-primary btn-block btn-lg fileinput-button"> <span>Selecccionar</span>
-								<input id="files" type="file" name="files[]" multiple>
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+							<span class="btn btn-primary btn-block btn-lg fileinput-button">
+								<span>Selecccionar</span> <input id="files" type="file"
+								name="files[]" multiple>
 							</span>
 						</div>
 
@@ -106,7 +117,10 @@ deg
 								<tbody>
 								</tbody>
 							</table>
+
 						</div>
+						<div style="padding-left: 3%;">*Solo se permiten n&uacute;meros, letras sin acentuar,- ,_ ,.
+							y que no hayan espacios en blanco</div>
 
 					</form>
 					<br>
@@ -126,7 +140,7 @@ deg
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
 					onclick="closeAddFileModal()">CANCELAR</button>
-				<button type="button" class="btn btn-primary waves-effect"
+				<button type="button" id="uploadButton"  class="btn btn-primary waves-effect"
 					onclick="upload()">GUARDAR</button>
 			</div>
 		</div>

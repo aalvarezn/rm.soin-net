@@ -411,7 +411,6 @@ public class RequestBaseController extends BaseController {
 					}
 
 				} else {
-
 					res.setStatus("exception");
 					res.setMessage("Error al crear la solicitud comunicarse con los administradores!");
 				}

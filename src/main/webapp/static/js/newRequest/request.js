@@ -764,7 +764,7 @@ function saveSystem(){
 						contentType: "application/json; charset=utf-8",
 						timeout : 60000,
 						data : JSON.stringify({
-							codeProyect : response.obj.sigesCode,
+							codeSigesId :response.obj.sigesId,
 							systemId : response.obj.id,
 							typePetitionId:response.obj.typePetitionId,
 						}),

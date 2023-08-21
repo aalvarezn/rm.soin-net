@@ -1,7 +1,15 @@
 /* Navbar ====================================== */
 @import url(materialize.css);
 
+/* Estilos para el texto verde */
+.green-text {
+  color: black;
+}
 
+/* Estilos para el texto rojo */
+.red-text {
+  color: #FE0000;
+}
 
 .navbar {
 	font-family: "Roboto", sans-serif;

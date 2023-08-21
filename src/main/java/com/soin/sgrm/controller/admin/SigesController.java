@@ -47,14 +47,12 @@ public class SigesController extends BaseController {
 
 	@Autowired
 	SigesService sigesService;
-	
+
 	@Autowired
 	SystemService systemService;
-	
-	@Autowired 
-	EmailTemplateService emailTemplateService;
-	
 
+	@Autowired
+	EmailTemplateService emailTemplateService;
 	@Autowired 
 	ProjectService proyectService;
   
@@ -102,7 +100,6 @@ public class SigesController extends BaseController {
 			model.addAttribute("emailTemplate",new PEmailTemplate());
 		}
 		
-		
 		return "/admin/siges/siges";
 	}
 
@@ -136,7 +133,6 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-		
 			String profile = profileActive();
 			if (profile.equals("oracle")) {
 				SystemInfo system= systemService.findSystemInfoById(addSiges.getSystemId());
@@ -171,7 +167,6 @@ public class SigesController extends BaseController {
 			}
 			
 
-			
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
 			res.setStatus("error");
@@ -186,7 +181,6 @@ public class SigesController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			
 			String profile = profileActive();
 			if (profile.equals("oracle")) {
 				SystemInfo system = systemService.findSystemInfoById(uptSiges.getSystemId());
@@ -212,6 +206,7 @@ public class SigesController extends BaseController {
 						res.setMessage("Siges modificado!");
 					}
 				}
+				
 			} else if (profile.equals("postgres")) {
 				PSiges puptSiges= new PSiges();
 				PSystemInfo system= psystemService.findSystemInfoById(uptSiges.getSystemId());
@@ -239,13 +234,10 @@ public class SigesController extends BaseController {
 					}
 				}
 			}
-			
-			
-			
-
+		
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al modificar siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
@@ -267,7 +259,7 @@ public class SigesController extends BaseController {
 			res.setMessage("Siges eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
-			res.setStatus("exception");
+			res.setStatus("error");
 			res.setMessage("Error al eliminar el siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}

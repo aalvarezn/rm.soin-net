@@ -18,12 +18,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.EmailTemplate;
-import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.model.TypePetitionR4;
 import com.soin.sgrm.model.pos.PTypePetitionR4;
 import com.soin.sgrm.response.JsonSheet;
-import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.TypePetitionR4Service;
 import com.soin.sgrm.service.TypePetitionService;
 import com.soin.sgrm.service.pos.PTypePetitionR4Service;

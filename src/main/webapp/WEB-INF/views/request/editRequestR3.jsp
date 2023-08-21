@@ -48,7 +48,9 @@
 <!-- <link -->
 <%-- 	href="<c:url value='/static/plugins/bootstrap-select/css/bootstrap-select.css'/>" --%>
 <!-- 	rel="stylesheet" type="text/css"> -->
-
+<!-- Linearicons -->
+<link rel="stylesheet"
+	href="<c:url value='/static/plugins/linearicons/webfont/style.css'/>" />
 <link rel="stylesheet"
 	href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
 
@@ -367,8 +369,6 @@ tr.selected {
 	<script
 		src="<c:url value='/static/js/newRequest/requestFileUpload.js'/>"></script>
 
-	<!-- Linearicons -->
-	<script src="https://cdn.linearicons.com/free/1.0.0/svgembedder.min.js"></script>
 
 
 </body>

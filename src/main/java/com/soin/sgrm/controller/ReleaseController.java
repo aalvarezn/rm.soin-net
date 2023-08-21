@@ -176,10 +176,9 @@ public class ReleaseController extends BaseController {
 	@Autowired
 	private NodeService nodeService;
 	@Autowired
-	private ReleaseObjectService releaseObjectService;
+	ReleaseObjectService releaseObjectService;
 	@Autowired
 	private ErrorReleaseService errorService;
-
 	@Autowired
 	private PUserInfoService ploginService;
 	@Autowired
@@ -479,6 +478,13 @@ public class ReleaseController extends BaseController {
 				model.addAttribute("status", new Status());
 				model.addAttribute("statuses", statusService.list());
 				model.addAttribute("errors", errorService.findAll());
+				String textChanged = "No aplica";
+				if (release.getObservations() != null) {
+					textChanged = release.getObservations().replaceAll("(https?://\\S+)",
+							"<a href=\"$1\" target=\"_blank\">$1</a>");
+				}
+
+				model.addAttribute("textChanged", textChanged);
 				Set<EmailTemplate> emailTemplate = release.getSystem().getEmailTemplate();
 				if (!emailTemplate.isEmpty()) {
 					model.addAttribute("cc", release.getSystem().getEmailTemplate().iterator().next().getCc());
@@ -506,12 +512,21 @@ public class ReleaseController extends BaseController {
 				model.addAttribute("status", new PStatus());
 				model.addAttribute("statuses", pstatusService.list());
 				model.addAttribute("errors", perrorService.findAll());
+
+				String textChanged = "No aplica";
+				if (release.getObservations() != null) {
+					textChanged = release.getObservations().replaceAll("(https?://\\S+)",
+							"<a href=\"$1\" target=\"_blank\">$1</a>");
+				}
+
+				model.addAttribute("textChanged", textChanged);
 				Set<PEmailTemplate> emailTemplate = release.getSystem().getEmailTemplate();
 				if (!emailTemplate.isEmpty()) {
 					model.addAttribute("cc", release.getSystem().getEmailTemplate().iterator().next().getCc());
 				} else {
 					model.addAttribute("cc", "");
 				}
+
 			}
 			
 
@@ -546,6 +561,12 @@ public class ReleaseController extends BaseController {
 				SystemConfiguration systemConfiguration = systemConfigurationService
 						.findBySystemId(release.getSystem().getId());
 				List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
+				String textChanged = "No aplica";
+				if (release.getObservations() != null) {
+					textChanged = release.getObservations().replaceAll("(https?://\\S+)",
+							"<a href=\"$1\" target=\"_blank\">$1</a>");
+				}
+				model.addAttribute("textChanged", textChanged);
 				model.addAttribute("dependency", new Release());
 				model.addAttribute("doc", new DocTemplate());
 				model.addAttribute("docs", docs);
@@ -574,7 +595,6 @@ public class ReleaseController extends BaseController {
 				model.addAttribute("status", new PStatus());
 				model.addAttribute("statuses", pstatusService.list());
 			}
-			
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
@@ -649,11 +669,13 @@ public class ReleaseController extends BaseController {
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		
 		try {
+
 			
 			if (profileActive().equals("oracle")) {
 				ReleaseEditWithOutObjects release = new ReleaseEditWithOutObjects();
 				SystemConfiguration systemConfiguration = new SystemConfiguration();
 				UserLogin user = getUserLogin();
+
 				if (id == null) {
 					return "redirect:/";
 				}
@@ -715,7 +737,9 @@ public class ReleaseController extends BaseController {
 
 				} else {
 					model.addAttribute("ccs", "");
+
 				}
+				
 			} else if (profileActive().equals("postgres")) {
 				PReleaseEditWithOutObjects release = new PReleaseEditWithOutObjects();
 				PSystemConfiguration systemConfiguration = new PSystemConfiguration();
@@ -783,8 +807,6 @@ public class ReleaseController extends BaseController {
 					model.addAttribute("ccs", "");
 				}
 			}
-			
-			
 			return "/release/editRelease";
 
 		} catch (Exception e) {
@@ -1223,6 +1245,17 @@ public class ReleaseController extends BaseController {
 					}
 				}
 
+				release.checkModifiedComponents(modifiedComponents);
+				release.checkAmbientsExists(ambients);
+				release.checkDependenciesExists(dependencies);
+				if (rc.getSenders() != null) {
+					if (rc.getSenders().length() < 256) {
+						rc.setSenders(rc.getSenders());
+					} else {
+						rc.setSenders(release.getSenders());
+					}
+				}
+
 				if (rc.getMessage() != null) {
 					if (rc.getMessage().length() < 256) {
 						rc.setMessage(rc.getMessage());
@@ -1231,6 +1264,7 @@ public class ReleaseController extends BaseController {
 					}
 				}
 				releaseService.saveRelease(release, rc);
+
 
 				res.setStatus("success");
 				if (errors.size() > 0) {
@@ -1303,6 +1337,7 @@ public class ReleaseController extends BaseController {
 				}
 			}
 			
+
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			res.setStatus("exception");
@@ -1322,7 +1357,6 @@ public class ReleaseController extends BaseController {
 		try {
 			if (profileActive().equals("oracle")) {
 				Release release = null;
-
 				if (CommonUtils.isNumeric(releaseId)) {
 					release = releaseService.findReleaseById(Integer.parseInt(releaseId));
 				}
@@ -1473,6 +1507,7 @@ public class ReleaseController extends BaseController {
 
 				return "redirect:/release/summary-" + release.getId();
 			}
+
 
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
@@ -1682,6 +1717,7 @@ public class ReleaseController extends BaseController {
 				request.setAttribute("systemC", systemC);
 			}
 	
+
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -1700,6 +1736,7 @@ public class ReleaseController extends BaseController {
 			if (sqlS != null) {
 				sql = Integer.parseInt(request.getParameter("sql"));
 			}
+
 			if (profileActive().equals("oracle")) {
 				releaseObjects = releaseObjectService.listObjectsByReleases(sEcho, iDisplayStart, iDisplayLength, sSearch,
 						releaseId, sql);
@@ -1749,8 +1786,6 @@ public class ReleaseController extends BaseController {
 	@RequestMapping(value = "/getRelease-{id}", method = RequestMethod.GET)
 	public @ResponseBody Object getRelease(@PathVariable Integer id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-		
-
 		try {
 			if (profileActive().equals("oracle")) {
 				ReleaseReport release = new ReleaseReport();
@@ -1761,8 +1796,6 @@ public class ReleaseController extends BaseController {
 				release = preleaseService.findByIdReleaseReport(id);
 				return release;
 			}
-			
-
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
 			redirectAttributes.addFlashAttribute("data", e.toString());
