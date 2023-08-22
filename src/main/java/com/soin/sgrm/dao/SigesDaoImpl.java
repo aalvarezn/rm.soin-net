@@ -49,4 +49,15 @@ public class SigesDaoImpl extends  AbstractDao<Long, Siges> implements SigesDao{
 	    return count > 0;
 	}
 
+
+	@Override
+	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges) {
+		Criteria crit = getSession().createCriteria(Siges.class);
+		crit.add(Restrictions.eq("codeSiges", codeSiges));
+		crit.add(Restrictions.ne("id", id));
+		crit.setProjection(Projections.rowCount());
+	    Long count = (Long) crit.uniqueResult();
+	    return count > 0;
+	}
+
 }

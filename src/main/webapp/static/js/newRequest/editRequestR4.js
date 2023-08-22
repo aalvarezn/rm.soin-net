@@ -863,7 +863,7 @@ function requestRequest() {
 		success : function(response) {
 			responseAjaxRequestRequest(response);
 			changeSaveButton(false);
-			origForm = $rfcEditForm.serialize();
+			origForm = $requestEditForm.serialize();
 			reloadPreview();
 		},
 		error: function(x, t, m) {

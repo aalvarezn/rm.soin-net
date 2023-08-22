@@ -373,9 +373,9 @@ function deleteRFC(element) {
 		success : function(response) {
 			switch (response.status) {
 			case 'success':
-				swal("Correcto!", "El RFC ha sido eliminado exitosamente.",
+				swal("Correcto!", "Se anulo exitosamente.",
 						"success", 2000)
-						$dtRFCs.DataTable().ajax.reload();
+						$dtRFCs.ajax.reload();
 				break;
 			case 'fail':
 				swal("Error!", response.exception, "error")

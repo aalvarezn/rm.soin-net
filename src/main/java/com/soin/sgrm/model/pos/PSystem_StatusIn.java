@@ -1,4 +1,4 @@
-package com.soin.sgrm.model;
+package com.soin.sgrm.model.pos;
 
 import java.io.Serializable;
 
@@ -15,8 +15,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "SISTEMA_ESTADOINCIDENCIA")
-public class SystemStatusIncidence implements Serializable{
+@Table(name = "SISTEMA_ESTADOINC")
+public class PSystem_StatusIn implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(generator = "increment")
@@ -25,49 +25,61 @@ public class SystemStatusIncidence implements Serializable{
 	private Long id;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "TIPOINCIDENCIA_ID", nullable = true)
-	private StatusIncidence statusIncidence;
+	@JoinColumn(name = "\"ESTADO_ID\"", nullable = true)
+	private PStatusIncidence status;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "SISTEMA_ID", nullable = true)
-	private System system;
-
+	@JoinColumn(name = "\"SISTEMA_ID\"", nullable = true)
+	private PSystem system;
+	
+	@Column(name = "SLA_ACTIVO")
+	private Integer slaActive;
+	
+	
 	@Transient
 	Integer systemId;
 
 	@Transient
-	Long statusIncidenceId;
+	Long statusId;
 
-	public StatusIncidence getStatusIncidence() {
-		return statusIncidence;
+	public PStatusIncidence getStatus() {
+		return status;
 	}
 
-	public void setStatusIncidence(StatusIncidence statusIncidence) {
-		this.statusIncidence = statusIncidence;
+	public void setStatus(PStatusIncidence status) {
+		this.status = status;
 	}
 
-	public Long getStatusIncidenceId() {
-		return statusIncidenceId;
-	}
-
-	public void setStatusIncidenceId(Long statusIncidenceId) {
-		this.statusIncidenceId = statusIncidenceId;
-	}
-
-	public System getSystem() {
+	public PSystem getSystem() {
 		return system;
 	}
 
-	public void setSystem(System system) {
+	public void setSystem(PSystem system) {
 		this.system = system;
 	}
-	
+
+	public Integer getSlaActive() {
+		return slaActive;
+	}
+
+	public void setSlaActive(Integer slaActive) {
+		this.slaActive = slaActive;
+	}
+
 	public Integer getSystemId() {
 		return systemId;
 	}
 
 	public void setSystemId(Integer systemId) {
 		this.systemId = systemId;
+	}
+
+	public Long getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
 	}
 
 	public Long getId() {
@@ -77,5 +89,8 @@ public class SystemStatusIncidence implements Serializable{
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	
+	
 	
 }

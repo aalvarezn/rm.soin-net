@@ -21,7 +21,7 @@
 							<div class="form-group">
 								<div class="form-line">
 									<input type="password" class="form-control" id="newPassword"
-										name="newPassword" placeholder="Ingrese un nombre"
+										name="newPassword" placeholder="Ingrese la contraseña"
 										style="height: 60px;">
 								</div>
 								<label id="newPassword_field" class="error fieldError"
@@ -34,7 +34,7 @@
 								<div class="form-line">
 									<input type="password" class="form-control"
 										id="confirmPassword" name="confirmPassword"
-										placeholder="Ingrese un nombre" style="height: 60px;">
+										placeholder="Ingrese la confirmacion de contraseña" style="height: 60px;">
 								</div>
 								<label id="confirmPassword_field" class="error fieldError"
 									for="name" style="display: none">Campo Requerido.</label>

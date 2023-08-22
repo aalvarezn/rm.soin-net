@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,10 +22,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.AttentionGroup;
+import com.soin.sgrm.model.Authority;
 import com.soin.sgrm.model.User;
+import com.soin.sgrm.model.pos.PAttentionGroup;
+import com.soin.sgrm.model.pos.PAuthority;
+import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.AttentionGroupService;
 import com.soin.sgrm.service.UserInfoService;
+import com.soin.sgrm.service.pos.PAttentionGroupService;
+import com.soin.sgrm.service.pos.PUserInfoService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
@@ -37,14 +44,42 @@ public class AttentionGroupController extends BaseController {
 
 	@Autowired
 	AttentionGroupService attentionGroupService;
+	
+	@Autowired
+	PUserInfoService puserService;
 
+	@Autowired
+	PAttentionGroupService pattentionGroupService;
+
+	private final Environment environment;
+	
 	public static final Logger logger = Logger.getLogger(AttentionGroupController.class);
+	
+	@Autowired
+	public AttentionGroupController(Environment environment) {
+		this.environment = environment;
+	}
 
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
-			model.addAttribute("users", userService.list());
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				model.addAttribute("users", userService.list());
+			} else if (profile.equals("postgres")) {
+				model.addAttribute("users", puserService.list());
+			}
+			
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "attentionGroup");
 			e.printStackTrace();
@@ -55,40 +90,82 @@ public class AttentionGroupController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<AttentionGroup> attentionGroups = new JsonSheet<>();
+		
 		try {
-
-			attentionGroups.setData(attentionGroupService.findAll());
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				JsonSheet<AttentionGroup> attentionGroups = new JsonSheet<>();
+				attentionGroups.setData(attentionGroupService.findAll());
+				return attentionGroups;
+			} else if (profile.equals("postgres")) {
+				JsonSheet<PAttentionGroup> attentionGroups = new JsonSheet<>();
+				attentionGroups.setData(pattentionGroupService.findAll());
+				return attentionGroups;
+			}
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return attentionGroups;
+		return null;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody AttentionGroup addAttentionGroup) {
 		JsonResponse res = new JsonResponse();
 		try {
-			User temp = null;
-			User lead=userService.findUserById(addAttentionGroup.getLeaderId());
-			addAttentionGroup.setLead(lead);
-			Set<User> authsUser = new HashSet<>();
-			List<Integer> listUser=addAttentionGroup.getUsersAttentionId();
-			if(!listUser.contains(addAttentionGroup.getLeaderId())) {
-				listUser.add(addAttentionGroup.getLeaderId());
-			}
-			for (Integer index : listUser) {
-				temp = userService.findUserById(index);
-				if (temp != null) {
-					authsUser.add(temp);
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				User temp = null;
+				User lead=userService.findUserById(addAttentionGroup.getLeaderId());
+				addAttentionGroup.setLead(lead);
+				Set<User> authsUser = new HashSet<>();
+				List<Integer> listUser=addAttentionGroup.getUsersAttentionId();
+				if(!listUser.contains(addAttentionGroup.getLeaderId())) {
+					listUser.add(addAttentionGroup.getLeaderId());
 				}
+				for (Integer index : listUser) {
+					temp = userService.findUserById(index);
+					if (temp != null) {
+						authsUser.add(temp);
+					}
+				}
+				addAttentionGroup.checkUserExists(authsUser);
+
+				res.setStatus("success");
+
+				attentionGroupService.save(addAttentionGroup);
+			} else if (profile.equals("postgres")) {
+				PAttentionGroup paddAttentionGroup=new PAttentionGroup();
+				PUser temp = null;
+				PUser lead=puserService.findUserById(addAttentionGroup.getLeaderId());
+				paddAttentionGroup.setLead(lead);
+			
+				paddAttentionGroup.setName(addAttentionGroup.getName());
+				paddAttentionGroup.setCode(addAttentionGroup.getCode());
+				paddAttentionGroup.setLeaderId(addAttentionGroup.getLeaderId());
+				paddAttentionGroup.setUsersAttentionId(addAttentionGroup.getUsersAttentionId());
+				
+				Set<PUser> pauthsUser = new HashSet<>();
+				List<Integer> listUser=paddAttentionGroup.getUsersAttentionId();
+				if(!listUser.contains(addAttentionGroup.getLeaderId())) {
+					listUser.add(paddAttentionGroup.getLeaderId());
+				}
+				for (Integer index : listUser) {
+					temp = puserService.findUserById(index);
+					if (temp != null) {
+						pauthsUser.add(temp);
+					}
+				}
+				paddAttentionGroup.checkUserExists(pauthsUser);
+
+				res.setStatus("success");
+
+				pattentionGroupService.save(paddAttentionGroup);
 			}
-			addAttentionGroup.checkUserExists(authsUser);
+			
 
-			res.setStatus("success");
-
-			attentionGroupService.save(addAttentionGroup);
 
 			res.setMessage("Grupo de atencion agregado!");
 		} catch (Exception e) {
@@ -106,22 +183,51 @@ public class AttentionGroupController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			User temp = null;
-			User lead=userService.findUserById(uptAttentionGroup.getLeaderId());
-			uptAttentionGroup.setLead(lead);
-			Set<User> authsUser = new HashSet<>();
-			List<Integer> listUser=uptAttentionGroup.getUsersAttentionId();
-			if(!listUser.contains(uptAttentionGroup.getLeaderId())) {
-				listUser.add(uptAttentionGroup.getLeaderId());
-			}
-			for (Integer index : listUser) {
-				temp = userService.findUserById(index);
-				if (temp != null) {
-					authsUser.add(temp);
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				
+				User temp = null;
+				User lead=userService.findUserById(uptAttentionGroup.getLeaderId());
+				uptAttentionGroup.setLead(lead);
+				Set<User> authsUser = new HashSet<>();
+				List<Integer> listUser=uptAttentionGroup.getUsersAttentionId();
+				if(!listUser.contains(uptAttentionGroup.getLeaderId())) {
+					listUser.add(uptAttentionGroup.getLeaderId());
 				}
+				for (Integer index : listUser) {
+					temp = userService.findUserById(index);
+					if (temp != null) {
+						authsUser.add(temp);
+					}
+				}
+				uptAttentionGroup.checkUserExists(authsUser);
+				attentionGroupService.update(uptAttentionGroup);
+			} else if (profile.equals("postgres")) {
+				PUser temp = null;
+				PUser lead=puserService.findUserById(uptAttentionGroup.getLeaderId());
+				PAttentionGroup puptAttentionGroup=new PAttentionGroup();
+				puptAttentionGroup.setLead(lead);
+				puptAttentionGroup.setId(uptAttentionGroup.getId());
+				puptAttentionGroup.setName(uptAttentionGroup.getName());
+				puptAttentionGroup.setCode(uptAttentionGroup.getCode());
+				puptAttentionGroup.setLeaderId(uptAttentionGroup.getLeaderId());
+				puptAttentionGroup.setUsersAttentionId(uptAttentionGroup.getUsersAttentionId());
+				Set<PUser> pauthsUser = new HashSet<>();
+				List<Integer> listUser=puptAttentionGroup.getUsersAttentionId();
+				if(!listUser.contains(puptAttentionGroup.getLeaderId())) {
+					listUser.add(puptAttentionGroup.getLeaderId());
+				}
+				for (Integer index : listUser) {
+					temp = puserService.findUserById(index);
+					if (temp != null) {
+						pauthsUser.add(temp);
+					}
+				}
+				puptAttentionGroup.checkUserExists(pauthsUser);
+				pattentionGroupService.update(puptAttentionGroup);
 			}
-			uptAttentionGroup.checkUserExists(authsUser);
-			attentionGroupService.update(uptAttentionGroup);
+			
 
 			res.setMessage("Grupo de atencion modificado!");
 		} catch (Exception e) {
@@ -138,7 +244,14 @@ public class AttentionGroupController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			attentionGroupService.delete(id);
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				attentionGroupService.delete(id);
+			} else if (profile.equals("postgres")) {
+				pattentionGroupService.delete(id);
+			}
+			
 			res.setMessage("Grupo de atencion eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "attentioGroup");

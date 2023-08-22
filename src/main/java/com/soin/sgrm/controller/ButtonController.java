@@ -32,6 +32,11 @@ import com.soin.sgrm.service.ButtonFileService;
 import com.soin.sgrm.service.CrontabService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.TypeDetailService;
+import com.soin.sgrm.service.pos.PButtonCommandService;
+import com.soin.sgrm.service.pos.PButtonFileService;
+import com.soin.sgrm.service.pos.PCrontabService;
+import com.soin.sgrm.service.pos.PReleaseService;
+import com.soin.sgrm.service.pos.PTypeDetailService;
 import com.soin.sgrm.utils.Constant;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -44,16 +49,26 @@ public class ButtonController extends BaseController {
 	public static final Logger logger = Logger.getLogger(ButtonController.class);
 
 	@Autowired
-	private ReleaseService releaseService;
+	ReleaseService releaseService;
 	@Autowired
 	TypeDetailService typeDetailService;
 	@Autowired
 	ButtonCommandService buttonService;
 	@Autowired
 	ButtonFileService buttonFileService;
-	
 	@Autowired
 	CrontabService crontabService;
+	
+	@Autowired
+	PReleaseService preleaseService;
+	@Autowired
+	PTypeDetailService ptypeDetailService;
+	@Autowired
+	PButtonCommandService pbuttonService;
+	@Autowired
+	PButtonFileService pbuttonFileService;
+	@Autowired
+	PCrontabService pcrontabService;
 
 	@RequestMapping(value = "/saveButtonCommand-{id}", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse saveButtonCommand(@PathVariable String id, HttpServletResponse response,

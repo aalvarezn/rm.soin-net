@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +18,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.TypeAmbient;
 import com.soin.sgrm.model.TypeChange;
+import com.soin.sgrm.model.pos.PImpact;
+import com.soin.sgrm.model.pos.PTypeChange;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.TypeChangeService;
+import com.soin.sgrm.service.pos.PTypeChangeService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
@@ -31,7 +36,23 @@ public class TypeChangeController extends BaseController {
 	@Autowired
 	TypeChangeService typeChangeService;
 	
+	@Autowired
+	PTypeChangeService ptypeChangeService;
 	
+	private final Environment environment;
+	
+	@Autowired
+	public TypeChangeController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
 	
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
@@ -42,14 +63,25 @@ public class TypeChangeController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		JsonSheet<TypeChange> typeChange = new JsonSheet<>();
+		
 		try {
-			typeChange.setData(typeChangeService.findAll());
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				JsonSheet<TypeChange> typeChange = new JsonSheet<>();
+				typeChange.setData(typeChangeService.findAll());
+				return typeChange;
+			} else if (profile.equals("postgres")) {
+				JsonSheet<PTypeChange> typeChange = new JsonSheet<>();
+				typeChange.setData(ptypeChangeService.findAll());
+				return typeChange;
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return typeChange;
+		return null;
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)
@@ -57,8 +89,16 @@ public class TypeChangeController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-
-			typeChangeService.save(addTypeChange);
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				typeChangeService.save(addTypeChange);
+			} else if (profile.equals("postgres")) {
+				PTypeChange paddTypeChange=new PTypeChange();
+				paddTypeChange.setName(addTypeChange.getName());
+				paddTypeChange.setDescription(addTypeChange.getDescription());
+				ptypeChangeService.save(paddTypeChange);
+			}
+			
 
 			res.setMessage("Tipo cambio agregado!");
 		} catch (Exception e) {
@@ -75,7 +115,18 @@ public class TypeChangeController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			typeChangeService.update(uptTypeChange);
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				typeChangeService.update(uptTypeChange);
+			} else if (profile.equals("postgres")) {
+				PTypeChange puptTypeChange=new PTypeChange();
+				puptTypeChange.setId(uptTypeChange.getId());
+				puptTypeChange.setDescription(uptTypeChange.getDescription());
+				puptTypeChange.setName(uptTypeChange.getName());
+				ptypeChangeService.update(puptTypeChange);
+			}
+			
 
 			res.setMessage("Tipo cambio modificado!");
 		} catch (Exception e) {
@@ -92,7 +143,13 @@ public class TypeChangeController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
-			typeChangeService.delete(id);
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				typeChangeService.delete(id);
+			} else if (profile.equals("postgres")) {
+				ptypeChangeService.delete(id);
+			}
+			
 			res.setMessage("Tipo cambio  eliminado!");
 		} catch (Exception e) {
 			Sentry.capture(e, "typeChange");

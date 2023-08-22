@@ -21,7 +21,7 @@
 									<input type="text" class="form-control" id="name"
 										maxlength="50" name="name" placeholder="Ingrese un nombre"
 										style="height: 60px;">
-									<div class="help-info">M�x. 50 caracteres</div>
+									<div class="help-info">M&aacute;x. 50 caracteres</div>
 								</div>
 								<label id="name_error" class="error fieldError" for="name"
 									style="visibility: hidden">Campo Requerido.</label>
@@ -29,7 +29,7 @@
 						</div>
 						<div
 							class="col-lg-12 col-md-12 col-sm-12 col-xs-12 m-t--20 m-b--20">
-							<label for="description">Descripción</label>
+							<label for="description">Descripci&oacute;n</label>
 							<div class="form-group">
 								<div class="form-line">
 									<input type="text" class="form-control" id="description"

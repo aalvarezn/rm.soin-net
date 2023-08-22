@@ -1,6 +1,7 @@
 package com.soin.sgrm.controller.admin;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -10,6 +11,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -25,9 +27,13 @@ import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Tree;
+import com.soin.sgrm.model.pos.PErrors_Release;
+import com.soin.sgrm.model.pos.PReleaseUser;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.TreeService;
+import com.soin.sgrm.service.pos.PReleaseService;
+import com.soin.sgrm.service.pos.PTreeService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
@@ -42,7 +48,26 @@ public class TreeController extends BaseController {
 	TreeService treeService;
 	@Autowired
 	private ReleaseService releaseService;
+	
+	@Autowired
+	PTreeService ptreeService;
+	@Autowired
+	private PReleaseService preleaseService;
 
+	private final Environment environment;
+
+	@Autowired
+	public TreeController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		return "/admin/tree/tree";
@@ -50,10 +75,20 @@ public class TreeController extends BaseController {
 
 	@RequestMapping(value = { "/{id}" }, method = RequestMethod.GET)
 	public String index(@PathVariable Integer id, HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		ReleaseUser release;
+	
 		try {
-			release = releaseService.findReleaseUserById(id);
-			model.addAttribute("release", release);
+			
+			if (profileActive().equals("oracle")) {
+				ReleaseUser release;
+				release = releaseService.findReleaseUserById(id);
+				model.addAttribute("release", release);
+			} else if (profileActive().equals("postgres")) {
+				PReleaseUser release;
+				release = preleaseService.findReleaseUserById(id);
+				model.addAttribute("release", release);
+			}
+
+			
 		} catch (SQLException e) {
 			Sentry.capture(e, "admin");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -66,7 +101,13 @@ public class TreeController extends BaseController {
 			HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
-			List<Tree> treeList = treeService.findTree(releaseNumber, depth);
+			List<Tree> treeList=new ArrayList<Tree>();
+			if (profileActive().equals("oracle")) {
+				treeList= treeService.findTree(releaseNumber, depth);
+			} else if (profileActive().equals("postgres")) {
+				treeList = ptreeService.findTree(releaseNumber, depth);
+			}
+			
 			res.setStatus("success");
 			res.setObj(treeList);
 		} catch (Exception e) {

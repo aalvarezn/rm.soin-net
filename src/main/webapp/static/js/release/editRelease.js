@@ -757,6 +757,7 @@ function validEmptySection() {
 	var i;
 	for (i = 2; i <= 4; i++) {
 		if ($("#step" + i).find(".activeSection").length == 0) {
+			console.log($("#step" + i).find(".activeSection").length);
 			$("#empty_" + i).show();
 			$('.wizard .nav-tabs #'+i).addClass('disabled');
 			$('.wizard .nav-tabs #'+i).css("opacity", "0.4");

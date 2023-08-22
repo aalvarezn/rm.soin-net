@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.soin.sgrm.dao.ModifiedComponentDao;
+import com.soin.sgrm.dao.pos.PModifiedComponentDao;
 import com.soin.sgrm.model.ModifiedComponent;
+import com.soin.sgrm.model.pos.PModifiedComponent;
 
 @Transactional("transactionManager")
 @Service("ModifiedComponentService")

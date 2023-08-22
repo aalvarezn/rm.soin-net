@@ -17,6 +17,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.corp.RMReleaseFile;
+import com.soin.sgrm.model.pos.PReleaseEdit;
 
 @Repository
 public class RMReleaseFileDaoImpl implements RMReleaseFileDao {
@@ -57,6 +58,33 @@ public class RMReleaseFileDaoImpl implements RMReleaseFileDao {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(RMReleaseFile.class);
 		crit.add(Restrictions.eq("release", release));
 		return (RMReleaseFile) crit.uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<RMReleaseFile> listByRelease(PReleaseEdit release) {
+		Session sessionObj = null;
+		String sql = "";
+		try {
+			sessionObj = sessionFactory.openSession();
+			sql = String.format(
+					" SELECT r.archivo as filename, r.release, r.revision, r.usuario as username FROM RM_OP.rm_release_file r WHERE r.release = %s ",
+					"'" + release.getReleaseNumber() + "'");
+
+			SQLQuery query = (SQLQuery) sessionObj.createSQLQuery(sql).addScalar("filename", StandardBasicTypes.STRING)
+					.addScalar("release", StandardBasicTypes.STRING).addScalar("revision", StandardBasicTypes.INTEGER)
+					.addScalar("username", StandardBasicTypes.STRING)
+					.setResultTransformer(Transformers.aliasToBean(RMReleaseFile.class));
+			List<RMReleaseFile> items = query.list();
+
+			return items;
+
+		} catch (Exception e) {
+			Sentry.capture(e, "RMRelease");
+		} finally {
+			sessionObj.close();
+		}
+		return null;
 	}
 
 }

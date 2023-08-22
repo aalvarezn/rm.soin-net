@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.TypeRequest;
+import com.soin.sgrm.model.pos.PTypeRequest;
 import com.soin.sgrm.service.TypeRequestService;
+import com.soin.sgrm.service.pos.PTypeRequestService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
@@ -34,25 +37,62 @@ public class TypeRequestController extends BaseController {
 
 	@Autowired
 	TypeRequestService typeRequestService;
+	
+	@Autowired
+	PTypeRequestService ptypeRequestService;
+
+	private final Environment environment;
+
+	@Autowired
+	public TypeRequestController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
+	
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("typeRequests", typeRequestService.list());
-		model.addAttribute("typeRequest", new TypeRequest());
+		
+		String profile = profileActive();
+		if (profile.equals("oracle")) {
+			model.addAttribute("typeRequests", typeRequestService.list());
+			model.addAttribute("typeRequest", new TypeRequest());
+		} else if (profile.equals("postgres")) {
+			model.addAttribute("typeRequests", ptypeRequestService.list());
+			model.addAttribute("typeRequest", new PTypeRequest());
+		}
+
 		return "/admin/typeRequest/typeRequest";
 	}
 
 	@RequestMapping(value = "/findTypeRequest/{id}", method = RequestMethod.GET)
-	public @ResponseBody TypeRequest findTypeRequest(@PathVariable Integer id, HttpServletRequest request,
+	public @ResponseBody Object findTypeRequest(@PathVariable Integer id, HttpServletRequest request,
 			Locale locale, Model model, HttpSession session) {
 		try {
-			TypeRequest typeRequest = typeRequestService.findById(id);
-			return typeRequest;
+			
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				TypeRequest typeRequest = typeRequestService.findById(id);
+				return typeRequest;
+			} else if (profile.equals("postgres")) {
+				PTypeRequest typeRequest = ptypeRequestService.findById(id);
+				return typeRequest;
+			}
+			
+		
 		} catch (Exception e) {
 			Sentry.capture(e, "typeRequest");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
+		return null;
 	}
 
 	@RequestMapping(path = "/saveTypeRequest", method = RequestMethod.POST)
@@ -71,8 +111,19 @@ public class TypeRequestController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				typeRequestService.save(typeRequest);
-				res.setObj(typeRequest);
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					typeRequestService.save(typeRequest);
+					res.setObj(typeRequest);
+				} else if (profile.equals("postgres")) {
+					PTypeRequest ptypeRequest= new PTypeRequest();
+					ptypeRequest.setCode(typeRequest.getCode());
+					ptypeRequest.setDescription(typeRequest.getDescription());
+					ptypeRequestService.save(ptypeRequest);
+					res.setObj(typeRequest);
+				}
+				
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "typeRequest");
@@ -97,11 +148,21 @@ public class TypeRequestController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				TypeRequest typeRequestOrigin = typeRequestService.findById(typeRequest.getId());
-				typeRequestOrigin.setCode(typeRequest.getCode());
-				typeRequestOrigin.setDescription(typeRequest.getDescription());
-				typeRequestService.update(typeRequestOrigin);
-				res.setObj(typeRequest);
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					TypeRequest typeRequestOrigin = typeRequestService.findById(typeRequest.getId());
+					typeRequestOrigin.setCode(typeRequest.getCode());
+					typeRequestOrigin.setDescription(typeRequest.getDescription());
+					typeRequestService.update(typeRequestOrigin);
+					res.setObj(typeRequest);
+				} else if (profile.equals("postgres")) {
+					PTypeRequest ptypeRequestOrigin = ptypeRequestService.findById(typeRequest.getId());
+					ptypeRequestOrigin.setCode(typeRequest.getCode());
+					ptypeRequestOrigin.setDescription(typeRequest.getDescription());
+					ptypeRequestService.update(ptypeRequestOrigin);
+					res.setObj(ptypeRequestOrigin);
+				}
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "typeRequest");
@@ -116,7 +177,13 @@ public class TypeRequestController extends BaseController {
 	public @ResponseBody JsonResponse deleteTypeRequest(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			typeRequestService.delete(id);
+			String profile = profileActive();
+			if (profile.equals("oracle")) {
+				typeRequestService.delete(id);
+			} else if (profile.equals("postgres")) {
+				ptypeRequestService.delete(id);
+			}
+			
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {
