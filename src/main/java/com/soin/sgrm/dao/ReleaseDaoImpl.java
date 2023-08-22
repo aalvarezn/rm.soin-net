@@ -965,7 +965,6 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		return release;
 	}
 
-
 	@Override
 	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
 		ReleaseSummaryFile release = (ReleaseSummaryFile) sessionFactory.getCurrentSession()
@@ -1000,7 +999,6 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		return json;
 
 	}
-
 
 	@Override
 	public ReleaseEdit findEditByName(String numRelease) {

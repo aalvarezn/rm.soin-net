@@ -752,6 +752,7 @@ public class ReleaseComponentsController extends BaseController {
 							obj.setIsSql((configurationItem.getName().equalsIgnoreCase("Base Datos")) ? 1 : 0);
 							objects.add(obj);
 						}
+
 					}
 				} else {
 					res.setStatus("success");

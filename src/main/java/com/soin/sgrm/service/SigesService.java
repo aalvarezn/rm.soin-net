@@ -13,6 +13,4 @@ public interface SigesService extends BaseService<Long, Siges>{
 
 	boolean veryUpdateSigesCode(Long id, String codeSiges);
 
-
-
 }

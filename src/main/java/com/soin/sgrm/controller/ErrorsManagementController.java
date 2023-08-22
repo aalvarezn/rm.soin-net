@@ -709,7 +709,6 @@ public class ErrorsManagementController extends BaseController {
 				} else {
 					systems = systemService.getSystemByProject(projectId);
 				}
-
 				projectService.listAll();
 				List<Errors_Release> errors = errorReleaseService.findAll();
 				int valueError = 0;
@@ -992,6 +991,7 @@ public class ErrorsManagementController extends BaseController {
 			Long errorId;
 			Long sigesId;
 			int systemId;
+			int projectId;
 			int typeDocument;
 			if (!request.getParameter("errorId").equals("") && request.getParameter("errorId") != null) {
 				errorId = (long) Integer.parseInt(request.getParameter("errorId"));
@@ -1013,6 +1013,11 @@ public class ErrorsManagementController extends BaseController {
 			if (!request.getParameter("projectId").equals("") && request.getParameter("projectId") != null) {
 				Integer.parseInt(request.getParameter("projectId"));
 			} else {
+			}
+			if (request.getParameter("typeDocument").equals("")) {
+				typeDocument = 0;
+			} else {
+				typeDocument =  Integer.parseInt(request.getParameter("typeDocument"));
 			}
 			if (request.getParameter("typeDocument").equals("")) {
 				typeDocument = 0;
@@ -1205,7 +1210,6 @@ public class ErrorsManagementController extends BaseController {
 						errorTypeGraphList.add(errorTypeGraph);
 					}
 				}
-
 				for (PSystem systemOnly : systems) {
 					valueError = 0;
 					for (PRFCError rfcError : rfcs) {
@@ -1307,6 +1311,7 @@ public class ErrorsManagementController extends BaseController {
 				res.setObj(dataNew);
 			}
 			
+
 			return res;
 		} catch (Exception e) {
 			Sentry.capture(e, "report");
@@ -1325,6 +1330,7 @@ public class ErrorsManagementController extends BaseController {
 			Long errorId;
 			Long typePetitionId;
 			int systemId;
+			int projectId;
 			int typeDocument;
 			if (!request.getParameter("errorId").equals("") && request.getParameter("errorId") != null) {
 				errorId = (long) Integer.parseInt(request.getParameter("errorId"));
@@ -1398,7 +1404,6 @@ public class ErrorsManagementController extends BaseController {
 						errorTypeGraphList.add(errorTypeGraph);
 					}
 				}
-
 				for (System systemOnly : systems) {
 					valueError = 0;
 					for (RequestError requestError : requests) {
@@ -1671,7 +1676,6 @@ public class ErrorsManagementController extends BaseController {
 				dataNew.put("name", reportName);
 				res.setObj(dataNew);
 			}
-			
 			return res;
 		} catch (Exception e) {
 			Sentry.capture(e, "report");

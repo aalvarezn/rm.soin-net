@@ -148,8 +148,6 @@ public class WorkFlowManagerController extends BaseController {
 	private RequestNewService requestNewService;
 	@Autowired
 	private TypeRequestService typeRequestService;
-	
-	
 	@Autowired
 	private PStatusService pstatusService;
 	@Autowired
@@ -363,7 +361,6 @@ public class WorkFlowManagerController extends BaseController {
 			
 			
 			res.setStatus("success");
-			
 			
 		} catch (Exception e) {
 			Sentry.capture(e, "typePetition");

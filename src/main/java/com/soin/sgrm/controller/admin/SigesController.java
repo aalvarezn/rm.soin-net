@@ -100,6 +100,7 @@ public class SigesController extends BaseController {
 			model.addAttribute("emailTemplate",new PEmailTemplate());
 		}
 		
+
 		return "/admin/siges/siges";
 	}
 
@@ -166,6 +167,7 @@ public class SigesController extends BaseController {
 				}
 			}
 			
+
 
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
@@ -234,7 +236,7 @@ public class SigesController extends BaseController {
 					}
 				}
 			}
-		
+
 		} catch (Exception e) {
 			Sentry.capture(e, "siges");
 			res.setStatus("error");

@@ -13,5 +13,4 @@ public interface SigesDao extends BaseDao<Long, Siges> {
 
 	boolean veryUpdateSigesCode(Long id, String codeSiges);
 
-
 }

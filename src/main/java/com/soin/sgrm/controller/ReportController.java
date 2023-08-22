@@ -22,10 +22,12 @@ import javax.xml.bind.DatatypeConverter;
 import org.springframework.core.env.Environment;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.metamodel.relational.Exportable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +38,7 @@ import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.CountReport;
 import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.Errors_RFC;
+import com.soin.sgrm.model.Errors_Requests;
 import com.soin.sgrm.model.ImageTree;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Priority;
@@ -45,6 +48,7 @@ import com.soin.sgrm.model.RFCReport;
 import com.soin.sgrm.model.RFCReportComplete;
 import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseObjectClean;
 import com.soin.sgrm.model.ReleaseReport;
@@ -168,7 +172,6 @@ import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
-
 @Controller
 @RequestMapping("/report")
 public class ReportController extends BaseController {
@@ -178,6 +181,7 @@ public class ReportController extends BaseController {
 	@Autowired
 	StatusService statusService;
 	@Autowired
+
 	StatusRFCService statusRFCService;
 	@Autowired
 	PriorityService priorityService;
@@ -348,7 +352,6 @@ public class ReportController extends BaseController {
 				model.addAttribute("statuses", statuses);
 				model.addAttribute("systems", systems);
 			}
-			
 		} catch (Exception e) {
 			Sentry.capture(e, "releaseManagement");
 			redirectAttributes.addFlashAttribute("data",
@@ -379,7 +382,6 @@ public class ReportController extends BaseController {
 				model.addAttribute("projects", projects);
 				model.addAttribute("systems", systems);
 			}
-
 		} catch (Exception e) {
 			Sentry.capture(e, "requestManagement");
 			redirectAttributes.addFlashAttribute("data",
@@ -474,7 +476,6 @@ public class ReportController extends BaseController {
 							dateRange, systemId, typePetitionId);
 				}
 			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -496,6 +497,7 @@ public class ReportController extends BaseController {
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+
 			if (profileActive().equals("oracle")) {
 				return releaseService.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
 						Constant.FILTRED, dateRange, systemId, statusId, projectId);
@@ -547,8 +549,7 @@ public class ReportController extends BaseController {
 			rfcC.put("all", (rfcC.get("draft") + rfcC.get("requested") + rfcC.get("completed")));
 			request.setAttribute("rfcC", rfcC);
 		}
-		
-
+	
 	}
 
 	@RequestMapping(path = "/listRFC", method = RequestMethod.GET)
@@ -633,12 +634,12 @@ public class ReportController extends BaseController {
 				}
 			}
 			
-
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
+ 
 		return null;
 	}
 
@@ -646,59 +647,9 @@ public class ReportController extends BaseController {
 		
 		if (profileActive().equals("oracle")) {
 			Map<String, Integer> userC = new HashMap<String, Integer>();
-			userC.put("draft", rfcService.countByType(id, "Borrador", 1, null));
-			userC.put("requested", rfcService.countByType(id, "Solicitado", 1, null));
-			userC.put("completed", rfcService.countByType(id, "Completado", 1, null));
-			userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
-			request.setAttribute("userC", userC);
-		} else if (profileActive().equals("postgres")) {
-			Map<String, Integer> userC = new HashMap<String, Integer>();
-			userC.put("draft", prfcService.countByType(id, "Borrador", 1, null));
-			userC.put("requested", prfcService.countByType(id, "Solicitado", 1, null));
-			userC.put("completed", prfcService.countByType(id, "Completado", 1, null));
-			userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
-			request.setAttribute("userC", userC);
-		}
-		
-
-	}
-
-	@RequestMapping(value = "/summaryReportRelease-{status}", method = RequestMethod.GET)
-	public String summaryReportRelease(@PathVariable String status, HttpServletRequest request, Locale locale,
-			Model model, HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
-
-		try {
-			model.addAttribute("parameter", status);
-			
-			if (profileActive().equals("oracle")) {
-				ReleaseReport release = null;
-				if (CommonUtils.isNumeric(status)) {
-					release = releaseService.findByIdReleaseReport(Integer.parseInt(status));
+                                                           ervice.findByIdReleaseReport(Integer.parseInt(status));
 				}
-
-				if (release == null) {
-					return "redirect:/";
-				}
-				SystemConfiguration systemConfiguration = systemConfigurationService
-						.findBySystemId(release.getSystem().getId());
-				List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
-				model.addAttribute("dependency", new Release());
-				model.addAttribute("object", new ReleaseObject());
-				model.addAttribute("doc", new DocTemplate());
-				model.addAttribute("docs", docs);
-				model.addAttribute("release", release);
-				model.addAttribute("systemConfiguration", systemConfiguration);
-				model.addAttribute("status", new Status());
-				model.addAttribute("statuses", statusService.list());
-			} else if (profileActive().equals("postgres")) {
-				PReleaseReport release = null;
-				if (CommonUtils.isNumeric(status)) {
-					release = preleaseService.findByIdReleaseReport(Integer.parseInt(status));
-				}
-
-				if (release == null) {
-					return "redirect:/";
-				}
+                  
 				PSystemConfiguration systemConfiguration = psystemConfigurationService
 						.findBySystemId(release.getSystem().getId());
 				List<PDocTemplate> docs = pdocsTemplateService.findBySystem(release.getSystem().getId());
@@ -725,8 +676,6 @@ public class ReportController extends BaseController {
 	@RequestMapping(value = "/summaryReportRFC-{status}", method = RequestMethod.GET)
 	public String summaryReportRFC(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
-
-	
 		try {
 			if (profileActive().equals("oracle")) {
 				List<System> systems = systemService.list();
@@ -844,6 +793,7 @@ public class ReportController extends BaseController {
 				model.addAttribute("listObjects", listObjects);
 			}
 			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "rfc");
 			redirectAttributes.addFlashAttribute("data",
@@ -853,6 +803,7 @@ public class ReportController extends BaseController {
 		}
 
 		return "/report/summaryReportRFC";
+
 	}
 
 	@RequestMapping(value = "/summaryReportRequest-{status}", method = RequestMethod.GET)
@@ -979,6 +930,7 @@ public class ReportController extends BaseController {
 		return "/rfc/summaryRFC";
 	}
 
+
 	@RequestMapping(value = "/summaryRelease-{status}", method = RequestMethod.GET)
 	public String summaryRelease(@PathVariable String status, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
@@ -1066,6 +1018,7 @@ public class ReportController extends BaseController {
 				typePetitionId = null;
 			} else {
 				typePetitionId = (long) Integer.parseInt(request.getParameter("typePetitionId"));
+
 			}
 			if (request.getParameter("typeDocument").equals("")) {
 				typeDocument = 0;
@@ -1073,15 +1026,14 @@ public class ReportController extends BaseController {
 				typeDocument = Integer.parseInt(request.getParameter("typeDocument"));
 			}
 
+
 			String dateRange = request.getParameter("dateRange");
 			ClassPathResource resource = null;
 			if (typeDocument == 2) {
 				resource = new ClassPathResource("reports" + File.separator + "RequestReportGeneral" + ".jrxml");
-
 			} else {
 				resource = new ClassPathResource("reports" + File.separator + "RequestReportGeneralExcel1" + ".jrxml");
 			}
-
 			InputStream inputStream = resource.getInputStream();
 			JasperReport compileReport = JasperCompileManager.compileReport(inputStream);
 			
@@ -1646,6 +1598,7 @@ public class ReportController extends BaseController {
 
 	}
 
+
 	@RequestMapping(value = { "/downloadreportrelease" }, method = RequestMethod.GET)
 	public @ResponseBody JsonResponse downloadreportGeneral(HttpServletRequest request, Locale locale, Model model) {
 		JsonResponse res = new JsonResponse();
@@ -2048,9 +2001,11 @@ public class ReportController extends BaseController {
 				// Get your data source
 				JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(releases);
 
-				// Add parameters
-				Map<String, Object> parameters = new HashMap<>();
 
+			Long sigesId;
+			int systemId;
+			int projectId;
+			int typeDocument;
 				parameters.put("treeImage", targetStream);
 				ClassPathResource images = new ClassPathResource("images" + File.separator + "logo" + ".png");
 				parameters.put("logo", images.getInputStream());
@@ -2114,14 +2069,12 @@ public class ReportController extends BaseController {
 				response.getOutputStream().flush();
 				response.getOutputStream().close();
 			}
-		
-
 		} catch (Exception e) {
 			Sentry.capture(e, "report");
 
 			e.printStackTrace();
+			return res;
 		}
-
 	}
 
 	@RequestMapping(value = { "/downloadRFC/{id}" }, method = RequestMethod.GET)
@@ -2518,8 +2471,6 @@ public class ReportController extends BaseController {
 				dataNew.put("name", reportName);
 				res.setObj(dataNew);
 			}
-			
-
 		} catch (Exception e) {
 			Sentry.capture(e, "report");
 			Map<String, String> dataNew = new HashMap<String, String>();

@@ -526,10 +526,6 @@ public class ReleaseController extends BaseController {
 				} else {
 					model.addAttribute("cc", "");
 				}
-
-			}
-			
-
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
@@ -692,7 +688,6 @@ public class ReleaseController extends BaseController {
 					String referer = request.getHeader("Referer");
 					return "redirect:" + referer;
 				}
-
 				if (!(release.getUser().getUsername().toLowerCase().trim())
 						.equals((user.getUsername().toLowerCase().trim()))) {
 					redirectAttributes.addFlashAttribute("data", "No tiene permisos sobre el release.");
@@ -1255,7 +1250,6 @@ public class ReleaseController extends BaseController {
 						rc.setSenders(release.getSenders());
 					}
 				}
-
 				if (rc.getMessage() != null) {
 					if (rc.getMessage().length() < 256) {
 						rc.setMessage(rc.getMessage());
@@ -1337,7 +1331,6 @@ public class ReleaseController extends BaseController {
 				}
 			}
 			
-
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			res.setStatus("exception");
@@ -1407,7 +1400,6 @@ public class ReleaseController extends BaseController {
 						});
 						newThread.start();
 					}
-
 					// si tiene un nodo y ademas tiene actor se notifica por correo
 					if (node != null && node.getUsers().size() > 0) {
 						Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
@@ -1719,7 +1711,6 @@ public class ReleaseController extends BaseController {
 	
 
 	}
-
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/listObjects" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet listObjects(HttpServletRequest request, Locale locale, Model model) {
@@ -1736,7 +1727,6 @@ public class ReleaseController extends BaseController {
 			if (sqlS != null) {
 				sql = Integer.parseInt(request.getParameter("sql"));
 			}
-
 			if (profileActive().equals("oracle")) {
 				releaseObjects = releaseObjectService.listObjectsByReleases(sEcho, iDisplayStart, iDisplayLength, sSearch,
 						releaseId, sql);
@@ -1744,7 +1734,7 @@ public class ReleaseController extends BaseController {
 				releaseObjects = preleaseObjectService.listObjectsByReleases(sEcho, iDisplayStart, iDisplayLength, sSearch,
 						releaseId, sql);
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1761,7 +1751,6 @@ public class ReleaseController extends BaseController {
 			} else if (profileActive().equals("postgres")) {
 				releaseObjects = preleaseObjectService.listCountByReleases(releaseId);
 			}
-			
 		} catch (Exception e) {
 			Sentry.capture(e, "countObjects");
 
@@ -1782,7 +1771,6 @@ public class ReleaseController extends BaseController {
 		}
 		return getCC;
 	}
-
 	@RequestMapping(value = "/getRelease-{id}", method = RequestMethod.GET)
 	public @ResponseBody Object getRelease(@PathVariable Integer id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session, RedirectAttributes redirectAttributes) {

@@ -52,6 +52,7 @@ import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.TypeObject;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+
 import com.soin.sgrm.model.pos.PConfigurationItem;
 import com.soin.sgrm.model.pos.PDependency;
 import com.soin.sgrm.model.pos.PImpact;
@@ -176,7 +177,6 @@ public class WebServiceController extends BaseController {
 		// Se genera la estructura base del release para su posterior creacion completa.
 		JsonResponse res = new JsonResponse();
 		String number_release = "";
-
 		if (profileActive().equals("oracle")) {
 			Release release = new Release();
 			Module module = new Module();
@@ -288,6 +288,7 @@ public class WebServiceController extends BaseController {
 									? "PR" + releaseWs.getRequirementName()
 									: releaseWs.getRequirementName());
 
+
 				if (releaseWs.getRequirement().equals("SS"))
 					release.setService_requests(
 							(!releaseWs.getRequirementName().substring(0, 2).toString().toUpperCase().equals("SS"))
@@ -333,7 +334,6 @@ public class WebServiceController extends BaseController {
 			} else {
 				releaseWs.setVersionNumber(jsonObject.get("versionNumber").toString().replace("\"", ""));
 			}
-
 			releaseWs.setRequirement(jsonObject.get("requirement").toString().replace("\"", ""));
 			releaseWs.setUserId(jsonObject.get("userId").toString().replace("\"", ""));
 			String objects = jsonObject.get("objects").toString();
@@ -688,7 +688,6 @@ public class WebServiceController extends BaseController {
 		return errors;
 	}
 
-
 	public ArrayList<MyError> validLine(ArrayList<MyError> errors, String[] line, int i, PReleaseEdit release,
 			List<PConfigurationItem> configurationItemList, List<PTypeObject> typeObjectList) {
 		if (CommonUtils.isSqlDate(line[3].trim()) == null) {
@@ -718,7 +717,6 @@ public class WebServiceController extends BaseController {
 		}
 		return errors;
 	}
-
 	public ArrayList<ReleaseObjectEdit> createObjects(String csv, ReleaseEdit release,
 			List<ConfigurationItem> configurationItemList, List<TypeObject> typeObjectList) throws Exception {
 
@@ -936,6 +934,4 @@ public class WebServiceController extends BaseController {
 		}
 		return objects;
 	}
-
-
 }

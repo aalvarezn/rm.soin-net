@@ -21,14 +21,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_RFC;
 import com.soin.sgrm.model.Errors_Release;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFCError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.StatusRFC;
+import com.soin.sgrm.model.System;
 //import com.soin.sgrm.model.StatusIncidence;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.pos.PEmailTemplate;
@@ -66,6 +69,8 @@ import com.soin.sgrm.service.RFCErrorService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestNewService;
+import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusIncidenceService;
 import com.soin.sgrm.service.StatusRFCService;
@@ -144,7 +149,6 @@ public class WorkFlowManagementController extends BaseController {
 	private SigesService sigesService;
 	@Autowired
 	private ProjectService projectService;
-	
 	@Autowired
 	private PStatusService pstatusService;
 	@Autowired
@@ -196,6 +200,7 @@ public class WorkFlowManagementController extends BaseController {
 		}
 		return "";
 	}
+
 	@RequestMapping(value = "/release/", method = RequestMethod.GET)
 	public String indexRelease(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {

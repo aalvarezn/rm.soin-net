@@ -103,6 +103,8 @@ public interface ReleaseDao {
 
 	ReleaseTrackingShow findReleaseTracking(int id);
 
+	JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId) throws SQLException, ParseException;
 	ReleaseSummaryFile findByIdSummaryFile(Integer id);
 
 	JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
@@ -110,5 +112,4 @@ public interface ReleaseDao {
 
 
 	ReleaseEdit findEditByName(String numRelease);
-
 }

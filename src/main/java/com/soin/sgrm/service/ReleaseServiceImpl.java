@@ -343,9 +343,17 @@ public class ReleaseServiceImpl implements ReleaseService {
 	}
 
 	@Override
+	public JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength,
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
+			throws SQLException, ParseException {
+		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
+				statusId,projectId);
+	}
+  @Override
 	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
 		// TODO Auto-generated method stub
 		return dao.findByIdSummaryFile(id);
+
 	}
 
 	@Override
@@ -362,5 +370,4 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public ReleaseEdit findEditByName(String numRelease) {
 		return dao.findEditByName(numRelease);
 	}
-
 }
