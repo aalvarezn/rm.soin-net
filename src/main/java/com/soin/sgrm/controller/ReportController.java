@@ -644,12 +644,60 @@ public class ReportController extends BaseController {
 	}
 
 	public void loadCountsRFC(HttpServletRequest request, Integer id) {
-		
+
 		if (profileActive().equals("oracle")) {
 			Map<String, Integer> userC = new HashMap<String, Integer>();
-                                                           ervice.findByIdReleaseReport(Integer.parseInt(status));
+			userC.put("draft", rfcService.countByType(id, "Borrador", 1, null));
+			userC.put("requested", rfcService.countByType(id, "Solicitado", 1, null));
+			userC.put("completed", rfcService.countByType(id, "Completado", 1, null));
+			userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+			request.setAttribute("userC", userC);
+		} else if (profileActive().equals("postgres")) {
+			Map<String, Integer> userC = new HashMap<String, Integer>();
+			userC.put("draft", prfcService.countByType(id, "Borrador", 1, null));
+			userC.put("requested", prfcService.countByType(id, "Solicitado", 1, null));
+			userC.put("completed", prfcService.countByType(id, "Completado", 1, null));
+			userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
+			request.setAttribute("userC", userC);
+		}
+
+	}
+	@RequestMapping(value = "/summaryReportRelease-{status}", method = RequestMethod.GET)
+	public String summaryReportRelease(@PathVariable String status, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
+
+		try {
+			model.addAttribute("parameter", status);
+
+			if (profileActive().equals("oracle")) {
+				ReleaseReport release = null;
+				if (CommonUtils.isNumeric(status)) {
+					release = releaseService.findByIdReleaseReport(Integer.parseInt(status));
 				}
-                  
+
+				if (release == null) {
+					return "redirect:/";
+				}
+				SystemConfiguration systemConfiguration = systemConfigurationService
+						.findBySystemId(release.getSystem().getId());
+				List<DocTemplate> docs = docsTemplateService.findBySystem(release.getSystem().getId());
+				model.addAttribute("dependency", new Release());
+				model.addAttribute("object", new ReleaseObject());
+				model.addAttribute("doc", new DocTemplate());
+				model.addAttribute("docs", docs);
+				model.addAttribute("release", release);
+				model.addAttribute("systemConfiguration", systemConfiguration);
+				model.addAttribute("status", new Status());
+				model.addAttribute("statuses", statusService.list());
+			} else if (profileActive().equals("postgres")) {
+				PReleaseReport release = null;
+				if (CommonUtils.isNumeric(status)) {
+					release = preleaseService.findByIdReleaseReport(Integer.parseInt(status));
+				}
+
+				if (release == null) {
+					return "redirect:/";
+				}
 				PSystemConfiguration systemConfiguration = psystemConfigurationService
 						.findBySystemId(release.getSystem().getId());
 				List<PDocTemplate> docs = pdocsTemplateService.findBySystem(release.getSystem().getId());
@@ -662,7 +710,7 @@ public class ReportController extends BaseController {
 				model.addAttribute("status", new PStatus());
 				model.addAttribute("statuses", pstatusService.list());
 			}
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
 			redirectAttributes.addFlashAttribute("data",
@@ -1971,10 +2019,10 @@ public class ReportController extends BaseController {
 
 	}
 
-	@RequestMapping(value = { "/downloadRelease/{id}" }, method = RequestMethod.GET)
+	
 	public void downloadReportRelease(HttpServletResponse response, @PathVariable Integer id, Locale locale,
 			Model model) {
-		
+
 		try {
 			if (profileActive().equals("oracle")) {
 				ReleaseReport release = null;
@@ -2001,11 +2049,9 @@ public class ReportController extends BaseController {
 				// Get your data source
 				JRBeanCollectionDataSource beanCollectionDataSource = new JRBeanCollectionDataSource(releases);
 
+				// Add parameters
+				Map<String, Object> parameters = new HashMap<>();
 
-			Long sigesId;
-			int systemId;
-			int projectId;
-			int typeDocument;
 				parameters.put("treeImage", targetStream);
 				ClassPathResource images = new ClassPathResource("images" + File.separator + "logo" + ".png");
 				parameters.put("logo", images.getInputStream());
@@ -2069,14 +2115,16 @@ public class ReportController extends BaseController {
 				response.getOutputStream().flush();
 				response.getOutputStream().close();
 			}
+
+
 		} catch (Exception e) {
 			Sentry.capture(e, "report");
-
 			e.printStackTrace();
-			return res;
+		
 		}
 	}
-
+	
+	
 	@RequestMapping(value = { "/downloadRFC/{id}" }, method = RequestMethod.GET)
 	public @ResponseBody JsonResponse downloadReportRFC(HttpServletResponse response, @PathVariable Long id,
 			Locale locale, Model model) {

@@ -1,5 +1,6 @@
 package com.soin.sgrm.controller;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,18 +34,19 @@ import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.Module;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseReport;
-import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_Objects;
-import com.soin.sgrm.model.Siges;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.User;
@@ -61,10 +63,13 @@ import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseEditWithOutObjects;
 import com.soin.sgrm.model.pos.PReleaseObject;
 import com.soin.sgrm.model.pos.PReleaseReport;
+import com.soin.sgrm.model.pos.PReleaseSummary;
+import com.soin.sgrm.model.pos.PReleaseSummaryFile;
 import com.soin.sgrm.model.pos.PReleaseSummaryMin;
 import com.soin.sgrm.model.pos.PReleaseTinySummary;
 import com.soin.sgrm.model.pos.PReleaseUser;
 import com.soin.sgrm.model.pos.PRelease_Objects;
+import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.model.pos.PStatus;
 import com.soin.sgrm.model.pos.PSystemConfiguration;
 import com.soin.sgrm.model.pos.PSystemUser;
@@ -85,6 +90,7 @@ import com.soin.sgrm.service.ModifiedComponentService;
 import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.RiskService;
@@ -108,6 +114,7 @@ import com.soin.sgrm.service.pos.PModifiedComponentService;
 import com.soin.sgrm.service.pos.PModuleService;
 import com.soin.sgrm.service.pos.PParameterService;
 import com.soin.sgrm.service.pos.PPriorityService;
+import com.soin.sgrm.service.pos.PProjectService;
 import com.soin.sgrm.service.pos.PReleaseObjectService;
 import com.soin.sgrm.service.pos.PReleaseService;
 import com.soin.sgrm.service.pos.PRiskService;
@@ -217,7 +224,10 @@ public class ReleaseController extends BaseController {
 	private PReleaseObjectService preleaseObjectService;
 	@Autowired
 	private PErrorReleaseService perrorService;
-
+	@Autowired
+	ProjectService projectService;
+	@Autowired
+	PProjectService pprojectService;
 	@Autowired
 	private PEnvironmentService penvironmentService;
 	
@@ -526,6 +536,7 @@ public class ReleaseController extends BaseController {
 				} else {
 					model.addAttribute("cc", "");
 				}
+			}
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
@@ -1002,6 +1013,7 @@ public class ReleaseController extends BaseController {
 					releaseService.save(release, requirement_name);
 				}
 				res.setData(release.getId() + "");
+				createPathRelease(release.getId());
 			} else if (profileActive().equals("postgres")) {
 				String number_release = "";
 				PRelease release = new PRelease();
@@ -1065,6 +1077,7 @@ public class ReleaseController extends BaseController {
 				} else {
 					preleaseService.save(release, requirement_name);
 				}
+				createPathPRelease(release.getId());
 				res.setData(release.getId() + "");
 			}
 			
@@ -1792,4 +1805,58 @@ public class ReleaseController extends BaseController {
 
 		return null;
 	}
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del release.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathRelease(Integer idRelease) throws SQLException {
+			ReleaseSummary release=releaseService.findById(idRelease);
+			String basePath = environment.getProperty("fileStore.path");
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
+			if (release.getRequestList().size() != 0) {
+				Request request = release.getRequestList().iterator().next();
+				if (request.getCode_ice() != null) {
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
+				} else {
+					path += request.getCode_soin().replace(" ","") + "/";
+				}
+			}
+			path += release.getReleaseNumber() + "/";
+			path=path.trim();
+			new File(basePath + path).mkdirs();
+			return path;
+		
+
+	}
+	
+	/**
+	 * @description: Se crea la direccion donde se guardan los archivos del release.
+	 * @author: Anthony Alvarez N.
+	 * @return: Base path del release.
+	 * @throws SQLException
+	 **/
+	public String createPathPRelease(Integer idRelease) throws SQLException {
+			PReleaseSummary release=preleaseService.findById(idRelease);
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			String basePath = environment.getProperty("fileStore.path");
+			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
+			if (release.getRequestList().size() != 0) {
+				PRequest request = release.getRequestList().iterator().next();
+				if (request.getCode_ice() != null) {
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
+				} else {
+					path += request.getCode_soin().replace(" ","") + "/";
+				}
+			}
+			path += release.getReleaseNumber() + "/";
+			path=path.trim();
+			new File(basePath + path).mkdirs();
+			return path;
+		
+
+	}
+
 }

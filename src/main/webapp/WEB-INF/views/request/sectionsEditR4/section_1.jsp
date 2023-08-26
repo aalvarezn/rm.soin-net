@@ -265,7 +265,8 @@
 </div>
 <div class="row clearfix" style="margin-top: 50px;">
 
-		<div class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
+
+		<div id='divGit' class="col-lg-3 col-md-3 col-sm-10 col-xs-10">
 		<label for="email_address">Usuario git</label>
 		<div class="form-group m-b-0i">
 			<div class="form-line" style="height: 40px;">

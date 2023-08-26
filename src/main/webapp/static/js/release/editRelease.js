@@ -195,6 +195,21 @@ $(function() {
 	modifiedComponentsList = listLi('listComponents');
 	actionsList = listRowsId('environmentActionTable');
 	initTableObjectRelease();
+	
+    const executeCheckboxes = document.querySelectorAll('[id^=obj_sql_exec_]');
+    executeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const inputId = this.id.replace('obj_sql_exec_', 'form-tags_');
+            const input = document.getElementById(inputId);
+            
+            if (this.checked) {
+                input.disabled = false;
+            } else {
+                input.disabled = true;
+                input.value = ''; // Clear the input value
+            }
+        });
+    });
 });
 
 function formHasChanges(){

@@ -566,8 +566,11 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-								request.setActive(true);
-
+								if(request.getStatus().trim().equals("COMPLETADA")) {
+									request.setActive(false);
+								}else {
+									request.setActive(true);
+								}
 								if (existRequest)
 									prequestService.update(request);
 								else
@@ -637,7 +640,11 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-								request.setActive(true);
+								if(request.getStatus().trim().equals("COMPLETADA")) {
+									request.setActive(false);
+								}else {
+									request.setActive(true);
+								}
 								if (existRequest)
 									prequestService.update(request);
 								else
@@ -707,7 +714,11 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-								request.setActive(true);
+								if(request.getStatus().trim().equals("COMPLETADA")) {
+									request.setActive(false);
+								}else {
+									request.setActive(true);
+								}
 								if (existRequest)
 									prequestService.update(request);
 								else
@@ -971,7 +982,12 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-								request.setActive(true);
+								if(request.getStatus().trim().equals("COMPLETADA")) {
+									request.setActive(false);
+								}else {
+									request.setActive(true);
+								}
+								
 
 								if (existRequest)
 									requestService.update(request);
@@ -1042,7 +1058,11 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-								request.setActive(true);
+								if(request.getStatus().trim().equals("COMPLETADA")) {
+									request.setActive(false);
+								}else {
+									request.setActive(true);
+								}
 								if (existRequest)
 									requestService.update(request);
 								else
@@ -1112,7 +1132,11 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-								request.setActive(true);
+								if(request.getStatus().trim().equals("COMPLETADA")) {
+									request.setActive(false);
+								}else {
+									request.setActive(true);
+								}
 								if (existRequest)
 									requestService.update(request);
 								else
