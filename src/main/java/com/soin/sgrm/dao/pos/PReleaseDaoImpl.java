@@ -219,13 +219,14 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 			sessionObj.saveOrUpdate(release);
-
+			int releaseId = release.getId();
 			if (!tpos.equalsIgnoreCase("-1")) {
+				sessionObj.createSQLQuery("SET CONSTRAINTS ALL DEFERRED").executeUpdate();
 				for (int i = 0; i < ids.length; i++) {
 					id = Integer.parseInt(ids[i]);
 					sql = String.format(
-							"INSERT INTO \"RELEASES_RELEASE_REQUERIMIENTO\" ( \"ID\",\"RELEASE_ID\",\"REQUERIMIENTO_ID\") VALUES ( null, %s, %s ) ",
-							release.getId(), id);
+							"INSERT INTO \"RELEASES_RELEASE_REQUERIMIENTO\" ( \"RELEASE_ID\",\"REQUERIMIENTO_ID\") VALUES (  %s, %s ) ",
+							releaseId, id);
 					query = sessionObj.createSQLQuery(sql);
 					query.executeUpdate();
 				}

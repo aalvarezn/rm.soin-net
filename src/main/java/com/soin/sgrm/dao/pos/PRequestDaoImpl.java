@@ -48,15 +48,15 @@ public class PRequestDaoImpl implements PRequestDao {
 		try {
 			sessionObj = sessionFactory.openSession();
 			sql = String.format(
-					"select r.id , r.\"CODIGO_SOIN\" as code_soin , r.\"CODIGO_ICE\" as code_ice, r.\"DESCRIPCION\" as description from \"REQUERIMIENTOS_REQUERIMIENTO\" r "
+					"select r.\"ID\" , r.\"CODIGO_SOIN\" as code_soin , r.\"CODIGO_ICE\" as code_ice, r.\"DESCRIPCION\" as description from \"REQUERIMIENTOS_REQUERIMIENTO\" r "
 							+ "where r.\"CODIGO_SOIN\" || ' ' ||r.\"CODIGO_ICE\" || ' ' || r.\"DESCRIPCION\" like %s "
-							+ "and r.PROYECTO_ID\" in ( %s ) and r.\"ACTIVO\" = 1 and ROWNUM <= 50 ",
+							+ "and r.\"PROYECTO_ID\" in ( %s ) and r.\"ACTIVO\" = true LIMIT 50 ",
 					"'%" + search + "%'", concatObjet);
 
 			SQLQuery query = (SQLQuery) sessionObj.createSQLQuery(sql).addScalar("id", StandardBasicTypes.INTEGER)
 					.addScalar("code_soin", StandardBasicTypes.STRING).addScalar("code_ice", StandardBasicTypes.STRING)
 					.addScalar("description", StandardBasicTypes.STRING)
-					.setResultTransformer(Transformers.aliasToBean(Request.class));
+					.setResultTransformer(Transformers.aliasToBean(PRequest.class));
 			List<PRequest> items = query.list();
 			return items;
 

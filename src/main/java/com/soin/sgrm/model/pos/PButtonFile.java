@@ -237,6 +237,10 @@ public class PButtonFile implements Serializable {
 		}
 	}
 
+	public void setDetailsButtonFiles(List<PDetailButtonFile> detailsButtonFiles) {
+		this.detailsButtonFiles = detailsButtonFiles;
+	}
+
 	public void updateDetailsButtonFiles(List<PDetailButtonFile> detailsButtonFiles) {
 		this.detailsButtonFiles = detailsButtonFiles;
 	}

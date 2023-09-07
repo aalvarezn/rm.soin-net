@@ -145,13 +145,41 @@ public class CrontabController extends BaseController {
 					PDetailButtonCommand pdetail=new PDetailButtonCommand();
 					pdetail.setId(detail.getId());
 					pdetail.setName(detail.getName());
+					pdetail.setDescription(detail.getName());
+					pdetail.setTypeName(detail.getTypeName());
+					pdetail.setTypeText(detail.getTypeText());
+					pdetail.setIsRequired(detail.getIsRequired());
+					pdetail.setQuotationMarks(detail.getQuotationMarks());
+					PTypeDetail ptypeDetail =ptypeDetailService.findByName(detail.getTypeName());
+					pdetail.setTypeDetail(ptypeDetail);
+					PButtonCommand pbuttonSon=new PButtonCommand();
+					pbuttonSon.setId(button.getId());
+					pdetail.setButton(pbuttonSon);
 					listDetail.add(pdetail);
 				}
 				pbutton.setDetailsButtonCommands(listDetail);
 				pbutton.setId(button.getId());
-				PReleaseUser prelease=new PReleaseUser();
-				prelease.setId(button.getRelease().getId());
-				pbutton.setRelease(prelease);
+				pbutton.setModule(button.getModule());
+				pbutton.setDescription(button.getDescription());
+				pbutton.setName(button.getName());
+				pbutton.setCommand(button.getCommand());
+				pbutton.setExecuteDirectory(button.getExecuteDirectory());
+				pbutton.setExecuteUser(button.getExecuteUser());
+				pbutton.setDirectoryName(button.getDirectoryName());
+				pbutton.setUserName(button.getUserName());
+				pbutton.setUseUserEnvironment(button.getUseUserEnvironment());
+				pbutton.setHaveHTML(button.getHaveHTML());
+				pbutton.setHideExecute(button.getHideExecute());
+				pbutton.setUserminAvailability(button.getUserminAvailability());
+				pbutton.setClearVariables(button.getClearVariables());
+				pbutton.setWaitCommand(button.getWaitCommand());
+				pbutton.setTimeCommand(button.getTimeCommand());
+				pbutton.setPrincipalPage(button.getPrincipalPage());
+				pbutton.setPageName(button.getPageName());
+				pbutton.setDetailQuotationMarks(button.getDetailQuotationMarks());
+				pbutton.setDetailName(button.getDetailName());
+				PReleaseUser release=preleaseService.findReleaseUserById(Integer.parseInt(id));
+				pbutton.setRelease(release);
 				
 				pcrontrab.setButton(pbutton);
 				pcrontrab.setActive(crontab.getActive());
@@ -162,8 +190,8 @@ public class CrontabController extends BaseController {
 				pcrontrab.setHour(crontab.getHour());
 				pcrontrab.setMinutes(crontab.getMinutes());
 				pcrontrab.setMonth(crontab.getMonth());
-		
-				PReleaseUser release = preleaseService.findReleaseUserById(Integer.parseInt(id));
+				pcrontrab.setWeekDays(crontab.getWeekDays());
+				pcrontrab.setUser(crontab.getUser());
 				PTypeDetail typeDetail = null;
 				res.setStatus("success");
 
@@ -380,19 +408,48 @@ public class CrontabController extends BaseController {
 				PCrontab pcrontrab=new PCrontab();
 				PButtonCommand pbutton=new PButtonCommand();
 				ButtonCommand button=crontab.getButton();
+				
+				pcrontrab.setId(crontab.getId());
 				List<PDetailButtonCommand>listDetail=new ArrayList<PDetailButtonCommand>();
 				for(DetailButtonCommand detail: button.getDetailsButtonCommands()) {
 					PDetailButtonCommand pdetail=new PDetailButtonCommand();
 					pdetail.setId(detail.getId());
 					pdetail.setName(detail.getName());
+					pdetail.setDescription(detail.getName());
+					pdetail.setTypeName(detail.getTypeName());
+					pdetail.setTypeText(detail.getTypeText());
+					pdetail.setIsRequired(detail.getIsRequired());
+					PTypeDetail ptypeDetail =ptypeDetailService.findByName(detail.getTypeName());
+					pdetail.setTypeDetail(ptypeDetail);
+					pdetail.setQuotationMarks(detail.getQuotationMarks());
+					PButtonCommand pbuttonSon=new PButtonCommand();
+					pbuttonSon.setId(button.getId());
+					pdetail.setButton(pbuttonSon);
 					listDetail.add(pdetail);
 				}
 				pbutton.setDetailsButtonCommands(listDetail);
 				pbutton.setId(button.getId());
-				PReleaseUser prelease=new PReleaseUser();
-				prelease.setId(button.getRelease().getId());
-				pbutton.setRelease(prelease);
-				
+				pbutton.setModule(button.getModule());
+				pbutton.setDescription(button.getDescription());
+				pbutton.setName(button.getName());
+				pbutton.setCommand(button.getCommand());
+				pbutton.setExecuteDirectory(button.getExecuteDirectory());
+				pbutton.setExecuteUser(button.getExecuteUser());
+				pbutton.setDirectoryName(button.getDirectoryName());
+				pbutton.setUserName(button.getUserName());
+				pbutton.setUseUserEnvironment(button.getUseUserEnvironment());
+				pbutton.setHaveHTML(button.getHaveHTML());
+				pbutton.setHideExecute(button.getHideExecute());
+				pbutton.setUserminAvailability(button.getUserminAvailability());
+				pbutton.setClearVariables(button.getClearVariables());
+				pbutton.setWaitCommand(button.getWaitCommand());
+				pbutton.setTimeCommand(button.getTimeCommand());
+				pbutton.setPrincipalPage(button.getPrincipalPage());
+				pbutton.setPageName(button.getPageName());
+				pbutton.setDetailQuotationMarks(button.getDetailQuotationMarks());
+				pbutton.setDetailName(button.getDetailName());
+				PReleaseUser prelease=preleaseService.findReleaseUserById(Integer.parseInt(id));
+				pbutton.setRelease(release);
 				pcrontrab.setButton(pbutton);
 				pcrontrab.setActive(crontab.getActive());
 				pcrontrab.setCommandCron(crontab.getCommandCron());
@@ -402,13 +459,17 @@ public class CrontabController extends BaseController {
 				pcrontrab.setHour(crontab.getHour());
 				pcrontrab.setMinutes(crontab.getMinutes());
 				pcrontrab.setMonth(crontab.getMonth());
-				PReleaseUser preleaseCron=new PReleaseUser();
-				preleaseCron.setId(release.getId());
-				pcrontrab.getButton().setRelease(preleaseCron);
+				pcrontrab.setWeekDays(crontab.getWeekDays());
+				pcrontrab.setUser(crontab.getUser());
+				for (PDetailButtonCommand detail : pcrontrab.getButton().getDetailsButtonCommands()) {
+					typeDetail = ptypeDetailService.findByName(detail.getTypeName());
+					detail.setTypeDetail(typeDetail);
+				}
+
 				pcrontrab.getButton().setHaveCrontab(true);
-				pcrontrab.setRelease(preleaseCron);
+				pcrontrab.setRelease(prelease);
 				PButtonCommand old = pbuttonService.findById(crontab.getButton().getId());
-				pcrontrab.getButton().setRelease(preleaseCron);
+				pcrontrab.getButton().setRelease(prelease);
 				pcrontrab = pcrontabService.updateCrontab(pcrontrab, old);
 				for (PDetailButtonCommand detail : pcrontrab.getButton().getDetailsButtonCommands()) {
 					detail.setButton(null);

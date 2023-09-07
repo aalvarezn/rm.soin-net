@@ -6,11 +6,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -48,7 +46,7 @@ public class PDetailButtonCommand implements Serializable {
 	@SuppressWarnings("deprecation")
 	@Cascade({ CascadeType.MERGE, CascadeType.DETACH, CascadeType.EVICT })
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "\"BOTON_ID\",", nullable = false)
+	@JoinColumn(name = "\"BOTON_ID\"", nullable = false)
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	private PButtonCommand button;
 

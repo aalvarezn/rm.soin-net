@@ -197,11 +197,14 @@ $(function() {
 	initTableObjectRelease();
 	
     const executeCheckboxes = document.querySelectorAll('[id^=obj_sql_exec_]');
+    console.log(executeCheckboxes);
     executeCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
-            const inputId = this.id.replace('obj_sql_exec_', 'form-tags_');
+            var inputId = this.id.replace('obj_sql_exec_', 'form-tags-');
+            inputId=inputId+'_tag';
+           console.log(inputId)
             const input = document.getElementById(inputId);
-            
+            console.log(input);
             if (this.checked) {
                 input.disabled = false;
             } else {

@@ -150,12 +150,52 @@ public class HibernateConfiguration {
 
 	@Bean(name = "dataSourcePos")
 	public DataSource dataSourcePos() {
-		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setDriverClassName(env.getProperty("ds.pos.database.driverClassName"));
-		dataSource.setUrl(env.getProperty("ds.pos.url"));
-		dataSource.setUsername(env.getProperty("ds.pos.username"));
-		dataSource.setPassword(env.getProperty("ds.pos.password"));
-		return dataSource;
+		String path = context.getContextPath();
+		JndiTemplate jndiTemplate = new JndiTemplate();
+		// --- prd ---
+		if (path.contains("sgrmprod")) {
+			DataSource dataSource;
+			try {
+				dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrmpos");
+				return dataSource;
+			} catch (NamingException e) {
+				Sentry.capture(e, "hibernate");
+			}
+		} else {
+			// --- qa ---
+			if (path.contains("sgrm_qa")) {
+				DataSource dataSource;
+				try {
+					dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_qa_pos");
+					return dataSource;
+				} catch (NamingException e) {
+					Sentry.capture(e, "hibernate");
+				}
+
+			} else {
+				if (path.contains("sgrm_demos")) {
+					DataSource dataSource;
+					try {
+						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_demos_pos");
+						return dataSource;
+					} catch (NamingException e) {
+						Sentry.capture(e, "hibernate");
+					}
+				} else {
+
+					// --- desa ---
+					DataSource dataSource;
+					try {
+						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgm_desa_pos");
+						return dataSource;
+					} catch (NamingException e) {
+						Sentry.capture(e, "hibernate");
+					}
+				}
+			}
+		}
+		return null;
+	
 	}
 
 	@Bean(name = "transactionManagerPos")
