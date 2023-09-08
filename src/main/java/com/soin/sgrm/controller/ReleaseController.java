@@ -40,6 +40,7 @@ import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_Objects;
 import com.soin.sgrm.model.Siges;
@@ -1061,5 +1062,22 @@ public class ReleaseController extends BaseController {
 		}
 
 		return release;
+	}
+	
+	@RequestMapping(value = "/tracking/{id}", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse tracking(@PathVariable int id, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			ReleaseTrackingShow tracking = releaseService.findReleaseTracking(id);
+			res.setStatus("success");
+			res.setObj(tracking);
+		} catch (Exception e) {
+			Sentry.capture(e, "admin");
+			res.setStatus("exception");
+			res.setException("Error al procesar consulta: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 }
