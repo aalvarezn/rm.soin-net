@@ -425,8 +425,20 @@ function openReleaseTrackingModal(releaseId) {
 	var rowData = releaseTable.row(idRow).data();
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
-	loadTrackingRelease(rowData);
-	$('#trackingReleaseModal').modal('show');
+	$.ajax({
+		type : "GET",
+		url : getCont() + "release/tracking/"+ rowData.id ,
+		timeout : 600000,
+		data : {},
+		success : function(response) {
+			tracking=response.obj;
+			loadTrackingRelease(tracking);
+			$('#trackingReleaseModal').modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
 }
 
 function loadTrackingRelease(rowData){
