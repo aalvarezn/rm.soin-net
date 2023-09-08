@@ -38,6 +38,7 @@ import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.ReleaseUserFast;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -107,7 +108,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
 
-		List<ReleaseUser> aaData = crit.list();
+		List<ReleaseUserFast> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -131,7 +132,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
 
-		List<ReleaseUser> aaData = crit.list();
+		List<ReleaseUserFast> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -158,7 +159,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
 
-		List<ReleaseUser> aaData = crit.list();
+		List<ReleaseUserFast> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -185,7 +186,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
 
-		List<ReleaseUser> aaData = crit.list();
+		List<ReleaseUserFast> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -489,7 +490,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	@SuppressWarnings("deprecation")
 	public Criteria criteriaByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] dateRange, Integer systemId, Integer statusId) throws ParseException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUserFast.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "status");
 		crit.createAlias("user", "user");
@@ -531,7 +532,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 	public Criteria criteriaByTeams(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			Object[] ids, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException {
 
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUserFast.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "status");
 		crit.createAlias("user", "user");
@@ -574,7 +575,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
 			throws SQLException, ParseException {
 
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUserFast.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "status");
 		crit.createAlias("user", "user");
@@ -666,7 +667,7 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId)
 			throws SQLException, ParseException {
 
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUser.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ReleaseUserFast.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "status");
 		crit.createAlias("user", "user");
