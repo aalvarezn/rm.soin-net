@@ -2,7 +2,6 @@ package com.soin.sgrm.service;
 
 import java.util.List;
 
-import com.soin.sgrm.model.RFCTrackingToError;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestBaseTrackingToError;

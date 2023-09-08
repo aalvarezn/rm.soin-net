@@ -64,4 +64,6 @@ public interface SystemService {
 
 	boolean checkUniqueCode(String sCode, Integer proyectId,Integer typeCheck);
 
+
 }
+
