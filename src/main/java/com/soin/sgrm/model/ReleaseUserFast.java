@@ -1,6 +1,7 @@
 package com.soin.sgrm.model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -59,7 +61,17 @@ public class ReleaseUserFast implements Serializable {
 
 	@Column(name = "OPERADOR")
 	private String operator;
+	
+	@Column(name = "MOTIVO")
+	private String motive;
 
+	@Column(name = "NUMEROVERSION")
+	private String versionNumber;
+	@Transient
+	private Timestamp timeNew;
+	
+	@Transient
+	private String dateChange;
 	public int getId() {
 		return id;
 	}
@@ -140,4 +152,37 @@ public class ReleaseUserFast implements Serializable {
 		this.operator = operator;
 	}
 
+	public String getMotive() {
+		return motive;
+	}
+
+	public void setMotive(String motive) {
+		this.motive = motive;
+	}
+
+	public String getDateChange() {
+		return dateChange;
+	}
+
+	public void setDateChange(String dateChange) {
+		this.dateChange = dateChange;
+	}
+
+	public Timestamp getTimeNew() {
+		return timeNew;
+	}
+
+	public void setTimeNew(Timestamp timeNew) {
+		this.timeNew = timeNew;
+	}
+
+	public String getVersionNumber() {
+		return versionNumber;
+	}
+
+	public void setVersionNumber(String versionNumber) {
+		this.versionNumber = versionNumber;
+	}
+
+	
 }

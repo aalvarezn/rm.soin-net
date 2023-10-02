@@ -88,7 +88,7 @@
 									<textarea required="required" rows="2" cols="" id="motive"
 										name="motive" class="form-control"
 										placeholder="Ingrese un motivo..." style="height: 67px;"
-										maxlength="100"></textarea>
+										maxlength="250"></textarea>
 								</div>
 								<label id="motive_error" class="error fieldError" for="name"
 									style="visibility: hidden;">Campo Requerido.</label>

@@ -28,6 +28,7 @@ import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
+import com.soin.sgrm.model.ReleaseUserFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Status;
@@ -159,7 +160,7 @@ public class ReleaseManagementController extends BaseController {
 			@RequestParam(value = "note", required = false) String note) {
 		JsonResponse res = new JsonResponse();
 		try {
-			ReleaseEdit release = releaseService.findEditById(idRelease);
+			ReleaseUserFast release = releaseService.findByIdReleaseUserFast(idRelease);
 			Status status = statusService.findById(idStatus);
 			UserLogin userLogin = getUserLogin();
 			Errors_Release error = new Errors_Release();
@@ -184,7 +185,7 @@ public class ReleaseManagementController extends BaseController {
 				release.setOperator(getUserLogin().getFullName());
 				release.setMotive(motive);
 				release.setDateChange(dateChange);
-				releaseService.updateStatusRelease(release);
+				releaseService.updateStatusReleaseUser(release);
 				release.setTimeNew(null);
 				Status statusChange = statusService.findByName("Borrador");
 				release.setStatus(statusChange);
@@ -211,7 +212,7 @@ public class ReleaseManagementController extends BaseController {
 			release.setOperator(getUserLogin().getFullName());
 			release.setDateChange(dateChange);
 			release.setMotive(motive);
-			releaseService.updateStatusRelease(release);
+			releaseService.updateStatusReleaseUser(release);
 			res.setStatus("success");
 			if (sendEmail) {
 
@@ -286,7 +287,7 @@ public class ReleaseManagementController extends BaseController {
 		systemC.put("all", (systemC.get("draft") + systemC.get("requested") + systemC.get("completed")));
 		request.setAttribute("systemC", systemC);
 	}
-	public String getSubject(EmailTemplate emailNotify,ReleaseEdit release) {
+	public String getSubject(EmailTemplate emailNotify,ReleaseUserFast release) {
 		
 	
 		String tpo = "";

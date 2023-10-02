@@ -1008,4 +1008,43 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		return release;
 	}
 
+	@Override
+	public ReleaseUserFast findByIdReleaseUserFast(Integer idRelease) {
+		ReleaseUserFast release = (ReleaseUserFast) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseUserFast.class).add(Restrictions.eq("id", idRelease)).uniqueResult();
+		return release;
+	}
+
+	@Override
+	public void updateStatusReleaseUser(ReleaseUserFast release) {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		String sql = "";
+		Query query = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+
+			String dateChange = (release.getDateChange() != null && !release.getDateChange().equals("")
+					? "to_date('" + release.getDateChange() + "', 'DD-MM-YYYY HH:MI PM')"
+					: "sysdate");
+			sql = String.format(
+					"update releases_release set estado_id = %s , reintentos = %s , operador = '%s' , motivo = '%s' , fecha_creacion = "
+							+ dateChange + "  where id = %s",
+					release.getStatus().getId(), release.getRetries(), release.getOperator(), release.getMotive(),
+					release.getId());
+
+			query = sessionObj.createSQLQuery(sql);
+			query.executeUpdate();
+
+			transObj.commit();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
+	}
+
 }
