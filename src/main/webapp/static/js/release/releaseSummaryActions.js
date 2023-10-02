@@ -132,7 +132,8 @@ function changeStatusRelease(releaseId, releaseNumber,cc) {
 	$formChangeStatus.find('.form-line').removeClass('error');
 	$formChangeStatus.find('.form-line').removeClass('focused');
 	$('#divError').attr( "hidden",true);
-	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'))
+	$formChangeStatus.find('#dateChange').val(moment().format('DD/MM/YYYY hh:mm a'));
+	$('#divEmail').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
 }
 
@@ -158,7 +159,7 @@ function saveChangeStatusModal(){
 	$.ajax({
 		type : "GET",
 		url : getCont() + "management/release/" + "statusRelease",
-		timeout : 60000,
+		timeout : 500000000000,
 		data : {
 			idRelease : $formChangeStatus.find('#idRelease').val(),
 			idStatus: $formChangeStatus.find('#statusId').children("option:selected").val(),
