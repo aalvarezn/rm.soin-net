@@ -25,6 +25,7 @@ import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.ReleaseUserFast;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -359,6 +360,18 @@ public class ReleaseServiceImpl implements ReleaseService {
 @Override
 public ReleaseEdit findEditByName(String numRelease) {
 	return dao.findEditByName(numRelease);
+}
+
+@Override
+public ReleaseUserFast findByIdReleaseUserFast(Integer idRelease) {
+	// TODO Auto-generated method stub
+	return dao.findByIdReleaseUserFast(idRelease);
+}
+
+@Override
+public void updateStatusReleaseUser(ReleaseUserFast release) {
+	dao.updateStatusReleaseUser(release);
+	
 }
 
 }

@@ -156,6 +156,7 @@ function changeStatusRequest(requestId, requestNumRequest,cc) {
 	$formChangeStatus.find('.form-line').removeClass('error');
 	$formChangeStatus.find('.form-line').removeClass('focused');
 	$('#divError').attr( "hidden",true);
+	$('#divEmail').attr( "hidden",true);
 	$('#divDateEstimate').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
 }

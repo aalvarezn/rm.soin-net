@@ -41,7 +41,6 @@ function uploadCSV() {
 	$.ajax({
 		type : "POST",
 		url : cont + "release/" + "uploadCSV/" + id,
-		timeout : 300000,
 		data : {
 			csv : $csvForm.find('#csv').val(),
 		},
