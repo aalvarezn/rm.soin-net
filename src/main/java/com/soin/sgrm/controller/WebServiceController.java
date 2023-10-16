@@ -545,6 +545,25 @@ public class WebServiceController extends BaseController {
 		}
 		return res;
 	}
+	
+	@RequestMapping(value = "/statusNow", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse getStatus(HttpServletRequest request, Model model,
+			@RequestParam(value = "name", required = true) String name,
+			@RequestParam(value = "type", required = true) Integer type) {
+		JsonResponse res = new JsonResponse();
+
+			if (type == 0) {
+				ReleaseEdit release = releaseService.findEditByName(name);
+				res.setStatus(release.getStatus().getName());
+			} else if (type == 1) {
+				RFC rfc = rfcService.findByKey("numRequest",name.trim());
+				res.setStatus(rfc.getStatus().getName());
+			}
+		return res;
+	}
+	
+	
+	
 
 	private String getSubject(EmailTemplate email, RFC rfc) {
 		String temp = "";
