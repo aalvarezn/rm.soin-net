@@ -139,6 +139,8 @@ function openAddFileModal() {
 
 	// Limpia el campo de entrada de archivos asignando una cadena vacía a su valor
 	filesInput.value = "";
+	const uploadButton = $('#uploadButton');
+	uploadButton.prop('disabled', false);
 }
 
 function closeAddFileModal() {
