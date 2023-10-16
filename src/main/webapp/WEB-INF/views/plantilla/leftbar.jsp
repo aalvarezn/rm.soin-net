@@ -59,6 +59,10 @@
 					test="${authority.name == 'Gestores' or authority.name == 'Desarrolladores'}">
 					<c:set var="releaseAccess" value="true"></c:set>
 				</c:if>
+				<c:if
+					test="${authority.name == 'Gestores' or authority.name == 'Lider Tecnico'}">
+					<c:set var="tramiteAccess" value="true"></c:set>
+				</c:if>
 				<c:if test="${authority.name == 'Gestores'}">
 					<c:set var="managerAccess" value="true"></c:set>
 				</c:if>
@@ -74,7 +78,8 @@
 				<c:if test="${authority.name == 'Gestor Incidencias'}">
 					<c:set var="managerIncidenceAccess" value="true"></c:set>
 				</c:if>
-				<c:if test="${authority.name == 'Gestor Basecono'or authority.name == 'Release Manager'}">
+				<c:if
+					test="${authority.name == 'Gestor Basecono'or authority.name == 'Release Manager'}">
 					<c:set var="managerKnowledgeAccess" value="true"></c:set>
 				</c:if>
 			</c:forEach>
@@ -95,7 +100,7 @@
 					</ul></li>
 
 			</c:if>
-			
+
 			<c:if test="${managerIncidenceAccess}">
 				<!---- 	#Seccion de incidencias ---->
 				<li class=""><a id="incidenceManagementItem"
@@ -132,9 +137,9 @@
 						<li><a href="<c:url value='/report/rfc/'/>">RFC</a></li>
 						<li><a href="<c:url value='/report/request/'/>">Solicitudes</a></li>
 					</ul></li>
-					
+
 			</c:if>
-			<c:if test="${managerAccess}">
+			<c:if test="${tramiteAccess}">
 				<li>
 				<li><a id="RFCItem" href="<c:url value='/rfc/'/> "> <span>
 							RFC</span>
@@ -148,7 +153,7 @@
 						<li><a href="<c:url value='/manager/wf/release/'/>">Releases</a></li>
 						<li><a href="<c:url value='/manager/wf/rfc/'/>">RFC</a></li>
 						<li><a href="<c:url value='/manager/wf/tpo/'/>">TPOs</a></li>
-						
+
 					</ul></li>
 
 			</c:if>
