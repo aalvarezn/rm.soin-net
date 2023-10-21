@@ -809,10 +809,25 @@ function synchronizeObjects() {
 		data : {},
 		success : function(response) {
 			responseAjaxSynchronize(response);
+			console.log(response);
 			$.each(response.obj.dependencies, function(key, value) {
 				modifyDependency(value.to_release);
 			});
+			var obj=response.obj.objects;
+			
+			if(obj.length){
+				$('#sqlObjectTable').DataTable().rows().remove().draw();
+				console.log("deberia borrar");
+			}
+			for (var i = 0; i < obj.length; i++) {
+				console.log(obj[i].isSql);
+				if (obj[i].isSql == 1) {
+					triggerDataBaseFile(obj[i].id, obj[i].name);
+				}
+			}
 			reloadPreview();
+			
+
 			$dtObjects.ajax.reload();
 			countObjects();
 		},
