@@ -45,7 +45,7 @@
 								<th>Descripción</th>
 								<th>Solicitado por</th>
 								<th>Estado</th>
-								<th>Fecha de creación</th>
+								<th>Fecha de actualización</th>
 								<th class="actCol" style="text-align: center;">Acciones</th>
 							</tr>
 						</thead>
@@ -85,7 +85,7 @@
 								<th>Descripción</th>
 								<th>Solicitado por</th>
 								<th>Estado</th>
-								<th>Fecha de creación</th>
+								<th>Fecha de actualización</th>
 								<th class="actCol" style="text-align: center;">Acciones</th>
 							</tr>
 						</thead>
