@@ -255,7 +255,13 @@ public class WorkFlowManagementController extends BaseController {
 				WFRelease releaseEmail = release;
 				Thread newThread = new Thread(() -> {
 					try {
-						emailService.sendMail(releaseEmail, email, node.getStatus().getMotive());
+						String motiveNow="";
+						if(node.getStatus().getMotive()==null) {
+							motiveNow=node.getStatus().getDescription();
+						}else {
+							motiveNow=node.getStatus().getMotive();
+						}
+						emailService.sendMail(releaseEmail, email, motiveNow);
 					} catch (Exception e) {
 						Sentry.capture(e, "release");
 					}
