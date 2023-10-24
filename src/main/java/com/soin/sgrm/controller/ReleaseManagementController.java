@@ -223,7 +223,12 @@ public class ReleaseManagementController extends BaseController {
 					EmailTemplate email=new EmailTemplate();
 					if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 						 email = release.getSystem().getEmailTemplate().iterator().next();
+						 
 					}
+					if(email.getId()==0) {
+						
+						 email.setSubject("[ INSTALACION - "+release.getSystem().getName()+" ]:{{releaseNumber}}");
+					 }
 					String subject =getSubject(email,release);
 					
 					String statusName = status.getName();
@@ -248,6 +253,9 @@ public class ReleaseManagementController extends BaseController {
 					if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 						 email = release.getSystem().getEmailTemplate().iterator().next();
 					}
+					if(email.getId()==0) {
+						email.setSubject("[ INSTALACION - "+release.getSystem().getName()+" ]:{{releaseNumber}}");
+					 }
 					String subject =getSubject(email,release);
 					
 					String typeError = error.getName();

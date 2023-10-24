@@ -106,12 +106,12 @@ public class WorkFlowManagerController extends BaseController {
 	private SigesService sigesService;
 	@Autowired
 	private RFCService rfcService;
-	
+
 	@Autowired
 	private RequestNewService requestNewService;
 	@Autowired
 	private TypeRequestService typeRequestService;
-	
+
 	@RequestMapping(value = "/release/", method = RequestMethod.GET)
 	public String indexRelease(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -133,26 +133,25 @@ public class WorkFlowManagerController extends BaseController {
 		return "/wf/workFlow/workFlowManagerRelease";
 
 	}
-	
-	
+
 	@RequestMapping(value = "/tpo/", method = RequestMethod.GET)
 	public String indexTPOs(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
 			Integer userLogin = getUserLogin().getId();
-			
-			List<System> systems=systemService.findByUserIncidence(userLogin);
-			List<Project>projects=new ArrayList<>();
-			
-			for(System system: systems) {
+
+			List<System> systems = systemService.findByUserIncidence(userLogin);
+			List<Project> projects = new ArrayList<>();
+
+			for (System system : systems) {
 				system.getProyect();
-				boolean veri=true;
-				for(Project project: projects) {
-					if(project.getId()==system.getProyect().getId()) {
-						veri=false;
+				boolean veri = true;
+				for (Project project : projects) {
+					if (project.getId() == system.getProyect().getId()) {
+						veri = false;
 					}
 				}
-				if(veri) {
+				if (veri) {
 					projects.add(system.getProyect());
 				}
 			}
@@ -169,7 +168,6 @@ public class WorkFlowManagerController extends BaseController {
 		return "/wf/request/request";
 
 	}
-	
 
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/listTpos" }, method = RequestMethod.GET)
@@ -187,16 +185,17 @@ public class WorkFlowManagerController extends BaseController {
 			if (request.getParameter("proyectFilter").equals("")) {
 				proyectId = 0;
 			} else {
-				proyectId =  Integer.parseInt(request.getParameter("proyectFilter"));
+				proyectId = Integer.parseInt(request.getParameter("proyectFilter"));
 			}
 
 			if (request.getParameter("typeRequestFilter").equals("")) {
-				typeId= 0;
+				typeId = 0;
 			} else {
 				typeId = Integer.parseInt(request.getParameter("typeRequestFilter"));
 			}
-			
-			requests = requestNewService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, proyectId, typeId,userLogin);
+
+			requests = requestNewService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, proyectId, typeId,
+					userLogin);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -204,22 +203,22 @@ public class WorkFlowManagerController extends BaseController {
 		return requests;
 
 	}
-	
+
 	@RequestMapping(value = "/updateRequest/{id}", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse updateRequest(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			Request requestUpt=requestNewService.findById(id);
-			if(requestUpt.getAuto()==1) {
+			Request requestUpt = requestNewService.findById(id);
+			if (requestUpt.getAuto() == 1) {
 				requestUpt.setAuto(0);
 				res.setMessage("Aprobacion automatica desactivada!");
-			}else {
+			} else {
 				requestUpt.setAuto(1);
 				res.setMessage("Aprobacion automatica activada!");
 			}
 			res.setStatus("success");
 			requestNewService.update(requestUpt);
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "typePetition");
 			res.setStatus("exception");
@@ -228,6 +227,7 @@ public class WorkFlowManagerController extends BaseController {
 		}
 		return res;
 	}
+
 	@RequestMapping(value = "/rfc/", method = RequestMethod.GET)
 	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
@@ -271,9 +271,7 @@ public class WorkFlowManagerController extends BaseController {
 			return null;
 		}
 	}
-	
 
-	
 	@RequestMapping(path = "/workFlowRFC", method = RequestMethod.GET)
 	public @ResponseBody JsonSheet<?> getSystemRFC(HttpServletRequest request, Locale locale, Model model,
 			HttpSession session) {
@@ -295,49 +293,47 @@ public class WorkFlowManagerController extends BaseController {
 			return null;
 		}
 	}
-	
+
 	@RequestMapping(value = "/wfStatus", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse draftRelease(HttpServletRequest request, Model model,
 			@RequestParam(value = "idRelease", required = true) Integer idRelease,
 			@RequestParam(value = "idNode", required = true) Integer idNode,
 			@RequestParam(value = "motive", required = true) String motive,
-			@RequestParam(value = "idError", required = false) Long idError
-			) {
+			@RequestParam(value = "idError", required = false) Long idError) {
 		JsonResponse res = new JsonResponse();
 		try {
 			WFRelease release = wfReleaseService.findWFReleaseById(idRelease);
 			Node node = nodeService.findById(idNode);
-			String newMotive=motive;
+			String newMotive = motive;
 			node.getStatus().setMotive(newMotive);
 			release.setNode(node);
 			release.setStatus(node.getStatus());
 			release.setOperator(getUserLogin().getFullName());
-			if(node.getStatus().getName().equals("Error")) {
-			Errors_Release error = errorReleaseService.findById(idError);
-			ReleaseError releaseError = new ReleaseError();
-			releaseError.setSystem(release.getSystem());
-			releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
-			releaseError.setError(error);
-			Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
-			releaseError.setRelease(releaseWithObj);
-			releaseError.setObservations(newMotive);
-			releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
-			releaseErrorService.save(releaseError);
-			wfReleaseService.wfStatusReleaseWithOutMin(release);
-			Status statusChange = statusService.findByName("Borrador");
-			release.setStatus(statusChange);
-			
-			if (statusChange != null && statusChange.getName().equals("Borrador")) {
-				if (release.getStatus().getId() != node.getStatus().getId())
-					release.setRetries(release.getRetries() + 1);
-			}
-			
-			newMotive = "Paso a borrador por " + error.getName();
-			node.getStatus().setMotive(newMotive);
-			release.setNode(node);
+			if (node.getStatus().getName().equals("Error")) {
+				Errors_Release error = errorReleaseService.findById(idError);
+				ReleaseError releaseError = new ReleaseError();
+				releaseError.setSystem(release.getSystem());
+				releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
+				releaseError.setError(error);
+				Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
+				releaseError.setRelease(releaseWithObj);
+				releaseError.setObservations(newMotive);
+				releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
+				releaseErrorService.save(releaseError);
+				wfReleaseService.wfStatusReleaseWithOutMin(release);
+				Status statusChange = statusService.findByName("Borrador");
+				release.setStatus(statusChange);
+
+				if (statusChange != null && statusChange.getName().equals("Borrador")) {
+					if (release.getStatus().getId() != node.getStatus().getId())
+						release.setRetries(release.getRetries() + 1);
+				}
+
+				newMotive = "Paso a borrador por " + error.getName();
+				node.getStatus().setMotive(newMotive);
+				release.setNode(node);
 			}
 			wfReleaseService.wfStatusRelease(release);
-
 
 			// Si esta marcado para enviar correo
 			if (node.getSendEmail()) {
@@ -351,13 +347,31 @@ public class WorkFlowManagerController extends BaseController {
 						Sentry.capture(e, "release");
 					}
 				});
+
+				newThread.start();
+			}
+			// Si esta marcado para enviar correo
+			if (node.getUsers().size() > 0) {
+				Integer idTemplate2 = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+				EmailTemplate emailNotify = emailService.findById(idTemplate2);
+
+				String user = getUserLogin().getFullName();
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotify(release, emailNotify, user);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
 				newThread.start();
 			}
 
 			// si tiene un nodo y ademas tiene actor se notifica por correo
 			if (node != null && node.getActors().size() > 0) {
-				Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
-				EmailTemplate emailActor = emailService.findById(idTemplate);
+				Integer idTemplate3 = Integer.parseInt(paramService.findByCode(22).getParamValue());
+				EmailTemplate emailActor = emailService.findById(idTemplate3);
 				WFRelease releaseEmail = release;
 				Thread newThread = new Thread(() -> {
 					try {
@@ -370,7 +384,6 @@ public class WorkFlowManagerController extends BaseController {
 				newThread.start();
 			}
 
-
 			res.setStatus("success");
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
@@ -380,25 +393,24 @@ public class WorkFlowManagerController extends BaseController {
 		}
 		return res;
 	}
-	
+
 	@RequestMapping(value = "/wfStatusRFC", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse draftRFC(HttpServletRequest request, Model model,
 			@RequestParam(value = "idRFC", required = true) Long idRFC,
 			@RequestParam(value = "idNode", required = true) Integer idNode,
 			@RequestParam(value = "motive", required = true) String motive,
-			@RequestParam(value = "idError", required = false) Long idError
-			) {
+			@RequestParam(value = "idError", required = false) Long idError) {
 		JsonResponse res = new JsonResponse();
-		String newMotive=motive;
+		String newMotive = motive;
 		try {
 			WFRFC rfc = wfrfcService.findWFRFCById(idRFC);
 			NodeRFC node = nodeService.findByIdNoRFC(idNode);
-			
+
 			node.getStatus().setReason(newMotive);
 
 			rfc.setNode(node);
 			rfc.setStatus(node.getStatus());
-			
+
 			String user = getUserLogin().getFullName();
 			rfc.setOperator(user);
 			if (node.getStatus() != null && node.getStatus().getName().equals("Borrador")) {
@@ -407,13 +419,13 @@ public class WorkFlowManagerController extends BaseController {
 					release.setStatus(release.getStatusBefore());
 					release.setMotive("Devuelto al estado " + release.getStatus().getName());
 					releaseService.updateStatusReleaseRFC(release, user);
-				} 
+				}
 
 				/*
 				 * if (release.getStatus().getId() != status.getId())
 				 * release.setRetries(release.getRetries() + 1);
 				 */
-			}else if (node.getStatus() != null && node.getStatus().getName().equals("Error")) {
+			} else if (node.getStatus() != null && node.getStatus().getName().equals("Error")) {
 				Errors_RFC error = errorRFCService.findById(idError);
 				RFCError rfcError = new RFCError();
 				rfcError.setSystem(rfc.getSystemInfo());
@@ -434,7 +446,7 @@ public class WorkFlowManagerController extends BaseController {
 				rfc.setRequestDate(dateFormat);
 
 				wfrfcService.wfStatusRFCWithOutMin(rfc);
-				StatusRFC statusChange = statusRFCService.findByKey("name","Borrador");
+				StatusRFC statusChange = statusRFCService.findByKey("name", "Borrador");
 				rfc.setStatus(statusChange);
 
 				if (statusChange != null && statusChange.getName().equals("Borrador")) {
@@ -443,15 +455,14 @@ public class WorkFlowManagerController extends BaseController {
 						release.setStatus(release.getStatusBefore());
 						release.setMotive("Devuelto al estado " + release.getStatus().getName());
 						releaseService.updateStatusReleaseRFC(release, user);
-					} 
+					}
 				}
 				newMotive = "Paso a borrador por " + error.getName();
-				
+
 				node.getStatus().setReason(newMotive);
 				rfc.setNode(node);
 			}
 			wfrfcService.wfStatusRFC(rfc);
-
 
 			// Si esta marcado para enviar correo
 			if (node.getSendEmail()) {
@@ -484,7 +495,6 @@ public class WorkFlowManagerController extends BaseController {
 				newThread.start();
 			}
 
-
 			res.setStatus("success");
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
@@ -494,63 +504,46 @@ public class WorkFlowManagerController extends BaseController {
 		}
 		return res;
 	}
-/*
-
-	@RequestMapping(value = "/wfStatus", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse draftRelease(HttpServletRequest request, Model model,
-			@RequestParam(value = "idRelease", required = true) Integer idRelease,
-			@RequestParam(value = "idNode", required = true) Integer idNode,
-			@RequestParam(value = "motive", required = true) String motive) {
-		JsonResponse res = new JsonResponse();
-		try {
-			WFRelease release = wfReleaseService.findWFReleaseById(idRelease);
-			Node node = nodeService.findById(idNode);
-			node.getStatus().setMotive(motive);
-			release.setNode(node);
-			release.setStatus(node.getStatus());
-			release.setOperator(getUserLogin().getFullName());
-			wfReleaseService.wfStatusRelease(release);
-
-			// Si esta marcado para enviar correo
-			if (node.getSendEmail()) {
-				Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
-				EmailTemplate email = emailService.findById(idTemplate);
-				WFRelease releaseEmail = release;
-				Thread newThread = new Thread(() -> {
-					try {
-						emailService.sendMail(releaseEmail, email, motive);
-					} catch (Exception e) {
-						Sentry.capture(e, "release");
-					}
-				});
-				newThread.start();
-			}
-
-			// si tiene un nodo y ademas tiene actor se notifica por correo
-			if (node != null && node.getActors().size() > 0) {
-				Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
-				EmailTemplate emailActor = emailService.findById(idTemplate);
-				WFRelease releaseEmail = release;
-				Thread newThread = new Thread(() -> {
-					try {
-						emailService.sendMailActor(releaseEmail, emailActor);
-					} catch (Exception e) {
-						Sentry.capture(e, "release");
-					}
-
-				});
-				newThread.start();
-			}
-
-			res.setStatus("success");
-		} catch (Exception e) {
-			Sentry.capture(e, "wfReleaseManager");
-			res.setStatus("exception");
-			res.setException("Error al cambiar estado del release: " + e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-		}
-		return res;
-	}*/
+	/*
+	 * 
+	 * @RequestMapping(value = "/wfStatus", method = RequestMethod.POST)
+	 * public @ResponseBody JsonResponse draftRelease(HttpServletRequest request,
+	 * Model model,
+	 * 
+	 * @RequestParam(value = "idRelease", required = true) Integer idRelease,
+	 * 
+	 * @RequestParam(value = "idNode", required = true) Integer idNode,
+	 * 
+	 * @RequestParam(value = "motive", required = true) String motive) {
+	 * JsonResponse res = new JsonResponse(); try { WFRelease release =
+	 * wfReleaseService.findWFReleaseById(idRelease); Node node =
+	 * nodeService.findById(idNode); node.getStatus().setMotive(motive);
+	 * release.setNode(node); release.setStatus(node.getStatus());
+	 * release.setOperator(getUserLogin().getFullName());
+	 * wfReleaseService.wfStatusRelease(release);
+	 * 
+	 * // Si esta marcado para enviar correo if (node.getSendEmail()) { Integer
+	 * idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
+	 * EmailTemplate email = emailService.findById(idTemplate); WFRelease
+	 * releaseEmail = release; Thread newThread = new Thread(() -> { try {
+	 * emailService.sendMail(releaseEmail, email, motive); } catch (Exception e) {
+	 * Sentry.capture(e, "release"); } }); newThread.start(); }
+	 * 
+	 * // si tiene un nodo y ademas tiene actor se notifica por correo if (node !=
+	 * null && node.getActors().size() > 0) { Integer idTemplate =
+	 * Integer.parseInt(paramService.findByCode(22).getParamValue()); EmailTemplate
+	 * emailActor = emailService.findById(idTemplate); WFRelease releaseEmail =
+	 * release; Thread newThread = new Thread(() -> { try {
+	 * emailService.sendMailActor(releaseEmail, emailActor); } catch (Exception e) {
+	 * Sentry.capture(e, "release"); }
+	 * 
+	 * }); newThread.start(); }
+	 * 
+	 * res.setStatus("success"); } catch (Exception e) { Sentry.capture(e,
+	 * "wfReleaseManager"); res.setStatus("exception");
+	 * res.setException("Error al cambiar estado del release: " + e.getMessage());
+	 * logger.log(MyLevel.RELEASE_ERROR, e.toString()); } return res; }
+	 */
 
 	public void loadCountsRFC(HttpServletRequest request, Object[] systemIds) {
 		Map<String, Integer> wfCount = new HashMap<String, Integer>();
@@ -560,7 +553,7 @@ public class WorkFlowManagerController extends BaseController {
 		wfCount.put("all", (wfCount.get("start") + wfCount.get("action") + wfCount.get("finish")));
 		request.setAttribute("wfCount", wfCount);
 	}
-	
+
 	public void loadCountsRelease(HttpServletRequest request, Object[] systemIds) {
 		Map<String, Integer> wfCount = new HashMap<String, Integer>();
 		wfCount.put("start", wfReleaseService.countByType("start", systemIds));
