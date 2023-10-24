@@ -262,6 +262,24 @@ public class WorkFlowManagementController extends BaseController {
 				});
 				newThread.start();
 			}
+			
+			// Si esta marcado para enviar correo
+			if (node.getUsers().size()>0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				
+				String user = getUserLogin().getFullName();
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotify(release, emailNotify, user);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
 
 			res.setStatus("success");
 		} catch (Exception e) {

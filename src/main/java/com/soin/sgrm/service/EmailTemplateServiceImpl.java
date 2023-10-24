@@ -674,6 +674,10 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				email.setHtml(email.getHtml().replace("{{userName}}",
 						(releaseEmail.getUser().getFullName() != null ? releaseEmail.getUser().getFullName() : "")));
 			}
+			if (email.getHtml().contains("{{motive}}")) {
+				email.setHtml(email.getHtml().replace("{{motive}}",
+						(releaseEmail.getUser().getFullName() != null ? releaseEmail.getNode().getStatus().getMotive() : "")));
+			}
 
 			if (email.getHtml().contains("{{operator}}")) {
 				email.setHtml(email.getHtml().replace("{{operator}}", (user != null ? user : "")));
