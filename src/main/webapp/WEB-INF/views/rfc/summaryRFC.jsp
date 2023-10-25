@@ -109,7 +109,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creaci&oacute;n</label>
+					<label for="email_address">Fecha de actualizaci&oacute;n</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -169,21 +169,6 @@
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
 							<p>${rfc.priority.name}</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row clearfix m-t-10">
-				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creaci&oacute;n</label>
-					<div class="form-group m-b-0i">
-						<div class="form-group m-b-0i">
-							<div class="form-line disabled">
-								<p>
-									<fmt:formatDate value="${rfc.requestDate }"
-										pattern="dd/MM/YYYY HH:mm:ss" />
-								</p>
-							</div>
 						</div>
 					</div>
 				</div>

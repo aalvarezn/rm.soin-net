@@ -873,6 +873,7 @@ public class ReleaseController extends BaseController {
 					String user = getUserLogin().getFullName();
 					Thread newThread = new Thread(() -> {
 						try {
+							
 							emailService.sendMailNotify(releaseEmail, emailNotify, user);
 						} catch (Exception e) {
 							Sentry.capture(e, "release");

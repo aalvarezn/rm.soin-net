@@ -255,10 +255,34 @@ public class WorkFlowManagementController extends BaseController {
 				WFRelease releaseEmail = release;
 				Thread newThread = new Thread(() -> {
 					try {
-						emailService.sendMail(releaseEmail, email, node.getStatus().getMotive());
+						String motiveNow="";
+						if(node.getStatus().getMotive()==null) {
+							motiveNow=node.getStatus().getDescription();
+						}else {
+							motiveNow=node.getStatus().getMotive();
+						}
+						emailService.sendMail(releaseEmail, email, motiveNow);
 					} catch (Exception e) {
 						Sentry.capture(e, "release");
 					}
+				});
+				newThread.start();
+			}
+			
+			// Si esta marcado para enviar correo
+			if (node.getUsers().size()>0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				
+				String user = getUserLogin().getFullName();
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotify(release, emailNotify, user);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
 				});
 				newThread.start();
 			}
