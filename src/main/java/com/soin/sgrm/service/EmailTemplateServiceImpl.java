@@ -676,7 +676,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 			if (email.getHtml().contains("{{motive}}")) {
 				email.setHtml(email.getHtml().replace("{{motive}}",
-						(releaseEmail.getNode().getStatus() != null ? releaseEmail.getNode().getStatus().getMotive() : "")));
+						(releaseEmail.getNode().getStatus().getMotive() != null ? releaseEmail.getNode().getStatus().getMotive() : releaseEmail.getNode().getStatus().getName())));
 			}
 
 			if (email.getHtml().contains("{{operator}}")) {
