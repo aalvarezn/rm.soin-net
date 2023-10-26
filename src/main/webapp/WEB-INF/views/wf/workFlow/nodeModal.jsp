@@ -76,7 +76,22 @@
 										</label>
 									</div>
 								</div>
-							
+							<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+									<label for="name">Enviar Correo</label>
+									<div class="switch" style="margin-top: 20px;">
+										<label>No<input id="sendEmail" type="checkbox"><span
+											class="lever"></span>Si
+										</label>
+									</div>
+								</div>
+															<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+									<label for="name">Enviar Correo</label>
+									<div class="switch" style="margin-top: 20px;">
+										<label>No<input id="sendEmail" type="checkbox"><span
+											class="lever"></span>Si
+										</label>
+									</div>
+								</div>
 							</div>
 
 							

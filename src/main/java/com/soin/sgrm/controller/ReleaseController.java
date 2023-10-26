@@ -537,7 +537,7 @@ public class ReleaseController extends BaseController {
 			releaseCopy.setCreateDate(CommonUtils.getSystemTimestamp());
 			releaseCopy.setUser(user);
 			releaseCopy.setStatus(statusService.findByName("Borrador"));
-
+			releaseCopy.setMotive("Inicio de release");
 			if (requeriment.equals("IN"))
 				releaseCopy.setIncidents(requirement_name);
 
