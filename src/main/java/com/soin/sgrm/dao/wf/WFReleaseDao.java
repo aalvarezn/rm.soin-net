@@ -17,7 +17,7 @@ public interface WFReleaseDao {
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
 	
 	JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] systemsId) throws SQLException, ParseException;
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] systemsId, Integer userId) throws SQLException, ParseException;
 	
 	void wfStatusRelease(WFRelease release);
 	

@@ -260,11 +260,12 @@ public class WorkFlowManagerController extends BaseController {
 			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
 
 			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
+			Integer idUser=getUserLogin().getId();
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			return wfReleaseService.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
-					dateRange, systemId, statusId, systemService.myTeams(name));
+					dateRange, systemId, statusId, systemService.myTeams(name),idUser);
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());

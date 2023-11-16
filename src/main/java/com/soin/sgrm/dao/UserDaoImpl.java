@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StringType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -42,6 +43,51 @@ public class UserDaoImpl implements UserDao{
 		User user = (User) sessionFactory.getCurrentSession().createCriteria(User.class)
 				.add(Restrictions.eq("id", id)).uniqueResult();
 		return user;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public User findByName(String soinManager) {
+		String [] soinManagerWords=soinManager.split(" ");
+		User userReal=null;
+		try { 
+			List<User> users = sessionFactory.getCurrentSession()
+				    .createCriteria(User.class)
+				    .add(Restrictions.ilike("fullName", soinManagerWords[0].toLowerCase().substring(0,3) + "%"))
+				    .list();
+				
+					for(User userVerification: users) {
+						userReal=userVerification;
+						int i=0;
+						for(int x=0; x<soinManagerWords.length;x++) {
+						if(x==0) {
+							if(userVerification.getFullName().toLowerCase().contains(soinManagerWords[x].toLowerCase().substring(0,3))) {
+								i++;
+							}
+						}else {
+							if(userVerification.getFullName().toLowerCase().contains(soinManagerWords[x].toLowerCase())) {
+								i++;
+							}
+						}
+
+						if(i>=2) {
+							return userReal;
+						}
+						}
+						
+						
+					}
+				return userReal;
+				
+			
+		    
+
+		    } catch (Exception e) {
+		    // Otros tipos de excepciones que puedan ocurrir
+		    e.printStackTrace();
+		    return userReal;
+		}
+
 	}
 
 

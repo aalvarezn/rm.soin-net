@@ -63,11 +63,6 @@ public class WFRelease implements Serializable {
 	private Integer retries;
 
 
-	@OrderBy("trackingDate ASC")
-	@Fetch(value = FetchMode.SUBSELECT)
-	@OneToMany(mappedBy = "release", fetch = FetchType.EAGER)
-	private Set<ReleaseTracking> tracking = new HashSet<ReleaseTracking>();
-
 	public int getId() {
 		return id;
 	}
@@ -131,17 +126,7 @@ public class WFRelease implements Serializable {
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
-
-	public Set<ReleaseTracking> getTracking() {
-		return tracking;
-	}
-
-	public void setTracking(Set<ReleaseTracking> tracking) {
-		this.tracking = tracking;
-	}
 	
-	
-
 	public Integer getRetries() {
 		return retries;
 	}
