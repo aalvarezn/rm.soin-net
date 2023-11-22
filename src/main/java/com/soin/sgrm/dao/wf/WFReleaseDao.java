@@ -21,7 +21,7 @@ public interface WFReleaseDao {
 	
 	void wfStatusRelease(WFRelease release);
 	
-	Integer countByType(String group, Object[] ids);
+	Integer countByType(String group, Object[] ids, Integer userId);
 
 	void wfStatusReleaseWithOutMin(WFRelease release);
 

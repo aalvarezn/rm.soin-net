@@ -628,6 +628,7 @@ public class RequestController extends BaseController {
 						proyect = config.getProyect();
 					} else {
 						// Se verifica que la hoja tenga la columna de TPO
+						if(!(row.size()==0)) {
 						if (btIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
@@ -637,9 +638,17 @@ public class RequestController extends BaseController {
 									existRequest = true;
 								}
 							}
+							
+							if(count==74) {
+								System.out.println("Aca");
+							}
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new Request() : request;
+								String code=(String) row.get(btIndex);
+								if(!code.equals("")) {
+									
+								
 								request.setCode_soin((String) row.get(btIndex));
 								request.setStatus((String) row.get(statusIndex));
 								request.setDescription((String) row.get(codeIce) + " " + row.get(descriptionIndex));
@@ -658,12 +667,15 @@ public class RequestController extends BaseController {
 									request.setActive(true);
 									requestService.save(request);
 								}
+								}
+								
 
 							} catch (Exception e) {
 								Sentry.capture(e, "request");
 								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
 						}
+					}
 					}
 					count++;
 				}

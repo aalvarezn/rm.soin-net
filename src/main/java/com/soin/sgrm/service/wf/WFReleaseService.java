@@ -21,7 +21,7 @@ public interface WFReleaseService {
 
 	void wfStatusRelease(WFRelease release);
 	
-	Integer countByType(String group, Object[] ids);
+	Integer countByType(String group, Object[] ids, Integer idUser);
 
 	void wfStatusReleaseWithOutMin(WFRelease release);
 }

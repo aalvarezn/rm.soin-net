@@ -52,8 +52,8 @@ public class WFReleaseServiceImpl implements WFReleaseService {
 	}
 
 	@Override
-	public Integer countByType(String group, Object[] ids) {
-		return dao.countByType(group, ids);
+	public Integer countByType(String group, Object[] ids,Integer userId) {
+		return dao.countByType(group, ids,userId);
 	}
 
 	@Override

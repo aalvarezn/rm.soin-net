@@ -260,13 +260,29 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 		return crit;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Integer countByType(String group, Object[] ids) {
+	public Integer countByType(String group, Object[] ids,Integer userId) {
+		Criteria crit2 = sessionFactory.getCurrentSession().createCriteria(RequestFast.class);
+		crit2.add(Restrictions.eq("userManager", userId));
+		List<RequestFast> requestList = crit2.list();
+		Disjunction disjunction = Restrictions.disjunction();
+		// Valores de busqueda en la tabla
+		for (RequestFast request : requestList) {
+			String codeSoing=request.getCode_soin().replaceFirst("-", "");
+			if (!codeSoing.equals("")) {
+				disjunction.add(Restrictions.like("releaseNumber", codeSoing, MatchMode.ANYWHERE).ignoreCase());
+		    }
+			
+		}
+	
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFRelease.class);
+		if(requestList.size()!=0) {
 		crit.createAlias("system", "system");
 		crit.createAlias("node", "node");
 		crit.createAlias("node.workFlow", "workFlow");
 		crit.createAlias("workFlow.type", "type");
+		crit.add(disjunction);
 		crit.add(Restrictions.eq("type.id", 1));
 		crit.add(Restrictions.isNotNull("node"));
 		crit.add(Restrictions.in("system.id", ids));
@@ -281,8 +297,13 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 			for (String itemModel : fetchs)
 				crit.setFetchMode(itemModel, FetchMode.SELECT);
 
+	
+		}else {
+			crit.add(Restrictions.eq("id", null));
+		}
 		crit.setProjection(Projections.rowCount());
 		Long count = (Long) crit.uniqueResult();
+		
 		return count.intValue();
 	}
 
