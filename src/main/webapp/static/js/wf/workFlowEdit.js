@@ -252,9 +252,11 @@ function getSelectIds(form, name) {
 function ajaxLoadWorkFlow(response) {
 	if (response != null) {
 		let dataNodes = response.nodes;
+		console.log(response.nodes);
 		if (dataNodes.length > 0) {
 			// Se recorre cada nodo para ser agregado
 			for (var i = 0; i < dataNodes.length; i++) {
+				console.log();
 				var visNode = {
 						id : dataNodes[i].id,
 						label : dataNodes[i].label,
@@ -265,6 +267,8 @@ function ajaxLoadWorkFlow(response) {
 						sendEmail : dataNodes[i].sendEmail,
 						users : dataNodes[i].users,
 						actors : dataNodes[i].actors,
+						nodesTo: dataNodes[i].edges
+						
 				};
 
 				// Se agrega el nodo
@@ -423,6 +427,8 @@ function updateNodeModal() {
 			statusId : $nodeForm.find("#statusId").children("option:selected")
 			.val(),
 			sendEmail : $nodeForm.find('#sendEmail').prop('checked'),
+			skipNode : $nodeForm.find('#skipNode').prop('checked'),
+			skipStatusId : $nodeForm.find('#skipStatusId').children("option:selected"),
 			usersIds : JSON.stringify(usersNotyIds),
 			actorsIds : JSON.stringify(actorsNotyIds),
 		},
@@ -647,7 +653,9 @@ function closeNodeModal() {
 
 function openUpdateNodeModal(properties) {
 	if (typeof properties.nodes[0] !== 'undefined') {
+		console.log(properties.nodes[0]);
 		let tempNode = nodes.get(properties.nodes[0]);
+		console.log(tempNode);
 		$nodeForm.find('#users option').removeAttr('selected');
 		$nodeForm.find('#actors option').removeAttr('selected');
 		$nodeForm.find('a[href="#tabHome"]').click();
@@ -661,7 +669,23 @@ function openUpdateNodeModal(properties) {
 		$nodeForm.find('#name').val(tempNode.label);
 		$nodeForm.find('#x').val(tempNode.x);
 		$nodeForm.find('#y').val(tempNode.y);
-
+		console.log(tempNode.nodesTo);
+		if(tempNode.nodesTo!=null&&tempNode.nodesTo.length>0){
+			var s = '';
+			s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+			console.log(tempNode.nodesTo.length);
+			for(var i = 0; i < tempNode.nodesTo.length; i++) {
+				console.log(tempNode.nodesTo[i].nodeTo.label);
+				s += '<option value="' + tempNode.nodesTo[i].nodeTo.id + '">' + tempNode.nodesTo[i].nodeTo.label + '</option>';
+			}
+			$('#statusSkipId').html(s);
+			$('#statusSkipId').selectpicker('refresh');
+		}else{
+			s+='<option value="">-- Ninguno --</option>';
+			$('#statusSkipId').html(s);
+			$('#statusSkipId').selectpicker('refresh');
+		}
+		
 
 		if(typeof tempNode.users !== 'undefined'){
 			for (var i = 0, l = tempNode.users.length; i < l; i++) {
