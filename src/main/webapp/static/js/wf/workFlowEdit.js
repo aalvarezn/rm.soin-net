@@ -1,5 +1,6 @@
 var $network;
 var container = document.getElementById('wfEdit');
+var skipDiv = $('#skipDiv');
 var nodes = new vis.DataSet([]);
 var edges = new vis.DataSet([]);
 var scales=0.8;
@@ -220,7 +221,26 @@ $(function() {
 			});
 
 	loadWorkFlow();
+	dropDownChange();
+	changeCheckBoxSkipNode();
+	
 });
+
+function changeCheckBoxSkipNode(){
+	$('#skipNode').change(function () {
+		
+        if ($(this).is(':checked')) {
+        	skipDiv.show();
+        	$nodeForm.find("#statusSkipId").selectpicker('val', '');
+        	$nodeForm.find("#statustoSkipId").selectpicker('val', '');
+        	$('#statustoSkipId').prop('disabled',true);
+        	$('#statustoSkipId').selectpicker('refresh');
+        } else {
+        	skipDiv.hide();
+
+        }
+    });
+}
 
 function loadWorkFlow() {
 	$.ajax({
@@ -267,7 +287,10 @@ function ajaxLoadWorkFlow(response) {
 						sendEmail : dataNodes[i].sendEmail,
 						users : dataNodes[i].users,
 						actors : dataNodes[i].actors,
-						nodesTo: dataNodes[i].edges
+						nodesTo: dataNodes[i].edges,
+						skipNode :  dataNodes[i].skipNode,
+						skipId :  dataNodes[i].skipId,
+						nodeToId :  dataNodes[i].nodeToId,
 						
 				};
 
@@ -428,7 +451,8 @@ function updateNodeModal() {
 			.val(),
 			sendEmail : $nodeForm.find('#sendEmail').prop('checked'),
 			skipNode : $nodeForm.find('#skipNode').prop('checked'),
-			skipStatusId : $nodeForm.find('#skipStatusId').children("option:selected"),
+			skipId : $nodeForm.find('#statusSkipId').children("option:selected").val(),
+			nodeToId : $nodeForm.find('#statustoSkipId').children("option:selected").val(),
 			usersIds : JSON.stringify(usersNotyIds),
 			actorsIds : JSON.stringify(actorsNotyIds),
 		},
@@ -460,6 +484,9 @@ function ajaxUpdateNode(response) {
 				y : response.obj.y,
 				status : response.obj.status,
 				sendEmail : response.obj.sendEmail,
+				skipNode :  response.obj.skipNode,
+				skipId :  response.obj.skipId,
+				nodeToId :  response.obj.nodeToId,
 				users : response.obj.users,
 				actors : response.obj.actors
 			});
@@ -669,10 +696,17 @@ function openUpdateNodeModal(properties) {
 		$nodeForm.find('#name').val(tempNode.label);
 		$nodeForm.find('#x').val(tempNode.x);
 		$nodeForm.find('#y').val(tempNode.y);
-		console.log(tempNode.nodesTo);
+		console.log(tempNode.skipId);
+		$nodeForm.find('#skipNode').prop('checked', tempNode.skipNode);
+		if(tempNode.skipNode){
+			skipDiv.show();
+		}else{
+			skipDiv.hide();
+		}
+		
 		if(tempNode.nodesTo!=null&&tempNode.nodesTo.length>0){
 			var s = '';
-			s+='<option value="">-- Seleccione una opci&oacute;n --</option>';
+			s+='<option value="">-- Ninguno --</option>';
 			console.log(tempNode.nodesTo.length);
 			for(var i = 0; i < tempNode.nodesTo.length; i++) {
 				console.log(tempNode.nodesTo[i].nodeTo.label);
@@ -680,13 +714,53 @@ function openUpdateNodeModal(properties) {
 			}
 			$('#statusSkipId').html(s);
 			$('#statusSkipId').selectpicker('refresh');
+			if (tempNode.skipId != null){
+				$nodeForm.find("#statusSkipId").selectpicker('val', tempNode.skipId);
+				console.log("deberia salir el"+tempNode.skipId)
+			}
+				
 		}else{
 			s+='<option value="">-- Ninguno --</option>';
 			$('#statusSkipId').html(s);
 			$('#statusSkipId').selectpicker('refresh');
 		}
 		
-
+		if (tempNode.nodeToId != null){
+			var sId = tempNode.skipId;
+			console.log(sId+"segundo estado");
+			if(sId!=""){
+				
+			$.ajax({
+				type: 'GET',
+				url: getCont() + "management/wf/nodesearch/"+sId,
+				success: function(result) {
+					console.log(result.obj.edges);
+					var nodes=result.obj.edges;
+					if(nodes.length!=0){
+						var s = '';
+						s+='<option value="">-- Ninguno --</option>';
+						for(var i = 0; i < nodes.length; i++) {
+							s += '<option value="' + nodes[i].nodeTo.id + '">' + nodes[i].nodeTo.label + '</option>';
+						}
+						$('#statustoSkipId').html(s);
+						$('#statustoSkipId').prop('disabled', false);
+						$('#statustoSkipId').selectpicker('refresh');
+						$nodeForm.find("#statustoSkipId").selectpicker('val', tempNode.nodeToId);
+					}else{
+						resetDrop();
+					}
+					
+					
+				}
+			});
+			}else{
+				resetDrop();
+			}
+		}else{
+			$('#statustoSkipId').prop('disabled',true);
+		}
+		
+		
 		if(typeof tempNode.users !== 'undefined'){
 			for (var i = 0, l = tempNode.users.length; i < l; i++) {
 				$nodeForm.find('#users option').each(
@@ -716,4 +790,47 @@ function openUpdateNodeModal(properties) {
 		$nodeForm.find('#users').multiSelect("refresh");
 		$nodeModal.modal('show');
 	}
+}
+
+function dropDownChange(){
+
+	$('#statusSkipId').on('change', function(){
+		var sId =$nodeModal.find('#statusSkipId').val();
+		if(sId!=""){
+			
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "management/wf/nodesearch/"+sId,
+			success: function(result) {
+				console.log(result.obj.edges);
+				var nodes=result.obj.edges;
+				if(nodes.length!=0){
+					var s = '';
+					s+='<option value="">-- Ninguno --</option>';
+					for(var i = 0; i < nodes.length; i++) {
+						s += '<option value="' + nodes[i].nodeTo.id + '">' + nodes[i].nodeTo.label + '</option>';
+					}
+					$('#statustoSkipId').html(s);
+					$('#statustoSkipId').prop('disabled', false);
+					$('#statustoSkipId').selectpicker('refresh');
+				}else{
+					resetDrop();
+				}
+				
+				
+			}
+		});
+		}else{
+			resetDrop();
+		}
+		
+	});
+}
+
+function resetDrop(){
+	var s = '';
+	s+='<option value="">-- Ninguno --</option>';
+	$('#statustoSkipId').html(s);
+	$('#statustoSkipId').prop('disabled',true);
+	$('#statustoSkipId').selectpicker('refresh');
 }

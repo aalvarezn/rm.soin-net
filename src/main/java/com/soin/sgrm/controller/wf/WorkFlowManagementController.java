@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +29,7 @@ import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFCError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.ReleaseError;
+import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -487,6 +489,22 @@ public class WorkFlowManagementController extends BaseController {
 		}
 		return "/wf/workFlow/workFlowManagementIncidence";
 
+	}
+	@RequestMapping(value = "/nodesearch/{idNode}", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse nodeSearch(@PathVariable int idNode, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			Node node = nodeService.findById(idNode);
+			res.setStatus("success");
+			res.setObj(node);
+		} catch (Exception e) {
+			Sentry.capture(e, "node");
+			res.setStatus("exception");
+			res.setException("Error al procesar consulta: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 /*
 	@RequestMapping(value = "/wfStatusIncidence", method = RequestMethod.POST)

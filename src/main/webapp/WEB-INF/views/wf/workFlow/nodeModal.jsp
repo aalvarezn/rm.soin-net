@@ -88,18 +88,29 @@
 										</label>
 									</div>
 								</div>
-								<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-									<label>Estado a saltar</label>
-									<div class="form-group m-t-25">
-										<select id="statusSkipId"
-											class="form-control show-tick selectpicker"
-											data-live-search="true">
-											<option value="">-- Ninguno --</option>
-										</select>
+								<div id="skipDiv">
+									<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+										<label>Estado a saltar</label>
+										<div class="form-group m-t-25">
+											<select id="statusSkipId"
+												class="form-control show-tick selectpicker"
+												data-live-search="true">
+												<option value="">-- Ninguno --</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+										<label>Estado a continuar</label>
+										<div class="form-group m-t-25">
+											<select id="statustoSkipId"
+												class="form-control show-tick selectpicker"
+												data-live-search="true" disabled>
+												<option value="">-- Ninguno --</option>
+											</select>
+										</div>
 									</div>
 								</div>
 							</div>
-
 						</div>
 						<div role="tabpanel" class="tab-pane" id="tabActors">
 							<div class="row m-t-20">

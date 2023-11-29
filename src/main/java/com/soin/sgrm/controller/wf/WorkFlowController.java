@@ -242,6 +242,7 @@ public class WorkFlowController extends BaseController {
 				WorkFlow workFlow = new WorkFlow();
 				workFlow.setId(node.getWorkFlowId());
 				node.setSendEmail(false);
+				node.setSkipNode(false);
 				node.setWorkFlow(workFlow);
 				node = nodeService.save(node);
 				res.setObj(node);
@@ -330,6 +331,18 @@ public class WorkFlowController extends BaseController {
 					res.setStatus("exception");
 					res.setException("Error al crear el nodo ya hay un nodo inicio para este tramite.");
 				}
+			}
+			if(node.getSkipNode()==true) {
+				if(node.getSkipId()==null) {
+					res.setStatus("exception");
+					res.setException("Error al crear el nodo no puede haber un salto de tramite sin seleccionar alguno.");
+				}else if(node.getNodeToId()==null) {
+					res.setStatus("exception");
+					res.setException("Error al crear el nodo no puede haber un salto de tramite sin el tramite siguiente.");
+				}
+			}else {
+				node.setSkipId(null);
+				node.setNodeToId(null);
 			}
 			if (res.getStatus().equals("success")) {
 				WorkFlow workFlow = new WorkFlow();
