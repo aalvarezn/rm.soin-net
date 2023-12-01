@@ -218,78 +218,155 @@ public class WorkFlowManagementController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			WFRelease release = wfReleaseService.findWFReleaseById(idRelease);
-			Node node = nodeService.findById(idNode);
-			String newMotive=motive;
-			node.getStatus().setMotive(newMotive);
-			release.setNode(node);
-			release.setStatus(node.getStatus());
-			release.setOperator(getUserLogin().getFullName());
-			if(node.getStatus().getName().equals("Error")) {
-			Errors_Release error = errorService.findById(idError);
-			ReleaseError releaseError = new ReleaseError();
-			releaseError.setSystem(release.getSystem());
-			releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
-			releaseError.setError(error);
-			Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
-			releaseError.setRelease(releaseWithObj);
-			releaseError.setObservations(newMotive);
-			releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
-			releaseErrorService.save(releaseError);
-			wfReleaseService.wfStatusReleaseWithOutMin(release);
-			Status statusChange = statusService.findByName("Borrador");
-			release.setStatus(statusChange);
-			
-			if (statusChange != null && statusChange.getName().equals("Borrador")) {
-				if (release.getStatus().getId() != node.getStatus().getId())
-					release.setRetries(release.getRetries() + 1);
-			}
-			
-			newMotive = "Paso a borrador por " + error.getName();
-			node.getStatus().setMotive(newMotive);
-			release.setNode(node);
-			}
-			wfReleaseService.wfStatusRelease(release);
-
-			// Si esta marcado para enviar correo
-			if (node.getSendEmail()) {
-				Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
-				EmailTemplate email = emailService.findById(idTemplate);
-				WFRelease releaseEmail = release;
-				Thread newThread = new Thread(() -> {
-					try {
-						String motiveNow="";
-						if(node.getStatus().getMotive()==null) {
-							motiveNow=node.getStatus().getDescription();
-						}else {
-							motiveNow=node.getStatus().getMotive();
-						}
-						emailService.sendMail(releaseEmail, email, motiveNow);
-					} catch (Exception e) {
-						Sentry.capture(e, "release");
-					}
-				});
-				newThread.start();
-			}
-			
-			// Si esta marcado para enviar correo
-			if (node.getUsers().size()>0) {
-				Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
-
-				EmailTemplate emailNotify = emailService.findById(idTemplate);
+			final Node node = nodeService.findById(idNode);
+			if(!node.getSkipNode()) {
+				String newMotive=motive;
+				node.getStatus().setMotive(newMotive);
+				release.setNode(node);
+				release.setStatus(node.getStatus());
+				release.setOperator(getUserLogin().getFullName());
+				if(node.getStatus().getName().equals("Error")) {
+				Errors_Release error = errorService.findById(idError);
+				ReleaseError releaseError = new ReleaseError();
+				releaseError.setSystem(release.getSystem());
+				releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
+				releaseError.setError(error);
+				Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
+				releaseError.setRelease(releaseWithObj);
+				releaseError.setObservations(newMotive);
+				releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
+				releaseErrorService.save(releaseError);
+				wfReleaseService.wfStatusReleaseWithOutMin(release);
+				Status statusChange = statusService.findByName("Borrador");
+				release.setStatus(statusChange);
 				
-				String user = getUserLogin().getFullName();
-				Thread newThread = new Thread(() -> {
-					try {
-						emailService.sendMailNotify(release, emailNotify, user);
-					} catch (Exception e) {
-						Sentry.capture(e, "release");
-					}
+				if (statusChange != null && statusChange.getName().equals("Borrador")) {
+					if (release.getStatus().getId() != node.getStatus().getId())
+						release.setRetries(release.getRetries() + 1);
+				}
+				
+				newMotive = "Paso a borrador por " + error.getName();
+				node.getStatus().setMotive(newMotive);
+				release.setNode(node);
+				}
+				wfReleaseService.wfStatusRelease(release);
 
-				});
-				newThread.start();
+				// Si esta marcado para enviar correo
+				if (node.getSendEmail()) {
+					Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
+					EmailTemplate email = emailService.findById(idTemplate);
+					WFRelease releaseEmail = release;
+					Thread newThread = new Thread(() -> {
+						try {
+							String motiveNow="";
+							if(node.getStatus().getMotive()==null) {
+								motiveNow=node.getStatus().getDescription();
+							}else {
+								motiveNow=node.getStatus().getMotive();
+							}
+							emailService.sendMail(releaseEmail, email, motiveNow);
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+					});
+					newThread.start();
+				}
+				
+				// Si esta marcado para enviar correo
+				if (node.getUsers().size()>0) {
+					Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					
+					String user = getUserLogin().getFullName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotify(release, emailNotify, user);
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+
+					});
+					newThread.start();
+				}
+
+				res.setStatus("success");
+			}else {
+				String newMotive=motive;
+			   Node nodenew = nodeService.findById(node.getNodeToId());
+			   nodenew.getStatus().setMotive(newMotive);
+				release.setNode(nodenew);
+				release.setStatus(nodenew.getStatus());
+				release.setOperator(getUserLogin().getFullName());
+				if(nodenew.getStatus().getName().equals("Error")) {
+				Errors_Release error = errorService.findById(idError);
+				ReleaseError releaseError = new ReleaseError();
+				releaseError.setSystem(release.getSystem());
+				releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
+				releaseError.setError(error);
+				Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
+				releaseError.setRelease(releaseWithObj);
+				releaseError.setObservations(newMotive);
+				releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
+				releaseErrorService.save(releaseError);
+				wfReleaseService.wfStatusReleaseWithOutMin(release);
+				Status statusChange = statusService.findByName("Borrador");
+				release.setStatus(statusChange);
+				
+				if (statusChange != null && statusChange.getName().equals("Borrador")) {
+					if (release.getStatus().getId() != node.getStatus().getId())
+						release.setRetries(release.getRetries() + 1);
+				}
+				
+				newMotive = "Paso a borrador por " + error.getName();
+				nodenew.getStatus().setMotive(newMotive);
+				release.setNode(nodenew);
+				}
+				wfReleaseService.wfStatusRelease(release);
+
+				// Si esta marcado para enviar correo
+				if (node.getSendEmail()) {
+					Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
+					EmailTemplate email = emailService.findById(idTemplate);
+					WFRelease releaseEmail = release;
+					Thread newThread = new Thread(() -> {
+						try {
+							String motiveNow="";
+							if(nodenew.getStatus().getMotive()==null) {
+								motiveNow=nodenew.getStatus().getDescription();
+							}else {
+								motiveNow=nodenew.getStatus().getMotive();
+							}
+							emailService.sendMail(releaseEmail, email, motiveNow);
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+					});
+					newThread.start();
+				}
+				
+				// Si esta marcado para enviar correo
+				if (node.getUsers().size()>0) {
+					Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+					EmailTemplate emailNotify = emailService.findById(idTemplate);
+					
+					String user = getUserLogin().getFullName();
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailNotify(release, emailNotify, user);
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+
+					});
+					newThread.start();
+				}
+
+				res.setStatus("success");
 			}
+			
 
-			res.setStatus("success");
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
 			res.setStatus("exception");
