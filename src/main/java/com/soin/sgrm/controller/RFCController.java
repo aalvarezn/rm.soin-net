@@ -854,6 +854,8 @@ public class RFCController extends BaseController {
 		}
 		
 		if(rfc.getIsRequest()==1) {
+			TypeChange typeChange=typeChangeService.findById(rfc.getTypeChangeId());
+			if(!typeChange.getName().equals("Emergencia")) {
 			if(!rfc.getRequestDateBegin().trim().equals("")) {
 				Timestamp requestDate=CommonUtils.getSystemTimestamp();
 				Timestamp requestDateBegin = CommonUtils.convertStringToTimestamp(rfc.getRequestDateBegin(), "dd/MM/yyyy hh:mm a");
@@ -872,6 +874,7 @@ public class RFCController extends BaseController {
 					errors.add(new MyError("dateFinish", "La fecha fin tiene que ser mayor a la fecha que se realiza la solicitud."));
 				}
 				
+			}
 			}
 		}
 
