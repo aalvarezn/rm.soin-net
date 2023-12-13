@@ -43,11 +43,13 @@ import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_Objects;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.wf.Edge;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.security.UserLogin;
@@ -63,6 +65,7 @@ import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
 import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.RiskService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
@@ -133,6 +136,8 @@ public class ReleaseController extends BaseController {
 	ReleaseObjectService releaseObjectService;
 	@Autowired
 	private ErrorReleaseService errorService;
+	@Autowired
+	private RequestService requestService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -537,7 +542,7 @@ public class ReleaseController extends BaseController {
 			releaseCopy.setCreateDate(CommonUtils.getSystemTimestamp());
 			releaseCopy.setUser(user);
 			releaseCopy.setStatus(statusService.findByName("Borrador"));
-
+			releaseCopy.setMotive("Inicio de release");
 			if (requeriment.equals("IN"))
 				releaseCopy.setIncidents(requirement_name);
 
@@ -820,70 +825,234 @@ public class ReleaseController extends BaseController {
 				return "redirect:/";
 			}
 			// Verificar si existe un flujo para el sistema
-			Node node = nodeService.existWorkFlow(release);
-			Status status = statusService.findByName("Solicitado");
-
-			release.setStatus(status);
-			release.setMotive(status.getMotive());
-			release.setOperator(getUserLogin().getFullName());
-
-			if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
-				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
-					EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
-					Release releaseEmail = release;
-					Thread newThread = new Thread(() -> {
-						try {
-							emailService.sendMail(releaseEmail, email);
-						} catch (Exception e) {
-							Sentry.capture(e, "release");
-						}
-
-					});
-					newThread.start();
-				}
+			
+			String [] listNumRelease= release.getReleaseNumber().split("\\.");
+			String tpo = listNumRelease[1];
+			if(tpo.contains("TPO")) {
+				tpo=tpo.replace("TPO", "TPO-");
+			}if(tpo.contains("BT")) {
+				tpo=tpo.replace("BT", "BT-");
 			}
+			Request requestVer=requestService.findByName(tpo);
+			if(requestVer==null) {
+				Node node = nodeService.existWorkFlow(release);
+				Status status = statusService.findByName("Solicitado");
 
-			if (node != null) {
-				release.setNode(node);
+				release.setStatus(status);
+				release.setMotive(status.getMotive());
+				release.setOperator(getUserLogin().getFullName());
 
-				// si tiene un nodo y ademas tiene actor se notifica por correo
-				if (node != null && node.getActors().size() > 0) {
-					Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
-					EmailTemplate emailActor = emailService.findById(idTemplate);
-					WFRelease releaseEmail = new WFRelease();
-					releaseEmail.convertReleaseToWFRelease(release);
-					Thread newThread = new Thread(() -> {
-						try {
-							emailService.sendMailActor(releaseEmail, emailActor);
-						} catch (Exception e) {
-							Sentry.capture(e, "release");
-						}
+				if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
+					if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+						EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
+						Release releaseEmail = release;
+						Thread newThread = new Thread(() -> {
+							try {
+								emailService.sendMail(releaseEmail, email);
+							} catch (Exception e) {
+								Sentry.capture(e, "release");
+							}
 
-					});
-					newThread.start();
+						});
+						newThread.start();
+					}
 				}
 
-				// si tiene un nodo y ademas tiene actor se notifica por correo
-				if (node != null && node.getUsers().size() > 0) {
-					Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+				if (node != null) {
+					release.setNode(node);
 
-					EmailTemplate emailNotify = emailService.findById(idTemplate);
-					WFRelease releaseEmail = new WFRelease();
-					releaseEmail.convertReleaseToWFRelease(release);
-					String user = getUserLogin().getFullName();
-					Thread newThread = new Thread(() -> {
-						try {
-							
-							emailService.sendMailNotify(releaseEmail, emailNotify, user);
-						} catch (Exception e) {
-							Sentry.capture(e, "release");
+					// si tiene un nodo y ademas tiene actor se notifica por correo
+					if (node != null && node.getActors().size() > 0) {
+						Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+						EmailTemplate emailActor = emailService.findById(idTemplate);
+						WFRelease releaseEmail = new WFRelease();
+						releaseEmail.convertReleaseToWFRelease(release);
+						Thread newThread = new Thread(() -> {
+							try {
+								emailService.sendMailActor(releaseEmail, emailActor);
+							} catch (Exception e) {
+								Sentry.capture(e, "release");
+							}
+
+						});
+						newThread.start();
+					}
+
+					// si tiene un nodo y ademas tiene actor se notifica por correo
+					if (node != null && node.getUsers().size() > 0) {
+						Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+						EmailTemplate emailNotify = emailService.findById(idTemplate);
+						WFRelease releaseEmail = new WFRelease();
+						releaseEmail.convertReleaseToWFRelease(release);
+						String user = getUserLogin().getFullName();
+						Thread newThread = new Thread(() -> {
+							try {
+								
+								emailService.sendMailNotify(releaseEmail, emailNotify, user);
+							} catch (Exception e) {
+								Sentry.capture(e, "release");
+							}
+
+						});
+						newThread.start();
+					}
+				}
+				releaseService.requestRelease(release);
+			}else {
+				if(requestVer.getAuto()==1) {
+					Node node = nodeService.existWorkFlow(release);
+					Status status = statusService.findByName("Solicitado");
+
+					release.setStatus(status);
+					release.setMotive(status.getMotive());
+					release.setOperator(getUserLogin().getFullName());
+					
+					if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
+						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+							EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
+							Release releaseEmail = release;
+							Thread newThread = new Thread(() -> {
+								try {
+									emailService.sendMail(releaseEmail, email);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
+						}
+					}
+					releaseService.requestRelease(release);
+					if (node != null) {
+						
+						List<Edge> edges=node.getEdges();
+						
+						for(Edge edge:edges) {
+							if(edge.getNodeTo().getLabel().equals("Aprobacion LT")) {
+								node=edge.getNodeTo();
+							}
+						}
+						edges=node.getEdges();
+						for(Edge edge:edges) {
+							if(edge.getNodeTo().getLabel().equals("RM")) {
+								node=edge.getNodeTo();
+							}
+						}
+						release.setNode(node);
+
+						// si tiene un nodo y ademas tiene actor se notifica por correo
+						if (node != null && node.getActors().size() > 0) {
+							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+							EmailTemplate emailActor = emailService.findById(idTemplate);
+							WFRelease releaseEmail = new WFRelease();
+							releaseEmail.convertReleaseToWFRelease(release);
+							Thread newThread = new Thread(() -> {
+								try {
+									emailService.sendMailActor(releaseEmail, emailActor);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
 						}
 
-					});
-					newThread.start();
+						// si tiene un nodo y ademas tiene actor se notifica por correo
+						if (node != null && node.getUsers().size() > 0) {
+							Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+							EmailTemplate emailNotify = emailService.findById(idTemplate);
+							WFRelease releaseEmail = new WFRelease();
+							releaseEmail.convertReleaseToWFRelease(release);
+							String user = getUserLogin().getFullName();
+							Thread newThread = new Thread(() -> {
+								try {
+									
+									emailService.sendMailNotify(releaseEmail, emailNotify, user);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
+						}
+						release.setStatus(node.getStatus());
+						release.setMotive("Automatico");
+						release.setOperator("Automatico");
+						releaseService.requestRelease(release);
+					}
+					
+				}else {
+					Node node = nodeService.existWorkFlow(release);
+					Status status = statusService.findByName("Solicitado");
+
+					release.setStatus(status);
+					release.setMotive(status.getMotive());
+					release.setOperator(getUserLogin().getFullName());
+
+					if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
+						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+							EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
+							Release releaseEmail = release;
+							Thread newThread = new Thread(() -> {
+								try {
+									emailService.sendMail(releaseEmail, email);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
+						}
+					}
+
+					if (node != null) {
+						release.setNode(node);
+
+						// si tiene un nodo y ademas tiene actor se notifica por correo
+						if (node != null && node.getActors().size() > 0) {
+							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+							EmailTemplate emailActor = emailService.findById(idTemplate);
+							WFRelease releaseEmail = new WFRelease();
+							releaseEmail.convertReleaseToWFRelease(release);
+							Thread newThread = new Thread(() -> {
+								try {
+									emailService.sendMailActor(releaseEmail, emailActor);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
+						}
+
+						// si tiene un nodo y ademas tiene actor se notifica por correo
+						if (node != null && node.getUsers().size() > 0) {
+							Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+							EmailTemplate emailNotify = emailService.findById(idTemplate);
+							WFRelease releaseEmail = new WFRelease();
+							releaseEmail.convertReleaseToWFRelease(release);
+							String user = getUserLogin().getFullName();
+							Thread newThread = new Thread(() -> {
+								try {
+									
+									emailService.sendMailNotify(releaseEmail, emailNotify, user);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
+						}
+					}
+					releaseService.requestRelease(release);
 				}
+				
 			}
-			releaseService.requestRelease(release);
+			
+			
 
 			return "redirect:/release/summary-" + release.getId();
 		} catch (Exception e) {

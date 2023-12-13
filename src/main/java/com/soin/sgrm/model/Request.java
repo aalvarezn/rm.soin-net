@@ -68,6 +68,9 @@ public class Request implements Serializable {
 	@Size(max = 200, message = "Máximo 200 caracteres.")
 	private String iceManagement;
 
+	@Column(name = "GESTOR_ID")
+	private Integer userManager;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "TIPO_REQUERIMIENTO_ID", nullable = true)
 	private TypeRequest typeRequest;
@@ -204,6 +207,15 @@ public class Request implements Serializable {
 	public void setAuto(Integer auto) {
 		this.auto = auto;
 	}
+
+	public Integer  getUserManager() {
+		return userManager;
+	}
+
+	public void setUserManager(Integer userManager) {
+		this.userManager = userManager;
+	}
+
 	
 	
 

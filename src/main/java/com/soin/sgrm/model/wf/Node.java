@@ -67,6 +67,8 @@ public class Node implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ESTADO_ID", nullable = true)
 	private Status status;
+	
+	
 
 	@Column(name = "X")
 	private Float x;
@@ -76,7 +78,13 @@ public class Node implements Serializable {
 
 	@Column(name = "GRUPO")
 	private String group;
-
+	
+	@Column(name = "SKIP_NODE_ID")
+	private Integer skipId;
+	
+	@Column(name = "NODE_TO_ID")
+	private Integer nodeToId;
+	
 	@Transient
 	private Integer workFlowId;
 
@@ -85,6 +93,10 @@ public class Node implements Serializable {
 
 	@Column(name = "CORREO")
 	private Boolean sendEmail;
+	
+	@Column(name = "SKIP")
+	private Boolean skipNode;
+
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -269,4 +281,29 @@ public class Node implements Serializable {
 		this.actors.add(user);
 	}
 
+	public Integer getSkipId() {
+		return skipId;
+	}
+
+	public void setSkipId(Integer skipId) {
+		this.skipId = skipId;
+	}
+
+	public Integer getNodeToId() {
+		return nodeToId;
+	}
+
+	public void setNodeToId(Integer nodeToId) {
+		this.nodeToId = nodeToId;
+	}
+
+	public Boolean getSkipNode() {
+		return skipNode;
+	}
+
+	public void setSkipNode(Boolean skipNode) {
+		this.skipNode = skipNode;
+	}
+
+	
 }

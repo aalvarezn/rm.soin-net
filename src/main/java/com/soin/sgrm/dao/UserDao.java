@@ -15,4 +15,6 @@ public interface UserDao {
 
 	User findUserById(Integer id);
 
+	User findByName(String soinManager);
+
 }

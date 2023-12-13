@@ -123,7 +123,7 @@ public class WorkFlowManagerController extends BaseController {
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
 			model.addAttribute("errors", errorReleaseService.findAll());
-			loadCountsRelease(request, systemIds);
+			loadCountsRelease(request, systemIds,getUserLogin().getId());
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
 			redirectAttributes.addFlashAttribute("data",
@@ -260,11 +260,12 @@ public class WorkFlowManagerController extends BaseController {
 			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
 
 			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
+			Integer idUser=getUserLogin().getId();
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			return wfReleaseService.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
-					dateRange, systemId, statusId, systemService.myTeams(name));
+					dateRange, systemId, statusId, systemService.myTeams(name),idUser);
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -554,11 +555,11 @@ public class WorkFlowManagerController extends BaseController {
 		request.setAttribute("wfCount", wfCount);
 	}
 
-	public void loadCountsRelease(HttpServletRequest request, Object[] systemIds) {
+	public void loadCountsRelease(HttpServletRequest request, Object[] systemIds, Integer idUser) {
 		Map<String, Integer> wfCount = new HashMap<String, Integer>();
-		wfCount.put("start", wfReleaseService.countByType("start", systemIds));
-		wfCount.put("action", wfReleaseService.countByType("action", systemIds));
-		wfCount.put("finish", wfReleaseService.countByType("finish", systemIds));
+		wfCount.put("start", wfReleaseService.countByType("start", systemIds,idUser));
+		wfCount.put("action", wfReleaseService.countByType("action", systemIds,idUser));
+		wfCount.put("finish", wfReleaseService.countByType("finish", systemIds,idUser));
 		wfCount.put("all", (wfCount.get("start") + wfCount.get("action") + wfCount.get("finish")));
 		request.setAttribute("wfCount", wfCount);
 	}

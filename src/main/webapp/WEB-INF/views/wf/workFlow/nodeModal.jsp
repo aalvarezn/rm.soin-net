@@ -76,10 +76,41 @@
 										</label>
 									</div>
 								</div>
-							
-							</div>
 
-							
+
+							</div>
+							<div class="row clearfix m-t-20">
+								<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+									<label for="name">Saltar tr&aacute;mite </label>
+									<div class="switch" style="margin-top: 20px;">
+										<label>No<input id="skipNode" type="checkbox"><span
+											class="lever"></span>Si
+										</label>
+									</div>
+								</div>
+								<div id="skipDiv">
+									<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+										<label>Estado a saltar</label>
+										<div class="form-group m-t-25">
+											<select id="statusSkipId"
+												class="form-control show-tick selectpicker"
+												data-live-search="true">
+												<option value="">-- Ninguno --</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+										<label>Estado a continuar</label>
+										<div class="form-group m-t-25">
+											<select id="statustoSkipId"
+												class="form-control show-tick selectpicker"
+												data-live-search="true" disabled>
+												<option value="">-- Ninguno --</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane" id="tabActors">
 							<div class="row m-t-20">
@@ -90,6 +121,7 @@
 										</c:forEach>
 									</select>
 								</div>
+
 							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane" id="tabSecurity">

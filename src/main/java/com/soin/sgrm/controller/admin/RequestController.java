@@ -41,10 +41,12 @@ import com.soin.sgrm.model.GDoc;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
+import com.soin.sgrm.model.User;
 import com.soin.sgrm.service.GDocService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.TypeRequestService;
+import com.soin.sgrm.service.UserService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -65,6 +67,9 @@ public class RequestController extends BaseController {
 
 	@Autowired
 	TypeRequestService typeRequestService;
+
+	@Autowired
+	UserService userService;
 
 	@Autowired
 	GDocService gDocService;
@@ -408,9 +413,16 @@ public class RequestController extends BaseController {
 								request.setDescription((String) row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								String soinManager=(String) row.get(soinManagementIndex);
+								User userManager= userService.findByName(soinManager);
+								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-								request.setActive(true);
+								if(request.getStatus().trim().equals("COMPLETADA")) {
+									request.setActive(false);
+								}else {
+									request.setActive(true);
+								}
 
 								if (existRequest)
 									requestService.update(request);
@@ -479,9 +491,16 @@ public class RequestController extends BaseController {
 								request.setDescription((String) row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								String soinManager=(String) row.get(soinManagementIndex);
+								User userManager= userService.findByName(soinManager);
+								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-								request.setActive(true);
+								if(request.getStatus().trim().equals("COMPLETADA")) {
+									request.setActive(false);
+								}else {
+									request.setActive(true);
+								}
 								if (existRequest)
 									requestService.update(request);
 								else
@@ -549,9 +568,16 @@ public class RequestController extends BaseController {
 								request.setDescription((String) row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								String soinManager=(String) row.get(soinManagementIndex);
+								User userManager= userService.findByName(soinManager);
+								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
-								request.setActive(true);
+								if(request.getStatus().trim().equals("COMPLETADA")) {
+									request.setActive(false);
+								}else {
+									request.setActive(true);
+								}
 								if (existRequest)
 									requestService.update(request);
 								else
@@ -602,6 +628,7 @@ public class RequestController extends BaseController {
 						proyect = config.getProyect();
 					} else {
 						// Se verifica que la hoja tenga la columna de TPO
+						if(!(row.size()==0)) {
 						if (btIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
@@ -611,14 +638,25 @@ public class RequestController extends BaseController {
 									existRequest = true;
 								}
 							}
+							
+							if(count==74) {
+								System.out.println("Aca");
+							}
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new Request() : request;
+								String code=(String) row.get(btIndex);
+								if(!code.equals("")) {
+									
+								
 								request.setCode_soin((String) row.get(btIndex));
 								request.setStatus((String) row.get(statusIndex));
 								request.setDescription((String) row.get(codeIce) + " " + row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								String soinManager=(String) row.get(soinManagementIndex);
+								User userManager= userService.findByName(soinManager);
+								request.setUserManager(userManager.getId());
 								request.setCode_ice((String) row.get(codeIce));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
@@ -629,12 +667,15 @@ public class RequestController extends BaseController {
 									request.setActive(true);
 									requestService.save(request);
 								}
+								}
+								
 
 							} catch (Exception e) {
 								Sentry.capture(e, "request");
 								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
 						}
+					}
 					}
 					count++;
 				}

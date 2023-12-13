@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.AttentionGroup;
+import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
 //import com.soin.sgrm.model.StatusIncidence;
@@ -240,6 +242,7 @@ public class WorkFlowController extends BaseController {
 				WorkFlow workFlow = new WorkFlow();
 				workFlow.setId(node.getWorkFlowId());
 				node.setSendEmail(false);
+				node.setSkipNode(false);
 				node.setWorkFlow(workFlow);
 				node = nodeService.save(node);
 				res.setObj(node);
@@ -328,6 +331,18 @@ public class WorkFlowController extends BaseController {
 					res.setStatus("exception");
 					res.setException("Error al crear el nodo ya hay un nodo inicio para este tramite.");
 				}
+			}
+			if(node.getSkipNode()==true) {
+				if(node.getSkipId()==null) {
+					res.setStatus("exception");
+					res.setException("Error al crear el nodo no puede haber un salto de tramite sin seleccionar alguno.");
+				}else if(node.getNodeToId()==null) {
+					res.setStatus("exception");
+					res.setException("Error al crear el nodo no puede haber un salto de tramite sin el tramite siguiente.");
+				}
+			}else {
+				node.setSkipId(null);
+				node.setNodeToId(null);
 			}
 			if (res.getStatus().equals("success")) {
 				WorkFlow workFlow = new WorkFlow();
@@ -762,5 +777,22 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
+	/*
+	@RequestMapping(value = "/nextNode/{id}", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse nextNode(@PathVariable int id, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			ReleaseTrackingShow tracking = releaseService.findReleaseTracking(id);
+			res.setStatus("success");
+			res.setObj(tracking);
+		} catch (Exception e) {
+			Sentry.capture(e, "admin");
+			res.setStatus("exception");
+			res.setException("Error al procesar consulta: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}*/
 
 }
