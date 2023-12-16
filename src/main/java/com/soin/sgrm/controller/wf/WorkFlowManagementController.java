@@ -293,7 +293,7 @@ public class WorkFlowManagementController extends BaseController {
 				res.setStatus("success");
 			}else {
 				String newMotive=motive;
-			   Node nodenew = nodeService.findById(node.getNodeToId());
+			   Node nodenew = nodeService.findById(node.getSkipId());
 			   nodenew.getStatus().setMotive(newMotive);
 				release.setNode(nodenew);
 				release.setStatus(nodenew.getStatus());

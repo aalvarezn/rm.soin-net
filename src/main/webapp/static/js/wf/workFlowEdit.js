@@ -231,10 +231,26 @@ function changeCheckBoxSkipNode(){
 		
         if ($(this).is(':checked')) {
         	skipDiv.show();
-        	$nodeForm.find("#statusSkipId").selectpicker('val', '');
-        	$nodeForm.find("#statustoSkipId").selectpicker('val', '');
-        	$('#statustoSkipId').prop('disabled',true);
-        	$('#statustoSkipId').selectpicker('refresh');
+        } else {
+        	skipDiv.hide();
+
+        }
+    });
+	
+	$('#skipNode1').change(function () {
+		
+        if ($(this).is(':checked')) {
+        	skipDiv.show();
+        } else {
+        	skipDiv.hide();
+
+        }
+    });
+	
+	$('#skipNode2').change(function () {
+		
+        if ($(this).is(':checked')) {
+        	skipDiv.show();
         } else {
         	skipDiv.hide();
 
@@ -290,7 +306,6 @@ function ajaxLoadWorkFlow(response) {
 						nodesTo: dataNodes[i].edges,
 						skipNode :  dataNodes[i].skipNode,
 						skipId :  dataNodes[i].skipId,
-						nodeToId :  dataNodes[i].nodeToId,
 						
 				};
 
@@ -452,7 +467,13 @@ function updateNodeModal() {
 			sendEmail : $nodeForm.find('#sendEmail').prop('checked'),
 			skipNode : $nodeForm.find('#skipNode').prop('checked'),
 			skipId : $nodeForm.find('#statusSkipId').children("option:selected").val(),
-			nodeToId : $nodeForm.find('#statustoSkipId').children("option:selected").val(),
+			motiveSkip : $nodeForm.find('#motiveSkip').val(),
+			skipByRequest : $nodeForm.find('#skipNode').prop('checked'),
+			skipByRequestId : $nodeForm.find('#skipByRequestId').children("option:selected").val(),
+			motiveSkipR : $nodeForm.find('#motiveSkipR').val(),
+			skipReapprove : $nodeForm.find('#skipReapprove').prop('checked'),
+			skipReapproveId : $nodeForm.find('#skipReapproveId').children("option:selected").val(),
+			motiveSkipRA : $nodeForm.find('#motiveSkipRA').val(),
 			usersIds : JSON.stringify(usersNotyIds),
 			actorsIds : JSON.stringify(actorsNotyIds),
 		},
@@ -486,7 +507,6 @@ function ajaxUpdateNode(response) {
 				sendEmail : response.obj.sendEmail,
 				skipNode :  response.obj.skipNode,
 				skipId :  response.obj.skipId,
-				nodeToId :  response.obj.nodeToId,
 				users : response.obj.users,
 				actors : response.obj.actors
 			});
@@ -725,42 +745,8 @@ function openUpdateNodeModal(properties) {
 			$('#statusSkipId').selectpicker('refresh');
 		}
 		
-		if (tempNode.nodeToId != null){
-			var sId = tempNode.skipId;
-			console.log(sId+"segundo estado");
-			if(sId!=""){
-				
-			$.ajax({
-				type: 'GET',
-				url: getCont() + "management/wf/nodesearch/"+sId,
-				success: function(result) {
-					console.log(result.obj.edges);
-					var nodes=result.obj.edges;
-					if(nodes.length!=0){
-						var s = '';
-						s+='<option value="">-- Ninguno --</option>';
-						for(var i = 0; i < nodes.length; i++) {
-							s += '<option value="' + nodes[i].nodeTo.id + '">' + nodes[i].nodeTo.label + '</option>';
-						}
-						$('#statustoSkipId').html(s);
-						$('#statustoSkipId').prop('disabled', false);
-						$('#statustoSkipId').selectpicker('refresh');
-						$nodeForm.find("#statustoSkipId").selectpicker('val', tempNode.nodeToId);
-					}else{
-						resetDrop();
-					}
-					
-					
-				}
-			});
-			}else{
-				resetDrop();
-			}
-		}else{
-			$('#statustoSkipId').prop('disabled',true);
-		}
-		
-		
+
+	
 		if(typeof tempNode.users !== 'undefined'){
 			for (var i = 0, l = tempNode.users.length; i < l; i++) {
 				$nodeForm.find('#users option').each(

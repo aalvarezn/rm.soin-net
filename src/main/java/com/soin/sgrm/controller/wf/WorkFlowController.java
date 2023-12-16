@@ -336,13 +336,10 @@ public class WorkFlowController extends BaseController {
 				if(node.getSkipId()==null) {
 					res.setStatus("exception");
 					res.setException("Error al crear el nodo no puede haber un salto de tramite sin seleccionar alguno.");
-				}else if(node.getNodeToId()==null) {
-					res.setStatus("exception");
-					res.setException("Error al crear el nodo no puede haber un salto de tramite sin el tramite siguiente.");
 				}
 			}else {
 				node.setSkipId(null);
-				node.setNodeToId(null);
+				node.setMotiveSkip(null);
 			}
 			if (res.getStatus().equals("success")) {
 				WorkFlow workFlow = new WorkFlow();
