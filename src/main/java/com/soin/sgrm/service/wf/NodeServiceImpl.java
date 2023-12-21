@@ -13,6 +13,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.wf.NodeName;
 //import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
 
@@ -130,6 +131,12 @@ public class NodeServiceImpl implements NodeService {
 	@Override
 	public boolean verifyStartNodeRFC(NodeRFC node) {
 		return dao.verifyStartNodeRFC(node);
+	}
+
+	@Override
+	public List<NodeName> listNodeNames(Integer i) {
+		// TODO Auto-generated method stub
+		return dao.listNodeNames(i);
 	}
 
 

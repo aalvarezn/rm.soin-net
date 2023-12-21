@@ -40,6 +40,7 @@ import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.model.TypeRequest;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeName;
 import com.soin.sgrm.model.wf.NodeRFC;
 import com.soin.sgrm.model.wf.WFRFC;
 import com.soin.sgrm.model.wf.WFRelease;
@@ -53,6 +54,7 @@ import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.RequestNewService;
+import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
@@ -106,6 +108,9 @@ public class WorkFlowManagerController extends BaseController {
 	private SigesService sigesService;
 	@Autowired
 	private RFCService rfcService;
+	@Autowired
+	private RequestService requestService;
+
 
 	@Autowired
 	private RequestNewService requestNewService;
@@ -193,7 +198,7 @@ public class WorkFlowManagerController extends BaseController {
 			} else {
 				typeId = Integer.parseInt(request.getParameter("typeRequestFilter"));
 			}
-
+			
 			requests = requestNewService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, proyectId, typeId,
 					userLogin);
 		} catch (Exception e) {
@@ -226,6 +231,21 @@ public class WorkFlowManagerController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
+	}
+	
+	@RequestMapping(value = "/listNodeName/{id}", method = RequestMethod.GET)
+	public @ResponseBody List<NodeName> listNodeName(@PathVariable Integer id, Model model) {
+	
+		try {
+		
+			List<NodeName> listNode=nodeService.listNodeNames(id);
+			
+			return listNode;
+		} catch (Exception e) {
+		
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return null;
 	}
 
 	@RequestMapping(value = "/rfc/", method = RequestMethod.GET)
