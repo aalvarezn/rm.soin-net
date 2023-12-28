@@ -12,6 +12,7 @@ public class BaseController {
 			UserLogin userLogin = (UserLogin) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			return userLogin;
 		}
+		
 		return null;
 	}
 }
