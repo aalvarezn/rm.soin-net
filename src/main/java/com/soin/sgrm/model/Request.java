@@ -56,8 +56,7 @@ public class Request implements Serializable {
 	@Column(name = "ESTADO")
 	private String status;
 	
-	@Column(name = "NOMBRE_NODO"
-			+ "")
+	@Column(name = "NOMBRE_NODO")
 	private String nodeName;
 	
 	@Column(name = "MOTIVO")

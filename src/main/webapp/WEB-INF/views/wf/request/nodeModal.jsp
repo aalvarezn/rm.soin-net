@@ -20,7 +20,7 @@
 						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 							<label>Estado a saltar</label>
 							<div class="form-group m-t-25">
-								<select id="statusSkipId"
+								<select id="statusSkipId" name="statusSkipId" required="required"
 									class="form-control show-tick selectpicker"
 									data-live-search="true">
 									<option value="">-- Ninguno --</option>
@@ -45,9 +45,9 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default waves-effect"
 					onclick="closeNode()">CANCELAR</button>
-				<button id="save" disabled type="button"
+				<button id="save" type="button"
 					class="btn btn-primary waves-effect"
-					onclick="saveNode()">GUARDAR</button>
+					onclick="updateRequest()">GUARDAR</button>
 			</div>
 		</div>
 	</div>

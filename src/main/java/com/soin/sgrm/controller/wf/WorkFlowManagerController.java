@@ -216,6 +216,8 @@ public class WorkFlowManagerController extends BaseController {
 			Request requestUpt = requestNewService.findById(id);
 			if (requestUpt.getAuto() == 1) {
 				requestUpt.setAuto(0);
+				requestUpt.setNodeName("");
+				requestUpt.setMotive("");
 				res.setMessage("Aprobacion automatica desactivada!");
 			} else {
 				requestUpt.setAuto(1);
@@ -228,6 +230,32 @@ public class WorkFlowManagerController extends BaseController {
 			Sentry.capture(e, "typePetition");
 			res.setStatus("exception");
 			res.setMessage("Error al modificaar el Tipo solicitud!");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/updateRequestStatus", method = RequestMethod.POST)
+	public  @ResponseBody JsonResponse draftRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "idRequest", required = true) Integer idRequest,
+			@RequestParam(value = "nodeName", required = true) String nodeName,
+			@RequestParam(value = "motive", required = false) String motive) {
+		JsonResponse res = new JsonResponse();
+		try {
+				
+				Request requestOrigin = requestNewService.findById(idRequest);
+				requestOrigin.setNodeName(nodeName);
+				requestOrigin.setMotive(motive);
+				requestOrigin.setAuto(1);
+				requestNewService.update(requestOrigin);
+				res.setObj(requestOrigin);
+				res.setMessage("Aprobacion automatica activada!");
+				res.setStatus("success");
+			
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("error");
+			res.setException("Error al modificar requerimiento: " + e.toString());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;

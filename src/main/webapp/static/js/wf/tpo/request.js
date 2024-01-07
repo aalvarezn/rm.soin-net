@@ -5,6 +5,7 @@ $(function() {
 	activeItemMenu("managerWorkFlowItem", true);
 	
 	initRequestTable();
+	initFormValidation();
 });
 $('#proyectFilter').change(function() {
 	$dtRequests.ajax.reload();
@@ -135,6 +136,9 @@ function changeAuto(index,auto,requestId) {
 					$('#statusSkipId').html(s);
 					$('#statusSkipId').prop('disabled', false);
 					$('#statusSkipId').selectpicker('refresh');
+					$('#id').val(index);
+					$nodeForm.validate().resetForm();
+					$nodeForm[0].reset();
 					$nodeModal.modal('show');
 				}else{
 					swal("Error!", "No existen tramites para el proyecto de este TPO", "warning")
@@ -149,3 +153,73 @@ function changeAuto(index,auto,requestId) {
 
 }
 
+function updateRequest(){
+	console.log($nodeForm.valid());
+	if (!$nodeForm.valid())
+		return;
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
+		text: 'Esta acci\u00F3n no se puede reversar.',
+		...swalDefault
+	}).then((result) => {
+		console.log($nodeForm.find('#id').val());
+		if(result.value){
+			blockUI();
+			$.ajax({
+				type : "POST",
+				url : getCont() + "manager/wf/updateRequestStatus" ,
+				timeout : 60000,
+				data : {
+					idRequest :  $nodeForm.find('#id').val(),
+					nodeName: $nodeForm.find('#statusSkipId option:selected').text(),
+					motive:  $nodeForm.find('#motiveSkip').val()
+				},
+				success : function(response) {
+					unblockUI();
+					notifyMs(response.message, response.status)
+					$dtRequests.ajax.reload();
+					$nodeModal.modal('hide');
+				},
+				error : function(x, t, m) {
+					notifyAjaxError(x, t, m);
+				}
+			});
+		}
+	});
+}
+
+function initFormValidation() {
+	$nodeForm.validate({
+		rules : {
+			'statusSkipId' : {
+				required : true,
+			}
+		},
+		messages : {
+			'statusSkipId' : {
+				required :  "Ingrese un valor",
+			}
+		},
+		highlight,
+		unhighlight,
+		errorPlacement
+	});
+}
+
+function responseStatusRelease(response) {
+	console.log(response);
+	switch (response.status) {
+	case 'success':
+		swal("Correcto!", "El requerimiento ha sido modificado exitosamente.",
+				"success", 2000);
+		$nodeModal.modal('hide');
+		$dtRequests.ajax.reload();
+		break;
+	case 'fail':
+		swal("Error!", response.exception, "error")
+		break;
+	case 'exception':
+		swal("Error!", response.exception, "error")
+		break;
+	}
+}
