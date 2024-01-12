@@ -360,6 +360,15 @@ public class NodeDaoImpl implements NodeDao {
 		return listNode;
 		
 	}
+
+	@Override
+	public Node findByIdAndWorkFlow(String nodeName, int workFlowId) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Node.class);
+		crit.createAlias("workFlow", "workFlow");
+		crit.add(Restrictions.eq("workFlow.id",workFlowId));
+		crit.add(Restrictions.eq("label",nodeName));
+		return (Node) crit.uniqueResult();
+	}
 	
 
 

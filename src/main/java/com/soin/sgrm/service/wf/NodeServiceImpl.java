@@ -124,7 +124,6 @@ public class NodeServiceImpl implements NodeService {
 
 	@Override
 	public NodeRFC existWorkFlowNodeRFC(RFC rfc) {
-		// TODO Auto-generated method stub
 		return dao.existWorkFlowNodeRFC(rfc);
 	}
 
@@ -135,8 +134,12 @@ public class NodeServiceImpl implements NodeService {
 
 	@Override
 	public List<NodeName> listNodeNames(Integer i) {
-		// TODO Auto-generated method stub
 		return dao.listNodeNames(i);
+	}
+
+	@Override
+	public Node findByIdAndWorkFlow(String nodeName, int workFlowId) {
+		return dao.findByIdAndWorkFlow( nodeName,  workFlowId);
 	}
 
 

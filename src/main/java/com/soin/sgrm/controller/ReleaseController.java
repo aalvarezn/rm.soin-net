@@ -53,6 +53,7 @@ import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.wf.Edge;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
+import com.soin.sgrm.model.wf.WorkFlow;
 import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.ActionEnvironmentService;
 import com.soin.sgrm.service.AmbientService;
@@ -812,6 +813,7 @@ public class ReleaseController extends BaseController {
 		return res;
 	}
 
+	@SuppressWarnings("unused")
 	@RequestMapping(value = "/updateRelease/{releaseId}", method = RequestMethod.GET)
 	public String updateRelease(@PathVariable String releaseId, HttpServletRequest request, Locale locale,
 			HttpSession session, RedirectAttributes redirectAttributes) {
@@ -836,7 +838,11 @@ public class ReleaseController extends BaseController {
 				tpo = tpo.replace("BT", "BT-");
 			}
 			Request requestVer = requestService.findByNameCode(tpo);
+			
+			//aca empezaria la verificacion
+			
 			if (requestVer == null) {
+	
 				Node node = nodeService.existWorkFlow(release);
 				Status status = statusService.findByName("Solicitado");
 
@@ -861,16 +867,12 @@ public class ReleaseController extends BaseController {
 				}
 
 				if (node != null) {
+					int nodeId1=node.getId();
 					release.setNode(node);
-					ReleaseTrackingShow tracking = releaseService.findReleaseTracking(release.getId());
-					Set<ReleaseTracking> trackingList = tracking.getTracking();
-					boolean verification = false;
-					for (ReleaseTracking track : trackingList) {
-						if (track.getStatus().equals("En Aprobacion")) {
-							verification = true;//se verifica si ya paso por aprobacion si no se hace lo normal 
-						}
-					}
-					if (!verification) {
+					node =checkNode(node,release);
+					release.setNode(node);
+					int nodeId2=node.getId();
+					if (nodeId1==nodeId2) {
 						// si tiene un nodo y ademas tiene actor se notifica por correo
 						if (node != null && node.getActors().size() > 0) {
 							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
@@ -910,14 +912,7 @@ public class ReleaseController extends BaseController {
 						releaseService.requestRelease(release);
 					} else {
 						releaseService.requestRelease(release);
-						List<Edge> edges = node.getEdges();
-
-						for (Edge edge : edges) {
-							if (edge.getNodeTo().getLabel().equals("Aprobacion LT")) {
-								node = edge.getNodeTo();
-							}
-						}
-						release.setNode(node);
+	
 
 						// si tiene un nodo y ademas tiene actor se notifica por correo
 						if (node != null && node.getActors().size() > 0) {
@@ -964,7 +959,14 @@ public class ReleaseController extends BaseController {
 				}
 
 			} else {
+				//aca tomariamos el TPO se revisa si vienen un automatico si esta automatico procedemos a pasar al estado necesario 
+				//seleccionado por el gestor se busca el nombre del estado ahi seria en el estado que nos vamos a ubicar 
+				//pasaria a la siguiente verificacion si no trae nada vamos por prioridad revisamos el primero del nodo y pasamos a ese estado 
+				//si no hay el primero se verifica el segundo y pasamos al segundo y si no repetimos y pasamos al tercer hay que verifiricar si el siguiente nodo
+				//tiene salto
+				
 				if (requestVer.getAuto() == 1) {
+					
 					Node node = nodeService.existWorkFlow(release);
 					Status status = statusService.findByName("Solicitado");
 
@@ -989,16 +991,10 @@ public class ReleaseController extends BaseController {
 					}
 					releaseService.requestRelease(release);
 					if (node != null) {
-
-						List<Edge> edges = node.getEdges();
-
-						for (Edge edge : edges) {
-							if (edge.getNodeTo().getLabel().equals("Aprobacion LT")) {
-								node = edge.getNodeTo();
-							}
-						}
+						WorkFlow workflow= node.getWorkFlow();
+						node= nodeService.findByIdAndWorkFlow(requestVer.getNodeName(),workflow.getId());
+						node =checkNode(node,release);
 						release.setNode(node);
-
 						// si tiene un nodo y ademas tiene actor se notifica por correo
 						if (node != null && node.getActors().size() > 0) {
 							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
@@ -1067,15 +1063,11 @@ public class ReleaseController extends BaseController {
 
 					if (node != null) {
 						release.setNode(node);
-						ReleaseTrackingShow tracking = releaseService.findReleaseTracking(release.getId());
-						Set<ReleaseTracking> trackingList = tracking.getTracking();
-						boolean verification = false;
-						for (ReleaseTracking track : trackingList) {
-							if (track.getStatus().equals("En Aprobacion")) {
-								verification = true;//se verifica si ya paso por aprobacion si no se hace lo normal 
-							}
-						}
-						if (!verification) {
+						int nodeId1=node.getId();
+						node =checkNode(node,release);
+						release.setNode(node);
+						int nodeId2=node.getId();
+						if (nodeId1==nodeId2) {
 							// si tiene un nodo y ademas tiene actor se notifica por correo
 							if (node != null && node.getActors().size() > 0) {
 								Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
@@ -1115,13 +1107,6 @@ public class ReleaseController extends BaseController {
 							releaseService.requestRelease(release);
 						} else {
 							releaseService.requestRelease(release);
-							List<Edge> edges = node.getEdges();
-
-							for (Edge edge : edges) {
-								if (edge.getNodeTo().getLabel().equals("Aprobacion LT")) {
-									node = edge.getNodeTo();
-								}
-							}
 							release.setNode(node);
 
 							// si tiene un nodo y ademas tiene actor se notifica por correo
@@ -1179,6 +1164,39 @@ public class ReleaseController extends BaseController {
 		}
 
 		return "redirect:/";
+	}
+
+	private Node checkNode(Node node, Release release) {
+		if(node!=null) {
+			
+			if(node.getSkipByRequest()) {
+				 node=nodeService.findById(node.getSkipByRequestId());
+				return checkNode(node,release);
+			}else if(node.getSkipReapprove()) {
+				 node=nodeService.findById(node.getSkipReapproveId());
+				 ReleaseTrackingShow tracking = releaseService.findReleaseTracking(release.getId());
+					Set<ReleaseTracking> trackingList = tracking.getTracking();
+					boolean verification = false;
+					for (ReleaseTracking track : trackingList) {
+						if (track.getStatus().equals("En Aprobacion")) {
+							verification = true;//se verifica si ya paso por aprobacion si no se hace lo normal 
+						}
+					}
+					if(verification) {
+						return checkNode(node,release);
+					}else {
+						return node;
+					}
+				 
+			}else if (node.getSkipNode()) {
+				node=nodeService.findById(node.getSkipId());
+				return checkNode(node,release);
+			}else {
+				return node;
+			}
+		}
+		return null;
+		
 	}
 
 	public ArrayList<MyError> validSections(Release release, ArrayList<MyError> errors, ReleaseCreate rc) {

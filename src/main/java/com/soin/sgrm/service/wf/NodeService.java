@@ -59,4 +59,6 @@ public interface NodeService {
 
 	List<NodeName> listNodeNames(Integer i);
 
+	Node findByIdAndWorkFlow(String nodeName, int workFlowId);
+
 }
