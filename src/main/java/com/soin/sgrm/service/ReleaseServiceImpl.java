@@ -374,4 +374,9 @@ public void updateStatusReleaseUser(ReleaseUserFast release) {
 	
 }
 
+@Override
+public void requestRelease(ReleaseEditWithOutObjects release) {
+	dao.requestRelease(release);
+}
+
 }

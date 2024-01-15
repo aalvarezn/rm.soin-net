@@ -786,17 +786,12 @@ public class ReleaseController extends BaseController {
 				}
 			}
 			releaseService.saveRelease(release, rc);
-
 			res.setStatus("success");
 			if (errors.size() > 0) {
 				// Se adjunta lista de errores
 				res.setStatus("fail");
 				res.setErrors(errors);
 			}
-		} catch (SQLException ex) {
-			Sentry.capture(ex, "release");
-			res.setStatus("exception");
-			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
 			res.setStatus("exception");
@@ -810,17 +805,19 @@ public class ReleaseController extends BaseController {
 	public String updateRelease(@PathVariable String releaseId, HttpServletRequest request, Locale locale,
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		try {
-			Release release = null;
+			ReleaseEditWithOutObjects release = null;
 
 			if (CommonUtils.isNumeric(releaseId)) {
-				release = releaseService.findReleaseById(Integer.parseInt(releaseId));
+				release = releaseService.findEditByIdWithOutObjects(Integer.parseInt(releaseId));
 			}
 			// Si el release no existe se regresa al inicio.
 			if (release == null) {
 				return "redirect:/";
 			}
 			// Verificar si existe un flujo para el sistema
-			Node node = nodeService.existWorkFlow(release);
+			Release releaseNode=new Release();
+			releaseNode.setSystem(release.getSystem());
+			Node node = nodeService.existWorkFlow(releaseNode);
 			Status status = statusService.findByName("Solicitado");
 
 			release.setStatus(status);
@@ -830,7 +827,7 @@ public class ReleaseController extends BaseController {
 			if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 					EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
-					Release releaseEmail = release;
+					ReleaseEditWithOutObjects releaseEmail = release;
 					Thread newThread = new Thread(() -> {
 						try {
 							emailService.sendMail(releaseEmail, email);
@@ -844,6 +841,7 @@ public class ReleaseController extends BaseController {
 			}
 
 			if (node != null) {
+				/*
 				release.setNode(node);
 
 				// si tiene un nodo y ademas tiene actor se notifica por correo
@@ -882,6 +880,7 @@ public class ReleaseController extends BaseController {
 					});
 					newThread.start();
 				}
+				*/
 			}
 			releaseService.requestRelease(release);
 
