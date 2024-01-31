@@ -57,7 +57,7 @@ public interface NodeService {
 
 	boolean verifyStartNodeIncidence(NodeIncidence node);
 
-	List<NodeName> listNodeNames(Integer i);
+	List<NodeName> listNodeNames(Integer i,Integer idUser);
 
 	Node findByIdAndWorkFlow(String nodeName, int workFlowId);
 

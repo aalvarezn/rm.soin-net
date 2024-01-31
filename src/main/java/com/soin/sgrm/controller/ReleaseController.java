@@ -838,11 +838,11 @@ public class ReleaseController extends BaseController {
 				tpo = tpo.replace("BT", "BT-");
 			}
 			Request requestVer = requestService.findByNameCode(tpo);
-			
-			//aca empezaria la verificacion
-			
+
+			// aca empezaria la verificacion
+
 			if (requestVer == null) {
-	
+
 				Node node = nodeService.existWorkFlow(release);
 				Status status = statusService.findByName("Solicitado");
 
@@ -867,12 +867,16 @@ public class ReleaseController extends BaseController {
 				}
 
 				if (node != null) {
-					int nodeId1=node.getId();
+					int nodeId1 = node.getId();
 					release.setNode(node);
-					node =checkNode(node,release);
+					node = checkNode(node, release,requestVer);
 					release.setNode(node);
-					int nodeId2=node.getId();
-					if (nodeId1==nodeId2) {
+					int nodeId2 = node.getId();
+					node=release.getNode();
+					release.setStatus(node.getStatus());
+					release.setMotive("Automatico");
+					release.setOperator("Automatico");
+					if (nodeId1 == nodeId2) {
 						// si tiene un nodo y ademas tiene actor se notifica por correo
 						if (node != null && node.getActors().size() > 0) {
 							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
@@ -912,7 +916,6 @@ public class ReleaseController extends BaseController {
 						releaseService.requestRelease(release);
 					} else {
 						releaseService.requestRelease(release);
-	
 
 						// si tiene un nodo y ademas tiene actor se notifica por correo
 						if (node != null && node.getActors().size() > 0) {
@@ -950,23 +953,25 @@ public class ReleaseController extends BaseController {
 							});
 							newThread.start();
 						}
-						release.setStatus(node.getStatus());
-						release.setMotive("Automatico");
-						release.setOperator("Automatico");
+
 						releaseService.requestRelease(release);
 					}
 
 				}
 
 			} else {
-				//aca tomariamos el TPO se revisa si vienen un automatico si esta automatico procedemos a pasar al estado necesario 
-				//seleccionado por el gestor se busca el nombre del estado ahi seria en el estado que nos vamos a ubicar 
-				//pasaria a la siguiente verificacion si no trae nada vamos por prioridad revisamos el primero del nodo y pasamos a ese estado 
-				//si no hay el primero se verifica el segundo y pasamos al segundo y si no repetimos y pasamos al tercer hay que verifiricar si el siguiente nodo
-				//tiene salto
-				
+				// aca tomariamos el TPO se revisa si vienen un automatico si esta automatico
+				// procedemos a pasar al estado necesario
+				// seleccionado por el gestor se busca el nombre del estado ahi seria en el
+				// estado que nos vamos a ubicar
+				// pasaria a la siguiente verificacion si no trae nada vamos por prioridad
+				// revisamos el primero del nodo y pasamos a ese estado
+				// si no hay el primero se verifica el segundo y pasamos al segundo y si no
+				// repetimos y pasamos al tercer hay que verifiricar si el siguiente nodo
+				// tiene salto
+
 				if (requestVer.getAuto() == 1) {
-					
+
 					Node node = nodeService.existWorkFlow(release);
 					Status status = statusService.findByName("Solicitado");
 
@@ -991,10 +996,13 @@ public class ReleaseController extends BaseController {
 					}
 					releaseService.requestRelease(release);
 					if (node != null) {
-						WorkFlow workflow= node.getWorkFlow();
-						node= nodeService.findByIdAndWorkFlow(requestVer.getNodeName(),workflow.getId());
-						node =checkNode(node,release);
+						WorkFlow workflow = node.getWorkFlow();
+						node = nodeService.findByIdAndWorkFlow(requestVer.getNodeName(), workflow.getId());
+						node = checkNode(node, release,requestVer);
 						release.setNode(node);
+						release.setStatus(node.getStatus());
+						release.setMotive("Automatico");
+						release.setOperator("Automatico");
 						// si tiene un nodo y ademas tiene actor se notifica por correo
 						if (node != null && node.getActors().size() > 0) {
 							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
@@ -1031,9 +1039,7 @@ public class ReleaseController extends BaseController {
 							});
 							newThread.start();
 						}
-						release.setStatus(node.getStatus());
-						release.setMotive("Automatico");
-						release.setOperator("Automatico");
+
 						releaseService.requestRelease(release);
 					}
 
@@ -1063,11 +1069,14 @@ public class ReleaseController extends BaseController {
 
 					if (node != null) {
 						release.setNode(node);
-						int nodeId1=node.getId();
-						node =checkNode(node,release);
+						int nodeId1 = node.getId();
+						node = checkNode(node, release,requestVer);
 						release.setNode(node);
-						int nodeId2=node.getId();
-						if (nodeId1==nodeId2) {
+						release.setStatus(node.getStatus());
+						release.setMotive("Automatico");
+						release.setOperator("Automatico");
+						int nodeId2 = node.getId();
+						if (nodeId1 == nodeId2) {
 							// si tiene un nodo y ademas tiene actor se notifica por correo
 							if (node != null && node.getActors().size() > 0) {
 								Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
@@ -1108,7 +1117,9 @@ public class ReleaseController extends BaseController {
 						} else {
 							releaseService.requestRelease(release);
 							release.setNode(node);
-
+							release.setStatus(node.getStatus());
+							release.setMotive("Automatico");
+							release.setOperator("Automatico");
 							// si tiene un nodo y ademas tiene actor se notifica por correo
 							if (node != null && node.getActors().size() > 0) {
 								Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
@@ -1145,14 +1156,12 @@ public class ReleaseController extends BaseController {
 								});
 								newThread.start();
 							}
-							release.setStatus(node.getStatus());
-							release.setMotive("Automatico");
-							release.setOperator("Automatico");
+							
 							releaseService.requestRelease(release);
 						}
 
 					}
-	
+
 				}
 
 			}
@@ -1166,37 +1175,110 @@ public class ReleaseController extends BaseController {
 		return "redirect:/";
 	}
 
-	private Node checkNode(Node node, Release release) {
-		if(node!=null) {
-			
-			if(node.getSkipByRequest()) {
-				 node=nodeService.findById(node.getSkipByRequestId());
-				return checkNode(node,release);
-			}else if(node.getSkipReapprove()) {
-				 node=nodeService.findById(node.getSkipReapproveId());
-				 ReleaseTrackingShow tracking = releaseService.findReleaseTracking(release.getId());
-					Set<ReleaseTracking> trackingList = tracking.getTracking();
-					boolean verification = false;
-					for (ReleaseTracking track : trackingList) {
-						if (track.getStatus().equals("En Aprobacion")) {
-							verification = true;//se verifica si ya paso por aprobacion si no se hace lo normal 
-						}
+	private Node checkNode(Node node, Release release, Request requestVer) throws SQLException {
+		if (node != null) {
+			if(requestVer!=null) {
+				release.setStatus(node.getStatus());
+				release.setMotive(requestVer.getMotive());
+				release.setOperator("Automatico");
+				releaseService.requestRelease(release);
+				updateRelease(node,release,requestVer);
+				release.setNodeFinish(node);
+				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				if(node==null) {
+					node=release.getNodeFinish();
+				}
+				requestVer=null;
+				return checkNode(node, release,requestVer);
+			}else if (node.getSkipByRequest()) {
+				updateRelease(node,release,requestVer);
+				node = nodeService.findById(node.getSkipByRequestId());
+				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				requestVer=null;
+				return checkNode(node, release,requestVer);
+			} else if (node.getSkipReapprove()) {
+				node = nodeService.findById(node.getSkipReapproveId());
+				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				ReleaseTrackingShow tracking = releaseService.findReleaseTracking(release.getId());
+				Set<ReleaseTracking> trackingList = tracking.getTracking();
+				boolean verification = false;
+				for (ReleaseTracking track : trackingList) {
+					if (track.getStatus().equals("En Aprobacion")) {
+						verification = true;// se verifica si ya paso por aprobacion si no se hace lo normal
 					}
-					if(verification) {
-						return checkNode(node,release);
-					}else {
-						return node;
-					}
-				 
-			}else if (node.getSkipNode()) {
-				node=nodeService.findById(node.getSkipId());
-				return checkNode(node,release);
-			}else {
+				}
+				if (verification) {
+					updateRelease(node,release,requestVer);
+					requestVer=null;
+					return checkNode(node, release,requestVer);
+				} else {
+					return node;
+				}
+
+			} else if (node.getSkipNode()) {
+				updateRelease(node,release,requestVer);
+				node = nodeService.findById(node.getSkipId());
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				requestVer=null;
+				return checkNode(node, release,requestVer);
+			} else {
 				return node;
 			}
 		}
 		return null;
+
+	}
+	
+	public void updateRelease(Node node, Release release, Request requestVer) {
 		
+		try {
+			release.setStatus(node.getStatus());
+			if(requestVer==null) {
+				release.setMotive(node.getMotiveSkip());
+			}else {
+				release.setMotive(requestVer.getMotive());
+			}
+			release.setOperator("Automatico");
+			releaseService.requestRelease(release);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public ArrayList<MyError> validSections(Release release, ArrayList<MyError> errors, ReleaseCreate rc) {

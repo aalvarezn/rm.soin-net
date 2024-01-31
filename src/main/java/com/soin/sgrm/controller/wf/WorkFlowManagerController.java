@@ -265,8 +265,8 @@ public class WorkFlowManagerController extends BaseController {
 	public @ResponseBody List<NodeName> listNodeName(@PathVariable Integer id, Model model) {
 	
 		try {
-		
-			List<NodeName> listNode=nodeService.listNodeNames(id);
+			Integer userLogin = getUserLogin().getId();
+			List<NodeName> listNode=nodeService.listNodeNames(id,userLogin);
 			
 			return listNode;
 		} catch (Exception e) {

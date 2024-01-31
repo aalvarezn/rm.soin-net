@@ -133,8 +133,8 @@ public class NodeServiceImpl implements NodeService {
 	}
 
 	@Override
-	public List<NodeName> listNodeNames(Integer i) {
-		return dao.listNodeNames(i);
+	public List<NodeName> listNodeNames(Integer i,Integer idUser) {
+		return dao.listNodeNames(i,idUser);
 	}
 
 	@Override

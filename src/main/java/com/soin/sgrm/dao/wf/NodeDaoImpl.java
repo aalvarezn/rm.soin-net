@@ -344,7 +344,7 @@ public class NodeDaoImpl implements NodeDao {
 		return sessionFactory.getCurrentSession();
 	}
 	@SuppressWarnings("unchecked")
-	public List<NodeName> listNodeNames(Integer idProyecto){
+	public List<NodeName> listNodeNames(Integer idProyecto,Integer idUser){
 		List<NodeName>listNode=new ArrayList<NodeName>();
 		String sql = "";
 		Query query = null;
@@ -352,9 +352,10 @@ public class NodeDaoImpl implements NodeDao {
 				"SELECT DISTINCT tn.nombre\r\n" + 
 				"FROM TRAMITES_NODO tn\r\n" + 
 				"INNER JOIN TRAMITES_TRAMITE tt ON tn.TRAMITE_ID = tt.ID\r\n" + 
-				"INNER JOIN SISTEMAS_SISTEMA ss ON tt.SISTEMA_ID = ss.ID\r\n" + 
-				"WHERE tn.GRUPO = 'action' AND ss.PROYECTO_ID =%s AND tn.NOMBRE  != 'Revisar' ",
-				idProyecto);
+				"INNER JOIN SISTEMAS_SISTEMA ss ON tt.SISTEMA_ID = ss.ID\r\n" +
+				"INNER JOIN  TRAMITES_NODO_ACTOR tna ON tna.NODO_ID =tn.ID\r\n"+
+				"WHERE tn.GRUPO = 'action' AND ss.PROYECTO_ID =%s AND tna.CUSTOMUSER_ID=%s ",
+				idProyecto,idUser);
 		query = getSession().createSQLQuery(sql);
 		listNode=query.list();
 		return listNode;

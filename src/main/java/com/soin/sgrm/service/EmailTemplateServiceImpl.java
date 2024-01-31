@@ -271,6 +271,8 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				} else {
 					ccUserFinal = ccUserFinal + "," + ccFinal;
 				}
+			}else {
+				ccUserFinal=ccFinal;
 			}
 
 		}

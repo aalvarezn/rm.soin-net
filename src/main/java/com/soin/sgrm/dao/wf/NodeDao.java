@@ -54,7 +54,7 @@ public interface NodeDao {
 
 	NodeIncidence existWorkFlowNodeIn(Incidence incidence);
 
-	List<NodeName> listNodeNames(Integer i);
+	List<NodeName> listNodeNames(Integer i,Integer idUser);
 
 	Node findByIdAndWorkFlow(String nodeName, int workFlowId);
 }
