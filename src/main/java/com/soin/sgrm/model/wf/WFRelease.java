@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import java.sql.Timestamp;
 import org.hibernate.annotations.Fetch;
@@ -62,12 +63,9 @@ public class WFRelease implements Serializable {
 	@Column(name = "REINTENTOS", nullable = false)
 	private Integer retries;
 
-
-	@OrderBy("trackingDate ASC")
-	@Fetch(value = FetchMode.SUBSELECT)
-	@OneToMany(mappedBy = "release", fetch = FetchType.EAGER)
-	private Set<ReleaseTracking> tracking = new HashSet<ReleaseTracking>();
-
+	@Transient
+	private Node nodeFinish;
+	
 	public int getId() {
 		return id;
 	}
@@ -131,17 +129,7 @@ public class WFRelease implements Serializable {
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
-
-	public Set<ReleaseTracking> getTracking() {
-		return tracking;
-	}
-
-	public void setTracking(Set<ReleaseTracking> tracking) {
-		this.tracking = tracking;
-	}
 	
-	
-
 	public Integer getRetries() {
 		return retries;
 	}
@@ -158,4 +146,14 @@ public class WFRelease implements Serializable {
 		this.status = release.getStatus();
 		this.user = release.getUser();
 	}
+
+	public Node getNodeFinish() {
+		return nodeFinish;
+	}
+
+	public void setNodeFinish(Node nodeFinish) {
+		this.nodeFinish = nodeFinish;
+	}
+	
+	
 }

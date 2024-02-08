@@ -37,7 +37,7 @@
 						<input type="hidden" name="${_csrf.parameterName}"
 							value="${_csrf.token}" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
-							<span class="btn btn-primary fileinput-button"> <span>Selecccionar</span> <input
+							<span class="btn btn-primary fileinput-button"> <span>Seleccionar</span> <input
 								id="files" type="file" name="files[]">
 							</span>
 						</div>

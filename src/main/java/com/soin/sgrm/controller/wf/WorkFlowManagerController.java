@@ -40,6 +40,7 @@ import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.TypePetition;
 import com.soin.sgrm.model.TypeRequest;
 import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeName;
 import com.soin.sgrm.model.wf.NodeRFC;
 import com.soin.sgrm.model.wf.WFRFC;
 import com.soin.sgrm.model.wf.WFRelease;
@@ -53,6 +54,7 @@ import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseErrorService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.RequestNewService;
+import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SigesService;
 import com.soin.sgrm.service.StatusRFCService;
 import com.soin.sgrm.service.StatusService;
@@ -106,6 +108,9 @@ public class WorkFlowManagerController extends BaseController {
 	private SigesService sigesService;
 	@Autowired
 	private RFCService rfcService;
+	@Autowired
+	private RequestService requestService;
+
 
 	@Autowired
 	private RequestNewService requestNewService;
@@ -123,7 +128,7 @@ public class WorkFlowManagerController extends BaseController {
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
 			model.addAttribute("errors", errorReleaseService.findAll());
-			loadCountsRelease(request, systemIds);
+			loadCountsRelease(request, systemIds,getUserLogin().getId());
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
 			redirectAttributes.addFlashAttribute("data",
@@ -193,7 +198,7 @@ public class WorkFlowManagerController extends BaseController {
 			} else {
 				typeId = Integer.parseInt(request.getParameter("typeRequestFilter"));
 			}
-
+			
 			requests = requestNewService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, proyectId, typeId,
 					userLogin);
 		} catch (Exception e) {
@@ -211,6 +216,8 @@ public class WorkFlowManagerController extends BaseController {
 			Request requestUpt = requestNewService.findById(id);
 			if (requestUpt.getAuto() == 1) {
 				requestUpt.setAuto(0);
+				requestUpt.setNodeName("");
+				requestUpt.setMotive("");
 				res.setMessage("Aprobacion automatica desactivada!");
 			} else {
 				requestUpt.setAuto(1);
@@ -226,6 +233,47 @@ public class WorkFlowManagerController extends BaseController {
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
+	}
+	
+	@RequestMapping(value = "/updateRequestStatus", method = RequestMethod.POST)
+	public  @ResponseBody JsonResponse draftRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "idRequest", required = true) Integer idRequest,
+			@RequestParam(value = "nodeName", required = true) String nodeName,
+			@RequestParam(value = "motive", required = false) String motive) {
+		JsonResponse res = new JsonResponse();
+		try {
+				
+				Request requestOrigin = requestNewService.findById(idRequest);
+				requestOrigin.setNodeName(nodeName);
+				requestOrigin.setMotive(motive);
+				requestOrigin.setAuto(1);
+				requestNewService.update(requestOrigin);
+				res.setObj(requestOrigin);
+				res.setMessage("Aprobacion automatica activada!");
+				res.setStatus("success");
+			
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("error");
+			res.setException("Error al modificar requerimiento: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/listNodeName/{id}", method = RequestMethod.GET)
+	public @ResponseBody List<NodeName> listNodeName(@PathVariable Integer id, Model model) {
+	
+		try {
+			Integer userLogin = getUserLogin().getId();
+			List<NodeName> listNode=nodeService.listNodeNames(id,userLogin);
+			
+			return listNode;
+		} catch (Exception e) {
+		
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return null;
 	}
 
 	@RequestMapping(value = "/rfc/", method = RequestMethod.GET)
@@ -260,11 +308,12 @@ public class WorkFlowManagerController extends BaseController {
 			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
 
 			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
+			Integer idUser=getUserLogin().getId();
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
 			return wfReleaseService.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
-					dateRange, systemId, statusId, systemService.myTeams(name));
+					dateRange, systemId, statusId, systemService.myTeams(name),idUser);
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -554,11 +603,11 @@ public class WorkFlowManagerController extends BaseController {
 		request.setAttribute("wfCount", wfCount);
 	}
 
-	public void loadCountsRelease(HttpServletRequest request, Object[] systemIds) {
+	public void loadCountsRelease(HttpServletRequest request, Object[] systemIds, Integer idUser) {
 		Map<String, Integer> wfCount = new HashMap<String, Integer>();
-		wfCount.put("start", wfReleaseService.countByType("start", systemIds));
-		wfCount.put("action", wfReleaseService.countByType("action", systemIds));
-		wfCount.put("finish", wfReleaseService.countByType("finish", systemIds));
+		wfCount.put("start", wfReleaseService.countByType("start", systemIds,idUser));
+		wfCount.put("action", wfReleaseService.countByType("action", systemIds,idUser));
+		wfCount.put("finish", wfReleaseService.countByType("finish", systemIds,idUser));
 		wfCount.put("all", (wfCount.get("start") + wfCount.get("action") + wfCount.get("finish")));
 		request.setAttribute("wfCount", wfCount);
 	}

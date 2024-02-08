@@ -7,6 +7,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.wf.NodeName;
 import com.soin.sgrm.model.wf.NodeRFC;
 
 public interface NodeDao {
@@ -52,4 +53,8 @@ public interface NodeDao {
 	boolean verifyStartNodeIncidence(NodeIncidence node);
 
 	NodeIncidence existWorkFlowNodeIn(Incidence incidence);
+
+	List<NodeName> listNodeNames(Integer i,Integer idUser);
+
+	Node findByIdAndWorkFlow(String nodeName, int workFlowId);
 }

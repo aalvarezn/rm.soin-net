@@ -68,7 +68,11 @@
 	<!-- Overlay For Sidebars -->
 	<div class="overlay"></div>
 	<!-- #END# Overlay For Sidebars -->
-
+	<section>
+		<!-- 		workFlowModal -->
+		<%@include file="../../wf/request/nodeModal.jsp"%>
+		<!-- 		#END# workFlowModal -->
+	</section>
 	<!-- Top Bar -->
 	<%@include file="../../plantilla/topbar.jsp"%>
 	<!-- #Top Bar -->
@@ -89,15 +93,7 @@
 				</div>
 			</div>
 			<div class="row clearfix">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<div class="button-demo flr">
-						<button type="button" class="btn btn-primary setIcon"
-							onclick="openExcelSync()">
-							<span>SINCRONIZAR EXCEL</span><span><i
-								class="material-icons m-t--2 ">update</i></span>
-						</button>
-					</div>
-				</div>
+
 				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 					<label>Proyecto</label>
 					<div class="form-group">
@@ -141,6 +137,7 @@
 												<th>Tipo requerimiento</th>
 												<th class="actCol" style="text-align: center;">Aprobaci&oacute;n
 													Automatica</th>
+													<th>Tr&aacute;mite automatico</th>
 
 											</tr>
 										</thead>
