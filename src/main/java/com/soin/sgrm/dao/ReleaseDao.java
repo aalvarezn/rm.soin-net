@@ -114,6 +114,8 @@ public interface ReleaseDao {
 
 	void updateStatusReleaseUser(ReleaseUserFast release);
 
+	void requestRelease(ReleaseEditWithOutObjects release);
+
 	
 
 }
