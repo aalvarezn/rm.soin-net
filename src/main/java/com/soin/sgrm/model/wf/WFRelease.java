@@ -62,6 +62,9 @@ public class WFRelease implements Serializable {
 	@Value("${retries:0}")
 	@Column(name = "REINTENTOS", nullable = false)
 	private Integer retries;
+	
+	@Column(name = "MOTIVO")
+	private String motive;
 
 	@Transient
 	private Node nodeFinish;
@@ -153,6 +156,14 @@ public class WFRelease implements Serializable {
 
 	public void setNodeFinish(Node nodeFinish) {
 		this.nodeFinish = nodeFinish;
+	}
+
+	public String getMotive() {
+		return motive;
+	}
+
+	public void setMotive(String motive) {
+		this.motive = motive;
 	}
 	
 	

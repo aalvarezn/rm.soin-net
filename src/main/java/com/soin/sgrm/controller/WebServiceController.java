@@ -286,7 +286,7 @@ public class WebServiceController extends BaseController {
 				releaseService.save(release, releaseWs.getRequirementName());
 			}
 			res.setData(release.getReleaseNumber() + "");
-
+			res.setPath(CommonUtils.createPath(release.getId()));
 			if (addObjects(releaseWs.getObjects(), release.getId())) {
 				System.out.print("si");
 			} else {

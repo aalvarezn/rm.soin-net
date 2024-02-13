@@ -77,6 +77,7 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.service.TypeObjectService;
 import com.soin.sgrm.service.UserInfoService;
+import com.soin.sgrm.service.UserService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
@@ -140,6 +141,9 @@ public class ReleaseController extends BaseController {
 	private ErrorReleaseService errorService;
 	@Autowired
 	private RequestService requestService;
+	@Autowired
+	private UserService userService;
+
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -576,6 +580,90 @@ public class ReleaseController extends BaseController {
 		}
 		return res;
 	}
+	
+	@RequestMapping(value = "/saveRelease", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveRelease(HttpServletRequest request,
+			@ModelAttribute("ReleaseCreate") ReleaseCreate rc, ModelMap model, Locale locale, HttpSession session) {
+
+		JsonResponse res = new JsonResponse();
+		List<Ambient> ambients = new ArrayList<Ambient>();
+		List<ModifiedComponent> modifiedComponents = new ArrayList<ModifiedComponent>();
+		Set<Dependency> dependencies = new HashSet<Dependency>();
+		Dependency dependency = null;
+		ArrayList<MyError> errors = new ArrayList<MyError>(); // contiene los errores del release.
+		// Validacion del Release con la configuracion por secciones del sistema.
+		try {
+
+			Release release = releaseService.findReleaseById(Integer.parseInt(rc.getRelease_id()));
+			errors = validSections(release, errors, rc);
+			// Si no tiene errores se guarda
+
+			for (Integer idAmbient : rc.getAmbient()) {
+				ambients.add(ambientService.findById(idAmbient, rc.getSystemCode()));
+			}
+
+			for (Integer idComponent : rc.getModifiedComponent()) {
+				modifiedComponents.add(modifiedComponentService.findById(idComponent));
+			}
+
+			ReleaseUser releaseUser = releaseService.findReleaseUserById(Integer.parseInt(rc.getRelease_id()));
+			for (Integer to_id : rc.getDependenciesFunctionals()) {
+				dependency = new Dependency();
+				dependency.setId(0);
+				dependency.setRelease(releaseUser);
+				dependency.setTo_release(releaseService.findReleaseUserById(to_id));
+				dependency.setMandatory(release.isMandatory(dependency));
+				dependency.setIsFunctional(true);
+				dependencies.add(dependency);
+			}
+			for (Integer to_id : rc.getDependenciesTechnical()) {
+				dependency = new Dependency();
+				dependency.setId(0);
+				dependency.setRelease(releaseUser);
+				dependency.setTo_release(releaseService.findReleaseUserById(to_id));
+				dependency.setMandatory(release.isMandatory(dependency));
+				dependency.setIsFunctional(false);
+				dependencies.add(dependency);
+			}
+
+			release.checkModifiedComponents(modifiedComponents);
+			release.checkAmbientsExists(ambients);
+			release.checkDependenciesExists(dependencies);
+			if (rc.getSenders() != null) {
+				if (rc.getSenders().length() < 256) {
+					rc.setSenders(rc.getSenders());
+				} else {
+					rc.setSenders(release.getSenders());
+				}
+			}
+
+			if (rc.getMessage() != null) {
+				if (rc.getMessage().length() < 256) {
+					rc.setMessage(rc.getMessage());
+				} else {
+					rc.setMessage(release.getMessage());
+				}
+			}
+			releaseService.saveRelease(release, rc);
+
+			res.setStatus("success");
+			if (errors.size() > 0) {
+				// Se adjunta lista de errores
+				res.setStatus("fail");
+				res.setErrors(errors);
+			}
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
+			res.setStatus("exception");
+			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			res.setStatus("exception");
+			res.setException("Error al guardar el release: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 
 	@RequestMapping(value = "/release-generate", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse createRelease(HttpServletRequest request, Model model,
@@ -650,6 +738,7 @@ public class ReleaseController extends BaseController {
 				releaseService.save(release, requirement_name);
 			}
 			res.setData(release.getId() + "");
+			res.setPath(CommonUtils.createPath(release.getId()));
 			return res;
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
@@ -734,10 +823,19 @@ public class ReleaseController extends BaseController {
 	public String updateRelease(@PathVariable String releaseId, HttpServletRequest request, Locale locale,
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		try {
-			Release release = null;
-
+			ReleaseEditWithOutObjects release = null;
+			Release releaseComplete=new Release();
 			if (CommonUtils.isNumeric(releaseId)) {
-				release = releaseService.findReleaseById(Integer.parseInt(releaseId));
+				release = releaseService.findEditByIdWithOutObjects(Integer.parseInt(releaseId));
+				releaseComplete.setId(release.getId());
+				releaseComplete.setNode(release.getNode());
+				releaseComplete.setSystem(release.getSystem());
+				releaseComplete.setCreateDate(release.getCreateDate());
+				releaseComplete.setReleaseNumber(release.getReleaseNumber());
+			
+				releaseComplete.setStatus(release.getStatus()); 
+				User user=userService.findUserById(release.getUser().getId());
+				releaseComplete.setUser(user);
 			}
 			// Si el release no existe se regresa al inicio.
 			if (release == null) {
@@ -759,7 +857,7 @@ public class ReleaseController extends BaseController {
 
 			if (requestVer == null) {
 
-				Node node = nodeService.existWorkFlow(release);
+				Node node = nodeService.existWorkFlow(releaseComplete);
 				Status status = statusService.findByName("Solicitado");
 
 				release.setStatus(status);
@@ -769,7 +867,7 @@ public class ReleaseController extends BaseController {
 				if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 					if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 						EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
-						Release releaseEmail = release;
+						ReleaseEditWithOutObjects releaseEmail = release;
 						Thread newThread = new Thread(() -> {
 							try {
 								emailService.sendMail(releaseEmail, email);
@@ -785,7 +883,7 @@ public class ReleaseController extends BaseController {
 				if (node != null) {
 					int nodeId1 = node.getId();
 					release.setNode(node);
-					node = checkNode(node, release,requestVer);
+					node = checkNode(node, releaseComplete,requestVer);
 					release.setNode(node);
 					int nodeId2 = node.getId();
 					node=release.getNode();
@@ -798,7 +896,7 @@ public class ReleaseController extends BaseController {
 							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
 							EmailTemplate emailActor = emailService.findById(idTemplate);
 							WFRelease releaseEmail = new WFRelease();
-							releaseEmail.convertReleaseToWFRelease(release);
+							releaseEmail.convertReleaseToWFRelease(releaseComplete);
 							Thread newThread = new Thread(() -> {
 								try {
 									emailService.sendMailActor(releaseEmail, emailActor);
@@ -816,7 +914,7 @@ public class ReleaseController extends BaseController {
 
 							EmailTemplate emailNotify = emailService.findById(idTemplate);
 							WFRelease releaseEmail = new WFRelease();
-							releaseEmail.convertReleaseToWFRelease(release);
+							releaseEmail.convertReleaseToWFRelease(releaseComplete);
 							String user = getUserLogin().getFullName();
 							Thread newThread = new Thread(() -> {
 								try {
@@ -838,7 +936,7 @@ public class ReleaseController extends BaseController {
 							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
 							EmailTemplate emailActor = emailService.findById(idTemplate);
 							WFRelease releaseEmail = new WFRelease();
-							releaseEmail.convertReleaseToWFRelease(release);
+							releaseEmail.convertReleaseToWFRelease(releaseComplete);
 							Thread newThread = new Thread(() -> {
 								try {
 									emailService.sendMailActor(releaseEmail, emailActor);
@@ -856,7 +954,7 @@ public class ReleaseController extends BaseController {
 
 							EmailTemplate emailNotify = emailService.findById(idTemplate);
 							WFRelease releaseEmail = new WFRelease();
-							releaseEmail.convertReleaseToWFRelease(release);
+							releaseEmail.convertReleaseToWFRelease(releaseComplete);
 							String user = getUserLogin().getFullName();
 							Thread newThread = new Thread(() -> {
 								try {
@@ -888,7 +986,7 @@ public class ReleaseController extends BaseController {
 
 				if (requestVer.getAuto() == 1) {
 
-					Node node = nodeService.existWorkFlow(release);
+					Node node = nodeService.existWorkFlow(releaseComplete);
 					Status status = statusService.findByName("Solicitado");
 
 					release.setStatus(status);
@@ -898,7 +996,7 @@ public class ReleaseController extends BaseController {
 					if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 							EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
-							Release releaseEmail = release;
+							ReleaseEditWithOutObjects releaseEmail = release;
 							Thread newThread = new Thread(() -> {
 								try {
 									emailService.sendMail(releaseEmail, email);
@@ -914,53 +1012,67 @@ public class ReleaseController extends BaseController {
 					if (node != null) {
 						WorkFlow workflow = node.getWorkFlow();
 						node = nodeService.findByIdAndWorkFlow(requestVer.getNodeName(), workflow.getId());
-						node = checkNode(node, release,requestVer);
+						
+						int nodeId1 = node.getId();
+						node = checkNode(node, releaseComplete,requestVer);
 						release.setNode(node);
 						release.setStatus(node.getStatus());
 						release.setMotive("Automatico");
 						release.setOperator("Automatico");
-						// si tiene un nodo y ademas tiene actor se notifica por correo
-						if (node != null && node.getActors().size() > 0) {
-							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
-							EmailTemplate emailActor = emailService.findById(idTemplate);
-							WFRelease releaseEmail = new WFRelease();
-							releaseEmail.convertReleaseToWFRelease(release);
-							Thread newThread = new Thread(() -> {
-								try {
-									emailService.sendMailActor(releaseEmail, emailActor);
-								} catch (Exception e) {
-									Sentry.capture(e, "release");
-								}
+						int nodeId2 = node.getId();
+						
+						node = checkNode(node, releaseComplete,requestVer);
+						release.setNode(node);
+						release.setStatus(node.getStatus());
+						release.setMotive("Automatico");
+						release.setOperator("Automatico");
+						if(nodeId1==nodeId2) {
+							
+						}else {
+							// si tiene un nodo y ademas tiene actor se notifica por correo
+							if (node != null && node.getActors().size() > 0) {
+								Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+								EmailTemplate emailActor = emailService.findById(idTemplate);
+								WFRelease releaseEmail = new WFRelease();
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
+								Thread newThread = new Thread(() -> {
+									try {
+										emailService.sendMailActor(releaseEmail, emailActor);
+									} catch (Exception e) {
+										Sentry.capture(e, "release");
+									}
 
-							});
-							newThread.start();
+								});
+								newThread.start();
+							}
+
+							// si tiene un nodo y ademas tiene actor se notifica por correo
+							if (node != null && node.getUsers().size() > 0) {
+								Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+								EmailTemplate emailNotify = emailService.findById(idTemplate);
+								WFRelease releaseEmail = new WFRelease();
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
+								String user = getUserLogin().getFullName();
+								Thread newThread = new Thread(() -> {
+									try {
+
+										emailService.sendMailNotify(releaseEmail, emailNotify, user);
+									} catch (Exception e) {
+										Sentry.capture(e, "release");
+									}
+
+								});
+								newThread.start();
+							}
+
+							releaseService.requestRelease(release);
 						}
-
-						// si tiene un nodo y ademas tiene actor se notifica por correo
-						if (node != null && node.getUsers().size() > 0) {
-							Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
-
-							EmailTemplate emailNotify = emailService.findById(idTemplate);
-							WFRelease releaseEmail = new WFRelease();
-							releaseEmail.convertReleaseToWFRelease(release);
-							String user = getUserLogin().getFullName();
-							Thread newThread = new Thread(() -> {
-								try {
-
-									emailService.sendMailNotify(releaseEmail, emailNotify, user);
-								} catch (Exception e) {
-									Sentry.capture(e, "release");
-								}
-
-							});
-							newThread.start();
 						}
-
-						releaseService.requestRelease(release);
-					}
+					
 
 				} else {
-					Node node = nodeService.existWorkFlow(release);
+					Node node = nodeService.existWorkFlow(releaseComplete);
 					Status status = statusService.findByName("Solicitado");
 
 					release.setStatus(status);
@@ -970,7 +1082,7 @@ public class ReleaseController extends BaseController {
 					if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 							EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
-							Release releaseEmail = release;
+							ReleaseEditWithOutObjects releaseEmail = release;
 							Thread newThread = new Thread(() -> {
 								try {
 									emailService.sendMail(releaseEmail, email);
@@ -986,7 +1098,7 @@ public class ReleaseController extends BaseController {
 					if (node != null) {
 						release.setNode(node);
 						int nodeId1 = node.getId();
-						node = checkNode(node, release,requestVer);
+						node = checkNode(node, releaseComplete,requestVer);
 						release.setNode(node);
 						release.setStatus(node.getStatus());
 						release.setMotive("Automatico");
@@ -998,7 +1110,7 @@ public class ReleaseController extends BaseController {
 								Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
 								EmailTemplate emailActor = emailService.findById(idTemplate);
 								WFRelease releaseEmail = new WFRelease();
-								releaseEmail.convertReleaseToWFRelease(release);
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
 								Thread newThread = new Thread(() -> {
 									try {
 										emailService.sendMailActor(releaseEmail, emailActor);
@@ -1016,7 +1128,7 @@ public class ReleaseController extends BaseController {
 
 								EmailTemplate emailNotify = emailService.findById(idTemplate);
 								WFRelease releaseEmail = new WFRelease();
-								releaseEmail.convertReleaseToWFRelease(release);
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
 								String user = getUserLogin().getFullName();
 								Thread newThread = new Thread(() -> {
 									try {
@@ -1029,7 +1141,7 @@ public class ReleaseController extends BaseController {
 								});
 								newThread.start();
 							}
-							releaseService.requestRelease(release);
+							
 						} else {
 							releaseService.requestRelease(release);
 							release.setNode(node);
@@ -1041,7 +1153,7 @@ public class ReleaseController extends BaseController {
 								Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
 								EmailTemplate emailActor = emailService.findById(idTemplate);
 								WFRelease releaseEmail = new WFRelease();
-								releaseEmail.convertReleaseToWFRelease(release);
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
 								Thread newThread = new Thread(() -> {
 									try {
 										emailService.sendMailActor(releaseEmail, emailActor);
@@ -1059,7 +1171,7 @@ public class ReleaseController extends BaseController {
 
 								EmailTemplate emailNotify = emailService.findById(idTemplate);
 								WFRelease releaseEmail = new WFRelease();
-								releaseEmail.convertReleaseToWFRelease(release);
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
 								String user = getUserLogin().getFullName();
 								Thread newThread = new Thread(() -> {
 									try {

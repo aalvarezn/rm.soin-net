@@ -1,5 +1,6 @@
 package com.soin.sgrm.controller.wf;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFCError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
 import com.soin.sgrm.model.ReleaseError;
+import com.soin.sgrm.model.ReleaseTracking;
 import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
@@ -218,66 +220,110 @@ public class WorkFlowManagementController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			WFRelease release = wfReleaseService.findWFReleaseById(idRelease);
-			final Node node = nodeService.findById(idNode);
-			if(!node.getSkipNode()) {
-				String newMotive=motive;
+			Node node = nodeService.findById(idNode);
+			String newMotive=motive;
+			node.getStatus().setMotive(newMotive);
+			release.setNode(node);
+			release.setStatus(node.getStatus());
+			release.setOperator(getUserLogin().getFullName());
+			if(node.getStatus().getName().equals("Error")) {
+			Errors_Release error = errorService.findById(idError);
+			ReleaseError releaseError = new ReleaseError();
+			releaseError.setSystem(release.getSystem());
+			releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
+			releaseError.setError(error);
+			Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
+			releaseError.setRelease(releaseWithObj);
+			releaseError.setObservations(newMotive);
+			releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
+			releaseErrorService.save(releaseError);
+			wfReleaseService.wfStatusReleaseWithOutMin(release);
+			Status statusChange = statusService.findByName("Borrador");
+			release.setStatus(statusChange);
+			
+			if (statusChange != null && statusChange.getName().equals("Borrador")) {
+				if (release.getStatus().getId() != node.getStatus().getId())
+					release.setRetries(release.getRetries() + 1);
+			}
+			
+			newMotive = "Paso a borrador por " + error.getName();
+			node.getStatus().setMotive(newMotive);
+			release.setNode(node);
+			wfReleaseService.wfStatusRelease(release);
+
+			// Si esta marcado para enviar correo
+			if (node.getSendEmail()) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
+				EmailTemplate email = emailService.findById(idTemplate);
+				WFRelease releaseEmail = release;
+				final String[] motiveNow = new String[1];
+				
+				if (node.getStatus().getMotive() == null) {
+				    motiveNow[0] = node.getStatus().getDescription(); // Asignación simple sin usar +=
+				} else {
+				    motiveNow[0] = node.getStatus().getMotive(); // Asignación simple sin usar +=
+				}
+				Thread newThread = new Thread(() -> {
+					try {
+				
+						emailService.sendMail(releaseEmail, email, motiveNow[0]);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+				});
+				newThread.start();
+			}
+			
+			// Si esta marcado para enviar correo
+			if (node.getUsers().size()>0) {
+				Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+				EmailTemplate emailNotify = emailService.findById(idTemplate);
+				
+				String user = getUserLogin().getFullName();
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMailNotify(release, emailNotify, user);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
+			}else {
 				node.getStatus().setMotive(newMotive);
 				release.setNode(node);
 				release.setStatus(node.getStatus());
 				release.setOperator(getUserLogin().getFullName());
-				if(node.getStatus().getName().equals("Error")) {
-				Errors_Release error = errorService.findById(idError);
-				ReleaseError releaseError = new ReleaseError();
-				releaseError.setSystem(release.getSystem());
-				releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
-				releaseError.setError(error);
-				Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
-				releaseError.setRelease(releaseWithObj);
-				releaseError.setObservations(newMotive);
-				releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
-				releaseErrorService.save(releaseError);
-				wfReleaseService.wfStatusReleaseWithOutMin(release);
-				Status statusChange = statusService.findByName("Borrador");
-				release.setStatus(statusChange);
 				
-				if (statusChange != null && statusChange.getName().equals("Borrador")) {
-					if (release.getStatus().getId() != node.getStatus().getId())
-						release.setRetries(release.getRetries() + 1);
+				// Si esta marcado para enviar correo
+				if (node.getSendEmail()) {
+					Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
+					EmailTemplate email = emailService.findById(idTemplate);
+					WFRelease releaseEmail = release;
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMail(releaseEmail, email, motive);
+						} catch (Exception e) {
+							Sentry.capture(e, "release");
+						}
+					});
+
+					newThread.start();
 				}
-				
-				newMotive = "Paso a borrador por " + error.getName();
-				node.getStatus().setMotive(newMotive);
+				Request requestVer = null;
+				node = checkNode(node, release,requestVer);
 				release.setNode(node);
-				}
-				wfReleaseService.wfStatusRelease(release);
+				release.setStatus(node.getStatus());
+				release.setOperator("Automatico");
 
 				// Si esta marcado para enviar correo
-				if (node.getSendEmail()) {
-					Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
-					EmailTemplate email = emailService.findById(idTemplate);
-					WFRelease releaseEmail = release;
-					Thread newThread = new Thread(() -> {
-						try {
-							String motiveNow="";
-							if(node.getStatus().getMotive()==null) {
-								motiveNow=node.getStatus().getDescription();
-							}else {
-								motiveNow=node.getStatus().getMotive();
-							}
-							emailService.sendMail(releaseEmail, email, motiveNow);
-						} catch (Exception e) {
-							Sentry.capture(e, "release");
-						}
-					});
-					newThread.start();
-				}
-				
-				// Si esta marcado para enviar correo
-				if (node.getUsers().size()>0) {
-					Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+				if (node.getUsers().size() > 0) {
+					Integer idTemplate2 = Integer.parseInt(paramService.findByCode(23).getParamValue());
 
-					EmailTemplate emailNotify = emailService.findById(idTemplate);
-					
+					EmailTemplate emailNotify = emailService.findById(idTemplate2);
+
 					String user = getUserLogin().getFullName();
 					Thread newThread = new Thread(() -> {
 						try {
@@ -290,71 +336,14 @@ public class WorkFlowManagementController extends BaseController {
 					newThread.start();
 				}
 
-				res.setStatus("success");
-			}else {
-				String newMotive=motive;
-			   Node nodenew = nodeService.findById(node.getSkipId());
-			   nodenew.getStatus().setMotive(newMotive);
-				release.setNode(nodenew);
-				release.setStatus(nodenew.getStatus());
-				release.setOperator(getUserLogin().getFullName());
-				if(nodenew.getStatus().getName().equals("Error")) {
-				Errors_Release error = errorService.findById(idError);
-				ReleaseError releaseError = new ReleaseError();
-				releaseError.setSystem(release.getSystem());
-				releaseError.setProject(projectService.findById(release.getSystem().getProyectId()));
-				releaseError.setError(error);
-				Releases_WithoutObj releaseWithObj = releaseService.findReleaseWithouObj(release.getId());
-				releaseError.setRelease(releaseWithObj);
-				releaseError.setObservations(newMotive);
-				releaseError.setErrorDate(CommonUtils.getSystemTimestamp());
-				releaseErrorService.save(releaseError);
-				wfReleaseService.wfStatusReleaseWithOutMin(release);
-				Status statusChange = statusService.findByName("Borrador");
-				release.setStatus(statusChange);
-				
-				if (statusChange != null && statusChange.getName().equals("Borrador")) {
-					if (release.getStatus().getId() != node.getStatus().getId())
-						release.setRetries(release.getRetries() + 1);
-				}
-				
-				newMotive = "Paso a borrador por " + error.getName();
-				nodenew.getStatus().setMotive(newMotive);
-				release.setNode(nodenew);
-				}
-				wfReleaseService.wfStatusRelease(release);
-
-				// Si esta marcado para enviar correo
-				if (node.getSendEmail()) {
-					Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
-					EmailTemplate email = emailService.findById(idTemplate);
+				// si tiene un nodo y ademas tiene actor se notifica por correo
+				if (node != null && node.getActors().size() > 0) {
+					Integer idTemplate3 = Integer.parseInt(paramService.findByCode(22).getParamValue());
+					EmailTemplate emailActor = emailService.findById(idTemplate3);
 					WFRelease releaseEmail = release;
 					Thread newThread = new Thread(() -> {
 						try {
-							String motiveNow="";
-							if(nodenew.getStatus().getMotive()==null) {
-								motiveNow=nodenew.getStatus().getDescription();
-							}else {
-								motiveNow=nodenew.getStatus().getMotive();
-							}
-							emailService.sendMail(releaseEmail, email, motiveNow);
-						} catch (Exception e) {
-							Sentry.capture(e, "release");
-						}
-					});
-					newThread.start();
-				}
-				
-				// Si esta marcado para enviar correo
-				if (node.getUsers().size()>0) {
-					Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
-
-					EmailTemplate emailNotify = emailService.findById(idTemplate);
-					
-					String user = getUserLogin().getFullName();
-					Thread newThread = new Thread(() -> {
-						try {
-							emailService.sendMailNotify(release, emailNotify, user);
+							emailService.sendMailActor(releaseEmail, emailActor);
 						} catch (Exception e) {
 							Sentry.capture(e, "release");
 						}
@@ -362,11 +351,11 @@ public class WorkFlowManagementController extends BaseController {
 					});
 					newThread.start();
 				}
-
-				res.setStatus("success");
+				wfReleaseService.wfStatusRelease(release);
 			}
-			
+		
 
+			res.setStatus("success");
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
 			res.setStatus("exception");
@@ -375,6 +364,107 @@ public class WorkFlowManagementController extends BaseController {
 		}
 		return res;
 	}
+	private Node checkNode(Node node, WFRelease release, Request requestVer) throws SQLException {
+		if (node != null) {
+			if(requestVer!=null) {
+				release.setStatus(node.getStatus());
+				release.setMotive(requestVer.getMotive());
+				release.setOperator("Automatico");
+				wfReleaseService.wfStatusRelease(release);
+				updateRelease(node,release,requestVer);
+				release.setNodeFinish(node);
+				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				if(node==null) {
+					node=release.getNodeFinish();
+				}
+				requestVer=null;
+				return checkNode(node, release,requestVer);
+			}else if (node.getSkipByRequest()) {
+				updateRelease(node,release,requestVer);
+				node = nodeService.findById(node.getSkipByRequestId());
+				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				requestVer=null;
+				return checkNode(node, release,requestVer);
+			} else if (node.getSkipReapprove()) {
+				node = nodeService.findById(node.getSkipReapproveId());
+				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				ReleaseTrackingShow tracking = releaseService.findReleaseTracking(release.getId());
+				Set<ReleaseTracking> trackingList = tracking.getTracking();
+				boolean verification = false;
+				for (ReleaseTracking track : trackingList) {
+					if (track.getStatus().equals("En Aprobacion")) {
+						verification = true;// se verifica si ya paso por aprobacion si no se hace lo normal
+					}
+				}
+				if (verification) {
+					updateRelease(node,release,requestVer);
+					requestVer=null;
+					return checkNode(node, release,requestVer);
+				} else {
+					return node;
+				}
+
+			} else if (node.getSkipNode()) {
+				updateRelease(node,release,requestVer);
+				node = nodeService.findById(node.getSkipId());
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if(node==null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				requestVer=null;
+				return checkNode(node, release,requestVer);
+			} else {
+				return node;
+			}
+		}
+		return null;
+
+	}
+	
+	public void updateRelease(Node node, WFRelease release, Request requestVer) {
+		
+		release.setStatus(node.getStatus());
+		if(requestVer==null) {
+			release.setMotive(node.getMotiveSkip());
+		}else {
+			release.setMotive(requestVer.getMotive());
+		}
+		release.setOperator("Automatico");
+		wfReleaseService.wfStatusRelease(release);
+	}
+
 	@RequestMapping(value = "/wfStatusRFC", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse draftRFC(HttpServletRequest request, Model model,
 			@RequestParam(value = "idRFC", required = true) Long idRFC,
