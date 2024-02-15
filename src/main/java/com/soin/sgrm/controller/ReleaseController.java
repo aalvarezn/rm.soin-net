@@ -992,7 +992,7 @@ public class ReleaseController extends BaseController {
 					release.setStatus(status);
 					release.setMotive(status.getMotive());
 					release.setOperator(getUserLogin().getFullName());
-
+					release.setNode(node);
 					if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
 						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 							EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
@@ -1020,14 +1020,44 @@ public class ReleaseController extends BaseController {
 						release.setMotive("Automatico");
 						release.setOperator("Automatico");
 						int nodeId2 = node.getId();
-						
-						node = checkNode(node, releaseComplete,requestVer);
-						release.setNode(node);
-						release.setStatus(node.getStatus());
-						release.setMotive("Automatico");
-						release.setOperator("Automatico");
+
 						if(nodeId1==nodeId2) {
-							
+							// si tiene un nodo y ademas tiene actor se notifica por correo
+							if (node != null && node.getActors().size() > 0) {
+								Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+								EmailTemplate emailActor = emailService.findById(idTemplate);
+								WFRelease releaseEmail = new WFRelease();
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
+								Thread newThread = new Thread(() -> {
+									try {
+										emailService.sendMailActor(releaseEmail, emailActor);
+									} catch (Exception e) {
+										Sentry.capture(e, "release");
+									}
+
+								});
+								newThread.start();
+							}
+
+							// si tiene un nodo y ademas tiene actor se notifica por correo
+							if (node != null && node.getUsers().size() > 0) {
+								Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+								EmailTemplate emailNotify = emailService.findById(idTemplate);
+								WFRelease releaseEmail = new WFRelease();
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
+								String user = getUserLogin().getFullName();
+								Thread newThread = new Thread(() -> {
+									try {
+
+										emailService.sendMailNotify(releaseEmail, emailNotify, user);
+									} catch (Exception e) {
+										Sentry.capture(e, "release");
+									}
+
+								});
+								newThread.start();
+							}
 						}else {
 							// si tiene un nodo y ademas tiene actor se notifica por correo
 							if (node != null && node.getActors().size() > 0) {
@@ -1209,8 +1239,7 @@ public class ReleaseController extends BaseController {
 				release.setStatus(node.getStatus());
 				release.setMotive(requestVer.getMotive());
 				release.setOperator("Automatico");
-				releaseService.requestRelease(release);
-				updateRelease(node,release,requestVer);
+				updateRelease(node,release,requestVer,release.getMotive());
 				release.setNodeFinish(node);
 				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
 				if(node==null) {
@@ -1228,7 +1257,7 @@ public class ReleaseController extends BaseController {
 				requestVer=null;
 				return checkNode(node, release,requestVer);
 			}else if (node.getSkipByRequest()) {
-				updateRelease(node,release,requestVer);
+				updateRelease(node,release,requestVer,node.getMotiveSkipR());
 				node = nodeService.findById(node.getSkipByRequestId());
 				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
 				if(node==null) {
@@ -1244,7 +1273,6 @@ public class ReleaseController extends BaseController {
 				return checkNode(node, release,requestVer);
 			} else if (node.getSkipReapprove()) {
 				node = nodeService.findById(node.getSkipReapproveId());
-				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
 				if(node==null) {
 					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
 				}
@@ -1263,7 +1291,8 @@ public class ReleaseController extends BaseController {
 					}
 				}
 				if (verification) {
-					updateRelease(node,release,requestVer);
+					updateRelease(node,release,requestVer,node.getMotiveSkipRA());
+					
 					requestVer=null;
 					return checkNode(node, release,requestVer);
 				} else {
@@ -1271,7 +1300,7 @@ public class ReleaseController extends BaseController {
 				}
 
 			} else if (node.getSkipNode()) {
-				updateRelease(node,release,requestVer);
+				updateRelease(node,release,requestVer,node.getMotiveSkip());
 				node = nodeService.findById(node.getSkipId());
 				if(node==null) {
 					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
@@ -1292,14 +1321,15 @@ public class ReleaseController extends BaseController {
 
 	}
 	
-	public void updateRelease(Node node, Release release, Request requestVer) {
+	public void updateRelease(Node node, Release release, Request requestVer,String motive) {
 		
 		try {
+			release.setNode(node);
 			release.setStatus(node.getStatus());
 			if(requestVer==null) {
-				release.setMotive(node.getMotiveSkip());
+				release.setMotive(motive);
 			}else {
-				release.setMotive(requestVer.getMotive());
+				release.setMotive(motive);
 			}
 			release.setOperator("Automatico");
 			releaseService.requestRelease(release);

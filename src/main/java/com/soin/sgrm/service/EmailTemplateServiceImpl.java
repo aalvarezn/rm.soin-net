@@ -2613,9 +2613,14 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				} else {
 					ccUserFinal = ccUserFinal + "," + ccFinal;
 				}
+			}else {
+				if (ccUserFinal.equals("")) {
+					ccUserFinal = ccFinal;
+				} 
 			}
 
 		}
+		
 		for (String ccUser : ccUserFinal.split(",")) {
 			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 		}

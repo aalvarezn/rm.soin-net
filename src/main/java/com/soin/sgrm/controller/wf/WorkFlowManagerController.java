@@ -465,11 +465,14 @@ public class WorkFlowManagerController extends BaseController {
 
 					newThread.start();
 				}
-				
+				int nodeId1 = node.getId();
 				node = checkNode(node, release,requestVer);
+				int nodeId2= node.getId();
 				release.setNode(node);
 				release.setStatus(node.getStatus());
 				release.setOperator("Automatico");
+				
+				
 
 				// Si esta marcado para enviar correo
 				if (node.getUsers().size() > 0) {
@@ -504,7 +507,10 @@ public class WorkFlowManagerController extends BaseController {
 					});
 					newThread.start();
 				}
-				wfReleaseService.wfStatusRelease(release);
+				if(nodeId1!=nodeId2) {
+					wfReleaseService.wfStatusRelease(release);
+				}
+				
 			}
 		
 
@@ -525,7 +531,7 @@ public class WorkFlowManagerController extends BaseController {
 				release.setMotive(requestVer.getMotive());
 				release.setOperator("Automatico");
 				wfReleaseService.wfStatusRelease(release);
-				updateRelease(node,release,requestVer);
+				updateRelease(node,release,requestVer,"");
 				release.setNodeFinish(node);
 				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
 				if(node==null) {
@@ -543,7 +549,7 @@ public class WorkFlowManagerController extends BaseController {
 				requestVer=null;
 				return checkNode(node, release,requestVer);
 			}else if (node.getSkipByRequest()) {
-				updateRelease(node,release,requestVer);
+				updateRelease(node,release,requestVer,node.getMotiveSkipR());
 				node = nodeService.findById(node.getSkipByRequestId());
 				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
 				if(node==null) {
@@ -558,17 +564,6 @@ public class WorkFlowManagerController extends BaseController {
 				requestVer=null;
 				return checkNode(node, release,requestVer);
 			} else if (node.getSkipReapprove()) {
-				node = nodeService.findById(node.getSkipReapproveId());
-				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
-				if(node==null) {
-					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
-				}
-				if(node==null) {
-					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
-				}
-				if(node==null) {
-					node = nodeService.findById(release.getNodeFinish().getSkipId());
-				}
 				ReleaseTrackingShow tracking = releaseService.findReleaseTracking(release.getId());
 				Set<ReleaseTracking> trackingList = tracking.getTracking();
 				boolean verification = false;
@@ -578,15 +573,37 @@ public class WorkFlowManagerController extends BaseController {
 					}
 				}
 				if (verification) {
-					updateRelease(node,release,requestVer);
+					updateRelease(node,release,requestVer,node.getMotiveSkipRA());
+					node = nodeService.findById(node.getSkipReapproveId());
+					
+					if(node==null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+					}
+					if(node==null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+					}
+					if(node==null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipId());
+					}
 					requestVer=null;
 					return checkNode(node, release,requestVer);
 				} else {
+					node = nodeService.findById(node.getSkipReapproveId());
+					
+					if(node==null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+					}
+					if(node==null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+					}
+					if(node==null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipId());
+					}
 					return node;
 				}
 
 			} else if (node.getSkipNode()) {
-				updateRelease(node,release,requestVer);
+				updateRelease(node,release,requestVer,node.getMotiveSkip());
 				node = nodeService.findById(node.getSkipId());
 				if(node==null) {
 					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
@@ -607,13 +624,19 @@ public class WorkFlowManagerController extends BaseController {
 
 	}
 	
-	public void updateRelease(Node node, WFRelease release, Request requestVer) {
+	public void updateRelease(Node node, WFRelease release, Request requestVer,String motive) {
 		
 		release.setStatus(node.getStatus());
 		if(requestVer==null) {
-			release.setMotive(node.getMotiveSkip());
+			release.setMotive(motive);
+			Status statusNew=new Status();
+			statusNew=node.getStatus();
+			node.setStatus(statusNew);
+			release.setNode(node);
 		}else {
-			release.setMotive(requestVer.getMotive());
+			release.setMotive(node.getMotiveSkip());
+			release.getNode().getStatus().setMotive(node.getMotiveSkip());
+			
 		}
 		release.setOperator("Automatico");
 		wfReleaseService.wfStatusRelease(release);
