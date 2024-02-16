@@ -472,8 +472,8 @@ public class WorkFlowManagementController extends BaseController {
 		release.setStatus(node.getStatus());
 		if (requestVer == null) {
 			release.setMotive(motive);
-			Status statusNew = new Status();
-			statusNew = node.getStatus();
+			Status statusNew=new Status();
+			statusNew=node.getStatus();
 			node.setStatus(statusNew);
 			release.setNode(node);
 

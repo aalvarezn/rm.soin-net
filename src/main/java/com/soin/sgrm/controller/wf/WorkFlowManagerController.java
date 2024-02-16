@@ -509,6 +509,8 @@ public class WorkFlowManagerController extends BaseController {
 				}
 				if(nodeId1!=nodeId2) {
 					wfReleaseService.wfStatusRelease(release);
+				}else {
+					
 				}
 				
 			}

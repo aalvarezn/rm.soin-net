@@ -116,6 +116,8 @@ public interface ReleaseDao {
 
 	void requestRelease(ReleaseEditWithOutObjects release);
 
+	String getLastStatusHistory(Integer releaseId);
+
 	
 
 }

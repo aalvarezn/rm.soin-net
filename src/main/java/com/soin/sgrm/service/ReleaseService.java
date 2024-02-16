@@ -127,6 +127,8 @@ public interface ReleaseService {
 
 	void requestRelease(ReleaseEditWithOutObjects release);
 
+	String getLastStatusHistory(Integer releaseId);
+
 	
 
 
