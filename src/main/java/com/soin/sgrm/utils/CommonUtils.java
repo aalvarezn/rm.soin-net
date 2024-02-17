@@ -28,8 +28,7 @@ public class CommonUtils {
 	@Autowired
 	static
 	ReleaseService releaseService;
-	@Autowired
-	private static Environment env;
+	
 	
 	public static final Logger logger = Logger.getLogger(CommonUtils.class);
 
@@ -165,10 +164,9 @@ public class CommonUtils {
     }
 	
 
-	public static String createPath(Integer id) throws SQLException {
-			String basePath = env.getProperty("fileStore.path");
-			ReleaseSummaryFile release = releaseService.findByIdSummaryFile(id);
-			Project project = projectService.findById(release.getSystem().getProyectId());
+	public static String createPath(Integer id,String basePath, ReleaseSummaryFile release, Project project) throws SQLException {
+		
+			
 			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
 			if (release.getRequestList().size() != 0) {
 				Request request = release.getRequestList().iterator().next();

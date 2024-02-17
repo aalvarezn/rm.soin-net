@@ -312,13 +312,12 @@ public class WorkFlowManagementController extends BaseController {
 					newThread.start();
 				}
 				Request requestVer = null;
-				int nodeId1= node.getId();
-				node = checkNode(node, release, requestVer);
-				int nodeId2= node.getId();
+				int nodeId1 = node.getId();
+				boolean firstTime = true;
+				node = checkNode(node, release, requestVer, firstTime, newMotive);
+				int nodeId2 = node.getId();
 				release.setNode(node);
 				release.setStatus(node.getStatus());
-				release.setOperator("Automatico");
-
 				// Si esta marcado para enviar correo
 				if (node.getUsers().size() > 0) {
 					Integer idTemplate2 = Integer.parseInt(paramService.findByCode(23).getParamValue());
@@ -367,14 +366,20 @@ public class WorkFlowManagementController extends BaseController {
 		return res;
 	}
 
-	private Node checkNode(Node node, WFRelease release, Request requestVer) throws SQLException {
+	private Node checkNode(Node node, WFRelease release, Request requestVer, boolean firstTime, String newMotive)
+			throws SQLException {
+		String motive = "";
 		if (node != null) {
 			if (requestVer != null) {
-				release.setStatus(node.getStatus());
-				release.setMotive(requestVer.getMotive());
-				release.setOperator("Automatico");
+				if (!firstTime) {
+					release.setStatus(node.getStatus());
+					release.setMotive(requestVer.getMotive());
+					release.setOperator("Automatico");
+				}
+
 				wfReleaseService.wfStatusRelease(release);
-				updateRelease(node, release, requestVer, "");
+				firstTime = false;
+				updateRelease(node, release, requestVer, motive);
 				release.setNodeFinish(node);
 				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
 				if (node == null) {
@@ -390,11 +395,19 @@ public class WorkFlowManagementController extends BaseController {
 					node = release.getNodeFinish();
 				}
 				requestVer = null;
-				return checkNode(node, release, requestVer);
+				return checkNode(node, release, requestVer, firstTime, motive);
 			} else if (node.getSkipByRequest()) {
-				updateRelease(node, release, requestVer, node.getMotiveSkipR());
-				node = nodeService.findById(node.getSkipByRequestId());
 
+				if (!firstTime) {
+					release.setStatus(node.getStatus());
+					release.setOperator("Automatico");
+					motive = node.getMotiveSkipR();
+				} else {
+					motive = newMotive;
+				}
+				updateRelease(node, release, requestVer, motive);
+				firstTime = false;
+				node = nodeService.findById(node.getSkipByRequestId());
 				if (node == null) {
 					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
 				}
@@ -405,8 +418,15 @@ public class WorkFlowManagementController extends BaseController {
 					node = nodeService.findById(release.getNodeFinish().getSkipId());
 				}
 				requestVer = null;
-				return checkNode(node, release, requestVer);
+				return checkNode(node, release, requestVer, firstTime, motive);
 			} else if (node.getSkipReapprove()) {
+				if (!firstTime) {
+					release.setStatus(node.getStatus());
+					release.setOperator("Automatico");
+					motive = node.getMotiveSkipRA();
+				} else {
+					motive = newMotive;
+				}
 				ReleaseTrackingShow tracking = releaseService.findReleaseTracking(release.getId());
 				Set<ReleaseTracking> trackingList = tracking.getTracking();
 				boolean verification = false;
@@ -416,7 +436,8 @@ public class WorkFlowManagementController extends BaseController {
 					}
 				}
 				if (verification) {
-					updateRelease(node, release, requestVer, node.getMotiveSkipRA());
+					updateRelease(node, release, requestVer, motive);
+					firstTime = false;
 					node = nodeService.findById(node.getSkipReapproveId());
 
 					if (node == null) {
@@ -429,7 +450,7 @@ public class WorkFlowManagementController extends BaseController {
 						node = nodeService.findById(release.getNodeFinish().getSkipId());
 					}
 					requestVer = null;
-					return checkNode(node, release, requestVer);
+					return checkNode(node, release, requestVer, firstTime, motive);
 				} else {
 					node = nodeService.findById(node.getSkipReapproveId());
 
@@ -446,7 +467,14 @@ public class WorkFlowManagementController extends BaseController {
 				}
 
 			} else if (node.getSkipNode()) {
-				updateRelease(node, release, requestVer, node.getMotiveSkip());
+				if (!firstTime) {
+					release.setStatus(node.getStatus());
+					release.setOperator("Automatico");
+					motive = node.getMotiveSkip();
+				} else {
+					motive = newMotive;
+				}
+				updateRelease(node, release, requestVer, motive);
 				node = nodeService.findById(node.getSkipId());
 				if (node == null) {
 					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
@@ -458,7 +486,7 @@ public class WorkFlowManagementController extends BaseController {
 					node = nodeService.findById(release.getNodeFinish().getSkipId());
 				}
 				requestVer = null;
-				return checkNode(node, release, requestVer);
+				return checkNode(node, release, requestVer, firstTime, motive);
 			} else {
 				return node;
 			}
@@ -472,8 +500,9 @@ public class WorkFlowManagementController extends BaseController {
 		release.setStatus(node.getStatus());
 		if (requestVer == null) {
 			release.setMotive(motive);
-			Status statusNew=new Status();
-			statusNew=node.getStatus();
+			Status statusNew = new Status();
+			statusNew = node.getStatus();
+			statusNew.setMotive(motive);
 			node.setStatus(statusNew);
 			release.setNode(node);
 

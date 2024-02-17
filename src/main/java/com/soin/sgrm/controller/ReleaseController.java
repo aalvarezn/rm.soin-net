@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -31,6 +32,7 @@ import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.Module;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
@@ -38,6 +40,7 @@ import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTracking;
@@ -65,6 +68,7 @@ import com.soin.sgrm.service.ModifiedComponentService;
 import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
 import com.soin.sgrm.service.RequestService;
@@ -143,6 +147,11 @@ public class ReleaseController extends BaseController {
 	private RequestService requestService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ProjectService projectService;
+	
+	@Autowired
+	private Environment env;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -738,7 +747,10 @@ public class ReleaseController extends BaseController {
 				releaseService.save(release, requirement_name);
 			}
 			res.setData(release.getId() + "");
-			res.setPath(CommonUtils.createPath(release.getId()));
+			String basePath = env.getProperty("fileStore.path");
+			ReleaseSummaryFile releaseSummary = releaseService.findByIdSummaryFile(release.getId());
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			res.setPath(CommonUtils.createPath(release.getId(),basePath,releaseSummary,project));
 			return res;
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
