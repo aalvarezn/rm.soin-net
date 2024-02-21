@@ -114,9 +114,6 @@ public class WorkFlowManagerController extends BaseController {
 	@Autowired
 	private RFCService rfcService;
 	@Autowired
-	private RequestService requestService;
-
-	@Autowired
 	private RequestNewService requestNewService;
 	@Autowired
 	private TypeRequestService typeRequestService;
@@ -443,6 +440,13 @@ public class WorkFlowManagerController extends BaseController {
 				release.setNode(node);
 				release.setStatus(node.getStatus());
 				release.setOperator(getUserLogin().getFullName());
+				
+				int nodeId1 = node.getId();
+				boolean firstTime = true;
+				node = checkNode(node, release, requestVer, firstTime, newMotive);
+				int nodeId2 = node.getId();
+				release.setNode(node);
+				release.setStatus(node.getStatus());
 				// Si esta marcado para enviar correo
 				if (node.getSendEmail()) {
 					Integer idTemplate = Integer.parseInt(paramService.findByCode(21).getParamValue());
@@ -458,13 +462,6 @@ public class WorkFlowManagerController extends BaseController {
 
 					newThread.start();
 				}
-				int nodeId1 = node.getId();
-				boolean firstTime = true;
-				node = checkNode(node, release, requestVer, firstTime, newMotive);
-				int nodeId2 = node.getId();
-				release.setNode(node);
-				release.setStatus(node.getStatus());
-
 				// Si esta marcado para enviar correo
 				if (node.getUsers().size() > 0) {
 					Integer idTemplate2 = Integer.parseInt(paramService.findByCode(23).getParamValue());
@@ -526,8 +523,6 @@ public class WorkFlowManagerController extends BaseController {
 					release.setMotive(requestVer.getMotive());
 					release.setOperator("Automatico");
 				}
-
-				wfReleaseService.wfStatusRelease(release);
 				firstTime = false;
 				updateRelease(node, release, requestVer, motive);
 				release.setNodeFinish(node);
@@ -624,6 +619,7 @@ public class WorkFlowManagerController extends BaseController {
 				} else {
 					motive = newMotive;
 				}
+				firstTime=false;
 				updateRelease(node, release, requestVer, motive);
 				node = nodeService.findById(node.getSkipId());
 				if (node == null) {
