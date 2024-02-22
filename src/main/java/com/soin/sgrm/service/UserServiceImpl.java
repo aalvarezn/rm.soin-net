@@ -37,6 +37,12 @@ public class UserServiceImpl implements UserService {
 	
 		return userDao.findUserById(id);
 	}
+
+	@Override
+	public User findByName(String soinManager) {
+	
+		return userDao.findByName(soinManager);
+	}
 	
 
 

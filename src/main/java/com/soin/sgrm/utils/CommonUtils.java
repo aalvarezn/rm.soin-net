@@ -1,5 +1,7 @@
 package com.soin.sgrm.utils;
 
+import java.io.File;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -8,11 +10,26 @@ import java.util.Date;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.Project;
+import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseSummaryFile;
+import com.soin.sgrm.model.Request;
+import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.ReleaseService;
 
 public class CommonUtils {
-
+	@Autowired
+	static
+	ProjectService projectService;
+	@Autowired
+	static
+	ReleaseService releaseService;
+	
+	
 	public static final Logger logger = Logger.getLogger(CommonUtils.class);
 
 	public static boolean isNumeric(String str) {
@@ -145,4 +162,25 @@ public class CommonUtils {
             return null;
         }
     }
+	
+
+	public static String createPath(Integer id,String basePath, ReleaseSummaryFile release, Project project) throws SQLException {
+		
+			
+			String path = project.getCode() + "/" + release.getSystem().getName() + "/";
+			if (release.getRequestList().size() != 0) {
+				Request request = release.getRequestList().iterator().next();
+				if (request.getCode_ice() != null) {
+					path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
+				} else {
+					path += request.getCode_soin().replace(" ","") + "/";
+				}
+			}
+			path += release.getReleaseNumber() + "/";
+			path=path.trim();
+			new File(basePath + path).mkdirs();
+			return path;
+		
+
+	}
 }

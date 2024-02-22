@@ -1,5 +1,8 @@
 var $network;
 var container = document.getElementById('wfEdit');
+var skipDiv = $('#skipDiv');
+var reapproveDiv = $('#reapproveDiv');
+var requerimentDiv = $('#requerimentDiv');
 var nodes = new vis.DataSet([]);
 var edges = new vis.DataSet([]);
 var scales=0.8;
@@ -220,7 +223,54 @@ $(function() {
 			});
 
 	loadWorkFlow();
+	dropDownChange();
+	changeCheckBoxSkipNode();
+	
 });
+
+function changeCheckBoxSkipNode(){
+	$('#skipNodeRequeriment').change(function () {
+		
+        if ($(this).is(':checked')) {
+        	requerimentDiv.show();
+			$nodeForm.find("#skipByRequestId").selectpicker('val', '');
+			$nodeForm.find('#motiveSkipR').val('');
+
+        } else {
+        	requerimentDiv.hide();
+			$nodeForm.find("#skipByRequestId").selectpicker('val', '');
+			$nodeForm.find('#motiveSkipR').val('');
+
+        }
+    });
+	
+	$('#skipNodeReapprove').change(function () {
+		
+        if ($(this).is(':checked')) {
+        	reapproveDiv.show();
+			$nodeForm.find("#skipReapproveId").selectpicker('val', '');
+			$nodeForm.find('#motiveSkipRA').val('');
+        } else {
+        	reapproveDiv.hide();
+			$nodeForm.find("#skipReapproveId").selectpicker('val', '');
+			$nodeForm.find('#motiveSkipRA').val('');
+
+        }
+    });
+	
+	$('#skipNode').change(function () {
+		
+        if ($(this).is(':checked')) {
+        	skipDiv.show();
+			$nodeForm.find("#statusSkipId").selectpicker('val', '');
+			$nodeForm.find('#motiveSkip').val('');
+        } else {
+        	skipDiv.hide();
+			$nodeForm.find("#statusSkipId").selectpicker('val', '');
+			$nodeForm.find('#motiveSkip').val('');
+        }
+    });
+}
 
 function loadWorkFlow() {
 	$.ajax({
@@ -252,9 +302,11 @@ function getSelectIds(form, name) {
 function ajaxLoadWorkFlow(response) {
 	if (response != null) {
 		let dataNodes = response.nodes;
+		console.log(response.nodes);
 		if (dataNodes.length > 0) {
 			// Se recorre cada nodo para ser agregado
 			for (var i = 0; i < dataNodes.length; i++) {
+				console.log();
 				var visNode = {
 						id : dataNodes[i].id,
 						label : dataNodes[i].label,
@@ -265,6 +317,17 @@ function ajaxLoadWorkFlow(response) {
 						sendEmail : dataNodes[i].sendEmail,
 						users : dataNodes[i].users,
 						actors : dataNodes[i].actors,
+						nodesTo: dataNodes[i].edges,
+						skipNode :  dataNodes[i].skipNode,
+						skipId :  dataNodes[i].skipId,
+						motiveSkip : dataNodes[i].motiveSkip,
+						skipByRequest :  dataNodes[i].skipByRequest,
+						skipByRequestId :  dataNodes[i].skipByRequestId,
+						motiveSkipR : dataNodes[i].motiveSkipR,
+						skipReapprove :  dataNodes[i].skipReapprove,
+						skipReapproveId :  dataNodes[i].skipReapproveId,
+						motiveSkipRA : dataNodes[i].motiveSkipRA,
+						
 				};
 
 				// Se agrega el nodo
@@ -423,6 +486,15 @@ function updateNodeModal() {
 			statusId : $nodeForm.find("#statusId").children("option:selected")
 			.val(),
 			sendEmail : $nodeForm.find('#sendEmail').prop('checked'),
+			skipNode : $nodeForm.find('#skipNode').prop('checked'),
+			skipId : $nodeForm.find('#statusSkipId').children("option:selected").val(),
+			motiveSkip : $nodeForm.find('#motiveSkip').val(),
+			skipByRequest : $nodeForm.find('#skipNodeRequeriment').prop('checked'),
+			skipByRequestId : $nodeForm.find('#skipByRequestId').children("option:selected").val(),
+			motiveSkipR : $nodeForm.find('#motiveSkipR').val(),
+			skipReapprove : $nodeForm.find('#skipNodeReapprove').prop('checked'),
+			skipReapproveId : $nodeForm.find('#skipReapproveId').children("option:selected").val(),
+			motiveSkipRA : $nodeForm.find('#motiveSkipRA').val(),
 			usersIds : JSON.stringify(usersNotyIds),
 			actorsIds : JSON.stringify(actorsNotyIds),
 		},
@@ -454,6 +526,15 @@ function ajaxUpdateNode(response) {
 				y : response.obj.y,
 				status : response.obj.status,
 				sendEmail : response.obj.sendEmail,
+				skipNode :  response.obj.skipNode,
+				motiveSkip : response.obj.motiveSkip,
+				skipByRequest :  response.obj.skipByRequest,
+				skipByRequestId :  response.obj.skipByRequestId,
+				motiveSkipR : response.obj.motiveSkipR,
+				skipReapprove :  response.obj.skipReapprove,
+				skipReapproveId :  response.obj.skipReapproveId,
+				motiveSkipRA :response.obj.motiveSkipRA,
+				skipId :  response.obj.skipId,
 				users : response.obj.users,
 				actors : response.obj.actors
 			});
@@ -647,7 +728,9 @@ function closeNodeModal() {
 
 function openUpdateNodeModal(properties) {
 	if (typeof properties.nodes[0] !== 'undefined') {
+		console.log(properties.nodes[0]);
 		let tempNode = nodes.get(properties.nodes[0]);
+		console.log(tempNode);
 		$nodeForm.find('#users option').removeAttr('selected');
 		$nodeForm.find('#actors option').removeAttr('selected');
 		$nodeForm.find('a[href="#tabHome"]').click();
@@ -661,8 +744,68 @@ function openUpdateNodeModal(properties) {
 		$nodeForm.find('#name').val(tempNode.label);
 		$nodeForm.find('#x').val(tempNode.x);
 		$nodeForm.find('#y').val(tempNode.y);
+		$nodeForm.find('#motiveSkip').val(tempNode.motiveSkip);
+		$nodeForm.find('#motiveSkipR').val(tempNode.motiveSkipR);
+		$nodeForm.find('#motiveSkipRA').val(tempNode.motiveSkipRA);
+		$nodeForm.find('#skipNode').prop('checked', tempNode.skipNode);
+		$nodeForm.find('#skipNodeRequeriment').prop('checked', tempNode.skipByRequest);
+		$nodeForm.find('#skipNodeReapprove').prop('checked', tempNode.skipReapprove);
+		if(tempNode.skipNode){
+			skipDiv.show();
+		}else{
+			skipDiv.hide();
+			$nodeForm.find("#statusSkipId").selectpicker('val', '');
+		}
+		
+		if(tempNode.skipByRequest){
+			requerimentDiv.show();
+		}else{
+			requerimentDiv.hide();
+			$nodeForm.find("#skipByRequestId").selectpicker('val', '');
+		}
+		if(tempNode.skipReapprove){
+			reapproveDiv.show();
+		}else{
+			reapproveDiv.hide();
+			$nodeForm.find("#skipReapproveId").selectpicker('val', '');
+		}
+		
+		if(tempNode.nodesTo!=null&&tempNode.nodesTo.length>0){
+			var s = '';
+			s+='<option value="">-- Ninguno --</option>';
+			console.log(tempNode.nodesTo.length);
+			for(var i = 0; i < tempNode.nodesTo.length; i++) {
+				console.log(tempNode.nodesTo[i].nodeTo.label);
+				s += '<option value="' + tempNode.nodesTo[i].nodeTo.id + '">' + tempNode.nodesTo[i].nodeTo.label + '</option>';
+			}
+			$('#statusSkipId').html(s);
+			$('#statusSkipId').selectpicker('refresh');
+			$('#skipByRequestId').html(s);
+			$('#skipByRequestId').selectpicker('refresh');
+			$('#skipReapproveId').html(s);
+			$('#skipReapproveId').selectpicker('refresh');
+			if (tempNode.skipId != null){
+				$nodeForm.find("#statusSkipId").selectpicker('val', tempNode.skipId);
+			}
+			if (tempNode.skipReapproveId != null){
+				$nodeForm.find("#skipReapproveId").selectpicker('val', tempNode.skipReapproveId);
+			}
+			if (tempNode.skipByRequestId != null){
+				$nodeForm.find("#skipByRequestId").selectpicker('val', tempNode.skipByRequestId);
+			}
+				
+		}else{
+			s+='<option value="">-- Ninguno --</option>';
+			$('#statusSkipId').html(s);
+			$('#statusSkipId').selectpicker('refresh');
+			$('#skipByRequestId').html(s);
+			$('#skipByRequestId').selectpicker('refresh');
+			$('#skipReapproveId').html(s);
+			$('#skipReapproveId').selectpicker('refresh');
+		}
+		
 
-
+	
 		if(typeof tempNode.users !== 'undefined'){
 			for (var i = 0, l = tempNode.users.length; i < l; i++) {
 				$nodeForm.find('#users option').each(
@@ -692,4 +835,47 @@ function openUpdateNodeModal(properties) {
 		$nodeForm.find('#users').multiSelect("refresh");
 		$nodeModal.modal('show');
 	}
+}
+
+function dropDownChange(){
+
+	$('#statusSkipId').on('change', function(){
+		var sId =$nodeModal.find('#statusSkipId').val();
+		if(sId!=""){
+			
+		$.ajax({
+			type: 'GET',
+			url: getCont() + "management/wf/nodesearch/"+sId,
+			success: function(result) {
+				console.log(result.obj.edges);
+				var nodes=result.obj.edges;
+				if(nodes.length!=0){
+					var s = '';
+					s+='<option value="">-- Ninguno --</option>';
+					for(var i = 0; i < nodes.length; i++) {
+						s += '<option value="' + nodes[i].nodeTo.id + '">' + nodes[i].nodeTo.label + '</option>';
+					}
+					$('#statustoSkipId').html(s);
+					$('#statustoSkipId').prop('disabled', false);
+					$('#statustoSkipId').selectpicker('refresh');
+				}else{
+					resetDrop();
+				}
+				
+				
+			}
+		});
+		}else{
+			resetDrop();
+		}
+		
+	});
+}
+
+function resetDrop(){
+	var s = '';
+	s+='<option value="">-- Ninguno --</option>';
+	$('#statustoSkipId').html(s);
+	$('#statustoSkipId').prop('disabled',true);
+	$('#statustoSkipId').selectpicker('refresh');
 }

@@ -77,13 +77,13 @@ public class ReleaseServiceImpl implements ReleaseService {
 		return dao.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
 				statusId);
 	}
-	
+
 	@Override
-	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId)
+	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength,
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
 			throws SQLException, ParseException {
-		return dao.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
-				statusId,projectId);
+		return dao.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId, projectId);
 	}
 
 	@Override
@@ -322,14 +322,14 @@ public class ReleaseServiceImpl implements ReleaseService {
 
 	@Override
 	public List<ReleaseReport> listReleaseReport() {
-		
+
 		return dao.listReleaseReport();
-				
+
 	}
 
 	@Override
 	public List<ReleaseReportFast> listReleaseReportFilter(int systemId, int projectId, String dateRange) {
-		return  dao.listReleaseReportFilter(systemId,projectId,dateRange);
+		return dao.listReleaseReportFilter(systemId, projectId, dateRange);
 	}
 
 	@Override
@@ -339,7 +339,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 
 	@Override
 	public ReleaseTrackingShow findReleaseTracking(int id) {
-	
+
 		return dao.findReleaseTracking(id);
 	}
 
@@ -347,31 +347,40 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength,
 			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
 			throws SQLException, ParseException {
-		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
-				statusId,projectId);
+		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId, projectId);
 	}
-  @Override
+
+	@Override
 	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
 		// TODO Auto-generated method stub
 		return dao.findByIdSummaryFile(id);
 
 	}
 
-@Override
-public ReleaseEdit findEditByName(String numRelease) {
-	return dao.findEditByName(numRelease);
-}
+	@Override
+	public ReleaseEdit findEditByName(String numRelease) {
+		return dao.findEditByName(numRelease);
+	}
 
-@Override
-public ReleaseUserFast findByIdReleaseUserFast(Integer idRelease) {
-	// TODO Auto-generated method stub
-	return dao.findByIdReleaseUserFast(idRelease);
-}
+	@Override
+	public ReleaseUserFast findByIdReleaseUserFast(Integer idRelease) {
+		// TODO Auto-generated method stub
+		return dao.findByIdReleaseUserFast(idRelease);
+	}
 
-@Override
-public void updateStatusReleaseUser(ReleaseUserFast release) {
-	dao.updateStatusReleaseUser(release);
-	
-}
+	@Override
+	public void updateStatusReleaseUser(ReleaseUserFast release) {
+		dao.updateStatusReleaseUser(release);
 
+	}
+
+	@Override
+	public void requestRelease(ReleaseEditWithOutObjects release) {
+		dao.requestRelease(release);
+	}
+	@Override
+	public String getLastStatusHistory(Integer releaseId) {
+		return dao.getLastStatusHistory(releaseId);
+	}
 }
