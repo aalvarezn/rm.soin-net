@@ -116,7 +116,7 @@ public class RequestNewDaoImpl extends AbstractDao<Integer,Request> implements R
 		if (typeId != 0) {
 			crit.add(Restrictions.eq("typeRequest.id", typeId));
 		}
-
+		crit.add(Restrictions.eq("userManager", userLogin));
 		return crit;
 	}
 	

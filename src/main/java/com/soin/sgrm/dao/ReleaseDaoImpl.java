@@ -373,7 +373,24 @@ public class ReleaseDaoImpl implements ReleaseDao {
 			sessionObj.close();
 		}
 	}
-
+	@Override
+	public String getLastStatusHistory(Integer releaseId) {
+	    Session sessionObj = null;
+	    try {
+	        sessionObj = sessionFactory.openSession();
+	        // Consulta SQL para obtener el último ID de historial basado en el ID de release y la máxima fecha
+	        String sql = "SELECT estado FROM RELEASES_RELEASE_HISTORIAL " +
+                    "WHERE id = (SELECT MAX(id) FROM RELEASES_RELEASE_HISTORIAL WHERE RELEASE_ID = :releaseId)";
+	        Query query = sessionObj.createSQLQuery(sql);
+	        query.setParameter("releaseId", releaseId);
+	        String nombreEstado = (String) query.uniqueResult();
+	        return nombreEstado != null ? nombreEstado : ""; // Retornar cadena vacía si no hay resultados
+	    } finally {
+	        if (sessionObj != null) {
+	            sessionObj.close();
+	        }
+	    }
+	}
 	@Override
 	public void requestRelease(Release release) {
 		Transaction transObj = null;
@@ -1034,6 +1051,32 @@ public class ReleaseDaoImpl implements ReleaseDao {
 					release.getStatus().getId(), release.getRetries(), release.getOperator(), release.getMotive(),
 					release.getId());
 
+			query = sessionObj.createSQLQuery(sql);
+			query.executeUpdate();
+
+			transObj.commit();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
+	}
+
+	@Override
+	public void requestRelease(ReleaseEditWithOutObjects release) {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		String sql = "";
+		Query query = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+			sql = String.format(
+					"update releases_release set estado_id = %s , nodo_id = %s , operador = '%s' , motivo = '%s' , fecha_creacion = sysdate where id = %s",
+					release.getStatus().getId(), (release.getNode() != null ? release.getNode().getId() : null),
+					release.getOperator(), release.getMotive(), release.getId());
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();
 

@@ -332,17 +332,34 @@ public class WorkFlowController extends BaseController {
 					res.setException("Error al crear el nodo ya hay un nodo inicio para este tramite.");
 				}
 			}
+			if(node.getSkipByRequest()==true) {
+				if(node.getSkipByRequestId()==null) {
+					res.setStatus("exception");
+					res.setException("Error al se debe seleccionar el estado a saltar.");
+				}
+			}else {
+				node.setSkipByRequestId(null);
+				node.setMotiveSkipR(null);
+			}
+			
+			if(node.getSkipReapprove()==true) {
+				if(node.getSkipReapproveId()==null) {
+					res.setStatus("exception");
+					res.setException("Error al se debe seleccionar el estado a saltar.");
+				}
+			}else {
+				node.setSkipReapproveId(null);
+				node.setMotiveSkipRA(null);
+			}
+			
 			if(node.getSkipNode()==true) {
 				if(node.getSkipId()==null) {
 					res.setStatus("exception");
-					res.setException("Error al crear el nodo no puede haber un salto de tramite sin seleccionar alguno.");
-				}else if(node.getNodeToId()==null) {
-					res.setStatus("exception");
-					res.setException("Error al crear el nodo no puede haber un salto de tramite sin el tramite siguiente.");
+					res.setException("Error al se debe seleccionar el estado a saltar.");
 				}
 			}else {
 				node.setSkipId(null);
-				node.setNodeToId(null);
+				node.setMotiveSkip(null);
 			}
 			if (res.getStatus().equals("success")) {
 				WorkFlow workFlow = new WorkFlow();

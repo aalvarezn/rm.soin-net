@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -145,7 +146,7 @@ public class RequestController extends BaseController {
 		return res;
 	}
 
-	@RequestMapping(value = "/updateRequest", method = RequestMethod.POST)
+	@RequestMapping(value = "/updateRequest/", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateRequest(HttpServletRequest req,
 			@Valid @ModelAttribute("Request") Request request, BindingResult errors, ModelMap model, Locale locale,
 			HttpSession session) {
@@ -193,6 +194,8 @@ public class RequestController extends BaseController {
 		}
 		return res;
 	}
+	
+	
 
 	@RequestMapping(value = "/deleteRequest/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteRequest(@PathVariable Integer id, Model model) {

@@ -114,6 +114,10 @@ public interface ReleaseDao {
 
 	void updateStatusReleaseUser(ReleaseUserFast release);
 
+	void requestRelease(ReleaseEditWithOutObjects release);
+
+	String getLastStatusHistory(Integer releaseId);
+
 	
 
 }

@@ -9,6 +9,7 @@ public class JsonResponse {
 	private String status = null;
 	private String message = null;
 	private String exception = null;
+	private String path = null;
 	private ArrayList<MyError> errors = new ArrayList<MyError>();
 	private String data;
 	private Object obj;
@@ -73,5 +74,14 @@ public class JsonResponse {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+	
 
 }

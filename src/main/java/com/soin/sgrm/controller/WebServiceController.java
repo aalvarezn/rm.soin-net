@@ -24,6 +24,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,11 +46,13 @@ import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Module;
 import com.soin.sgrm.model.Priority;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.ReleaseWS;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -76,6 +79,7 @@ import com.soin.sgrm.service.ModifiedComponentService;
 import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
@@ -139,6 +143,10 @@ public class WebServiceController extends BaseController {
 	SigesService sigeService;
 	@Autowired
 	com.soin.sgrm.service.UserService userService ;
+  @Autowired  
+	private Environment env;
+	@Autowired
+	private ProjectService projectService;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
@@ -292,7 +300,10 @@ public class WebServiceController extends BaseController {
 				releaseService.save(release, releaseWs.getRequirementName());
 			}
 			res.setData(release.getReleaseNumber() + "");
-
+			String basePath = env.getProperty("fileStore.path");
+			ReleaseSummaryFile releaseSummary = releaseService.findByIdSummaryFile(release.getId());
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			res.setPath(CommonUtils.createPath(release.getId(),basePath,releaseSummary,project));
 			if (addObjects(releaseWs.getObjects(), release.getId())) {
 				System.out.print("si");
 			} else {

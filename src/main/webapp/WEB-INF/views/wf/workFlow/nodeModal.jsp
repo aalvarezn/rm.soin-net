@@ -81,6 +81,72 @@
 							</div>
 							<div class="row clearfix m-t-20">
 								<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+									<label for="name">Requerimiento autom&aacute;tico</label>
+									<div class="switch" style="margin-top: 20px;">
+										<label>No<input id="skipNodeRequeriment" type="checkbox"><span
+											class="lever"></span>Si
+										</label>
+									</div>
+								</div>
+								<div id="requerimentDiv">
+									<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+										<label>Estado a saltar</label>
+										<div class="form-group m-t-25">
+											<select id="skipByRequestId"
+												class="form-control show-tick selectpicker"
+												data-live-search="true">
+												<option value="">-- Ninguno --</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+										<label for="name">Motivo</label>
+										<div class="form-group">
+											<div class="form-line">
+												<input type="text" class="form-control" id="motiveSkipR"
+													name="motiveSkipR" placeholder="Ingrese un motivo"
+													style="height: 60px;">
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row clearfix m-t-20">
+								<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+									<label for="name">Reaprobaci&oacute;n </label>
+									<div class="switch" style="margin-top: 20px;">
+										<label>No<input id="skipNodeReapprove" type="checkbox"><span
+											class="lever"></span>Si
+										</label>
+									</div>
+								</div>
+								<div id="reapproveDiv">
+									<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+										<label>Estado a saltar</label>
+										<div class="form-group m-t-25">
+											<select id="skipReapproveId"
+												class="form-control show-tick selectpicker"
+												data-live-search="true">
+												<option value="">-- Ninguno --</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+										<label for="name">Motivo</label>
+										<div class="form-group">
+											<div class="form-line">
+												<input type="text" class="form-control" id="motiveSkipRA"
+													name="motiveSkipRA" placeholder="Ingrese un motivo"
+													style="height: 60px;">
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="row clearfix m-t-20">
+								<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 									<label for="name">Saltar tr&aacute;mite </label>
 									<div class="switch" style="margin-top: 20px;">
 										<label>No<input id="skipNode" type="checkbox"><span
@@ -100,17 +166,20 @@
 										</div>
 									</div>
 									<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-										<label>Estado a continuar</label>
-										<div class="form-group m-t-25">
-											<select id="statustoSkipId"
-												class="form-control show-tick selectpicker"
-												data-live-search="true" disabled>
-												<option value="">-- Ninguno --</option>
-											</select>
+										<label for="name">Motivo</label>
+										<div class="form-group">
+											<div class="form-line">
+												<input type="text" class="form-control" id="motiveSkip"
+													name="motiveSkip" placeholder="Ingrese un motivo"
+													style="height: 60px;">
+											</div>
+
 										</div>
 									</div>
 								</div>
 							</div>
+
+
 						</div>
 						<div role="tabpanel" class="tab-pane" id="tabActors">
 							<div class="row m-t-20">

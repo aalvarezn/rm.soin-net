@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import java.sql.Timestamp;
 import org.hibernate.annotations.Fetch;
@@ -61,8 +62,13 @@ public class WFRelease implements Serializable {
 	@Value("${retries:0}")
 	@Column(name = "REINTENTOS", nullable = false)
 	private Integer retries;
+	
+	@Column(name = "MOTIVO")
+	private String motive;
 
-
+	@Transient
+	private Node nodeFinish;
+	
 	public int getId() {
 		return id;
 	}
@@ -143,4 +149,22 @@ public class WFRelease implements Serializable {
 		this.status = release.getStatus();
 		this.user = release.getUser();
 	}
+
+	public Node getNodeFinish() {
+		return nodeFinish;
+	}
+
+	public void setNodeFinish(Node nodeFinish) {
+		this.nodeFinish = nodeFinish;
+	}
+
+	public String getMotive() {
+		return motive;
+	}
+
+	public void setMotive(String motive) {
+		this.motive = motive;
+	}
+	
+	
 }

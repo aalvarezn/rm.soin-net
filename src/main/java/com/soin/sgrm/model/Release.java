@@ -22,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -282,6 +283,8 @@ public class Release implements Serializable, Cloneable {
 	@Column(name = "MOTIVO")
 	private String motive;
 
+	@Transient
+	private Node nodeFinish;
 	public int getId() {
 		return id;
 	}
@@ -1062,4 +1065,12 @@ public class Release implements Serializable, Cloneable {
 		this.motive = motive;
 	}
 
+	public Node getNodeFinish() {
+		return nodeFinish;
+	}
+
+	public void setNodeFinish(Node nodeFinish) {
+		this.nodeFinish = nodeFinish;
+	}
+	
 }
