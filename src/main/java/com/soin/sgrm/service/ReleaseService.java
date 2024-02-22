@@ -125,6 +125,10 @@ public interface ReleaseService {
 
 	void updateStatusReleaseUser(ReleaseUserFast release);
 
+	void requestRelease(ReleaseEditWithOutObjects release);
+
+	String getLastStatusHistory(Integer releaseId);
+
 	
 
 

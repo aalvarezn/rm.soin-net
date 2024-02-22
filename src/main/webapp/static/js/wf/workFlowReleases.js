@@ -389,11 +389,25 @@ function openReleaseTrackingModal(releaseId) {
     rowData = releaseTable.row(idRow).data();
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
-	loadTrackingRelease(rowData);
+	$.ajax({
+		type : "GET",
+		url : getCont() + "release/tracking/"+ rowData.id ,
+		timeout : 600000,
+		data : {},
+		success : function(response) {
+			tracking=response.obj;
+			loadTrackingRelease(tracking);
+			$('#trackingReleaseModal').modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
 	$('#trackingReleaseModal').modal('show');
 }
 
 function loadTrackingRelease(rowData){
+	console.log(rowData);
 	trackingReleaseForm.find('tbody tr').remove();
 	if(rowData.tracking.length == 0){
 		trackingReleaseForm.find('tbody').append('<tr><td colspan="4" style="text-align: center;">No hay movimientos</td></tr>');

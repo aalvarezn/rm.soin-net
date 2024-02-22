@@ -78,4 +78,10 @@ public class ReleaseObjectServiceImpl implements ReleaseObjectService {
 		return dao.listObjectsSql(idRelease);
 	}
 
+	@Override
+	public List<Release_Objects> listObjects(Integer idRelease) {
+		// TODO Auto-generated method stub
+		return dao.listObjects(idRelease);
+	}
+
 }

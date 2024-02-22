@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +16,15 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +34,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.soin.sgrm.exception.Sentry;
@@ -36,11 +46,13 @@ import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Module;
 import com.soin.sgrm.model.Priority;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.ReleaseWS;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -52,6 +64,7 @@ import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.TypeObject;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.wf.NodeRFC;
 import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.ActionEnvironmentService;
 import com.soin.sgrm.service.AmbientService;
@@ -66,6 +79,7 @@ import com.soin.sgrm.service.ModifiedComponentService;
 import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
@@ -85,6 +99,7 @@ import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
 import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.utils.UpdateJiraIssueStatus;
 
 @RestController
 @RequestMapping("/ws")
@@ -122,6 +137,16 @@ public class WebServiceController extends BaseController {
 	SigesService sigesService;
 	@Autowired
 	UserInfoService userInfoService;
+	@Autowired
+	ParameterService paramService;
+	@Autowired
+	SigesService sigeService;
+	@Autowired
+	com.soin.sgrm.service.UserService userService ;
+  @Autowired  
+	private Environment env;
+	@Autowired
+	private ProjectService projectService;
 
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
@@ -169,6 +194,7 @@ public class WebServiceController extends BaseController {
 		releaseWs.setUserId(jsonObject.get("userId").toString().replace("\"", ""));
 		String objects = jsonObject.get("objects").toString();
 		objects = objects.replace("Base Datos", "Base_Datos");
+		objects = objects.replace(" .", ".");
 		objects = objects.replace(" ", "\n");
 		objects = objects.replace("\"", "");
 		objects = objects.replace("Base_Datos", "Base Datos");
@@ -274,7 +300,10 @@ public class WebServiceController extends BaseController {
 				releaseService.save(release, releaseWs.getRequirementName());
 			}
 			res.setData(release.getReleaseNumber() + "");
-
+			String basePath = env.getProperty("fileStore.path");
+			ReleaseSummaryFile releaseSummary = releaseService.findByIdSummaryFile(release.getId());
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			res.setPath(CommonUtils.createPath(release.getId(),basePath,releaseSummary,project));
 			if (addObjects(releaseWs.getObjects(), release.getId())) {
 				System.out.print("si");
 			} else {
@@ -501,14 +530,13 @@ public class WebServiceController extends BaseController {
 				});
 				newThread.start();
 			} else if (type == 1) {
-				RFC rfc = rfcService.findByKey("numRequest",numRequest.trim());
+				RFC rfc = rfcService.findByKey("numRequest", numRequest.trim());
 				StatusRFC status = statusRFCService.findById((long) idStatus);
 				rfc.setStatus(status);
 				rfc.setOperator("Automatico");
 				Date currentDate = new Date();
-				
-	
-	            Timestamp timestamp = new Timestamp(currentDate.getTime());
+
+				Timestamp timestamp = new Timestamp(currentDate.getTime());
 				rfc.setRequestDate(timestamp);
 				rfc.setMotive(motive);
 				rfcService.update(rfc);
@@ -545,25 +573,105 @@ public class WebServiceController extends BaseController {
 		}
 		return res;
 	}
-	
+
 	@RequestMapping(value = "/statusNow", method = RequestMethod.GET)
 	public @ResponseBody JsonResponse getStatus(HttpServletRequest request, Model model,
 			@RequestParam(value = "name", required = true) String name,
 			@RequestParam(value = "type", required = true) Integer type) {
 		JsonResponse res = new JsonResponse();
 
-			if (type == 0) {
-				ReleaseEdit release = releaseService.findEditByName(name);
-				res.setStatus(release.getStatus().getName());
-			} else if (type == 1) {
-				RFC rfc = rfcService.findByKey("numRequest",name.trim());
-				res.setStatus(rfc.getStatus().getName());
+		if (type == 0) {
+			ReleaseEdit release = releaseService.findEditByName(name);
+			res.setStatus(release.getStatus().getName());
+		} else if (type == 1) {
+			RFC rfc = rfcService.findByKey("numRequest", name.trim());
+			res.setStatus(rfc.getStatus().getName());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/sendMail", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse sendMail(HttpServletRequest request, Model model,
+			@RequestParam(value = "id", required = true) String id,
+			@RequestParam(value = "type", required = true) Integer type,
+			@RequestParam(value = "dateChange", required = false) String dateChange,
+			@RequestParam(value = "idUser", required = false) Integer idUser
+			) {
+		JsonResponse res = new JsonResponse();
+		Release release=null;
+		if(type==1) {
+			
+		
+		try {
+			release = releaseService.findReleaseById(Integer.parseInt(id));
+		} catch (NumberFormatException | SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Status status = statusService.findByName("Solicitado");
+
+		release.setStatus(status);
+		release.setMotive(status.getMotive());
+		User user=userService.findUserById(idUser);
+		release.setOperator(user.getFullName());
+		release.setUser(user);
+		if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
+			if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+				EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
+				Release releaseEmail = release;
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMail(releaseEmail, email);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
 			}
+		}
+		}else {
+			RFC rfc = null;
+
+			if (CommonUtils.isNumeric(id)) {
+				rfc = rfcService.findById((long) Integer.parseInt(id));
+			}
+			
+			StatusRFC status = statusRFCService.findByKey("name", "Solicitado");
+
+//			if (node != null)
+
+//				release.setNode(node);
+
+			rfc.setStatus(status);
+			rfc.setMotive(status.getReason());
+			rfc.setRequestDate((CommonUtils.getSystemTimestamp()));
+			Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+			rfc.setRequestDate(dateFormat);
+			User user=userService.findUserById(idUser);
+			rfc.setOperator(user.getFullName());
+			rfc.setUser(user);
+			Siges siges = sigeService.findById(rfc.getSiges().getId());
+			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
+				if (siges.getEmailTemplate() != null) {
+					EmailTemplate email = siges.getEmailTemplate();
+					RFC rfcEmail = rfc;
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailRFC(rfcEmail, email);
+						} catch (Exception e) {
+							Sentry.capture(e, "rfc");
+						}
+
+					});
+					newThread.start();
+				}
+			}
+		}
 		return res;
 	}
 	
-	
-	
+
 
 	private String getSubject(EmailTemplate email, RFC rfc) {
 		String temp = "";
@@ -633,5 +741,77 @@ public class WebServiceController extends BaseController {
 					(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
 		}
 		return emailNotify.getSubject();
+	}
+
+	@RequestMapping(value = { "/updateJira" }, method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public void updateJira() {
+		String jiraUrl = "https://soinlabs.atlassian.net";
+		String username = "releaseice@soin.co.cr";
+		String apiToken = "ATATT3xFfGF0n6uMxvmFJF1x_RI4ZiQVIrkPMnJ3eIIk1ykAzKsbPMymn2XroLX7HmgqWzvEIN-BLj1KShYhr3NHpxvhljAyOqUHGp5jO9v5tpzl3JrtTHN4jgl4yHdph1dmqX3GzmjwfNji61hz6hiZTIFoIXHo7CSZ5GjRBMO4drT6HLObhGI=098DCD93";
+		String issueKey = "NSPCCNS-541"; // Cambia esto al identificador de tu tarea
+		String newStatus = "21"; // Cambia esto al nuevo estado que deseas establecer
+
+	        HttpClient httpClient = HttpClients.createDefault();
+	        HttpPut request = new HttpPut(jiraUrl + "/rest/api/latest/issue/" + issueKey + "/transitions");
+
+	        // Configura las cabeceras de autenticación con el API token
+	        String authHeader = "Bearer " + apiToken;
+	        request.setHeader("Authorization", authHeader);
+	        request.setHeader("Content-Type", "application/json");
+
+	        try {
+	            // Construye el JSON con el nuevo estado
+	            ObjectMapper mapper = new ObjectMapper();
+	            String jsonBody = "{ \"transition\": { \"id\": \"" + newStatus + "\" } }";
+	            request.setEntity(new StringEntity(jsonBody));
+
+	            HttpResponse response = httpClient.execute(request);
+	            // Procesa la respuesta aquí
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		
+		
+	}
+
+	@RequestMapping(value = { "/getStatusJira" }, method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public String getStatusJira() {
+		String jiraUrl = "https://soinlabs.atlassian.net";
+		String username = "releaseice@soin.co.cr";
+		String apiToken = "ATATT3xFfGF0n6uMxvmFJF1x_RI4ZiQVIrkPMnJ3eIIk1ykAzKsbPMymn2XroLX7HmgqWzvEIN-BLj1KShYhr3NHpxvhljAyOqUHGp5jO9v5tpzl3JrtTHN4jgl4yHdph1dmqX3GzmjwfNji61hz6hiZTIFoIXHo7CSZ5GjRBMO4drT6HLObhGI=098DCD93";
+		String issueKey = "NSPCCNS-541"; // Cambia esto al identificador de tu tarea
+
+		HttpClient httpClient = HttpClients.createDefault();
+		HttpGet request = new HttpGet(jiraUrl + "/rest/api/latest/issue/" + issueKey);
+
+		// Configura las cabeceras de autenticación
+		 String authHeader = "Bearer " + apiToken;
+	        request.setHeader("Authorization", authHeader);
+	        request.setHeader("Content-Type", "application/json");
+
+		try {
+			HttpResponse response = httpClient.execute(request);
+
+			if (response.getStatusLine().getStatusCode() == 200) {
+				// Procesa la respuesta JSON para obtener el estado
+				String responseBody = EntityUtils.toString(response.getEntity());
+				// Parsea el JSON para obtener el estado
+				// Por ejemplo, utilizando la biblioteca Jackson
+				 ObjectMapper mapper = new ObjectMapper();
+				 JsonNode jsonNode = mapper.readTree(responseBody);
+				 String status = jsonNode.get("fields").get("status").get("name").asText();
+				// System.out.println("Estado de la tarea: " + status);
+				return status;
+			} else {
+				System.out.println("Error al obtener el estado de la tarea. Código de estado: "
+						+ response.getStatusLine().getStatusCode());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
+
 	}
 }
