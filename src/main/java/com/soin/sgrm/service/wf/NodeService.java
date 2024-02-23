@@ -8,6 +8,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.wf.NodeName;
 //import com.soin.sgrm.model.wf.NodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
 
@@ -55,5 +56,9 @@ public interface NodeService {
 
 
 	boolean verifyStartNodeIncidence(NodeIncidence node);
+
+	List<NodeName> listNodeNames(Integer i,Integer idUser);
+
+	Node findByIdAndWorkFlow(String nodeName, int workFlowId);
 
 }

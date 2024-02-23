@@ -14,5 +14,7 @@ public interface UserService {
 	List<User> getUsersRM();
 
 	User findUserById(Integer id);
+
+	User findByName(String soinManager);
 	
 }

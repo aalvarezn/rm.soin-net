@@ -466,7 +466,7 @@ function requestRelease() {
 	var modifiedComponents = listLi('listComponents');
 	var actions = listRowsId('environmentActionTable');
 	var objectItemConfiguration = listItemObjects();
-
+	$('#applyFor').prop('disabled', true);
 	blockUI();
 	$
 	.ajax({
@@ -554,12 +554,14 @@ function requestRelease() {
 		success : function(response) {
 			
 			responseAjaxRequestRelease(response);
+	
 		},
 		error: function(x, t, m) {
 			console.log(x);
 			console.log(t);
 			console.log(m);
 			notifyAjaxError(x, t, m);
+			$('#applyFor').prop('disabled', false);
 		}
 	});
 
@@ -573,16 +575,19 @@ function responseAjaxRequestRelease(response) {
 			unblockUI();
 			window.location = getCont() + "release/updateRelease/"
 			+ $(form + ' #release_id').val();
+			//$('#applyFor').prop('disabled', false);
 			break;
 		case 'fail':
 			showReleaseErrors(response.errors);
 			countErrorsByStep();
 			var numItems = $('.yourclass').length
 			swal("Formulario incompleto!", "El formulario posee campos obligatorios, favor verificar.",
-			"warning")
+			"warning");
+			$('#applyFor').prop('disabled', false);
 			break;
 		case 'exception':
-			swal("Error!", response.exception, "error")
+			swal("Error!", response.exception, "error");
+			$('#applyFor').prop('disabled', false);
 			break;
 		default:
 			unblockUI();

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -31,6 +32,7 @@ import com.soin.sgrm.model.DocTemplate;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.ModifiedComponent;
 import com.soin.sgrm.model.Module;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
@@ -38,18 +40,23 @@ import com.soin.sgrm.model.ReleaseObject;
 import com.soin.sgrm.model.ReleaseReport;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.ReleaseSummary;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseSummaryMin;
 import com.soin.sgrm.model.ReleaseTinySummary;
+import com.soin.sgrm.model.ReleaseTracking;
 import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.Release_Objects;
+import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemConfiguration;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.wf.Edge;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFRelease;
+import com.soin.sgrm.model.wf.WorkFlow;
 import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.ActionEnvironmentService;
 import com.soin.sgrm.service.AmbientService;
@@ -61,8 +68,10 @@ import com.soin.sgrm.service.ModifiedComponentService;
 import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
+import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.RiskService;
 import com.soin.sgrm.service.StatusService;
 import com.soin.sgrm.service.SystemConfigurationService;
@@ -72,6 +81,7 @@ import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.TypeDetailService;
 import com.soin.sgrm.service.TypeObjectService;
 import com.soin.sgrm.service.UserInfoService;
+import com.soin.sgrm.service.UserService;
 import com.soin.sgrm.service.wf.NodeService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.Constant;
@@ -133,6 +143,15 @@ public class ReleaseController extends BaseController {
 	ReleaseObjectService releaseObjectService;
 	@Autowired
 	private ErrorReleaseService errorService;
+	@Autowired
+	private RequestService requestService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private ProjectService projectService;
+	
+	@Autowired
+	private Environment env;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -537,7 +556,8 @@ public class ReleaseController extends BaseController {
 			releaseCopy.setCreateDate(CommonUtils.getSystemTimestamp());
 			releaseCopy.setUser(user);
 			releaseCopy.setStatus(statusService.findByName("Borrador"));
-
+			releaseCopy.setMotive("Inicio de release");
+			releaseCopy.setRetries(0);
 			if (requeriment.equals("IN"))
 				releaseCopy.setIncidents(requirement_name);
 
@@ -565,6 +585,90 @@ public class ReleaseController extends BaseController {
 			Sentry.capture(e, "release");
 			res.setStatus("exception");
 			res.setException(e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/saveRelease", method = RequestMethod.POST)
+	public @ResponseBody JsonResponse saveRelease(HttpServletRequest request,
+			@ModelAttribute("ReleaseCreate") ReleaseCreate rc, ModelMap model, Locale locale, HttpSession session) {
+
+		JsonResponse res = new JsonResponse();
+		List<Ambient> ambients = new ArrayList<Ambient>();
+		List<ModifiedComponent> modifiedComponents = new ArrayList<ModifiedComponent>();
+		Set<Dependency> dependencies = new HashSet<Dependency>();
+		Dependency dependency = null;
+		ArrayList<MyError> errors = new ArrayList<MyError>(); // contiene los errores del release.
+		// Validacion del Release con la configuracion por secciones del sistema.
+		try {
+
+			Release release = releaseService.findReleaseById(Integer.parseInt(rc.getRelease_id()));
+			errors = validSections(release, errors, rc);
+			// Si no tiene errores se guarda
+
+			for (Integer idAmbient : rc.getAmbient()) {
+				ambients.add(ambientService.findById(idAmbient, rc.getSystemCode()));
+			}
+
+			for (Integer idComponent : rc.getModifiedComponent()) {
+				modifiedComponents.add(modifiedComponentService.findById(idComponent));
+			}
+
+			ReleaseUser releaseUser = releaseService.findReleaseUserById(Integer.parseInt(rc.getRelease_id()));
+			for (Integer to_id : rc.getDependenciesFunctionals()) {
+				dependency = new Dependency();
+				dependency.setId(0);
+				dependency.setRelease(releaseUser);
+				dependency.setTo_release(releaseService.findReleaseUserById(to_id));
+				dependency.setMandatory(release.isMandatory(dependency));
+				dependency.setIsFunctional(true);
+				dependencies.add(dependency);
+			}
+			for (Integer to_id : rc.getDependenciesTechnical()) {
+				dependency = new Dependency();
+				dependency.setId(0);
+				dependency.setRelease(releaseUser);
+				dependency.setTo_release(releaseService.findReleaseUserById(to_id));
+				dependency.setMandatory(release.isMandatory(dependency));
+				dependency.setIsFunctional(false);
+				dependencies.add(dependency);
+			}
+
+			release.checkModifiedComponents(modifiedComponents);
+			release.checkAmbientsExists(ambients);
+			release.checkDependenciesExists(dependencies);
+			if (rc.getSenders() != null) {
+				if (rc.getSenders().length() < 256) {
+					rc.setSenders(rc.getSenders());
+				} else {
+					rc.setSenders(release.getSenders());
+				}
+			}
+
+			if (rc.getMessage() != null) {
+				if (rc.getMessage().length() < 256) {
+					rc.setMessage(rc.getMessage());
+				} else {
+					rc.setMessage(release.getMessage());
+				}
+			}
+			releaseService.saveRelease(release, rc);
+
+			res.setStatus("success");
+			if (errors.size() > 0) {
+				// Se adjunta lista de errores
+				res.setStatus("fail");
+				res.setErrors(errors);
+			}
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "release");
+			res.setStatus("exception");
+			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			res.setStatus("exception");
+			res.setException("Error al guardar el release: " + e.getMessage());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -643,6 +747,10 @@ public class ReleaseController extends BaseController {
 				releaseService.save(release, requirement_name);
 			}
 			res.setData(release.getId() + "");
+			String basePath = env.getProperty("fileStore.path");
+			ReleaseSummaryFile releaseSummary = releaseService.findByIdSummaryFile(release.getId());
+			Project project = projectService.findById(release.getSystem().getProyectId());
+			res.setPath(CommonUtils.createPath(release.getId(),basePath,releaseSummary,project));
 			return res;
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
@@ -722,167 +830,301 @@ public class ReleaseController extends BaseController {
 		return res;
 	}
 
-	@RequestMapping(value = "/saveRelease", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse saveRelease(HttpServletRequest request,
-			@ModelAttribute("ReleaseCreate") ReleaseCreate rc, ModelMap model, Locale locale, HttpSession session) {
-
-		JsonResponse res = new JsonResponse();
-		List<Ambient> ambients = new ArrayList<Ambient>();
-		List<ModifiedComponent> modifiedComponents = new ArrayList<ModifiedComponent>();
-		Set<Dependency> dependencies = new HashSet<Dependency>();
-		Dependency dependency = null;
-		ArrayList<MyError> errors = new ArrayList<MyError>(); // contiene los errores del release.
-		// Validacion del Release con la configuracion por secciones del sistema.
-		try {
-
-			Release release = releaseService.findReleaseById(Integer.parseInt(rc.getRelease_id()));
-			errors = validSections(release, errors, rc);
-			// Si no tiene errores se guarda
-
-			for (Integer idAmbient : rc.getAmbient()) {
-				ambients.add(ambientService.findById(idAmbient, rc.getSystemCode()));
-			}
-
-			for (Integer idComponent : rc.getModifiedComponent()) {
-				modifiedComponents.add(modifiedComponentService.findById(idComponent));
-			}
-
-			ReleaseUser releaseUser = releaseService.findReleaseUserById(Integer.parseInt(rc.getRelease_id()));
-			for (Integer to_id : rc.getDependenciesFunctionals()) {
-				dependency = new Dependency();
-				dependency.setId(0);
-				dependency.setRelease(releaseUser);
-				dependency.setTo_release(releaseService.findReleaseUserById(to_id));
-				dependency.setMandatory(release.isMandatory(dependency));
-				dependency.setIsFunctional(true);
-				dependencies.add(dependency);
-			}
-			for (Integer to_id : rc.getDependenciesTechnical()) {
-				dependency = new Dependency();
-				dependency.setId(0);
-				dependency.setRelease(releaseUser);
-				dependency.setTo_release(releaseService.findReleaseUserById(to_id));
-				dependency.setMandatory(release.isMandatory(dependency));
-				dependency.setIsFunctional(false);
-				dependencies.add(dependency);
-			}
-
-			release.checkModifiedComponents(modifiedComponents);
-			release.checkAmbientsExists(ambients);
-			release.checkDependenciesExists(dependencies);
-			if (rc.getSenders() != null) {
-				if (rc.getSenders().length() < 256) {
-					rc.setSenders(rc.getSenders());
-				} else {
-					rc.setSenders(release.getSenders());
-				}
-			}
-
-			if (rc.getMessage() != null) {
-				if (rc.getMessage().length() < 256) {
-					rc.setMessage(rc.getMessage());
-				} else {
-					rc.setMessage(release.getMessage());
-				}
-			}
-			releaseService.saveRelease(release, rc);
-			res.setStatus("success");
-			if (errors.size() > 0) {
-				// Se adjunta lista de errores
-				res.setStatus("fail");
-				res.setErrors(errors);
-			}
-		} catch (Exception e) {
-			Sentry.capture(e, "release");
-			res.setStatus("exception");
-			res.setException("Error al guardar el release: " + e.getMessage());
-			logger.log(MyLevel.RELEASE_ERROR, e.toString());
-		}
-		return res;
-	}
-
 	@RequestMapping(value = "/updateRelease/{releaseId}", method = RequestMethod.GET)
 	public String updateRelease(@PathVariable String releaseId, HttpServletRequest request, Locale locale,
 			HttpSession session, RedirectAttributes redirectAttributes) {
 		try {
 			ReleaseEditWithOutObjects release = null;
-
+			Release releaseComplete = new Release();
 			if (CommonUtils.isNumeric(releaseId)) {
 				release = releaseService.findEditByIdWithOutObjects(Integer.parseInt(releaseId));
+				releaseComplete.setId(release.getId());
+				releaseComplete.setNode(release.getNode());
+				releaseComplete.setSystem(release.getSystem());
+				releaseComplete.setCreateDate(release.getCreateDate());
+				releaseComplete.setReleaseNumber(release.getReleaseNumber());
+
+				releaseComplete.setStatus(release.getStatus());
+				User user = userService.findUserById(release.getUser().getId());
+				releaseComplete.setUser(user);
 			}
 			// Si el release no existe se regresa al inicio.
 			if (release == null) {
 				return "redirect:/";
 			}
 			// Verificar si existe un flujo para el sistema
-			Release releaseNode=new Release();
-			releaseNode.setSystem(release.getSystem());
-			Node node = nodeService.existWorkFlow(releaseNode);
-			Status status = statusService.findByName("Solicitado");
 
-			release.setStatus(status);
-			release.setMotive(status.getMotive());
-			release.setOperator(getUserLogin().getFullName());
-
-			if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
-				if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
-					EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
-					ReleaseEditWithOutObjects releaseEmail = release;
-					Thread newThread = new Thread(() -> {
-						try {
-							emailService.sendMail(releaseEmail, email);
-						} catch (Exception e) {
-							Sentry.capture(e, "release");
-						}
-
-					});
-					newThread.start();
-				}
+			String[] listNumRelease = release.getReleaseNumber().split("\\.");
+			String tpo = listNumRelease[1];
+			if (tpo.contains("TPO")) {
+				tpo = tpo.replace("TPO", "TPO-");
 			}
-
-			if (node != null) {
-				/*
-				release.setNode(node);
-
-				// si tiene un nodo y ademas tiene actor se notifica por correo
-				if (node != null && node.getActors().size() > 0) {
-					Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
-					EmailTemplate emailActor = emailService.findById(idTemplate);
-					WFRelease releaseEmail = new WFRelease();
-					releaseEmail.convertReleaseToWFRelease(release);
-					Thread newThread = new Thread(() -> {
-						try {
-							emailService.sendMailActor(releaseEmail, emailActor);
-						} catch (Exception e) {
-							Sentry.capture(e, "release");
-						}
-
-					});
-					newThread.start();
-				}
-
-				// si tiene un nodo y ademas tiene actor se notifica por correo
-				if (node != null && node.getUsers().size() > 0) {
-					Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
-
-					EmailTemplate emailNotify = emailService.findById(idTemplate);
-					WFRelease releaseEmail = new WFRelease();
-					releaseEmail.convertReleaseToWFRelease(release);
-					String user = getUserLogin().getFullName();
-					Thread newThread = new Thread(() -> {
-						try {
-							
-							emailService.sendMailNotify(releaseEmail, emailNotify, user);
-						} catch (Exception e) {
-							Sentry.capture(e, "release");
-						}
-
-					});
-					newThread.start();
-				}
-				*/
+			if (tpo.contains("BT")) {
+				tpo = tpo.replace("BT", "BT-");
 			}
-			releaseService.requestRelease(release);
+			Request requestVer = requestService.findByNameCode(tpo);
+
+			// aca empezaria la verificacion
+
+			if (requestVer == null) {
+
+				Node node = nodeService.existWorkFlow(releaseComplete);
+				Status status = statusService.findByName("Solicitado");
+
+				release.setStatus(status);
+				release.setMotive(status.getMotive());
+				release.setOperator(getUserLogin().getFullName());
+
+				if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
+					if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+						EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
+						ReleaseEditWithOutObjects releaseEmail = release;
+						Thread newThread = new Thread(() -> {
+							try {
+								emailService.sendMail(releaseEmail, email);
+							} catch (Exception e) {
+								Sentry.capture(e, "release");
+							}
+
+						});
+						newThread.start();
+					}
+				}
+
+				if (node != null) {
+					int nodeId1 = node.getId();
+					release.setNode(node);
+					node = checkNode(node, releaseComplete, requestVer);
+					release.setNode(node);
+					int nodeId2 = node.getId();
+					node = release.getNode();
+					release.setStatus(node.getStatus());
+					release.setMotive("Automatico");
+					release.setOperator("Automatico");
+
+					// si tiene un nodo y ademas tiene actor se notifica por correo
+					if (node != null && node.getActors().size() > 0) {
+						Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+						EmailTemplate emailActor = emailService.findById(idTemplate);
+						WFRelease releaseEmail = new WFRelease();
+						releaseEmail.convertReleaseToWFRelease(releaseComplete);
+						Thread newThread = new Thread(() -> {
+							try {
+								emailService.sendMailActor(releaseEmail, emailActor);
+							} catch (Exception e) {
+								Sentry.capture(e, "release");
+							}
+
+						});
+						newThread.start();
+					}
+
+					// si tiene un nodo y ademas tiene actor se notifica por correo
+					if (node != null && node.getUsers().size() > 0) {
+						Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+						EmailTemplate emailNotify = emailService.findById(idTemplate);
+						WFRelease releaseEmail = new WFRelease();
+						releaseEmail.convertReleaseToWFRelease(releaseComplete);
+						String user = getUserLogin().getFullName();
+						Thread newThread = new Thread(() -> {
+							try {
+
+								emailService.sendMailNotify(releaseEmail, emailNotify, user);
+							} catch (Exception e) {
+								Sentry.capture(e, "release");
+							}
+
+						});
+						newThread.start();
+					}
+					if (nodeId1 != nodeId2) {
+						String statusName=releaseService.getLastStatusHistory(release.getId());
+						if(!statusName.equals(release.getStatus().getName())) {
+							releaseService.requestRelease(release);
+						}
+						
+					}
+				}
+
+			} else {
+				// aca tomariamos el TPO se revisa si vienen un automatico si esta automatico
+				// procedemos a pasar al estado necesario
+				// seleccionado por el gestor se busca el nombre del estado ahi seria en el
+				// estado que nos vamos a ubicar
+				// pasaria a la siguiente verificacion si no trae nada vamos por prioridad
+				// revisamos el primero del nodo y pasamos a ese estado
+				// si no hay el primero se verifica el segundo y pasamos al segundo y si no
+				// repetimos y pasamos al tercer hay que verifiricar si el siguiente nodo
+				// tiene salto
+
+				if (requestVer.getAuto() == 1) {
+
+					Node node = nodeService.existWorkFlow(releaseComplete);
+					Status status = statusService.findByName("Solicitado");
+
+					release.setStatus(status);
+					release.setMotive(status.getMotive());
+					release.setOperator(getUserLogin().getFullName());
+					release.setNode(node);
+					if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
+						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+							EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
+							ReleaseEditWithOutObjects releaseEmail = release;
+							Thread newThread = new Thread(() -> {
+								try {
+									emailService.sendMail(releaseEmail, email);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
+						}
+					}
+					releaseService.requestRelease(release);
+					if (node != null) {
+						WorkFlow workflow = node.getWorkFlow();
+						node = nodeService.findByIdAndWorkFlow(requestVer.getNodeName(), workflow.getId());
+
+						int nodeId1 = node.getId();
+						node = checkNode(node, releaseComplete, requestVer);
+						release.setNode(node);
+						release.setStatus(node.getStatus());
+						release.setMotive("Automatico");
+						release.setOperator("Automatico");
+						int nodeId2 = node.getId();
+
+						if (nodeId1 == nodeId2) {
+							// si tiene un nodo y ademas tiene actor se notifica por correo
+							if (node != null && node.getActors().size() > 0) {
+								Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+								EmailTemplate emailActor = emailService.findById(idTemplate);
+								WFRelease releaseEmail = new WFRelease();
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
+								Thread newThread = new Thread(() -> {
+									try {
+										emailService.sendMailActor(releaseEmail, emailActor);
+									} catch (Exception e) {
+										Sentry.capture(e, "release");
+									}
+
+								});
+								newThread.start();
+							}
+
+							// si tiene un nodo y ademas tiene actor se notifica por correo
+							if (node != null && node.getUsers().size() > 0) {
+								Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+								EmailTemplate emailNotify = emailService.findById(idTemplate);
+								WFRelease releaseEmail = new WFRelease();
+								releaseEmail.convertReleaseToWFRelease(releaseComplete);
+								String user = getUserLogin().getFullName();
+								Thread newThread = new Thread(() -> {
+									try {
+
+										emailService.sendMailNotify(releaseEmail, emailNotify, user);
+									} catch (Exception e) {
+										Sentry.capture(e, "release");
+									}
+
+								});
+								newThread.start();
+							}
+						}
+						if (nodeId1 != nodeId2) {
+							String statusName=releaseService.getLastStatusHistory(release.getId());
+							if(!statusName.equals(release.getStatus().getName())) {
+								releaseService.requestRelease(release);
+							}
+						}
+
+					}
+
+				} else {
+					Node node = nodeService.existWorkFlow(releaseComplete);
+					Status status = statusService.findByName("Solicitado");
+
+					release.setStatus(status);
+					release.setMotive(status.getMotive());
+					release.setOperator(getUserLogin().getFullName());
+
+					if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
+						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+							EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
+							ReleaseEditWithOutObjects releaseEmail = release;
+							Thread newThread = new Thread(() -> {
+								try {
+									emailService.sendMail(releaseEmail, email);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
+						}
+					}
+
+					if (node != null) {
+						release.setNode(node);
+						int nodeId1 = node.getId();
+						node = checkNode(node, releaseComplete, requestVer);
+						release.setNode(node);
+						release.setStatus(node.getStatus());
+						release.setMotive("Automatico");
+						release.setOperator("Automatico");
+						int nodeId2 = node.getId();
+
+						// si tiene un nodo y ademas tiene actor se notifica por correo
+						if (node != null && node.getActors().size() > 0) {
+							Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
+							EmailTemplate emailActor = emailService.findById(idTemplate);
+							WFRelease releaseEmail = new WFRelease();
+							releaseEmail.convertReleaseToWFRelease(releaseComplete);
+							Thread newThread = new Thread(() -> {
+								try {
+									emailService.sendMailActor(releaseEmail, emailActor);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
+						}
+
+						// si tiene un nodo y ademas tiene actor se notifica por correo
+						if (node != null && node.getUsers().size() > 0) {
+							Integer idTemplate = Integer.parseInt(paramService.findByCode(23).getParamValue());
+
+							EmailTemplate emailNotify = emailService.findById(idTemplate);
+							WFRelease releaseEmail = new WFRelease();
+							releaseEmail.convertReleaseToWFRelease(releaseComplete);
+							String user = getUserLogin().getFullName();
+							Thread newThread = new Thread(() -> {
+								try {
+
+									emailService.sendMailNotify(releaseEmail, emailNotify, user);
+								} catch (Exception e) {
+									Sentry.capture(e, "release");
+								}
+
+							});
+							newThread.start();
+						}
+
+						if (nodeId1 != nodeId2) {
+							String statusName=releaseService.getLastStatusHistory(release.getId());
+							if(!statusName.equals(release.getStatus().getName())) {
+								releaseService.requestRelease(release);
+							}
+						}
+
+					}
+
+				}
+
+			}
 
 			return "redirect:/release/summary-" + release.getId();
 		} catch (Exception e) {
@@ -891,6 +1133,122 @@ public class ReleaseController extends BaseController {
 		}
 
 		return "redirect:/";
+	}
+
+	private Node checkNode(Node node, Release release, Request requestVer) throws SQLException {
+		if (node != null) {
+			if (requestVer != null) {
+				release.setStatus(node.getStatus());
+				release.setMotive(requestVer.getMotive());
+				release.setOperator("Automatico");
+				updateRelease(node, release, requestVer, release.getMotive());
+				release.setNodeFinish(node);
+				node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				if (node == null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if (node == null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if (node == null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				if (node == null) {
+					node = release.getNodeFinish();
+				}
+				requestVer = null;
+				return checkNode(node, release, requestVer);
+			} else if (node.getSkipByRequest()) {
+				updateRelease(node, release, requestVer, node.getMotiveSkipR());
+				node = nodeService.findById(node.getSkipByRequestId());
+				if (node == null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if (node == null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if (node == null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				requestVer = null;
+				return checkNode(node, release, requestVer);
+			} else if (node.getSkipReapprove()) {
+				ReleaseTrackingShow tracking = releaseService.findReleaseTracking(release.getId());
+				Set<ReleaseTracking> trackingList = tracking.getTracking();
+				boolean verification = false;
+				for (ReleaseTracking track : trackingList) {
+					if (track.getStatus().equals("En Aprobacion")) {
+						verification = true;// se verifica si ya paso por aprobacion si no se hace lo normal
+					}
+				}
+				if (verification) {
+					updateRelease(node, release, requestVer, node.getMotiveSkipRA());
+					node = nodeService.findById(node.getSkipReapproveId());
+
+					if (node == null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+					}
+					if (node == null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+					}
+					if (node == null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipId());
+					}
+					requestVer = null;
+					return checkNode(node, release, requestVer);
+				} else {
+					node = nodeService.findById(node.getSkipReapproveId());
+
+					if (node == null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+					}
+					if (node == null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+					}
+					if (node == null) {
+						node = nodeService.findById(release.getNodeFinish().getSkipId());
+					}
+					return node;
+				}
+
+			} else if (node.getSkipNode()) {
+				updateRelease(node, release, requestVer, node.getMotiveSkip());
+				node = nodeService.findById(node.getSkipId());
+				if (node == null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipReapproveId());
+				}
+				if (node == null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipByRequestId());
+				}
+				if (node == null) {
+					node = nodeService.findById(release.getNodeFinish().getSkipId());
+				}
+				requestVer = null;
+				return checkNode(node, release, requestVer);
+			} else {
+				return node;
+			}
+		}
+		return null;
+
+	}
+
+	public void updateRelease(Node node, Release release, Request requestVer, String motive) {
+
+		try {
+			release.setNode(node);
+			release.setStatus(node.getStatus());
+			if (requestVer == null) {
+				release.setMotive(motive);
+			} else {
+				release.setMotive(motive);
+			}
+			release.setOperator("Automatico");
+			releaseService.requestRelease(release);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public ArrayList<MyError> validSections(Release release, ArrayList<MyError> errors, ReleaseCreate rc) {
@@ -1063,7 +1421,7 @@ public class ReleaseController extends BaseController {
 
 		return release;
 	}
-	
+
 	@RequestMapping(value = "/tracking/{id}", method = RequestMethod.GET)
 	public @ResponseBody JsonResponse tracking(@PathVariable int id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {

@@ -67,6 +67,8 @@ public class Node implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ESTADO_ID", nullable = true)
 	private Status status;
+	
+	
 
 	@Column(name = "X")
 	private Float x;
@@ -76,6 +78,22 @@ public class Node implements Serializable {
 
 	@Column(name = "GRUPO")
 	private String group;
+	
+	@Column(name = "SKIP_NODE_ID")
+	private Integer skipId;
+	
+	@Column(name = "REQUEST_NODE_ID")
+	private Integer skipByRequestId;
+	
+	@Column(name = "REAPPROVE_ID")
+	private Integer skipReapproveId;
+	
+	@Column(name = "SKIPBYREQUEST")
+	private Boolean skipByRequest;
+	
+
+	@Column(name = "REAPPROVE")
+	private Boolean skipReapprove;
 
 	@Transient
 	private Integer workFlowId;
@@ -85,6 +103,19 @@ public class Node implements Serializable {
 
 	@Column(name = "CORREO")
 	private Boolean sendEmail;
+	
+	@Column(name = "SKIP")
+	private Boolean skipNode;
+	
+	@Column(name = "MOTIVE_R")
+	private String motiveSkipR;
+	
+	@Column(name = "MOTIVE_RA")
+	private String motiveSkipRA;
+	
+	@Column(name = "MOTIVE_S")
+	private String motiveSkip;
+
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -269,4 +300,77 @@ public class Node implements Serializable {
 		this.actors.add(user);
 	}
 
+	public Integer getSkipId() {
+		return skipId;
+	}
+
+	public void setSkipId(Integer skipId) {
+		this.skipId = skipId;
+	}
+	
+	public Integer getSkipByRequestId() {
+		return skipByRequestId;
+	}
+
+	public void setSkipByRequestId(Integer skipByRequestId) {
+		this.skipByRequestId = skipByRequestId;
+	}
+
+	public Integer getSkipReapproveId() {
+		return skipReapproveId;
+	}
+
+	public void setSkipReapproveId(Integer skipReapproveId) {
+		this.skipReapproveId = skipReapproveId;
+	}
+
+	public Boolean getSkipByRequest() {
+		return skipByRequest;
+	}
+
+	public void setSkipByRequest(Boolean skipByRequest) {
+		this.skipByRequest = skipByRequest;
+	}
+
+	public Boolean getSkipReapprove() {
+		return skipReapprove;
+	}
+
+	public void setSkipReapprove(Boolean skipReapprove) {
+		this.skipReapprove = skipReapprove;
+	}
+
+	public Boolean getSkipNode() {
+		return skipNode;
+	}
+
+	public void setSkipNode(Boolean skipNode) {
+		this.skipNode = skipNode;
+	}
+
+	public String getMotiveSkipR() {
+		return motiveSkipR;
+	}
+
+	public void setMotiveSkipR(String motiveSkipR) {
+		this.motiveSkipR = motiveSkipR;
+	}
+
+	public String getMotiveSkipRA() {
+		return motiveSkipRA;
+	}
+
+	public void setMotiveSkipRA(String motiveSkipRA) {
+		this.motiveSkipRA = motiveSkipRA;
+	}
+
+	public String getMotiveSkip() {
+		return motiveSkip;
+	}
+
+	public void setMotiveSkip(String motiveSkip) {
+		this.motiveSkip = motiveSkip;
+	}
+
+	
 }

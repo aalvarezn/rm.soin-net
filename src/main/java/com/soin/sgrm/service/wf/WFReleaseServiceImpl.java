@@ -47,13 +47,13 @@ public class WFReleaseServiceImpl implements WFReleaseService {
 	@Override
 	public JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength,
 			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,
-			Object[] systemsId) throws SQLException, ParseException {
-		return dao.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId, statusId, systemsId);
+			Object[] systemsId,Integer userId) throws SQLException, ParseException {
+		return dao.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId, statusId, systemsId,userId);
 	}
 
 	@Override
-	public Integer countByType(String group, Object[] ids) {
-		return dao.countByType(group, ids);
+	public Integer countByType(String group, Object[] ids,Integer userId) {
+		return dao.countByType(group, ids,userId);
 	}
 
 	@Override
