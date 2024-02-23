@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
@@ -65,6 +64,7 @@ import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.TypeObject;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.wf.NodeRFC;
 import com.soin.sgrm.security.UserLogin;
 import com.soin.sgrm.service.ActionEnvironmentService;
 import com.soin.sgrm.service.AmbientService;
@@ -138,6 +138,12 @@ public class WebServiceController extends BaseController {
 	@Autowired
 	UserInfoService userInfoService;
 	@Autowired
+	ParameterService paramService;
+	@Autowired
+	SigesService sigeService;
+	@Autowired
+	com.soin.sgrm.service.UserService userService ;
+  @Autowired  
 	private Environment env;
 	@Autowired
 	private ProjectService projectService;
@@ -584,6 +590,89 @@ public class WebServiceController extends BaseController {
 		return res;
 	}
 
+	@RequestMapping(value = "/sendMail", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse sendMail(HttpServletRequest request, Model model,
+			@RequestParam(value = "id", required = true) String id,
+			@RequestParam(value = "type", required = true) Integer type,
+			@RequestParam(value = "dateChange", required = false) String dateChange,
+			@RequestParam(value = "idUser", required = false) Integer idUser
+			) {
+		JsonResponse res = new JsonResponse();
+		Release release=null;
+		if(type==1) {
+			
+		
+		try {
+			release = releaseService.findReleaseById(Integer.parseInt(id));
+		} catch (NumberFormatException | SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Status status = statusService.findByName("Solicitado");
+
+		release.setStatus(status);
+		release.setMotive(status.getMotive());
+		User user=userService.findUserById(idUser);
+		release.setOperator(user.getFullName());
+		release.setUser(user);
+		if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
+			if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+				EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
+				Release releaseEmail = release;
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMail(releaseEmail, email);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
+		}
+		}else {
+			RFC rfc = null;
+
+			if (CommonUtils.isNumeric(id)) {
+				rfc = rfcService.findById((long) Integer.parseInt(id));
+			}
+			
+			StatusRFC status = statusRFCService.findByKey("name", "Solicitado");
+
+//			if (node != null)
+
+//				release.setNode(node);
+
+			rfc.setStatus(status);
+			rfc.setMotive(status.getReason());
+			rfc.setRequestDate((CommonUtils.getSystemTimestamp()));
+			Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+			rfc.setRequestDate(dateFormat);
+			User user=userService.findUserById(idUser);
+			rfc.setOperator(user.getFullName());
+			rfc.setUser(user);
+			Siges siges = sigeService.findById(rfc.getSiges().getId());
+			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
+				if (siges.getEmailTemplate() != null) {
+					EmailTemplate email = siges.getEmailTemplate();
+					RFC rfcEmail = rfc;
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailRFC(rfcEmail, email);
+						} catch (Exception e) {
+							Sentry.capture(e, "rfc");
+						}
+
+					});
+					newThread.start();
+				}
+			}
+		}
+		return res;
+	}
+	
+
+
 	private String getSubject(EmailTemplate email, RFC rfc) {
 		String temp = "";
 		/* ------ Subject ------ */
@@ -725,5 +814,4 @@ public class WebServiceController extends BaseController {
 		return "";
 
 	}
-
 }
