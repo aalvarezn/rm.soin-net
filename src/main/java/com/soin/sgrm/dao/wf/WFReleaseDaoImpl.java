@@ -198,6 +198,7 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 		List<RequestFast> requestList = crit2.list();
 		Disjunction disjunction = Restrictions.disjunction();
 		// Valores de busqueda en la tabla
+		if(sSearch.equals("")) {
 		for (RequestFast request : requestList) {
 			String codeSoing=request.getCode_soin().replaceFirst("-", "");
 			if (!codeSoing.equals("")) {
@@ -205,7 +206,9 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 		    }
 			
 		}
-		if(requestList.size()!=0) {
+		}
+		
+		if(requestList.size()!=0 || !sSearch.equals("")) {
 			crit.createAlias("system", "system");
 			crit.createAlias("status", "status");
 			crit.createAlias("user", "user");
@@ -214,14 +217,26 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 			crit.createAlias("node.workFlow.type", "type");
 			if (ids != null)
 				crit.add(Restrictions.in("system.id", ids));
-			crit.add(disjunction);
+			
+			
+			
 			if (filtred != null) {
 				crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
 			}
-			crit.add(Restrictions.or(
-					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+			if(sSearch.equals("")) {
+				crit.add(disjunction);
+				crit.add(Restrictions.or(
+						Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+			}else {
+				crit.add(Restrictions.or(
+						Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+			}
+			
 			if (dateRange != null) {
 				if (dateRange.length > 1) {
 					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
