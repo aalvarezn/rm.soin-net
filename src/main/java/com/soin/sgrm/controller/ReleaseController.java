@@ -1122,6 +1122,8 @@ public class ReleaseController extends BaseController {
 							}
 						}
 
+					}else {
+						releaseService.requestRelease(release);
 					}
 
 				}
