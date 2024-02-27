@@ -899,9 +899,14 @@ public class ReleaseController extends BaseController {
 					int nodeId2 = node.getId();
 					node = release.getNode();
 					release.setStatus(node.getStatus());
-					release.setMotive("Automatico");
-					release.setOperator("Automatico");
-
+					if(!release.getStatus().getName().equals("Solicitado")) {
+						release.setMotive("Automatico");
+						release.setOperator("Automatico");
+					}else {
+						releaseService.requestRelease(release);
+					}
+					releaseComplete.setNode(node);
+					releaseComplete.setStatus(node.getStatus());
 					// si tiene un nodo y ademas tiene actor se notifica por correo
 					if (node != null && node.getActors().size() > 0) {
 						Integer idTemplate = Integer.parseInt(paramService.findByCode(22).getParamValue());
@@ -984,7 +989,7 @@ public class ReleaseController extends BaseController {
 							newThread.start();
 						}
 					}
-					releaseService.requestRelease(release);
+					
 					if (node != null) {
 						WorkFlow workflow = node.getWorkFlow();
 						node = nodeService.findByIdAndWorkFlow(requestVer.getNodeName(), workflow.getId());
@@ -993,9 +998,16 @@ public class ReleaseController extends BaseController {
 						node = checkNode(node, releaseComplete, requestVer);
 						release.setNode(node);
 						release.setStatus(node.getStatus());
-						release.setMotive("Automatico");
-						release.setOperator("Automatico");
+						if(!release.getStatus().getName().equals("Solicitado")) {
+							release.setMotive("Automatico");
+							release.setOperator("Automatico");
+						}else {
+							releaseService.requestRelease(release);
+						}
+						releaseComplete.setNode(node);
+						releaseComplete.setStatus(node.getStatus());
 						int nodeId2 = node.getId();
+						
 
 						if (nodeId1 == nodeId2) {
 							// si tiene un nodo y ademas tiene actor se notifica por correo
@@ -1074,8 +1086,14 @@ public class ReleaseController extends BaseController {
 						node = checkNode(node, releaseComplete, requestVer);
 						release.setNode(node);
 						release.setStatus(node.getStatus());
-						release.setMotive("Automatico");
-						release.setOperator("Automatico");
+						if(!release.getStatus().getName().equals("Solicitado")) {
+							release.setMotive("Automatico");
+							release.setOperator("Automatico");
+						}else {
+							releaseService.requestRelease(release);
+						}
+						releaseComplete.setNode(node);
+						releaseComplete.setStatus(node.getStatus());
 						int nodeId2 = node.getId();
 
 						// si tiene un nodo y ademas tiene actor se notifica por correo
