@@ -354,8 +354,8 @@ public class NodeDaoImpl implements NodeDao {
 				"INNER JOIN TRAMITES_TRAMITE tt ON tn.TRAMITE_ID = tt.ID\r\n" + 
 				"INNER JOIN SISTEMAS_SISTEMA ss ON tt.SISTEMA_ID = ss.ID\r\n" +
 				"INNER JOIN  TRAMITES_NODO_ACTOR tna ON tna.NODO_ID =tn.ID\r\n"+
-				"WHERE tn.GRUPO = 'action' AND ss.PROYECTO_ID =%s AND tna.CUSTOMUSER_ID=%s ",
-				idProyecto,idUser);
+				"WHERE tn.GRUPO = 'action' AND ss.PROYECTO_ID =%s",
+				idProyecto);
 		query = getSession().createSQLQuery(sql);
 		listNode=query.list();
 		return listNode;

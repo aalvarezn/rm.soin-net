@@ -352,7 +352,7 @@ public class WorkFlowManagementController extends BaseController {
 					});
 					newThread.start();
 				}
-				if (nodeId1 != nodeId2) {
+				if (nodeId1 == nodeId2) {
 					wfReleaseService.wfStatusRelease(release);
 				}
 			}
