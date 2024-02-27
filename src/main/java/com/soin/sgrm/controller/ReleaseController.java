@@ -856,13 +856,19 @@ public class ReleaseController extends BaseController {
 
 			String[] listNumRelease = release.getReleaseNumber().split("\\.");
 			String tpo = listNumRelease[1];
+			Request requestVer=new Request();
 			if (tpo.contains("TPO")) {
 				tpo = tpo.replace("TPO", "TPO-");
+				 requestVer = requestService.findByNameCode(tpo);
 			}
 			if (tpo.contains("BT")) {
 				tpo = tpo.replace("BT", "BT-");
+				 requestVer = requestService.findByNameCode(tpo);
+			}else {
+				 requestVer = null;
 			}
-			Request requestVer = requestService.findByNameCode(tpo);
+			
+			
 
 			// aca empezaria la verificacion
 
