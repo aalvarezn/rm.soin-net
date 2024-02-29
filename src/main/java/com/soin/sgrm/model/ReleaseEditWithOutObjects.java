@@ -66,6 +66,9 @@ public class ReleaseEditWithOutObjects implements Serializable, Cloneable {
 
 	@Column(name = "REMITENTES")
 	private String senders;
+	
+	@Column(name = "BUGS")
+	private String senders;
 
 	@Column(name = "MENSAJE_DESARROLLADOR")
 	private String message;
