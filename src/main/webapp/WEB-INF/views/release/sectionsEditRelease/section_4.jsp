@@ -99,4 +99,3 @@
 
 <%@include file="../../plantilla/mail.jsp"%>
 
-<%@include file="../../plantilla/bugs.jsp"%>

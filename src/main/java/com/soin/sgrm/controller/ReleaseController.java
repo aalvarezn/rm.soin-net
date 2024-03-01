@@ -860,11 +860,10 @@ public class ReleaseController extends BaseController {
 			if (tpo.contains("TPO")) {
 				tpo = tpo.replace("TPO", "TPO-");
 				 requestVer = requestService.findByNameCode(tpo);
-			}
-			if (tpo.contains("BT")) {
+			}else if (tpo.contains("BT")) {
 				tpo = tpo.replace("BT", "BT-");
 				 requestVer = requestService.findByNameCode(tpo);
-			}else {
+			}else{
 				 requestVer = null;
 			}
 			
@@ -999,7 +998,7 @@ public class ReleaseController extends BaseController {
 					if (node != null) {
 						WorkFlow workflow = node.getWorkFlow();
 						node = nodeService.findByIdAndWorkFlow(requestVer.getNodeName(), workflow.getId());
-
+						if(node!=null) {
 						int nodeId1 = node.getId();
 						node = checkNode(node, releaseComplete, requestVer);
 						release.setNode(node);
@@ -1059,7 +1058,7 @@ public class ReleaseController extends BaseController {
 								releaseService.requestRelease(release);
 							}
 						}
-
+					}
 					}
 
 				} else {

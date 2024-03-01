@@ -68,7 +68,7 @@ public class ReleaseEditWithOutObjects implements Serializable, Cloneable {
 	private String senders;
 	
 	@Column(name = "BUGS")
-	private String senders;
+	private String bugs;
 
 	@Column(name = "MENSAJE_DESARROLLADOR")
 	private String message;
@@ -855,5 +855,14 @@ public class ReleaseEditWithOutObjects implements Serializable, Cloneable {
 	public void setNode(Node node) {
 		this.node = node;
 	}
+
+	public String getBugs() {
+		return bugs;
+	}
+
+	public void setBugs(String bugs) {
+		this.bugs = bugs;
+	}
+	
 	
 }
