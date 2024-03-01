@@ -112,6 +112,10 @@ $(function() {
 	 $('.tagInitMail').tagsInput({
 		 placeholder: 'Ingrese los correos'
 	 });
+	 
+	 $('.tagInitBugs').tagsInput({
+		 placeholder: 'Ingrese los bugs'
+	 });
 
 	$('.tagInit').tagsInput({
 		width:'400px'
@@ -510,6 +514,7 @@ function requestRelease() {
 			postConditions : $(form + ' #postConditions').val(),
 			// Datos Email
 			senders:$releaseEditForm.find('#senders').val(),
+			bugs:$releaseEditForm.find('#bugs').val(),
 			message:$releaseEditForm.find('#messagePer').val(),
 			
 			// Componentes de AIA
@@ -649,6 +654,7 @@ function sendRelease() {
 
 			// Datos Email
 			senders:$releaseEditForm.find('#senders').val(),
+			bugs:$releaseEditForm.find('#bugs').val(),
 			message:$releaseEditForm.find('#messagePer').val(),
 			
 			// Componentes de AIA
@@ -956,6 +962,7 @@ function sendPartialRelease() {
 			prodRollbackPlan : $releaseEditForm.find('#prodRollbackPlan').val(),
 			// Datos Email
 			senders:$releaseEditForm.find('#senders').val(),
+			bugs:$releaseEditForm.find('#bugs').val(),
 			message:$releaseEditForm.find('#messagePer').val(),
 			// Pruebas minimas
 			minimalEvidence : $releaseEditForm.find('#minimalEvidence').val(),
