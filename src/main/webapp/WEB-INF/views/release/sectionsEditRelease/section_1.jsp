@@ -181,3 +181,7 @@
 		</div>
 	</div>
 </c:if>
+
+<c:if test="${systemConfiguration.bugs}">
+<%@include file="../../plantilla/bugs.jsp"%>
+</c:if>

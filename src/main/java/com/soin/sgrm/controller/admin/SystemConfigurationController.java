@@ -78,6 +78,7 @@ public class SystemConfigurationController extends BaseController {
 			systemConfig.setDependencies(sys.getDependencies());
 			systemConfig.setAttachmentFiles(sys.getAttachmentFiles());
 			systemConfig.setApplicationVersion(sys.isApplicationVersion());
+			systemConfig.setBugs(sys.getBugs());
 			systemConfig = systemConfigurationService.update(systemConfig);
 			res.setObj(systemConfig);
 		} catch (Exception e) {
@@ -122,6 +123,7 @@ public class SystemConfigurationController extends BaseController {
 				systemConfig.setDependencies(sys.getDependencies());
 				systemConfig.setAttachmentFiles(sys.getAttachmentFiles());
 				systemConfig.setApplicationVersion(sys.isApplicationVersion());
+				systemConfig.setBugs(sys.getBugs());
 				SystemInfo system = new SystemInfo();
 				system.setId(sys.getSystemId());
 				systemConfig.setSystem(system);

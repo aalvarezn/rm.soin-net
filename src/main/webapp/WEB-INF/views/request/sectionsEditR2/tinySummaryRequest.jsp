@@ -144,7 +144,8 @@
 					<label for="email_address">Requerimientos de servicio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR2.requeriments}</p>
+							<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR2.requeriments}</textarea>
 						</div>
 					</div>
 				</div>

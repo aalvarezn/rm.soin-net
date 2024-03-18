@@ -122,6 +122,14 @@
 								</label>
 							</div>
 						</div>
+						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 align-right">
+							<div class="switch" style="margin-top: 20px;">
+								<label>Bugs<input
+									id="bugs" type="checkbox" value="0"><span
+									class="lever"></span>
+								</label>
+							</div>
+						</div>
 					</form>
 				</div>
 			</div>
