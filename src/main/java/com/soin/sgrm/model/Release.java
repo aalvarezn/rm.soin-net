@@ -282,6 +282,10 @@ public class Release implements Serializable, Cloneable {
 	
 	@Column(name = "MOTIVO")
 	private String motive;
+	
+	@Column(name = "BUGS")
+	private String bugs;
+
 
 	@Transient
 	private Node nodeFinish;
@@ -1037,6 +1041,7 @@ public class Release implements Serializable, Cloneable {
 			this.has_changes_in_bd = (rc.haveSql()) ? 1 : 0;
 
 			this.versionNumber = rc.getVersionNumber();
+			this.bugs=rc.getBugs();
 
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
