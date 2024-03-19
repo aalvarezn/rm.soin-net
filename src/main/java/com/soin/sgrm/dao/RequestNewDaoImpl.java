@@ -90,28 +90,6 @@ public class RequestNewDaoImpl extends AbstractDao<Integer,Request> implements R
 
 		if (proyectId != 0) {
 			crit.add(Restrictions.eq("proyect.id", proyectId));
-		}else {
-			List<System> systems=systemService.findByUserIncidence(userLogin);
-			List<Project>projects=new ArrayList<>();
-			
-			for(System system: systems) {
-				system.getProyect();
-				boolean veri=true;
-				for(Project project: projects) {
-					if(project.getId()==system.getProyect().getId()) {
-						veri=false;
-					}
-				}
-				if(veri) {
-					projects.add(system.getProyect());
-				}
-			}
-			List<Integer> projectsId= new ArrayList<>();
-			for(Project project: projects) {
-				projectsId.add(project.getId());
-			}
-			crit.add(Restrictions.in("proyect.id", projectsId));
-			
 		}
 		if (typeId != 0) {
 			crit.add(Restrictions.eq("typeRequest.id", typeId));
