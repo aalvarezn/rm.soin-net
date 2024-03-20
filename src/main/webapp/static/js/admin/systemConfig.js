@@ -86,6 +86,8 @@ function ajaxOpenSystemConfigModal(obj) {
 			activeInputCheckbox($systemConfigForm, 'attachmentFiles');
 		if (obj.applicationVersion)
 			activeInputCheckbox($systemConfigForm, 'applicationVersion');
+		if (obj.bugs)
+			activeInputCheckbox($systemConfigForm, 'bugs');
 		$('.selectpicker').selectpicker('refresh');
 		$systemConfigForm.find('#systemId').prop('disabled', true);
 		$('#btnUpdateSystemConfig').show();
@@ -125,6 +127,8 @@ function updateSystemConfig() {
 							boolean($systemConfigForm.find('#downEnvironment').val()),
 							environmentObservations :
 								boolean($systemConfigForm.find('#environmentObservations').val()),
+								bugs :
+									boolean($systemConfigForm.find('#bugs').val()),
 								suggestedTests :
 									boolean($systemConfigForm.find('#suggestedTests').val()),
 									configurationItems :
@@ -191,6 +195,8 @@ function saveSystemConfig() {
 								boolean($systemConfigForm.find('#environmentObservations').val()),
 								suggestedTests :
 									boolean($systemConfigForm.find('#suggestedTests').val()),
+									bugs :
+										boolean($systemConfigForm.find('#bugs').val()),
 									configurationItems :
 										boolean($systemConfigForm.find('#configurationItems').val()),
 										dependencies : boolean($systemConfigForm.find('#dependencies').val()),

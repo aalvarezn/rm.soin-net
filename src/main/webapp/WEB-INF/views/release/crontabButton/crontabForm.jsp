@@ -33,9 +33,9 @@
 		<div class="form-group m-b-0i">
 			<div class="form-line">
 				<input type="text" id="commandCron" name="commandCron"
-					maxlength="100" value="" class="form-control"
+					maxlength="500" value="" class="form-control"
 					placeholder="Ingrese un valor..">
-					<div class="help-info">M&aacute;x. 100 caracteres</div>
+					<div class="help-info">M&aacute;x. 500 caracteres</div>
 			</div>
 			<label id="commandCron_error" class="error fieldError"
 				for="commandCron" style="visibility: hidden;">Valor

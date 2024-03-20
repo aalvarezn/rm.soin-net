@@ -166,7 +166,9 @@
 						cliente</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR1.initialRequeriments}</p>
+							<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR1.initialRequeriments}</textarea>
+
 						</div>
 					</div>
 				</div>
@@ -174,7 +176,8 @@
 					<label for="email_address">Observaciones Generales</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR1.observations}</p>
+							<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR1.observations}</textarea>
 						</div>
 					</div>
 				</div>
