@@ -67,6 +67,9 @@ public class SystemConfiguration implements Serializable {
 	
 	@Column(name = "OBSERVACIONES")
 	private boolean observations;
+	
+	@Column(name = "BUGS")
+	private boolean bugs;
 
 	@Transient
 	private Integer systemId;
@@ -197,6 +200,14 @@ public class SystemConfiguration implements Serializable {
 
 	public void setObservations(boolean observations) {
 		this.observations = observations;
+	}
+
+	public boolean getBugs() {
+		return bugs;
+	}
+
+	public void setBugs(boolean bugs) {
+		this.bugs = bugs;
 	}
 	
 	
