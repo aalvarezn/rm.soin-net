@@ -511,6 +511,7 @@ public class ReleaseController extends BaseController {
 			} else {
 				model.addAttribute("ccs", "");
 			}
+			model.addAttribute("bugs", release.getBugs());
 			return "/release/editRelease";
 
 		} catch (Exception e) {

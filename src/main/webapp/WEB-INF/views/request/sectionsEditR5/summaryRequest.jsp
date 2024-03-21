@@ -50,12 +50,11 @@
 <link
 	href="<c:url value='/static/plugins/jquery-tag-input/jquery.tagsinput-revisited.css'/>"
 	rel="stylesheet" type="text/css">
-	<link rel="stylesheet" type="text/css"
+<link rel="stylesheet" type="text/css"
 	href="<c:url value='/static/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css'/>" />
 <style>
 @media ( max-width : 1864px) {
 	#requestDateEstimate+.bootstrap-datetimepicker-widget {
-	
 		position: relative;
 	}
 }
@@ -178,7 +177,8 @@
 					<label for="email_address">Cambios de servicio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR5.changeService}</p>
+							<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR5.changeService}</textarea>
 						</div>
 					</div>
 				</div>
@@ -186,7 +186,8 @@
 					<label for="email_address">Justificaci&oacute;n de cambio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR5.justify}</p>
+							<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR5.justify}</textarea>
 						</div>
 					</div>
 				</div>
