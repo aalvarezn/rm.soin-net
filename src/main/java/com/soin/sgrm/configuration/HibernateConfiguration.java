@@ -6,6 +6,7 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -49,7 +51,7 @@ public class HibernateConfiguration {
 		sessionFactory.setHibernateProperties(hibernateProperties());
 		return sessionFactory;
 	}
-
+	
 	@Bean(name = "dataSource")
 	public DataSource dataSource() {
 		String path = context.getContextPath();
@@ -115,7 +117,8 @@ public class HibernateConfiguration {
 		sessionFactory.setHibernateProperties(hibernateProperties());
 		return sessionFactory;
 	}
-
+	
+	
 	@Bean(name = "dataSourceCorp")
 	public DataSource dataSourceCorp() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -134,6 +137,75 @@ public class HibernateConfiguration {
 		return txManager;
 	}
 
+	/* DatasourcePostgres */
+
+	@Bean(name = "sessionFactoryPos")
+	public LocalSessionFactoryBean sessionFactoryPos() {
+		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+		sessionFactory.setDataSource(dataSourcePos());
+		sessionFactory.setPackagesToScan(new String[] { "com.soin.sgrm.model.pos" });
+		sessionFactory.setHibernateProperties(hibernatePropertiesPos());
+		return sessionFactory;
+	}
+
+	@Bean(name = "dataSourcePos")
+	public DataSource dataSourcePos() {
+		String path = context.getContextPath();
+		JndiTemplate jndiTemplate = new JndiTemplate();
+		// --- prd ---
+		if (path.contains("sgrmprod")) {
+			DataSource dataSource;
+			try {
+				dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrmpos");
+				return dataSource;
+			} catch (NamingException e) {
+				Sentry.capture(e, "hibernate");
+			}
+		} else {
+			// --- qa ---
+			if (path.contains("sgrm_qa")) {
+				DataSource dataSource;
+				try {
+					dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_qa_pos");
+					return dataSource;
+				} catch (NamingException e) {
+					Sentry.capture(e, "hibernate");
+				}
+
+			} else {
+				if (path.contains("sgrm_demos")) {
+					DataSource dataSource;
+					try {
+						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_demos_pos");
+						return dataSource;
+					} catch (NamingException e) {
+						Sentry.capture(e, "hibernate");
+					}
+				} else {
+
+					// --- desa ---
+					DataSource dataSource;
+					try {
+						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgm_desa_pos");
+						return dataSource;
+					} catch (NamingException e) {
+						Sentry.capture(e, "hibernate");
+					}
+				}
+			}
+		}
+		return null;
+	
+	}
+
+	@Bean(name = "transactionManagerPos")
+	@Autowired
+	public HibernateTransactionManager transactionManagerPos(@Qualifier("sessionFactoryPos") SessionFactory s) {
+		HibernateTransactionManager txManager = new HibernateTransactionManager();
+		txManager.setSessionFactory(s);
+		return txManager;
+	}
+	
 	private Properties hibernateProperties() {
 		Properties properties = new Properties();
 		String[] _properties = new String[] { "hibernate.dialect", "hibernate.show_sql", "hibernate.SQL",
@@ -144,6 +216,22 @@ public class HibernateConfiguration {
 			if (property != null)
 				properties.put(_properties[i], property);
 		}
+		return properties;
+	}
+	
+	
+	private Properties hibernatePropertiesPos() {
+		Properties properties = new Properties();
+		String[] _properties = new String[] { "hibernate.default_schema", "hibernate.format_sql",
+				"hibernate.connection.CharSet", "hibernate.connection.characterEncoding",
+				"hibernate.connection.useUnicode", "hibernate.naming.implicit-strategy",
+				"hibernate.naming.physical-strategy", "hibernate.globally_quoted_identifiers" };
+		for (int i = 0; i < _properties.length; i++) {
+			String property = appProperties.getProperty(_properties[i]);
+			if (property != null)
+				properties.put(_properties[i], property);
+		}
+		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
 		return properties;
 	}
 

@@ -63,6 +63,7 @@ import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRFC;
 import com.soin.sgrm.model.wf.WFRelease;

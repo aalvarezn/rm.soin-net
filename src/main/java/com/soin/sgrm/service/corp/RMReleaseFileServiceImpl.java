@@ -10,6 +10,7 @@ import com.soin.sgrm.dao.corp.RMReleaseFileDao;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.corp.RMReleaseFile;
+import com.soin.sgrm.model.pos.PReleaseEdit;
 
 @Transactional("transactionManagerCorp")
 @Service("RMReleaseFileService")
@@ -26,6 +27,11 @@ public class RMReleaseFileServiceImpl implements RMReleaseFileService {
 	@Override
 	public RMReleaseFile findByRelease(String release) {
 		return dao.findByRelease(release);
+	}
+
+	@Override
+	public List<RMReleaseFile> listByRelease(PReleaseEdit release) {
+		return dao.listByRelease(release);
 	}
 
 }

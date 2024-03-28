@@ -22,20 +22,15 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.Ambient;
 import com.soin.sgrm.model.Status;
-import com.soin.sgrm.model.User;
 import com.soin.sgrm.utils.Constant;
 
 @SuppressWarnings("serial")
@@ -67,8 +62,6 @@ public class Node implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ESTADO_ID", nullable = true)
 	private Status status;
-	
-	
 
 	@Column(name = "X")
 	private Float x;

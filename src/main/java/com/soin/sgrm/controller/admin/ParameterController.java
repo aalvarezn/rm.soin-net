@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Parameter;
+import com.soin.sgrm.model.pos.PParameter;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.pos.PParameterService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -35,10 +38,34 @@ public class ParameterController extends BaseController {
 
 	@Autowired
 	ParameterService parameterService;
+	
+	@Autowired
+	PParameterService pparameterService;
 
+	private final Environment environment;
+
+	@Autowired
+	public ParameterController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("parameters", parameterService.listAll());
+		
+		String profile = profileActive();
+		if (profile.equals("oracle")) {
+			model.addAttribute("parameters", parameterService.listAll());
+		} else if (profile.equals("postgres")) {
+			model.addAttribute("parameters", pparameterService.listAll());
+		}
+		
 		return "/admin/parameter/parameter";
 	}
 
@@ -46,7 +73,19 @@ public class ParameterController extends BaseController {
 	public @ResponseBody Parameter findParameter(@PathVariable Integer id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {
 		try {
-			Parameter param = parameterService.findById(id);
+			String profile = profileActive();
+			Parameter param = new Parameter();
+			if (profile.equals("oracle")) {
+				 param = parameterService.findById(id);
+			} else if (profile.equals("postgres")) {
+				PParameter pparam = pparameterService.findById(id);
+				param.setId(pparam.getId());
+				param.setCode(pparam.getCode());
+				param.setDate(pparam.getDate());
+				param.setDescription(pparam.getDescription());
+				param.setParamValue(pparam.getParamValue());
+			}
+			
 			return param;
 		} catch (Exception e) {
 			Sentry.capture(e, "parameter");
@@ -69,12 +108,24 @@ public class ParameterController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				Parameter parameter = parameterService.findById(param.getId());
-				parameter.setDescription(param.getDescription());
-				parameter.setParamValue(param.getParamValue());
-				parameter.setDate(CommonUtils.getSystemTimestamp());
-				parameterService.updateParameter(parameter);
-				res.setObj(parameter);
+				
+				String profile = profileActive();
+				if (profile.equals("oracle")) {
+					Parameter parameter = parameterService.findById(param.getId());
+					parameter.setDescription(param.getDescription());
+					parameter.setParamValue(param.getParamValue());
+					parameter.setDate(CommonUtils.getSystemTimestamp());
+					parameterService.updateParameter(parameter);
+					res.setObj(parameter);
+				} else if (profile.equals("postgres")) {
+					PParameter pparameter = pparameterService.findById(param.getId());
+					pparameter.setDescription(param.getDescription());
+					pparameter.setParamValue(param.getParamValue());
+					pparameter.setDate(CommonUtils.getSystemTimestamp());
+					pparameterService.updateParameter(pparameter);
+					res.setObj(pparameter);
+				}
+				
 			}
 
 		} catch (Exception e) {

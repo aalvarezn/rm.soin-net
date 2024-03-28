@@ -363,6 +363,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 		return dao.findEditByName(numRelease);
 	}
 
+
 	@Override
 	public ReleaseUserFast findByIdReleaseUserFast(Integer idRelease) {
 		// TODO Auto-generated method stub
@@ -383,4 +384,5 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public String getLastStatusHistory(Integer releaseId) {
 		return dao.getLastStatusHistory(releaseId);
 	}
+
 }

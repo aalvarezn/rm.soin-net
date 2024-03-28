@@ -37,10 +37,16 @@ import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Parameter;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PParameter;
+import com.soin.sgrm.model.pos.PUserInfo;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.service.corp.RMReleaseFileService;
+import com.soin.sgrm.service.pos.PEmailTemplateService;
+import com.soin.sgrm.service.pos.PParameterService;
+import com.soin.sgrm.service.pos.PUserInfoService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.EnviromentConfig;
 
@@ -63,6 +69,9 @@ public class HomeController extends BaseController {
 
 	@Autowired
 	UserInfoService userService;
+	
+	@Autowired
+	PUserInfoService puserService;
 
 	@Autowired
 	RMReleaseFileService rmReleaseSerivce;
@@ -75,9 +84,29 @@ public class HomeController extends BaseController {
 
 	@Autowired
 	private ParameterService paramService;
+	
+	@Autowired
+	private PEmailTemplateService pemailService;
+
+	@Autowired
+	private PParameterService pparamService;
 
 	EnviromentConfig envConfig = new EnviromentConfig();
 
+	private final Environment environment;
+
+	@Autowired
+	public HomeController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		for (String profile : activeProfiles) {
+			return profile;
+		}
+		return "";
+	}
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
@@ -177,27 +206,54 @@ public class HomeController extends BaseController {
 			Locale locale, HttpSession session) {
 		try {
 			if (CommonUtils.isValidEmailAddress(user.getEmailAddress())) {
-				UserInfo userInfo = userService.getUserByEmail(user.getEmailAddress());
-				if (userInfo != null) {
-					String code = "soin" + CommonUtils.getRandom();
-					String newPassword = encoder.encode(code);
-					userInfo.setPassword(newPassword);
-					Parameter param = paramService.findByCode(2);
-					if (param != null) {
-						EmailTemplate email = emailService.findById(Integer.parseInt(param.getParamValue()));
-						if (email != null) {
-							userService.changePassword(userInfo);
-							emailService.sendMail(userInfo, code, email);
-							model.addAttribute("successMessge", "Correo de restablecimiento enviado!");
+				
+				if(profileActive().equals("oracle")) {
+					UserInfo userInfo = userService.getUserByEmail(user.getEmailAddress());
+					if (userInfo != null) {
+						String code = "soin" + CommonUtils.getRandom();
+						String newPassword = encoder.encode(code);
+						userInfo.setPassword(newPassword);
+						Parameter param = paramService.findByCode(2);
+						if (param != null) {
+							EmailTemplate email = emailService.findById(Integer.parseInt(param.getParamValue()));
+							if (email != null) {
+								userService.changePassword(userInfo);
+								emailService.sendMail(userInfo, code, email);
+								model.addAttribute("successMessge", "Correo de restablecimiento enviado!");
+							} else {
+								model.addAttribute("errorMessge", "Correo definido no existe!");
+							}
 						} else {
-							model.addAttribute("errorMessge", "Correo definido no existe!");
+							model.addAttribute("errorMessge", "Parámetro de correo no definido!");
 						}
 					} else {
-						model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+						model.addAttribute("errorMessge", "Correo ingresado no existe!");
 					}
-				} else {
-					model.addAttribute("errorMessge", "Correo ingresado no existe!");
+				}else if(profileActive().equals("postgres")) {
+					PUserInfo userInfo = puserService.getUserByEmail(user.getEmailAddress());
+					if (userInfo != null) {
+						String code = "soin" + CommonUtils.getRandom();
+						String newPassword = encoder.encode(code);
+						userInfo.setPassword(newPassword);
+						PParameter param = pparamService.findByCode(2);
+						if (param != null) {
+							PEmailTemplate email = pemailService.findById(Integer.parseInt(param.getParamValue()));
+							if (email != null) {
+								puserService.changePassword(userInfo);
+								pemailService.sendMail(userInfo, code, email);
+								model.addAttribute("successMessge", "Correo de restablecimiento enviado!");
+							} else {
+								model.addAttribute("errorMessge", "Correo definido no existe!");
+							}
+						} else {
+							model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+						}
+					} else {
+						model.addAttribute("errorMessge", "Correo ingresado no existe!");
+					}
 				}
+			
+
 			} else {
 				model.addAttribute("errorMessge", "Correo ingresado invalido!");
 			}

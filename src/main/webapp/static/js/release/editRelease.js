@@ -199,6 +199,24 @@ $(function() {
 	modifiedComponentsList = listLi('listComponents');
 	actionsList = listRowsId('environmentActionTable');
 	initTableObjectRelease();
+	
+    const executeCheckboxes = document.querySelectorAll('[id^=obj_sql_exec_]');
+    console.log(executeCheckboxes);
+    executeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            var inputId = this.id.replace('obj_sql_exec_', 'form-tags-');
+            inputId=inputId+'_tag';
+           console.log(inputId)
+            const input = document.getElementById(inputId);
+            console.log(input);
+            if (this.checked) {
+                input.disabled = false;
+            } else {
+                input.disabled = true;
+                input.value = ''; // Clear the input value
+            }
+        });
+    });
 });
 
 function formHasChanges(){
@@ -768,6 +786,7 @@ function validEmptySection() {
 	var i;
 	for (i = 2; i <= 4; i++) {
 		if ($("#step" + i).find(".activeSection").length == 0) {
+			console.log($("#step" + i).find(".activeSection").length);
 			$("#empty_" + i).show();
 			$('.wizard .nav-tabs #'+i).addClass('disabled');
 			$('.wizard .nav-tabs #'+i).css("opacity", "0.4");

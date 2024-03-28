@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.Impact;
+import com.soin.sgrm.model.pos.PImpact;
 import com.soin.sgrm.service.ImpactService;
+import com.soin.sgrm.service.pos.PImpactService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 import com.soin.sgrm.exception.Sentry;
@@ -34,25 +37,56 @@ public class ImpactController extends BaseController {
 
 	@Autowired
 	ImpactService impactService;
+	
+	@Autowired
+	PImpactService pimpactService;
 
+	private final Environment environment;
+
+	@Autowired
+	public ImpactController(Environment environment) {
+		this.environment = environment;
+	}
+
+	public String profileActive() {
+		String[] activeProfiles = environment.getActiveProfiles();
+		 for (String profile : activeProfiles) {
+			 return profile;
+	        }
+		return "";
+	}
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
-		model.addAttribute("impacts", impactService.list());
-		model.addAttribute("impact", new Impact());
+		if(profileActive().equals("oracle")) {
+			model.addAttribute("impacts", impactService.list());
+			model.addAttribute("impact", new Impact());
+		}else if(profileActive().equals("postgres")) {
+			model.addAttribute("impacts", pimpactService.list());
+			model.addAttribute("impact", new Impact());
+		}
+	
 		return "/admin/impact/impact";
 	}
 
 	@RequestMapping(value = "/findImpact/{id}", method = RequestMethod.GET)
-	public @ResponseBody Impact findImpact(@PathVariable Integer id, HttpServletRequest request, Locale locale,
+	public @ResponseBody Object findImpact(@PathVariable Integer id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {
 		try {
-			Impact impact = impactService.findById(id);
-			return impact;
+			
+			if(profileActive().equals("oracle")) {
+				Impact impact = impactService.findById(id);
+				return impact;
+			}else if(profileActive().equals("postgres")) {
+				PImpact impact = pimpactService.findById(id);
+				return impact;
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "impact");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
+		return null;
 	}
 
 	@RequestMapping(path = "/saveImpact", method = RequestMethod.POST)
@@ -71,8 +105,18 @@ public class ImpactController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				impactService.save(impact);
-				res.setObj(impact);
+				
+				if(profileActive().equals("oracle")) {
+					impactService.save(impact);
+					res.setObj(impact);
+				}else if(profileActive().equals("postgres")) {
+					PImpact pimpact=new PImpact();
+					pimpact.setDescription(impact.getDescription());
+					pimpact.setName(impact.getName());
+					pimpactService.save(pimpact);
+					res.setObj(pimpact);
+				}
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "impact");
@@ -97,11 +141,22 @@ public class ImpactController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
-				Impact impactOrigin = impactService.findById(impact.getId());
-				impactOrigin.setName(impact.getName());
-				impactOrigin.setDescription(impact.getDescription());
-				impactService.update(impactOrigin);
-				res.setObj(impact);
+				
+				if(profileActive().equals("oracle")) {
+					Impact impactOrigin = impactService.findById(impact.getId());
+					impactOrigin.setName(impact.getName());
+					impactOrigin.setDescription(impact.getDescription());
+					impactService.update(impactOrigin);
+					res.setObj(impact);
+				}else if(profileActive().equals("postgres")) {
+					PImpact pimpactOrigin = pimpactService.findById(impact.getId());
+					pimpactOrigin.setName(impact.getName());
+					pimpactOrigin.setDescription(impact.getDescription());
+					pimpactOrigin.setId(impact.getId());
+					pimpactService.update(pimpactOrigin);
+					res.setObj(pimpactOrigin);
+				}
+				
 			}
 		} catch (Exception e) {
 			Sentry.capture(e, "impact");
@@ -116,7 +171,13 @@ public class ImpactController extends BaseController {
 	public @ResponseBody JsonResponse deleteImpact(@PathVariable Integer id, Model model) {
 		JsonResponse res = new JsonResponse();
 		try {
-			impactService.delete(id);
+			
+			if(profileActive().equals("oracle")) {
+				impactService.delete(id);
+			}else if(profileActive().equals("postgres")) {
+				pimpactService.delete(id);
+			}
+			
 			res.setStatus("success");
 			res.setObj(id);
 		} catch (Exception e) {

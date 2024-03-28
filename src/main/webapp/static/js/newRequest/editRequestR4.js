@@ -129,7 +129,6 @@ function dropDownChangeType(){
 			console.log('SGRM');
 			$('#ambientId').selectpicker('text','Produccion');
 			var x = document.getElementById('sgrmId');
-			console.log(x)
 			for (i = 0; i < x.length; i++) {
 					if(x.options[i].text.toLowerCase().includes('produccion')||x.options[i].text.toLowerCase().includes('producci\u00F3n')){
 						  $('#ambientId').append('<option value="' + x.options[i].value + '">' + x.options[i].text + '</option>');
@@ -405,9 +404,18 @@ function showUser(id){
 		$requestEditForm.find('#espec').val(data.espec);
 		
 		if(data.type.code==='SGRM'){
-			
+			 $requestEditForm.validate();
+	    	 $("input[id*=userGit]").rules("add",{
+	    		 required: true,
+	             maxlength: 255,
+	             messages:{
+	            	 required: "Ingrese un valor",
+		               maxlength: "No puede poseer mas de {0} caracteres"
+	             }
+	    	 });
+	    	 $('#divGit').show();
 			var x = document.getElementById('sgrmId');
-			console.log(x)
+			
 			for (i = 0; i < x.length; i++) {
 					if(x.options[i].text.toLowerCase().includes('produccion')||x.options[i].text.toLowerCase().includes('producci\u00F3n')){
 						console.log(x.options[i].text);
@@ -558,6 +566,8 @@ function modUser(){
 					$requestEditForm.find('#update').hide();
 					$dtUser.ajax.reload();
 					reloadPreview();
+					$( "input[id*=userGit]" ).rules( "remove");
+					$('#divGit').hide();
 					//$mdImpact.modal('hide');
 				},
 				error : function(x, t, m) {
@@ -642,6 +652,8 @@ function addUser(){
 					resetSpaces();
 					$dtUser.ajax.reload();
 					reloadPreview();
+					$( "input[id*=userGit]" ).rules( "remove");
+					$('#divGit').hide();
 					//$mdImpact.modal('hide');
 				},
 				error : function(x, t, m) {
@@ -673,7 +685,11 @@ function resetSpaces(){
 	$requestEditForm.find('#typeId').selectpicker('val',"");
 	$("#espec").attr("placeholder", 'Ingrese la especificaci\u00F3n.');
 }
+
+
+
 function initRequestFormValidation() {
+	
 	if($('#verifySos').val()==="true"){
 		$requestEditForm.validate({
 			rules : {
@@ -734,75 +750,123 @@ function initRequestFormValidation() {
 			unhighlight,
 			errorPlacement
 		});
+		
 	}else{
-	$requestEditForm.validate({
-		rules : {
-			'user':{
-				required : true,
-				maxlength : 255,
-			},
-			'email':{
-				required :true,
-				maxlength : 255,
-		        email: true
-			},
-			'userGit':{
-				required :true,
-				maxlength : 255,
-			},
-			'ambientId':{
-				required:true,		
-			},
-			'espec':{
-				required:true,
-				minlength : 2,			
-			},
-			'typeId':{
-				required:true,		
-			}
-			,
-			'permission':{
-				required:true,		
-			}
+		$('#divGit').hide();
+	    
+	    var commonRules =  {
+				'user':{
+					required : true,
+					maxlength : 255,
+				},
+				'email':{
+					required :true,
+					maxlength : 255,
+			        email: true
+				},
+				'ambientId':{
+					required:true,		
+				},
+				'espec':{
+					required:true,
+					minlength : 2,			
+				},
+				'typeId':{
+					required:true,		
+				}
+				,
+				'permission':{
+					required:true,		
+				}
+			};
+	    
+	    var commonMessages = {
 				
-			
-		},
-		messages : {
-			
-			'user' : {
-				required : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
-			'userGit' : {
-				required : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
-			'email' : {
-				required : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres",
-				email:"Ingrese un correo v\u00E1lido"
-					
-			},
+				'user' : {
+					required : "Ingrese un valor",
+					maxlength : "No puede poseer mas de {0} caracteres"
+				},
+				'email' : {
+					required : "Ingrese un valor",
+					maxlength : "No puede poseer mas de {0} caracteres",
+					email:"Ingrese un correo v\u00E1lido"
+						
+				},
 
-			'ambientId' : {
-				required : "Seleccione un valor"
-			},
-			'espec' : {
-				required : "Ingrese un valor",
-				minlength : "Debe ser un minimo de dos caracteres"
-			},
-			'typeId':{
-				required:"Se debe seleccionar un valor",		
-			},
-			'permission':{
-				required:"Se debe seleccionar al menos una opci\u00F3n",		
-			}
-		},
-		highlight,
-		unhighlight,
-		errorPlacement
-	});
+				'ambientId' : {
+					required : "Seleccione un valor"
+				},
+				'espec' : {
+					required : "Ingrese un valor",
+					minlength : "Debe ser un minimo de dos caracteres"
+				},
+				'typeId':{
+					required:"Se debe seleccionar un valor",		
+				},
+				'permission':{
+					required:"Se debe seleccionar al menos una opci\u00F3n",		
+				}
+			};
+
+	    var validationRules = Object.assign({}, commonRules);
+	    var validationMessages = Object.assign({}, commonMessages);
+	    
+	    $('#typeId').on('change', function(){
+
+
+	    	var typeRequest =$('#typeId option:selected').text();
+			if(typeRequest==='SGRM'){
+		    	 $requestEditForm.validate();
+		    	 $("input[id*=userGit]").rules("add",{
+		    		 required: true,
+		             maxlength: 255,
+		             messages:{
+		            	 required: "Ingrese un valor",
+			               maxlength: "No puede poseer mas de {0} caracteres"
+		             }
+		    	 });
+		    	 $('#divGit').show();
+	        } else {
+	        	$( "input[id*=userGit]" ).rules( "remove");
+	        	$('#divGit').hide();
+	        }
+	        console.log(validationRules);
+	        console.log(validationMessages);
+	        // Re-inicializar la validación
+	        $requestEditForm.validate({
+	            rules: validationRules,
+	            messages: validationMessages,
+	            highlight,
+	            unhighlight,
+	            errorPlacement
+	        });
+	     // Suponiendo que $requestEditForm es la instancia del formulario validado.
+	        var validator = $requestEditForm.validate();
+
+	        // Obtén todas las reglas activadas en el formulario.
+	        var allRules = validator.settings.rules;
+
+	        // Imprime las reglas en la consola.
+	        console.log("Reglas activadas en el formulario:  2", allRules);
+	    });
+	    
+	    $requestEditForm.validate({
+	        rules: validationRules,
+	        messages: validationMessages,
+	        highlight,
+	        unhighlight,
+	        errorPlacement
+	    });
+	 // Suponiendo que $requestEditForm es la instancia del formulario validado.
+	    var validator = $requestEditForm.validate();
+
+	    // Obtén todas las reglas activadas en el formulario.
+	    var allRules = validator.settings.rules;
+
+	    // Imprime las reglas en la consola.
+	    console.log("Reglas activadas en el formulario: 1", allRules);
 	}
+
 }
 
 function reloadPreview() {
@@ -863,7 +927,7 @@ function requestRequest() {
 		success : function(response) {
 			responseAjaxRequestRequest(response);
 			changeSaveButton(false);
-			origForm = $rfcEditForm.serialize();
+			origForm = $requestEditForm.serialize();
 			reloadPreview();
 		},
 		error: function(x, t, m) {

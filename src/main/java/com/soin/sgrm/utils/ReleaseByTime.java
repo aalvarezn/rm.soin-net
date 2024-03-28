@@ -1,8 +1,6 @@
 package com.soin.sgrm.utils;
 
 import java.io.Serializable;
-import java.util.HashMap;
-
 import javax.persistence.Entity;
 import javax.persistence.Table;
 

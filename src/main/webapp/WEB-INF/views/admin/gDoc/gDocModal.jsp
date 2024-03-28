@@ -28,7 +28,7 @@
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-							<label for="name">Hola de Excel</label>
+							<label for="name">Hoja de Excel</label>
 							<div class="form-group">
 								<div class="form-line">
 									<input type="text" class="form-control" id="spreadSheet"

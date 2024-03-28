@@ -983,6 +983,13 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		return release;
 	}
 
+	@Override
+	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
+		ReleaseSummaryFile release = (ReleaseSummaryFile) sessionFactory.getCurrentSession()
+				.createCriteria(ReleaseSummaryFile.class).add(Restrictions.eq("id", id)).uniqueResult();
+		return release;
+}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength,
@@ -1008,13 +1015,6 @@ public class ReleaseDaoImpl implements ReleaseDao {
 		json.setRecordsFiltered(recordsTotal);
 		json.setData(aaData);
 		return json;
-	}
-
-	@Override
-	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
-		ReleaseSummaryFile release = (ReleaseSummaryFile) sessionFactory.getCurrentSession()
-				.createCriteria(ReleaseSummaryFile.class).add(Restrictions.eq("id", id)).uniqueResult();
-		return release;
 
 	}
 

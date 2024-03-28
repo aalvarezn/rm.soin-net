@@ -533,6 +533,7 @@ public class ReleaseCreate {
 
 	// Se valida observations
 	public ArrayList<MyError> validObservations(ReleaseCreate rc, ArrayList<MyError> errors) {
+
 		if (rc.getObservations().equals(""))
 			errors.add(new MyError("observations", "Valor requerido."));
 
@@ -634,9 +635,12 @@ public class ReleaseCreate {
 		for (ItemObject object : rc.getObjectItemConfiguration()) {
 
 			if (object.getIsSql().equals("1")) {
-				if (object.getDbScheme().equals("")) {
-					errors.add(new MyError("form-tags-" + object.getId(), "Valor requerido."));
+				if(object.getExecute().equals("1")) {
+					if (object.getDbScheme().equals("")) {
+						errors.add(new MyError("form-tags-" + object.getId(), "Valor requerido."));
+					}
 				}
+
 			}
 
 		}
