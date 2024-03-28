@@ -67,7 +67,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de actualización</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -137,7 +137,8 @@
 					<label for="email_address">Cambios de servicio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR5.changeService}</p>
+						<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR5.changeService}</textarea>
 						</div>
 					</div>
 				</div>
@@ -145,7 +146,8 @@
 					<label for="email_address">Justificaci&oacute;n de cambio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR5.justify}</p>
+						<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR5.justify}</textarea>
 						</div>
 					</div>
 				</div>

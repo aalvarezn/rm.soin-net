@@ -1450,7 +1450,7 @@ public class RFCController extends BaseController {
 
 		if (rfc.getRequestDateBegin().trim().equals(""))
 			errors.add(new MyError("dateBegin", "Valor requerido."));
-
+			
 		if (rfc.getRequestDateBegin().trim().equals(""))
 			errors.add(new MyError("dateFinish", "Valor requerido."));
 
@@ -1487,35 +1487,36 @@ public class RFCController extends BaseController {
 				errors.add(new MyError("messagePer", "La cantidad de caracteres no puede ser mayor a 256"));
 			}
 		}
-
-		if (rfc.getIsRequest() == 1) {
-			if (!rfc.getRequestDateBegin().trim().equals("")) {
-				Timestamp requestDate = CommonUtils.getSystemTimestamp();
-				Timestamp requestDateBegin = CommonUtils.convertStringToTimestamp(rfc.getRequestDateBegin(),
-						"dd/MM/yyyy hh:mm a");
+		
+		if(rfc.getIsRequest()==1) {
+			TypeChange typeChange=typeChangeService.findById(rfc.getTypeChangeId());
+			if(!typeChange.getName().equals("Emergencia")) {
+			if(!rfc.getRequestDateBegin().trim().equals("")) {
+				Timestamp requestDate=CommonUtils.getSystemTimestamp();
+				Timestamp requestDateBegin = CommonUtils.convertStringToTimestamp(rfc.getRequestDateBegin(), "dd/MM/yyyy hh:mm a");
 				int comparation = requestDate.compareTo(requestDateBegin);
-				if (comparation > 0) {
-					errors.add(new MyError("dateBegin",
-							"La fecha inicio tiene que ser mayor a la fecha que se realiza la solicitud."));
+				if(comparation>0) {
+					errors.add(new MyError("dateBegin", "La fecha inicio tiene que ser mayor a la fecha que se realiza la solicitud."));
 				}
-
+				
 			}
-
-			if (!rfc.getRequestDateFinish().trim().equals("")) {
-				Timestamp requestDate = CommonUtils.getSystemTimestamp();
-				Timestamp requestDateFinish = CommonUtils.convertStringToTimestamp(rfc.getRequestDateFinish(),
-						"dd/MM/yyyy hh:mm a");
+			
+			if(!rfc.getRequestDateFinish().trim().equals("")) {
+				Timestamp requestDate=CommonUtils.getSystemTimestamp();
+				Timestamp requestDateFinish = CommonUtils.convertStringToTimestamp(rfc.getRequestDateFinish(), "dd/MM/yyyy hh:mm a");
 				int comparation = requestDate.compareTo(requestDateFinish);
-				if (comparation > 0) {
-					errors.add(new MyError("dateFinish",
-							"La fecha fin tiene que ser mayor a la fecha que se realiza la solicitud."));
+				if(comparation>0) {
+					errors.add(new MyError("dateFinish", "La fecha fin tiene que ser mayor a la fecha que se realiza la solicitud."));
 				}
-
+				
+			}
 			}
 		}
 
 		return errors;
 	}
+
+
 
 	public MyError getErrorSenders(String senders) {
 

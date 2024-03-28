@@ -77,4 +77,9 @@ public class PReleaseObjectServiceImpl implements PReleaseObjectService {
 		return dao.listObjectsSql(idRelease);
 	}
 
+	@Override
+	public List<PRelease_Objects> listObjects(Integer id) {
+		return dao.listObjects(id);
+	}
+
 }

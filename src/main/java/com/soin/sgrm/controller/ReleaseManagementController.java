@@ -25,14 +25,17 @@ import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
+import com.soin.sgrm.model.ReleaseUserFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.SystemUser;
 import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PErrors_Release;
+import com.soin.sgrm.model.pos.PRFC_WithoutRelease;
 import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseError;
+import com.soin.sgrm.model.pos.PReleaseUserFast;
 import com.soin.sgrm.model.pos.PReleases_WithoutObj;
 import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.model.pos.PStatus;
@@ -182,8 +185,11 @@ public class ReleaseManagementController extends BaseController {
 				return releaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null, dateRange,
 						systemId, statusId);
 			} else if (profileActive().equals("postgres")) {
-				return preleaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null, dateRange,
+				JsonSheet<?> releases = new JsonSheet<>();		
+				String dateRange2 = request.getParameter("dateRange");
+				releases= preleaseService.findAll1(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange2,
 						systemId, statusId);
+				return releases;
 			}
 				
 		} catch (Exception e) {
@@ -244,7 +250,7 @@ public class ReleaseManagementController extends BaseController {
 		JsonResponse res = new JsonResponse();
 		try {
 			if (profileActive().equals("oracle")) {
-				ReleaseEdit release = releaseService.findEditById(idRelease);
+				ReleaseUserFast release = releaseService.findByIdReleaseUserFast(idRelease);
 				Status status = statusService.findById(idStatus);
 				UserLogin userLogin = getUserLogin();
 				Errors_Release error = new Errors_Release();
@@ -269,7 +275,7 @@ public class ReleaseManagementController extends BaseController {
 					release.setOperator(getUserLogin().getFullName());
 					release.setMotive(motive);
 					release.setDateChange(dateChange);
-					releaseService.updateStatusRelease(release);
+					releaseService.updateStatusReleaseUser(release);
 					release.setTimeNew(null);
 					Status statusChange = statusService.findByName("Borrador");
 					release.setStatus(statusChange);
@@ -296,7 +302,7 @@ public class ReleaseManagementController extends BaseController {
 				release.setOperator(getUserLogin().getFullName());
 				release.setDateChange(dateChange);
 				release.setMotive(motive);
-				releaseService.updateStatusRelease(release);
+				releaseService.updateStatusReleaseUser(release);
 				res.setStatus("success");
 				if (sendEmail) {
 
@@ -307,7 +313,12 @@ public class ReleaseManagementController extends BaseController {
 						EmailTemplate email=new EmailTemplate();
 						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 							 email = release.getSystem().getEmailTemplate().iterator().next();
+							 
 						}
+						if(email.getId()==0) {
+							
+							 email.setSubject("[ INSTALACION - "+release.getSystem().getName()+" ]:{{releaseNumber}}");
+						 }
 						String subject =getSubject(email,release);
 						
 						String statusName = status.getName();
@@ -332,6 +343,9 @@ public class ReleaseManagementController extends BaseController {
 						if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
 							 email = release.getSystem().getEmailTemplate().iterator().next();
 						}
+						if(email.getId()==0) {
+							email.setSubject("[ INSTALACION - "+release.getSystem().getName()+" ]:{{releaseNumber}}");
+						 }
 						String subject =getSubject(email,release);
 						
 						String typeError = error.getName();
@@ -349,9 +363,8 @@ public class ReleaseManagementController extends BaseController {
 						newThread.start();
 					}
 				}
-
 			} else if (profileActive().equals("postgres")) {
-				PReleaseEdit release = preleaseService.findEditById(idRelease);
+				PReleaseUserFast release = preleaseService.findByIdReleaseUserFast(idRelease);
 				PStatus status = pstatusService.findById(idStatus);
 				UserLogin userLogin = getUserLogin();
 				PErrors_Release error = new PErrors_Release();
@@ -475,6 +488,7 @@ public class ReleaseManagementController extends BaseController {
 	}
 
 
+
 	public void loadCountsRelease(HttpServletRequest request, String name) {
 		
 		if (profileActive().equals("oracle")) {
@@ -495,9 +509,7 @@ public class ReleaseManagementController extends BaseController {
 		
 	}
 	@SuppressWarnings("unused")
-	public String getSubject(EmailTemplate emailNotify,ReleaseEdit release) {
-		
-	
+	public String getSubject(EmailTemplate emailNotify,ReleaseUserFast release) {
 		String tpo = "";
 		String releaseNumber = release.getReleaseNumber();
 		String[] parts = releaseNumber.split("\\.");
@@ -529,7 +541,7 @@ public class ReleaseManagementController extends BaseController {
 	}
 	
 	@SuppressWarnings("unused")
-	public String getSubject(PEmailTemplate emailNotify,PReleaseEdit release) {
+	public String getSubject(PEmailTemplate emailNotify,PReleaseUserFast release) {
 		
 		
 		String tpo = "";

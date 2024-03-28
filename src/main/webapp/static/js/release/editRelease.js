@@ -112,6 +112,10 @@ $(function() {
 	 $('.tagInitMail').tagsInput({
 		 placeholder: 'Ingrese los correos'
 	 });
+	 
+	 $('.tagInitBugs').tagsInput({
+		 placeholder: 'Ingrese los bugs'
+	 });
 
 	$('.tagInit').tagsInput({
 		width:'400px'
@@ -484,7 +488,7 @@ function requestRelease() {
 	var modifiedComponents = listLi('listComponents');
 	var actions = listRowsId('environmentActionTable');
 	var objectItemConfiguration = listItemObjects();
-
+	$('#applyFor').prop('disabled', true);
 	blockUI();
 	$
 	.ajax({
@@ -528,6 +532,7 @@ function requestRelease() {
 			postConditions : $(form + ' #postConditions').val(),
 			// Datos Email
 			senders:$releaseEditForm.find('#senders').val(),
+			bugs:$releaseEditForm.find('#bugs').val(),
 			message:$releaseEditForm.find('#messagePer').val(),
 			
 			// Componentes de AIA
@@ -572,12 +577,14 @@ function requestRelease() {
 		success : function(response) {
 			
 			responseAjaxRequestRelease(response);
+	
 		},
 		error: function(x, t, m) {
 			console.log(x);
 			console.log(t);
 			console.log(m);
 			notifyAjaxError(x, t, m);
+			$('#applyFor').prop('disabled', false);
 		}
 	});
 
@@ -591,16 +598,19 @@ function responseAjaxRequestRelease(response) {
 			unblockUI();
 			window.location = getCont() + "release/updateRelease/"
 			+ $(form + ' #release_id').val();
+			//$('#applyFor').prop('disabled', false);
 			break;
 		case 'fail':
 			showReleaseErrors(response.errors);
 			countErrorsByStep();
 			var numItems = $('.yourclass').length
 			swal("Formulario incompleto!", "El formulario posee campos obligatorios, favor verificar.",
-			"warning")
+			"warning");
+			$('#applyFor').prop('disabled', false);
 			break;
 		case 'exception':
-			swal("Error!", response.exception, "error")
+			swal("Error!", response.exception, "error");
+			$('#applyFor').prop('disabled', false);
 			break;
 		default:
 			unblockUI();
@@ -662,6 +672,7 @@ function sendRelease() {
 
 			// Datos Email
 			senders:$releaseEditForm.find('#senders').val(),
+			bugs:$releaseEditForm.find('#bugs').val(),
 			message:$releaseEditForm.find('#messagePer').val(),
 			
 			// Componentes de AIA
@@ -828,10 +839,25 @@ function synchronizeObjects() {
 		data : {},
 		success : function(response) {
 			responseAjaxSynchronize(response);
+			console.log(response);
 			$.each(response.obj.dependencies, function(key, value) {
 				modifyDependency(value.to_release);
 			});
+			var obj=response.obj.objects;
+			
+			if(obj.length){
+				$('#sqlObjectTable').DataTable().rows().remove().draw();
+				console.log("deberia borrar");
+			}
+			for (var i = 0; i < obj.length; i++) {
+				console.log(obj[i].isSql);
+				if (obj[i].isSql == 1) {
+					triggerDataBaseFile(obj[i].id, obj[i].name);
+				}
+			}
 			reloadPreview();
+			
+
 			$dtObjects.ajax.reload();
 			countObjects();
 		},
@@ -955,6 +981,7 @@ function sendPartialRelease() {
 			prodRollbackPlan : $releaseEditForm.find('#prodRollbackPlan').val(),
 			// Datos Email
 			senders:$releaseEditForm.find('#senders').val(),
+			bugs:$releaseEditForm.find('#bugs').val(),
 			message:$releaseEditForm.find('#messagePer').val(),
 			// Pruebas minimas
 			minimalEvidence : $releaseEditForm.find('#minimalEvidence').val(),

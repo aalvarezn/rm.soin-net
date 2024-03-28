@@ -18,6 +18,7 @@ import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
 import com.soin.sgrm.model.pos.wf.PNodeIncidence;
 import com.soin.sgrm.model.pos.wf.PNodeRFC;
+import com.soin.sgrm.model.wf.NodeName;
 //import com.soin.sgrm.model.wf.PNodeIncidence;
 import com.soin.sgrm.model.wf.NodeRFC;
 
@@ -135,6 +136,18 @@ public class PNodeServiceImpl implements PNodeService {
 	@Override
 	public boolean verifyStartNodeRFC(PNodeRFC node) {
 		return dao.verifyStartNodeRFC(node);
+	}
+
+	@Override
+	public PNode findByIdAndWorkFlow(String nodeName, Integer id) {
+		// TODO Auto-generated method stub
+		return dao.findByIdAndWorkFlow(nodeName,id);
+	}
+
+	@Override
+	public List<NodeName> listNodeNames(Integer id, Integer userLogin) {
+		// TODO Auto-generated method stub
+		return dao.listNodeNames(id,userLogin);
 	}
 
 

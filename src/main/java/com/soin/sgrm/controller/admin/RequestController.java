@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -42,18 +43,22 @@ import com.soin.sgrm.model.GDoc;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Request;
 import com.soin.sgrm.model.TypeRequest;
+import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.pos.PGDoc;
 import com.soin.sgrm.model.pos.PProject;
 import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.model.pos.PTypeRequest;
+import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.service.GDocService;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.TypeRequestService;
+import com.soin.sgrm.service.UserService;
 import com.soin.sgrm.service.pos.PGDocService;
 import com.soin.sgrm.service.pos.PProjectService;
 import com.soin.sgrm.service.pos.PRequestService;
 import com.soin.sgrm.service.pos.PTypeRequestService;
+import com.soin.sgrm.service.pos.PUserService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
@@ -83,6 +88,12 @@ public class RequestController extends BaseController {
 
 	@Autowired
 	PTypeRequestService ptypeRequestService;
+
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	PUserService puserService;
 
 	@Autowired
 	GDocService gDocService;
@@ -218,7 +229,7 @@ public class RequestController extends BaseController {
 		return res;
 	}
 
-	@RequestMapping(value = "/updateRequest", method = RequestMethod.POST)
+	@RequestMapping(value = "/updateRequest/", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateRequest(HttpServletRequest req,
 			@Valid @ModelAttribute("Request") Request request, BindingResult errors, ModelMap model, Locale locale,
 			HttpSession session) {
@@ -288,6 +299,8 @@ public class RequestController extends BaseController {
 		}
 		return res;
 	}
+	
+	
 
 	@RequestMapping(value = "/deleteRequest/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteRequest(@PathVariable Integer id, Model model) {
@@ -564,6 +577,9 @@ public class RequestController extends BaseController {
 								request.setDescription((String) row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								String soinManager=(String) row.get(soinManagementIndex);
+								PUser userManager= puserService.findByName(soinManager);
+								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								if(request.getStatus().trim().equals("COMPLETADA")) {
@@ -571,6 +587,7 @@ public class RequestController extends BaseController {
 								}else {
 									request.setActive(true);
 								}
+
 								if (existRequest)
 									prequestService.update(request);
 								else
@@ -980,6 +997,9 @@ public class RequestController extends BaseController {
 								request.setDescription((String) row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								String soinManager=(String) row.get(soinManagementIndex);
+								User userManager= userService.findByName(soinManager);
+								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								if(request.getStatus().trim().equals("COMPLETADA")) {
@@ -987,7 +1007,6 @@ public class RequestController extends BaseController {
 								}else {
 									request.setActive(true);
 								}
-								
 
 								if (existRequest)
 									requestService.update(request);
@@ -1056,6 +1075,9 @@ public class RequestController extends BaseController {
 								request.setDescription((String) row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								String soinManager=(String) row.get(soinManagementIndex);
+								User userManager= userService.findByName(soinManager);
+								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								if(request.getStatus().trim().equals("COMPLETADA")) {
@@ -1130,6 +1152,9 @@ public class RequestController extends BaseController {
 								request.setDescription((String) row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								String soinManager=(String) row.get(soinManagementIndex);
+								User userManager= userService.findByName(soinManager);
+								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								if(request.getStatus().trim().equals("COMPLETADA")) {
@@ -1187,6 +1212,7 @@ public class RequestController extends BaseController {
 						proyect = config.getProyect();
 					} else {
 						// Se verifica que la hoja tenga la columna de TPO
+						if(!(row.size()==0)) {
 						if (btIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
@@ -1196,14 +1222,25 @@ public class RequestController extends BaseController {
 									existRequest = true;
 								}
 							}
+							
+							if(count==74) {
+								System.out.println("Aca");
+							}
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new Request() : request;
+								String code=(String) row.get(btIndex);
+								if(!code.equals("")) {
+									
+								
 								request.setCode_soin((String) row.get(btIndex));
 								request.setStatus((String) row.get(statusIndex));
 								request.setDescription((String) row.get(codeIce) + " " + row.get(descriptionIndex));
 								request.setSoinManagement((String) row.get(soinManagementIndex));
 								request.setIceManagement((String) row.get(iceManagementIndex));
+								String soinManager=(String) row.get(soinManagementIndex);
+								User userManager= userService.findByName(soinManager);
+								request.setUserManager(userManager.getId());
 								request.setCode_ice((String) row.get(codeIce));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
@@ -1214,12 +1251,15 @@ public class RequestController extends BaseController {
 									request.setActive(true);
 									requestService.save(request);
 								}
+								}
+								
 
 							} catch (Exception e) {
 								Sentry.capture(e, "request");
 								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
 						}
+					}
 					}
 					count++;
 				}

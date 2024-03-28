@@ -67,7 +67,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de actualización</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -144,7 +144,8 @@
 					<label for="email_address">Requerimientos de servicio</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR2.requeriments}</p>
+							<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR2.requeriments}</textarea>
 						</div>
 					</div>
 				</div>

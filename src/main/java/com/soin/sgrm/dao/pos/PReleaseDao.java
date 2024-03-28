@@ -4,8 +4,13 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.poi.ss.formula.functions.T;
+import org.hibernate.criterion.Criterion;
 
 import com.soin.sgrm.model.ReleaseEditWithOutObjects;
+import com.soin.sgrm.model.ReleaseUserFast;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseEditWithOutObjects;
@@ -20,6 +25,7 @@ import com.soin.sgrm.model.pos.PReleaseTinySummary;
 import com.soin.sgrm.model.pos.PReleaseTrackingShow;
 import com.soin.sgrm.model.pos.PReleaseTrackingToError;
 import com.soin.sgrm.model.pos.PReleaseUser;
+import com.soin.sgrm.model.pos.PReleaseUserFast;
 import com.soin.sgrm.model.pos.PRelease_RFC;
 import com.soin.sgrm.model.pos.PRelease_RFCFast;
 import com.soin.sgrm.model.pos.PReleases_WithoutObj;
@@ -110,6 +116,16 @@ public interface PReleaseDao {
 	JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId) throws SQLException, ParseException;
 
-	
+	PReleaseUserFast findByIdReleaseUserFast(Integer idRelease);
 
+	void updateStatusReleaseUser(PReleaseUserFast release);
+
+	void requestRelease(PReleaseEditWithOutObjects release);
+
+	String getLastStatusHistory(Integer releaseId);
+
+	
+	JsonSheet<T> findAllFastRelease(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias, Integer veri);
+	
 }

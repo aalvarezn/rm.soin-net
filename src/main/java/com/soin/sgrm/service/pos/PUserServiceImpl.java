@@ -37,6 +37,12 @@ public class PUserServiceImpl implements PUserService {
 	
 		return userDao.findUserById(id);
 	}
+
+	@Override
+	public PUser findByName(String soinManager) {
+		
+		return userDao.findByName(soinManager);
+	}
 	
 
 

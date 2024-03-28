@@ -30,6 +30,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.soin.sgrm.model.pos.wf.PNode;
+
 @Entity
 @Table(name = "RELEASES_RELEASE")
 public class PReleaseEditWithOutObjects implements Serializable, Cloneable {
@@ -277,6 +279,14 @@ public class PReleaseEditWithOutObjects implements Serializable, Cloneable {
 
 	@Column(name = "MOTIVO")
 	private String motive;
+	
+	@Column(name = "BUGS")
+	private String bugs;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "\"NODO_ID\"", nullable = true)
+	private PNode node;
+
 
 	@Transient
 	private String dateChange;
@@ -836,6 +846,22 @@ public class PReleaseEditWithOutObjects implements Serializable, Cloneable {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getBugs() {
+		return bugs;
+	}
+
+	public void setBugs(String bugs) {
+		this.bugs = bugs;
+	}
+
+	public PNode getNode() {
+		return node;
+	}
+
+	public void setNode(PNode node) {
+		this.node = node;
 	}
 	
 }

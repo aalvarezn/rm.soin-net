@@ -9,6 +9,7 @@ import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
 import com.soin.sgrm.model.pos.wf.PNodeIncidence;
 import com.soin.sgrm.model.pos.wf.PNodeRFC;
+import com.soin.sgrm.model.wf.NodeName;
 
 public interface PNodeDao {
 
@@ -53,4 +54,8 @@ public interface PNodeDao {
 	boolean verifyStartNodeIncidence(PNodeIncidence node);
 
 	PNodeIncidence existWorkFlowNodeIn(PIncidence incidence);
+
+	PNode findByIdAndWorkFlow(String nodeName, Integer id);
+
+	List<NodeName> listNodeNames(Integer id, Integer userLogin);
 }

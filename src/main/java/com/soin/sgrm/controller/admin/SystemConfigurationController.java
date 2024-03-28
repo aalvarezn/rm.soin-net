@@ -136,6 +136,7 @@ public class SystemConfigurationController extends BaseController {
 				systemConfig.setDependencies(sys.getDependencies());
 				systemConfig.setAttachmentFiles(sys.getAttachmentFiles());
 				systemConfig.setApplicationVersion(sys.isApplicationVersion());
+				systemConfig.setBugs(sys.getBugs());
 				systemConfig = systemConfigurationService.update(systemConfig);
 				res.setObj(systemConfig);
 			} else if (profile.equals("postgres")) {
@@ -153,6 +154,7 @@ public class SystemConfigurationController extends BaseController {
 				psystemConfig.setAttachmentFiles(sys.getAttachmentFiles());
 				psystemConfig.setApplicationVersion(sys.isApplicationVersion());
 				psystemConfig.setGeneralInfo(true);
+				psystemConfig.setBugs(sys.getBugs());
 				psystemConfig = psystemConfigurationService.update(psystemConfig);
 				res.setObj(psystemConfig);
 			}
@@ -165,7 +167,7 @@ public class SystemConfigurationController extends BaseController {
 		}
 		return res;
 	}
-
+		
 	@RequestMapping(value = "/createSystemConfig", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse createSystemConfig(HttpServletRequest request,
 			@ModelAttribute("SystemConfiguration") SystemConfiguration sys, ModelMap model, Locale locale,
@@ -200,6 +202,7 @@ public class SystemConfigurationController extends BaseController {
 					systemConfig.setDependencies(sys.getDependencies());
 					systemConfig.setAttachmentFiles(sys.getAttachmentFiles());
 					systemConfig.setApplicationVersion(sys.isApplicationVersion());
+					systemConfig.setBugs(sys.getBugs());
 					SystemInfo system = new SystemInfo();
 					system.setId(sys.getSystemId());
 					systemConfig.setSystem(system);
@@ -225,6 +228,7 @@ public class SystemConfigurationController extends BaseController {
 					psystemConfig.setDependencies(sys.getDependencies());
 					psystemConfig.setAttachmentFiles(sys.getAttachmentFiles());
 					psystemConfig.setApplicationVersion(sys.isApplicationVersion());
+					psystemConfig.setBugs(sys.getBugs());
 					psystemConfig.setGeneralInfo(true);
 					PSystemInfo psystem = new PSystemInfo();
 					psystem.setId(sys.getSystemId());
@@ -241,5 +245,4 @@ public class SystemConfigurationController extends BaseController {
 		}
 		return res;
 	}
-
 }

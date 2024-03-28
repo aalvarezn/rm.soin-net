@@ -33,15 +33,29 @@ import javax.mail.internet.PreencodedMimeBodyPart;
 
 import com.soin.sgrm.dao.pos.PEmailTemplateDao;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.Ambient;
+import com.soin.sgrm.model.Dependency;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Impact;
+import com.soin.sgrm.model.Priority;
+import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseObject;
+import com.soin.sgrm.model.Release_Objects;
+import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.pos.PAmbient;
 import com.soin.sgrm.model.pos.PAttentionGroup;
 import com.soin.sgrm.model.pos.PDependency;
 import com.soin.sgrm.model.pos.PEmailIncidence;
 import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PImpact;
 import com.soin.sgrm.model.pos.PIncidence;
+import com.soin.sgrm.model.pos.PPriority;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
+import com.soin.sgrm.model.pos.PReleaseEditWithOutObjects;
 import com.soin.sgrm.model.pos.PReleaseObject;
+import com.soin.sgrm.model.pos.PRelease_Objects;
 import com.soin.sgrm.model.pos.PRelease_RFCFast;
 import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.model.pos.PRequestBaseR1;
@@ -50,6 +64,7 @@ import com.soin.sgrm.model.pos.PRequestRM_P1_R2;
 import com.soin.sgrm.model.pos.PRequestRM_P1_R3;
 import com.soin.sgrm.model.pos.PRequestRM_P1_R4;
 import com.soin.sgrm.model.pos.PRequestRM_P1_R5;
+import com.soin.sgrm.model.pos.PRisk;
 import com.soin.sgrm.model.pos.PSiges;
 import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.model.pos.PUserInfo;
@@ -107,7 +122,19 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 	@Autowired
 	RequestService requestService;
+	
+	@Autowired
+	PReleaseObjectService preleaseObjectService;
+	
+	@Autowired
+	PRiskService priskService;
 
+	@Autowired
+	PImpactService pimpactService;
+	
+	@Autowired
+	PPriorityService ppriorityService;
+	
 	EnviromentConfig envConfig = new EnviromentConfig();
 
 	@Override
@@ -281,42 +308,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 
 		mailSender.send(mimeMessage);
 	}
-
-	@SuppressWarnings("unused")
-	private MimeMultipart MimeMultipart(String body) throws MessagingException {
-		MimeMultipart mmp = new MimeMultipart();
-		Map<String, String> inlineImage = new HashMap<String, String>();
-		final Matcher matcher = imgRegExp.matcher(body);
-		int i = 0;
-		while (matcher.find()) {
-			String src = matcher.group();
-			if (body.indexOf(src) != -1) {
-				String srcToken = "src=\"";
-				int x = src.indexOf(srcToken);
-				int y = src.indexOf("\"", x + srcToken.length());
-				String srcText = src.substring(x + srcToken.length(), y);
-				String cid = "image" + i;
-				String newSrc = src.replace(srcText, "cid:" + cid);
-				inlineImage.put(cid, srcText.split(",")[1]);
-				body = body.replace(src, newSrc);
-				i++;
-			}
-		}
-		BodyPart bp = new MimeBodyPart();
-		bp.setContent(body, "text/html");
-		mmp.addBodyPart(bp);
-		Iterator<Entry<String, String>> it = inlineImage.entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<String, String> pairs = it.next();
-			PreencodedMimeBodyPart pmp = new PreencodedMimeBodyPart("base64");
-			pmp.setHeader("Content-ID", "<" + pairs.getKey() + ">");
-			pmp.setDisposition(MimeBodyPart.INLINE);
-			pmp.setContent(pairs.getValue(), "image/png");
-			mmp.addBodyPart(pmp);
-		}
-		return mmp;
-	}
-
+	
 	public PEmailTemplate fillEmail(PEmailTemplate email, PRelease release) {
 		String temp = "";
 		String releaseNumber = release.getReleaseNumber();
@@ -331,9 +323,9 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			}
 		}
 
-		PRequest request = new PRequest();
+		Request request = new Request();
 		if (tpo != "") {
-			request = prequestService.findByNameCode(tpo);
+			request = requestService.findByNameCode(tpo);
 		}
 
 		/* ------ body ------ */
@@ -378,9 +370,10 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			email.setHtml(email.getHtml().replace("{{message}}",
 					(release.getMessage() != null ? release.getMessage() : "NA")));
 		}
-
+		
 		if (email.getHtml().contains("{{tpoNumber}}")) {
-			email.setHtml(email.getHtml().replace("{{tpoNumber}}", (tpo != null ? tpo : "NA")));
+			email.setHtml(email.getHtml().replace("{{tpoNumber}}",
+					(tpo != null ? tpo : "NA")));
 		}
 
 		if (email.getHtml().contains("{{tpoDescription}}")) {
@@ -453,6 +446,190 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		if (email.getSubject().contains("{{risk}}")) {
 			email.setSubject(email.getSubject().replace("{{risk}}",
 					(release.getRisk().getName() != null ? release.getRisk().getName() : "")));
+		}
+
+		return email;
+	}
+
+	@SuppressWarnings("unused")
+	private MimeMultipart MimeMultipart(String body) throws MessagingException {
+		MimeMultipart mmp = new MimeMultipart();
+		Map<String, String> inlineImage = new HashMap<String, String>();
+		final Matcher matcher = imgRegExp.matcher(body);
+		int i = 0;
+		while (matcher.find()) {
+			String src = matcher.group();
+			if (body.indexOf(src) != -1) {
+				String srcToken = "src=\"";
+				int x = src.indexOf(srcToken);
+				int y = src.indexOf("\"", x + srcToken.length());
+				String srcText = src.substring(x + srcToken.length(), y);
+				String cid = "image" + i;
+				String newSrc = src.replace(srcText, "cid:" + cid);
+				inlineImage.put(cid, srcText.split(",")[1]);
+				body = body.replace(src, newSrc);
+				i++;
+			}
+		}
+		BodyPart bp = new MimeBodyPart();
+		bp.setContent(body, "text/html");
+		mmp.addBodyPart(bp);
+		Iterator<Entry<String, String>> it = inlineImage.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<String, String> pairs = it.next();
+			PreencodedMimeBodyPart pmp = new PreencodedMimeBodyPart("base64");
+			pmp.setHeader("Content-ID", "<" + pairs.getKey() + ">");
+			pmp.setDisposition(MimeBodyPart.INLINE);
+			pmp.setContent(pairs.getValue(), "image/png");
+			mmp.addBodyPart(pmp);
+		}
+		return mmp;
+	}
+
+	public PEmailTemplate fillEmail(PEmailTemplate email, PReleaseEditWithOutObjects release) {
+		String temp = "";
+		String releaseNumber = release.getReleaseNumber();
+		String[] parts = releaseNumber.split("\\.");
+		boolean test = releaseNumber.contains(".");
+		String tpo = "";
+		for (String part : parts) {
+			if (part.contains("TPO")) {
+				String[] partsTPO = part.split("TPO");
+				String[] partsNumber = part.split(partsTPO[1]);
+				tpo = partsNumber[0] + "-" + partsTPO[1];
+			}
+		}
+
+		Request request = new Request();
+		if (tpo != "") {
+			request = requestService.findByNameCode(tpo);
+		}
+
+		/* ------ body ------ */
+		if (email.getHtml().contains("{{userName}}")) {
+			email.setHtml(email.getHtml().replace("{{userName}}",
+					(release.getUser().getFullName() != null ? release.getUser().getFullName() : "")));
+		}
+
+		if (email.getHtml().contains("{{releaseNumber}}")) {
+			email.setHtml(email.getHtml().replace("{{releaseNumber}}",
+					(release.getReleaseNumber() != null ? release.getReleaseNumber() : "")));
+		}
+
+		if (email.getHtml().contains("{{description}}")) {
+			String description = release.getDescription() != null ? release.getDescription() : "";
+			description = description.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{description}}", description));
+		}
+		
+		if (email.getHtml().contains("{{observation}}")) {
+			String observation = release.getObservations() != null ? release.getObservations() : "";
+			observation = observation.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{observation}}", observation));
+		}
+
+		if (email.getHtml().contains("{{functionalSolution}}")) {
+			String functionalSolution = release.getFunctionalSolution() != null ? release.getFunctionalSolution() : "";
+			functionalSolution = functionalSolution.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{functionalSolution}}", functionalSolution));
+		}
+
+		if (email.getHtml().contains("{{minimalEvidence}}")) {
+			String minimalEvidence = release.getMinimal_evidence() != null ? release.getMinimal_evidence() : "";
+			minimalEvidence = minimalEvidence.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{minimalEvidence}}", minimalEvidence));
+		}
+		
+		PPriority priority =ppriorityService.findById(release.getPriority());
+		PImpact impact =pimpactService.findById(release.getImpact());
+		PRisk risk=priskService.findById(release.getRisk());
+		List<PRelease_Objects> listObjects=preleaseObjectService.listObjects(release.getId());
+		
+		
+		if (email.getHtml().contains("{{priority}}")) {
+			email.setHtml(email.getHtml().replace("{{priority}}",
+					(priority.getName() != null ? priority.getName() : "")));
+		}
+		if (email.getHtml().contains("{{message}}")) {
+			email.setHtml(email.getHtml().replace("{{message}}",
+					(release.getMessage() != null ? release.getMessage() : "NA")));
+		}
+		
+		if (email.getHtml().contains("{{tpoNumber}}")) {
+			email.setHtml(email.getHtml().replace("{{tpoNumber}}",
+					(tpo != null ? tpo : "NA")));
+		}
+
+		if (email.getHtml().contains("{{tpoDescription}}")) {
+			email.setHtml(email.getHtml().replace("{{tpoDescription}}",
+					(request.getDescription() != null ? request.getDescription() : "NA")));
+		}
+
+		if (email.getHtml().contains("{{technicalSolution}}")) {
+			String technicalSolution = release.getTechnicalSolution() != null ? release.getTechnicalSolution() : "";
+			technicalSolution = technicalSolution.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{technicalSolution}}", technicalSolution));
+		}
+
+		if (email.getHtml().contains("{{ambient}}")) {
+			temp = "";
+			for (PAmbient amb : release.getAmbients()) {
+				temp += amb.getName() + "<br>";
+			}
+			email.setHtml(email.getHtml().replace("{{ambient}}", (temp.equals("") ? "Sin ambientes definidos" : temp)));
+		}
+
+		if (email.getHtml().contains("{{dependencies}}")) {
+			temp = "";
+			int i = 1;
+			for (PDependency dep : release.getDependencies()) {
+				temp += i + ": " + dep.getTo_release().getReleaseNumber() + "<br>";
+				i++;
+			}
+			email.setHtml(email.getHtml().replace("{{dependencies}}",
+					(temp.equals("") ? "Sin dependencias definidos" : temp)));
+		}
+
+		if (email.getHtml().contains("{{objects}}")) {
+			temp = "<ul>";
+
+			for (PRelease_Objects obj : listObjects) {
+				temp += "<li> " + obj.getObjects().getName() + "</li>";
+			}
+			temp += "</ul>";
+			email.setHtml(email.getHtml().replace("{{objects}}", (temp.equals("") ? "Sin objetos definidos" : temp)));
+		}
+
+		if (email.getHtml().contains("{{version}}")) {
+			email.setHtml(email.getHtml().replace("{{version}}",
+					(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
+		}
+
+		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{tpoNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{tpoNumber}}", (tpo != "" ? tpo : "")));
+		}
+		if (email.getSubject().contains("{{releaseNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{releaseNumber}}",
+					(release.getReleaseNumber() != null ? release.getReleaseNumber() : "")));
+		}
+		if (email.getSubject().contains("{{version}}")) {
+			email.setSubject(email.getSubject().replace("{{version}}",
+					(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
+		}
+		if (email.getSubject().contains("{{priority}}")) {
+			email.setSubject(email.getSubject().replace("{{priority}}",
+					(priority.getName() != null ? priority.getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{impact}}")) {
+			email.setSubject(email.getSubject().replace("{{impact}}",
+					(impact.getName() != null ? impact.getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{risk}}")) {
+			email.setSubject(email.getSubject().replace("{{risk}}",
+					(risk.getName() != null ? risk.getName() : "")));
 		}
 
 		return email;
@@ -2239,5 +2416,105 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	public PEmailTemplate getById(Integer id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void sendMail(PReleaseEditWithOutObjects release, PEmailTemplate email) throws MessagingException {
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
+		email = fillEmail(email, release);
+		String body = email.getHtml();
+		body = Constant.getCharacterEmail(body);
+		MimeMultipart mmp = MimeMultipart(body);
+		mimeMessage.setContent(mmp);
+		mimeMessage.setSubject(email.getSubject());
+		mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
+		mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
+		for (String toUser : email.getTo().split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toUser));
+		}
+		String ccFinish = "";
+		String cc = "";
+		if (!((email.getCc() != null) ? email.getCc() : "").trim().equals("")) {
+			cc = email.getCc();
+			if (release.getSenders() == null) {
+
+				ccFinish = email.getCc();
+				String[] split3 = ccFinish.split(",");
+				boolean verify = ArrayUtils.contains(split3, release.getUser().getEmailAddress());
+				if (!verify) {
+					ccFinish = cc + "," + release.getUser().getEmailAddress();
+				}
+			} else {
+				if (release.getSenders().trim().equals("")) {
+					ccFinish = email.getCc();
+					String[] split3 = ccFinish.split(",");
+					boolean verify = ArrayUtils.contains(split3, release.getUser().getEmailAddress());
+					if (!verify) {
+						ccFinish = cc + "," + release.getUser().getEmailAddress();
+					}
+				} else {
+
+					String[] split = release.getSenders().split(",");
+					String[] splitCC = cc.split(",");
+					ccFinish = release.getSenders();
+					for (int x = 0; splitCC.length > x; x++) {
+						boolean verify = ArrayUtils.contains(split, splitCC[x]);
+						if (!verify) {
+							ccFinish = ccFinish + "," + splitCC[x];
+						}
+					}
+					String[] split3 = ccFinish.split(",");
+					boolean verify = ArrayUtils.contains(split3, release.getUser().getEmailAddress());
+					if (!verify) {
+						ccFinish = ccFinish + "," + release.getUser().getEmailAddress();
+					}
+				}
+
+			}
+		} else {
+
+			if (release.getSenders() == null) {
+				ccFinish = release.getUser().getEmailAddress();
+			} else {
+				if (release.getSenders().trim().equals("")) {
+					ccFinish = release.getUser().getEmailAddress();
+				} else {
+					String[] split = release.getSenders().split(",");
+					ccFinish = release.getSenders();
+					boolean verify = ArrayUtils.contains(split, release.getUser().getEmailAddress());
+					if (!verify) {
+						ccFinish = ccFinish + "," + release.getUser().getEmailAddress();
+					}
+
+				}
+			}
+		}
+
+		String[] split = ccFinish.split(",");
+		String[] splitTo = email.getTo().split(",");
+		String ccUserFinal = "";
+		for (String ccFinal : split) {
+
+			boolean verify = ArrayUtils.contains(splitTo, ccFinal);
+			if (!verify) {
+				if (ccUserFinal.equals("")) {
+					ccUserFinal = ccFinal;
+				} else {
+					ccUserFinal = ccUserFinal + "," + ccFinal;
+				}
+			}else {
+				if (ccUserFinal.equals("")) {
+					ccUserFinal = ccFinal;
+				} 
+			}
+
+		}
+		
+		for (String ccUser : ccUserFinal.split(",")) {
+			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+		}
+
+		mailSender.send(mimeMessage);
 	}
 }

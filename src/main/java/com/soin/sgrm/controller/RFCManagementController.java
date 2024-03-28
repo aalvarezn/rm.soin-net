@@ -395,8 +395,12 @@ public class RFCManagementController extends BaseController {
 					Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
 					EmailTemplate emailNotify = emailService.findById(idTemplate);
 					String statusName=status.getName();
-					
-					String subject=getSubject(rfc.getSiges().getEmailTemplate(),rfc);
+					EmailTemplate email= rfc.getSiges().getEmailTemplate();
+					if(email==null) {
+						 email=new EmailTemplate();
+						 email.setSubject("[RFC - "+rfc.getSystemInfo().getName()+" ]:{{rfcNumber}}");
+					 }
+					String subject=getSubject(email,rfc);
 					Thread newThread = new Thread(() -> {
 						try {
 							emailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
@@ -411,7 +415,12 @@ public class RFCManagementController extends BaseController {
 						EmailTemplate emailNotify = emailService.findById(idTemplate);
 						String statusName=status.getName();
 						String typeError=error.getName();
-						String subject=getSubject(rfc.getSiges().getEmailTemplate(),rfc);
+						EmailTemplate email= rfc.getSiges().getEmailTemplate();
+						if(email==null) {
+							 email=new EmailTemplate();
+							 email.setSubject("[RFC - "+rfc.getSystemInfo().getName()+" ]:{{rfcNumber}}");
+						 }
+						String subject=getSubject(email,rfc);
 						Thread newThread = new Thread(() -> {
 							try {
 								emailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
@@ -497,11 +506,15 @@ public class RFCManagementController extends BaseController {
 				if (sendEmail) {
 
 					if(!errorVer) {
-					Integer idTemplate = Integer.parseInt(pparameterService.findByCode(30).getParamValue());
+					Integer idTemplate = Integer.parseInt(parameterService.findByCode(30).getParamValue());
 					PEmailTemplate emailNotify = pemailService.findById(idTemplate);
 					String statusName=status.getName();
-					
-					String subject=getSubject(rfc.getSiges().getEmailTemplate(),rfc);
+					PEmailTemplate email= rfc.getSiges().getEmailTemplate();
+					if(email==null) {
+						 email=new PEmailTemplate();
+						 email.setSubject("[RFC - "+rfc.getSystemInfo().getName()+" ]:{{rfcNumber}}");
+					 }
+					String subject=getSubject(email,rfc);
 					Thread newThread = new Thread(() -> {
 						try {
 							pemailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
@@ -512,11 +525,16 @@ public class RFCManagementController extends BaseController {
 					});
 					newThread.start();
 					}else {
-						Integer idTemplate = Integer.parseInt(pparameterService.findByCode(31).getParamValue());
+						Integer idTemplate = Integer.parseInt(parameterService.findByCode(31).getParamValue());
 						PEmailTemplate emailNotify = pemailService.findById(idTemplate);
 						String statusName=status.getName();
 						String typeError=error.getName();
-						String subject=getSubject(rfc.getSiges().getEmailTemplate(),rfc);
+						PEmailTemplate email= rfc.getSiges().getEmailTemplate();
+						if(email==null) {
+							 email=new PEmailTemplate();
+							 email.setSubject("[RFC - "+rfc.getSystemInfo().getName()+" ]:{{rfcNumber}}");
+						 }
+						String subject=getSubject(email,rfc);
 						Thread newThread = new Thread(() -> {
 							try {
 								pemailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");

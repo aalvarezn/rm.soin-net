@@ -23,6 +23,7 @@ public class ReleaseCreate {
 	private String description;
 	private String senders;
 	private String message;
+	private String bugs;
 
 	// Tipos de reportes
 	private Boolean reportHaveArt;
@@ -694,4 +695,13 @@ public class ReleaseCreate {
 		}
 		return false;
 	}
+
+	public String getBugs() {
+		return bugs;
+	}
+
+	public void setBugs(String bugs) {
+		this.bugs = bugs;
+	}
+	
 }

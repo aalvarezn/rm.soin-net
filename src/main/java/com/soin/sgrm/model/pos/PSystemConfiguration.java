@@ -71,6 +71,9 @@ public class PSystemConfiguration implements Serializable {
 	
 	@Column(name = "OBSERVACIONES")
 	private boolean observations;
+	
+	@Column(name = "BUGS")
+	private boolean bugs;
 
 	@Transient
 	private Integer systemId;
@@ -201,6 +204,14 @@ public class PSystemConfiguration implements Serializable {
 
 	public void setObservations(boolean observations) {
 		this.observations = observations;
+	}
+
+	public boolean isBugs() {
+		return bugs;
+	}
+
+	public void setBugs(boolean bugs) {
+		this.bugs = bugs;
 	}
 	
 	

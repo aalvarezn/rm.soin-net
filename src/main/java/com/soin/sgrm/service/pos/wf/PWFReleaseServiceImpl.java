@@ -42,22 +42,23 @@ public class PWFReleaseServiceImpl implements PWFReleaseService {
 		dao.wfStatusRelease(release);
 	}
 
-	@Override
-	public JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength,
-			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,
-			Object[] systemsId) throws SQLException, ParseException {
-		return dao.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId, statusId, systemsId);
-	}
-
-	@Override
-	public Integer countByType(String group, Object[] ids) {
-		return dao.countByType(group, ids);
-	}
-
+	
 	@Override
 	public void wfStatusReleaseWithOutMin(PWFRelease release) {
 		dao.wfStatusReleaseWithOutMin(release);
 		
+	}
+
+	@Override
+	public JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength,
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,
+			Object[] systemsId, Integer idUser) throws SQLException, ParseException {
+		return dao.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId, statusId, systemsId,idUser);
+	}
+
+	@Override
+	public Integer countByType(String group, Object[] ids, Integer idUser) {
+		return dao.countByType(group, ids,idUser);
 	}
 
 }

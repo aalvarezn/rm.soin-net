@@ -2,10 +2,19 @@ package com.soin.sgrm.service.pos;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +23,7 @@ import com.soin.sgrm.controller.ReleaseController;
 import com.soin.sgrm.dao.ReleaseDao;
 import com.soin.sgrm.dao.pos.PReleaseDao;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseEditWithOutObjects;
@@ -27,6 +37,7 @@ import com.soin.sgrm.model.pos.PReleaseTinySummary;
 import com.soin.sgrm.model.pos.PReleaseTrackingShow;
 import com.soin.sgrm.model.pos.PReleaseTrackingToError;
 import com.soin.sgrm.model.pos.PReleaseUser;
+import com.soin.sgrm.model.pos.PReleaseUserFast;
 import com.soin.sgrm.model.pos.PRelease_RFC;
 import com.soin.sgrm.model.pos.PRelease_RFCFast;
 import com.soin.sgrm.model.pos.PReleases_WithoutObj;
@@ -78,13 +89,13 @@ public class PReleaseServiceImpl implements PReleaseService {
 		return dao.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
 				statusId);
 	}
-	
+
 	@Override
-	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId)
+	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength,
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
 			throws SQLException, ParseException {
-		return dao.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
-				statusId,projectId);
+		return dao.listByAllWithObjects(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId, projectId);
 	}
 
 	@Override
@@ -323,14 +334,14 @@ public class PReleaseServiceImpl implements PReleaseService {
 
 	@Override
 	public List<PReleaseReport> listReleaseReport() {
-		
+
 		return dao.listReleaseReport();
-				
+
 	}
 
 	@Override
 	public List<PReleaseReportFast> listReleaseReportFilter(int systemId, int projectId, String dateRange) {
-		return  dao.listReleaseReportFilter(systemId,projectId,dateRange);
+		return dao.listReleaseReportFilter(systemId, projectId, dateRange);
 	}
 
 	@Override
@@ -340,7 +351,7 @@ public class PReleaseServiceImpl implements PReleaseService {
 
 	@Override
 	public PReleaseTrackingShow findReleaseTracking(int id) {
-	
+
 		return dao.findReleaseTracking(id);
 	}
 
@@ -348,13 +359,93 @@ public class PReleaseServiceImpl implements PReleaseService {
 	public PReleaseSummaryFile findByIdSummaryFile(Integer id) {
 		// TODO Auto-generated method stub
 		return dao.findByIdSummaryFile(id);
-}
-  @Override
+	}
+
+	@Override
 	public JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength,
 			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
 			throws SQLException, ParseException {
-		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
-				statusId,projectId);
+		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId, projectId);
 	}
+
+	@Override
+	public void requestRelease(PReleaseEditWithOutObjects release) {
+		dao.requestRelease(release);
+	}
+
+	@Override
+	public String getLastStatusHistory(Integer id) {
+		// TODO Auto-generated method stub
+		return dao.getLastStatusHistory(id);
+	}
+
+	@Override
+	public PReleaseUserFast findByIdReleaseUserFast(Integer idRelease) {
+		// TODO Auto-generated method stub
+		return dao.findByIdReleaseUserFast(idRelease);
+	}
+
+	@Override
+	public void updateStatusRelease(PReleaseUserFast release) {
+		dao.updateStatusReleaseUser(release);
+	}
+
+	@Override
+	public JsonSheet<?> findAll1(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			 String dateRange, Integer systemId, Integer statusId)
+			throws SQLException, ParseException {
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+		
+		alias.put("system", "system");
+		alias.put("status", "status");
+		alias.put("user", "user");
+
+		// Valores de busqueda en la tabla
+		
+		Criterion qSrch = null;
+		if (sSearch != null && sSearch.length() > 0) {
+			qSrch= Restrictions.or(Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase());
+		}
+		
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					columns.put("createDate", Restrictions.between("createDate", start, end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		
+		if (systemId != 0) {
+			columns.put("system", Restrictions.eq("system.id", systemId));
+			
+		}
+		if (statusId != 0) {
+			columns.put("status", Restrictions.eq("status.id", statusId));
+			
+		}
+		
+		List<String> fetchs = new ArrayList<String>();
+
+		return dao.findAllFastRelease(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
+
+	}
+	
+	
 
 }

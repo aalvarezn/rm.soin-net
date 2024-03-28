@@ -20,6 +20,7 @@ import com.soin.sgrm.model.pos.PReleaseTinySummary;
 import com.soin.sgrm.model.pos.PReleaseTrackingShow;
 import com.soin.sgrm.model.pos.PReleaseTrackingToError;
 import com.soin.sgrm.model.pos.PReleaseUser;
+import com.soin.sgrm.model.pos.PReleaseUserFast;
 import com.soin.sgrm.model.pos.PRelease_RFC;
 import com.soin.sgrm.model.pos.PRelease_RFCFast;
 import com.soin.sgrm.model.pos.PReleases_WithoutObj;
@@ -115,7 +116,18 @@ public interface PReleaseService {
 
 	PReleaseSummaryFile findByIdSummaryFile(Integer id);
 
-	
+	void requestRelease(PReleaseEditWithOutObjects release);
+
+	String getLastStatusHistory(Integer id);
+
+	PReleaseUserFast findByIdReleaseUserFast(Integer idRelease);
+
+	void updateStatusRelease(PReleaseUserFast release);
+
+
+	JsonSheet<?> findAll1(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
+			 String dateRange, Integer systemId, Integer statusId)
+			throws SQLException, ParseException;
 
 
 

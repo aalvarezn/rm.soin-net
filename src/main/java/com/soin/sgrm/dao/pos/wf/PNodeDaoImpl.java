@@ -1,5 +1,6 @@
 package com.soin.sgrm.dao.pos.wf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -21,6 +22,8 @@ import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
 import com.soin.sgrm.model.pos.wf.PNodeIncidence;
 import com.soin.sgrm.model.pos.wf.PNodeRFC;
+import com.soin.sgrm.model.wf.Node;
+import com.soin.sgrm.model.wf.NodeName;
 
 @Repository
 public class PNodeDaoImpl implements PNodeDao {
@@ -339,6 +342,34 @@ public class PNodeDaoImpl implements PNodeDao {
 		}else {
 			return true;
 		}
+	}
+
+	@Override
+	public PNode findByIdAndWorkFlow(String nodeName, Integer workFlowId) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Node.class);
+		crit.createAlias("workFlow", "workFlow");
+		crit.add(Restrictions.eq("workFlow.id",workFlowId));
+		crit.add(Restrictions.eq("label",nodeName));
+		return (PNode) crit.uniqueResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<NodeName> listNodeNames(Integer idProyecto, Integer userLogin) {
+		List<NodeName>listNode=new ArrayList<NodeName>();
+		String sql = "ID";
+		Query query = null;
+		sql = String.format(
+				"SELECT DISTINCT tn.\"NOMBRE\"\r\n" + 
+				"FROM \"TRAMITES_NODO\" tn\r\n" + 
+				"INNER JOIN \"TRAMITES_NODO\" tt ON tn.\"TRAMITE_ID\" = tt.\"ID\"\r\n" + 
+				"INNER JOIN \"SISTEMAS_SISTEMA\" ss ON tt.\"SISTEMA_ID\" = ss.\"ID\"\r\n" +
+				"INNER JOIN  \"TRAMITES_NODO_ACTOR\" tna ON tna.\"NODO_ID\" =tn.\"ID\"\r\n"+
+				"WHERE tn.\"GRUPO\" = 'action' AND ss.\"PROYECTO_ID\" =%s",
+				idProyecto);
+		query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		listNode=query.list();
+		return listNode;
 	}
 
 

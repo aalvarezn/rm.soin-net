@@ -1,5 +1,6 @@
 package com.soin.sgrm.dao.wf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -19,6 +20,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.NodeIncidence;
+import com.soin.sgrm.model.wf.NodeName;
 import com.soin.sgrm.model.wf.NodeRFC;
 
 @Repository
@@ -338,6 +340,37 @@ public class NodeDaoImpl implements NodeDao {
 			return true;
 		}
 	}
+	protected Session getSession() {
+		return sessionFactory.getCurrentSession();
+	}
+	@SuppressWarnings("unchecked")
+	public List<NodeName> listNodeNames(Integer idProyecto,Integer idUser){
+		List<NodeName>listNode=new ArrayList<NodeName>();
+		String sql = "";
+		Query query = null;
+		sql = String.format(
+				"SELECT DISTINCT tn.nombre\r\n" + 
+				"FROM TRAMITES_NODO tn\r\n" + 
+				"INNER JOIN TRAMITES_TRAMITE tt ON tn.TRAMITE_ID = tt.ID\r\n" + 
+				"INNER JOIN SISTEMAS_SISTEMA ss ON tt.SISTEMA_ID = ss.ID\r\n" +
+				"INNER JOIN  TRAMITES_NODO_ACTOR tna ON tna.NODO_ID =tn.ID\r\n"+
+				"WHERE tn.GRUPO = 'action' AND ss.PROYECTO_ID =%s",
+				idProyecto);
+		query = getSession().createSQLQuery(sql);
+		listNode=query.list();
+		return listNode;
+		
+	}
+
+	@Override
+	public Node findByIdAndWorkFlow(String nodeName, int workFlowId) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Node.class);
+		crit.createAlias("workFlow", "workFlow");
+		crit.add(Restrictions.eq("workFlow.id",workFlowId));
+		crit.add(Restrictions.eq("label",nodeName));
+		return (Node) crit.uniqueResult();
+	}
+	
 
 
 }

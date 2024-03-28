@@ -25,6 +25,7 @@ import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.ReleaseUserFast;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -346,10 +347,11 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength,
 			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
 			throws SQLException, ParseException {
-		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId,
-				statusId,projectId);
+		return dao.listByAllWithOutTracking(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
+				systemId, statusId, projectId);
 	}
-  @Override
+
+	@Override
 	public ReleaseSummaryFile findByIdSummaryFile(Integer id) {
 		// TODO Auto-generated method stub
 		return dao.findByIdSummaryFile(id);
@@ -360,4 +362,27 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public ReleaseEdit findEditByName(String numRelease) {
 		return dao.findEditByName(numRelease);
 	}
+
+
+	@Override
+	public ReleaseUserFast findByIdReleaseUserFast(Integer idRelease) {
+		// TODO Auto-generated method stub
+		return dao.findByIdReleaseUserFast(idRelease);
+	}
+
+	@Override
+	public void updateStatusReleaseUser(ReleaseUserFast release) {
+		dao.updateStatusReleaseUser(release);
+
+	}
+
+	@Override
+	public void requestRelease(ReleaseEditWithOutObjects release) {
+		dao.requestRelease(release);
+	}
+	@Override
+	public String getLastStatusHistory(Integer releaseId) {
+		return dao.getLastStatusHistory(releaseId);
+	}
+
 }

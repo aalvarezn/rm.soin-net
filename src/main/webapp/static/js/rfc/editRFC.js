@@ -43,13 +43,14 @@ $(function() {
 		 var data = $dtRFCsAdd.row( this ).data();
 		 removeData(data);
 	 });
-	 
-	$('#dateBegin').datetimepicker({
-		locale: 'es',
-		format: 'DD/MM/YYYY hh:mm a',
-		minDate : moment().add(10, 'minutes'),
-		sideBySide: true
-	});
+	 $('#dateBegin').val(null);
+	 $('#dateBegin').datetimepicker({
+		    locale: 'es',
+		    format: 'DD/MM/YYYY hh:mm a',
+		    minDate: moment().subtract(2, 'months').toDate(),
+		    defaultDate: moment().toDate(),// Cambiado 'month' a 'months'
+		    sideBySide: true
+		});
 	$('#dateFinish').datetimepicker({
 		locale: 'es',
 		format: 'DD/MM/YYYY hh:mm a',
@@ -61,13 +62,22 @@ $(function() {
 	var initialDate = currentDate.add(1, 'hour').add(10, 'minutes');
 	$('#dateFinish').data("DateTimePicker").date(initialDate);
 	   $("#dateBegin").on("dp.change", function (e) {
-		 
-           $('#dateFinish').data("DateTimePicker").minDate(e.date.add(60,'m'));
+		  var validEmergency= $('#typeChangeId').find(":selected").text();
+		 	if(validEmergency==='Emergencia'){
+		 		console.log("soy emergencia");
+		 		 var defaultValue = moment().add(60, 'm').toDate();
+		 	    $('#dateFinish').val(moment(defaultValue).format('DD/MM/YYYY hh:mm A')); 
+			 	   
+		 	}else{
+
+			 	   $('#dateFinish').data("DateTimePicker").minDate(e.date.add(60,'m'));
+		 	}	
+	      
        });
 	   
 	   $("#dateFinish").on("dp.change", function (e) {
 		   if( $("#dateBegin").val()==""){
-			  
+			 
 		   }else{
 			   var dateI=$('#dateBegin').data("DateTimePicker").date().add(1,'hours');
 			   var date1hour=moment(dateI, "DD-MM-YYYY");
@@ -170,10 +180,48 @@ $(function() {
 		}
 		$(".node-menu").hide(100);
 	});
-	
+	dropdownChangeType();
 });
 function nextTab(elem) {
 	$(elem).next().find('a[data-toggle="tab"]').tab('show');
+}
+function dropdownChangeType(){
+
+$('#typeChangeId').change(function() {
+    var nivelEmergencia = $(this).find(":selected").text();
+    console.log(nivelEmergencia);
+    $('#dateBegin').val('');
+    $('#dateFinish').val('');
+   
+    var currentDate = moment();
+ 
+
+
+    var initialDateBegin;
+    var minDateBegin;
+
+    if (nivelEmergencia === 'Emergencia') {
+        initialDateBegin = moment().subtract(2, 'month');
+        minDateBegin = moment().subtract(2, 'month');
+
+        
+    } else {
+        initialDateBegin = moment().add(10, 'minutes');
+        minDateBegin = moment().add(10, 'minutes');
+    }
+
+    
+    
+    // Configurar dateBegin
+    $('#dateBegin').data("DateTimePicker").minDate(minDateBegin);
+    $('#dateBegin').data("DateTimePicker").date(initialDateBegin);
+    
+
+    
+   
+
+   
+});
 }
 
 function prevTab(elem) {
@@ -902,7 +950,6 @@ function initTableAdd(){
 							+ row.id
 							+ '" target="_blank" title="Resumen"><i class="material-icons gris">info</i></a> </div>';
 							
-							return options;
 							return options;
 						},
 						sWidth: '30px'

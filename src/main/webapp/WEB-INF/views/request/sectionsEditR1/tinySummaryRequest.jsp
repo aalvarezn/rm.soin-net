@@ -67,7 +67,7 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de actualización</label>
 					<div class="form-group m-b-0i">
 						<div class="form-group m-b-0i">
 							<div class="form-line disabled">
@@ -123,11 +123,14 @@
 				</div>
 			</div>
 			<div class="row clearfix">
-			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
-					<label for="email_address">Requerimientos Iniciales del cliente</label>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 p-t-10">
+					<label for="email_address">Requerimientos Iniciales del
+						cliente</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR1.initialRequeriments}</p>
+							<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR1.initialRequeriments}</textarea>
+
 						</div>
 					</div>
 				</div>
@@ -135,7 +138,9 @@
 					<label for="email_address">Observaciones Generales</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line disabled">
-							<p>${requestR1.observations}</p>
+
+							<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${requestR1.observations}</textarea>
 						</div>
 					</div>
 				</div>

@@ -16,4 +16,6 @@ public interface PUserDao {
 
 	PUser findUserById(Integer id);
 
+	PUser findByName(String soinManager);
+
 }

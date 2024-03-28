@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import com.google.gdata.util.ParseException;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.Release_Objects;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseObject;
@@ -298,6 +299,16 @@ public class PReleaseObjectDaoImpl implements PReleaseObjectDao {
 		crit.createAlias("objects", "objects")
 		.add(Restrictions.eq("releaseId", idRelease));
 			crit.add(Restrictions.eq("objects.isSql", 1));
+		
+		return crit.list();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<PRelease_Objects> listObjects(Integer id) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		crit.createAlias("objects", "objects")
+		.add(Restrictions.eq("releaseId", id));
 		
 		return crit.list();
 	}

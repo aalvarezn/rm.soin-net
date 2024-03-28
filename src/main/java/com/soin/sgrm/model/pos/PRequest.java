@@ -50,6 +50,12 @@ public class PRequest implements Serializable {
 
 	@Column(name = "ESTADO")
 	private String status;
+	
+	@Column(name = "NOMBRE_NODO")
+	private String nodeName;
+	
+	@Column(name = "MOTIVO")
+	private String motive;
 
 	@Column(name = "LIDER_TECNICO_SOIN")
 	@Size(max = 200, message = "Máximo 200 caracteres.")
@@ -74,7 +80,8 @@ public class PRequest implements Serializable {
 	@Column(name = "AUTO")
 	private Integer auto;
 
-	
+	@Column(name = "GESTOR_ID")
+	private Integer userManager;
 
 	@Transient
 	Integer typeRequestId;
@@ -202,7 +209,29 @@ public class PRequest implements Serializable {
 		this.auto = auto;
 	}
 
+	public Integer getUserManager() {
+		return userManager;
+	}
 
+	public void setUserManager(Integer userManager) {
+		this.userManager = userManager;
+	}
+
+	public String getNodeName() {
+		return nodeName;
+	}
+
+	public void setNodeName(String nodeName) {
+		this.nodeName = nodeName;
+	}
+
+	public String getMotive() {
+		return motive;
+	}
+
+	public void setMotive(String motive) {
+		this.motive = motive;
+	}
 	
-
+	
 }

@@ -95,7 +95,7 @@ deg
 						<input type="hidden" name="${_csrf.parameterName}"
 							value="${_csrf.token}" />
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center" >
-							<span class="btn btn-primary btn-block btn-lg fileinput-button"> <span>Selecccionar</span>
+							<span class="btn btn-primary btn-block btn-lg fileinput-button"> <span>Seleccionar</span>
 								<input id="files" type="file" name="files[]" multiple>
 							</span>
 						</div>

@@ -8,6 +8,7 @@ import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.wf.PNode;
 import com.soin.sgrm.model.pos.wf.PNodeRFC;
+import com.soin.sgrm.model.wf.NodeName;
 import com.soin.sgrm.model.pos.wf.PNodeIncidence;
 
 public interface PNodeService {
@@ -54,6 +55,10 @@ public interface PNodeService {
 
 
 	boolean verifyStartNodeIncidence(PNodeIncidence node);
+
+	PNode findByIdAndWorkFlow(String nodeName, Integer id);
+ 
+	List<NodeName> listNodeNames(Integer id, Integer userLogin);
 
 	
 

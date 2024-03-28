@@ -870,6 +870,8 @@ public class FileController extends BaseController {
 		docxVariables.releaseActions(release);
 		docxVariables.releaseDataBaseInstructions(release);
 		docxVariables.releaseInstalationInstructions(release);
+		docxVariables.addVariable("{{r plan_de_rollback_base_datos_prd}}",
+				(release.getProdRollbackPlan() != null ? release.getProdRollbackPlan() : Constant.EMPTYVARDOC));
 		docxVariables.addVariable("{{r pruebas_minimas_sugeridas_en_qa}}",
 				(release.getMinimal_evidence() != null ? release.getMinimal_evidence() : Constant.EMPTYVARDOC));
 	}

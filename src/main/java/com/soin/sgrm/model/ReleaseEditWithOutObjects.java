@@ -29,6 +29,8 @@ import org.hibernate.annotations.CascadeType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.soin.sgrm.model.wf.Node;
+
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "RELEASES_RELEASE")
@@ -64,6 +66,9 @@ public class ReleaseEditWithOutObjects implements Serializable, Cloneable {
 
 	@Column(name = "REMITENTES")
 	private String senders;
+	
+	@Column(name = "BUGS")
+	private String bugs;
 
 	@Column(name = "MENSAJE_DESARROLLADOR")
 	private String message;
@@ -99,6 +104,11 @@ public class ReleaseEditWithOutObjects implements Serializable, Cloneable {
 
 	@Column(name = "POST_CONDICIONES")
 	private String postConditions;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "NODO_ID", nullable = true)
+	private Node node;
+	
 
 	// Datos de instalacion
 	@Lob
@@ -275,6 +285,8 @@ public class ReleaseEditWithOutObjects implements Serializable, Cloneable {
 
 	@Column(name = "MOTIVO")
 	private String motive;
+	
+	
 
 	@Transient
 	private String dateChange;
@@ -835,5 +847,22 @@ public class ReleaseEditWithOutObjects implements Serializable, Cloneable {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
+	public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
+	}
+
+	public String getBugs() {
+		return bugs;
+	}
+
+	public void setBugs(String bugs) {
+		this.bugs = bugs;
+	}
+	
 	
 }

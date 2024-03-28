@@ -47,5 +47,49 @@ public class PUserDaoImpl implements PUserDao{
 		return user;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public PUser findByName(String soinManager) {
+		String [] soinManagerWords=soinManager.split(" ");
+		PUser userReal=null;
+		try { 
+			List<PUser> users = sessionFactory.getCurrentSession()
+				    .createCriteria(PUser.class)
+				    .add(Restrictions.ilike("fullName", soinManagerWords[0].toLowerCase().substring(0,3) + "%"))
+				    .list();
+				
+					for(PUser userVerification: users) {
+						userReal=userVerification;
+						int i=0;
+						for(int x=0; x<soinManagerWords.length;x++) {
+						if(x==0) {
+							if(userVerification.getFullName().toLowerCase().contains(soinManagerWords[x].toLowerCase().substring(0,3))) {
+								i++;
+							}
+						}else {
+							if(userVerification.getFullName().toLowerCase().contains(soinManagerWords[x].toLowerCase())) {
+								i++;
+							}
+						}
+
+						if(i>=2) {
+							return userReal;
+						}
+						}
+						
+						
+					}
+				return userReal;
+				
+			
+		    
+
+		    } catch (Exception e) {
+		    // Otros tipos de excepciones que puedan ocurrir
+		    e.printStackTrace();
+		    return userReal;
+		}
+	}
+
 
 }

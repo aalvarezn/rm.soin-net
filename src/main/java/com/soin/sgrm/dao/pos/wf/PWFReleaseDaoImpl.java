@@ -13,6 +13,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -22,7 +23,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.RequestFast;
+import com.soin.sgrm.model.pos.PRequestFast;
 import com.soin.sgrm.model.pos.wf.PWFRelease;
+import com.soin.sgrm.model.wf.WFRelease;
 import com.soin.sgrm.utils.JsonSheet;
 
 @Repository
@@ -54,13 +58,13 @@ public class PWFReleaseDaoImpl implements PWFReleaseDao {
 
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, null,true);
+				systemId, statusId, null,true,null);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, null,false);
+				systemId, statusId, null,false,null);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -74,64 +78,149 @@ public class PWFReleaseDaoImpl implements PWFReleaseDao {
 		return json;
 	}
 
-	@SuppressWarnings({ "deprecation" })
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	public Criteria criteriaByWorkFlow(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] ids,boolean count)
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] ids,boolean count, Integer idUser)
 			throws SQLException, ParseException {
-		List<String> fetchs=new ArrayList<String>();
+		List<String> fetchs = new ArrayList<String>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PWFRelease.class);
-		crit.createAlias("system", "system");
-		crit.createAlias("status", "status");
-		crit.createAlias("user", "user");
-		crit.createAlias("node", "node");
-		crit.createAlias("node.workFlow", "workFlow");
-		crit.createAlias("node.workFlow.type", "type");
-		if (filtred != null) {
-			crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
-		}
-
-		if (ids != null)
-			crit.add(Restrictions.in("system.id", ids));
-
+		Criteria crit2 = sessionFactory.getCurrentSession().createCriteria(PRequestFast.class);
+		crit2.add(Restrictions.eq("userManager", idUser));
+		List<PRequestFast> requestList = crit2.list();
+		Disjunction disjunction = Restrictions.disjunction();
 		// Valores de busqueda en la tabla
-		crit.add(Restrictions.or(Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-				Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-				Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-				Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
-		if (dateRange != null) {
-			if (dateRange.length > 1) {
-				Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
-				Date end = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[1]);
-				end.setHours(23);
-				end.setMinutes(59);
-				end.setSeconds(59);
-				crit.add(Restrictions.ge("createDate", start));
-				crit.add(Restrictions.le("createDate", end));
+		if(sSearch.equals("")) {
+		for (PRequestFast request : requestList) {
+			String codeSoing=request.getCode_soin().replaceFirst("-", "");
+			if (!codeSoing.equals("")) {
+				disjunction.add(Restrictions.like("releaseNumber", codeSoing, MatchMode.ANYWHERE).ignoreCase());
+		    }
+			
+		}
+		}
+		
+		if(requestList.size()!=0 || !sSearch.equals("")) {
+			crit.createAlias("system", "system");
+			crit.createAlias("status", "status");
+			crit.createAlias("user", "user");
+			crit.createAlias("node", "node");
+			crit.createAlias("node.workFlow", "workFlow");
+			crit.createAlias("node.workFlow.type", "type");
+			if (ids != null)
+				crit.add(Restrictions.in("system.id", ids));
+			
+			
+			
+			if (filtred != null) {
+				crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
 			}
-		}
-		if (systemId != 0) {
-			crit.add(Restrictions.eq("system.id", systemId));
-		}
-		if (statusId != 0) {
-			crit.add(Restrictions.eq("status.id", statusId));
-		}
-		fetchs.add("node");
-		fetchs.add("workFlow");
-		fetchs.add("type");
-		fetchs.add("system");
-		fetchs.add("status");
-		fetchs.add("user");
-		if (fetchs != null)
-			for (String itemModel : fetchs)
-				crit.setFetchMode(itemModel, FetchMode.SELECT);
-		
-		crit.add(Restrictions.eq("type.id", 1));
-		crit.add(Restrictions.isNotNull("node"));
-		if(count) {
+			if(sSearch.equals("")) {
+				crit.add(disjunction);
+				crit.add(Restrictions.or(
+						Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+			}else {
+				crit.add(Restrictions.or(
+						Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+			}
+			
+			if (dateRange != null) {
+				if (dateRange.length > 1) {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					crit.add(Restrictions.ge("createDate", start));
+					crit.add(Restrictions.le("createDate", end));
+				}
+			}
+			if (systemId != 0) {
+				crit.add(Restrictions.eq("system.id", systemId));
+			}
+			if (statusId != 0) {
+				crit.add(Restrictions.eq("status.id", statusId));
+			}
+			fetchs.add("node");
+			fetchs.add("workFlow");
+			fetchs.add("type");
+			fetchs.add("system");
+			fetchs.add("status");
+			fetchs.add("user");
+			if (fetchs != null)
+				for (String itemModel : fetchs)
+					crit.setFetchMode(itemModel, FetchMode.SELECT);
+
+			crit.add(Restrictions.eq("type.id", 1));
+			crit.add(Restrictions.isNotNull("node"));
 			crit.addOrder(Order.desc("createDate"));
+		}else {
+			//crit.add(Restrictions.eq("id", null));
+			
+			crit.createAlias("system", "system");
+			crit.createAlias("status", "status");
+			crit.createAlias("user", "user");
+			crit.createAlias("node", "node");
+			crit.createAlias("node.workFlow", "workFlow");
+			crit.createAlias("node.workFlow.type", "type");
+			if (ids != null)
+				crit.add(Restrictions.in("system.id", ids));
+			
+			
+			
+			if (filtred != null) {
+				crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
+			}
+			if(sSearch.equals("")) {
+				
+				crit.add(Restrictions.or(
+						Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+			}else {
+				crit.add(Restrictions.or(
+						Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+						Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+			}
+			
+			if (dateRange != null) {
+				if (dateRange.length > 1) {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					crit.add(Restrictions.ge("createDate", start));
+					crit.add(Restrictions.le("createDate", end));
+				}
+			}
+			if (systemId != 0) {
+				crit.add(Restrictions.eq("system.id", systemId));
+			}
+			if (statusId != 0) {
+				crit.add(Restrictions.eq("status.id", statusId));
+			}
+			fetchs.add("node");
+			fetchs.add("workFlow");
+			fetchs.add("type");
+			fetchs.add("system");
+			fetchs.add("status");
+			fetchs.add("user");
+			if (fetchs != null)
+				for (String itemModel : fetchs)
+					crit.setFetchMode(itemModel, FetchMode.SELECT);
+
+			crit.add(Restrictions.eq("type.id", 1));
+			crit.add(Restrictions.isNotNull("node"));
+			crit.addOrder(Order.desc("createDate"));
+			
 		}
-		
-		
 		return crit;
 	}
 
@@ -166,16 +255,16 @@ public class PWFReleaseDaoImpl implements PWFReleaseDao {
 	@Override
 	public JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength,
 			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,
-			Object[] systemsId) throws SQLException, ParseException {
+			Object[] systemsId,Integer idUser) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, systemsId,true);
+				systemId, statusId, systemsId,true,idUser);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, systemsId,false);
+				systemId, statusId, systemsId,false,idUser);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -190,7 +279,7 @@ public class PWFReleaseDaoImpl implements PWFReleaseDao {
 	}
 
 	@Override
-	public Integer countByType(String group, Object[] ids) {
+	public Integer countByType(String group, Object[] ids,Integer idUser) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PWFRelease.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("node", "node");

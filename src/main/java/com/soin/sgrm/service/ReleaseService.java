@@ -23,6 +23,7 @@ import com.soin.sgrm.model.ReleaseTinySummary;
 import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.ReleaseTrackingToError;
 import com.soin.sgrm.model.ReleaseUser;
+import com.soin.sgrm.model.ReleaseUserFast;
 import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -119,6 +120,14 @@ public interface ReleaseService {
 	ReleaseSummaryFile findByIdSummaryFile(Integer id);
 
 	ReleaseEdit findEditByName(String numRelease);
+
+	ReleaseUserFast findByIdReleaseUserFast(Integer idRelease);
+
+	void updateStatusReleaseUser(ReleaseUserFast release);
+
+	void requestRelease(ReleaseEditWithOutObjects release);
+
+	String getLastStatusHistory(Integer releaseId);
 
 	
 

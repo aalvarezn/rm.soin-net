@@ -122,6 +122,7 @@ function changeStatusRFC(releaseId, rfcNumRequest,cc) {
 	$formChangeStatus.find('.form-line').removeClass('error');
 	$formChangeStatus.find('.form-line').removeClass('focused');
 	$('#divError').attr( "hidden",true);
+	$('#divEmail').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
 }
 

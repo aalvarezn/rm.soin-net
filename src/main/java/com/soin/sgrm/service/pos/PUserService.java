@@ -15,5 +15,7 @@ public interface PUserService {
 	List<PUser> getUsersRM();
 
 	PUser findUserById(Integer id);
+
+	PUser findByName(String soinManager);
 	
 }

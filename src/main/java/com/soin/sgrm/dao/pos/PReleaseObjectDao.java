@@ -37,4 +37,6 @@ public interface PReleaseObjectDao {
 	Integer listCountByReleases(Integer releaseId) throws ParseException, SQLException;
 
 	List<PRelease_Objects> listObjectsSql(Integer idRelease);
+
+	List<PRelease_Objects> listObjects(Integer id);
 }

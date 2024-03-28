@@ -10,6 +10,7 @@ import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.StatusRFC;
@@ -83,5 +84,9 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	void sendMailNotifyChangeStatusWebService(String releaseNumber, String type, String statusName, String operator,
 			Timestamp convertStringToTimestamp, UserInfo user, String senders, EmailTemplate emailNotify,
 			String subject, String motive, String link, String title);
+
+
+	void sendMail(ReleaseEditWithOutObjects releaseEmail, EmailTemplate email) throws MessagingException;
+
 }
 

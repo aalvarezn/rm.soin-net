@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
+import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.AttentionGroup;
+import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
@@ -421,6 +423,7 @@ public class WorkFlowController extends BaseController {
 					WorkFlow workFlow = new WorkFlow();
 					workFlow.setId(node.getWorkFlowId());
 					node.setSendEmail(false);
+					node.setSkipNode(false);
 					node.setWorkFlow(workFlow);
 					node = nodeService.save(node);
 					res.setObj(node);
@@ -429,6 +432,7 @@ public class WorkFlowController extends BaseController {
 					PNode pnode=new PNode();
 					workFlow.setId(node.getWorkFlowId());
 					pnode.setSendEmail(false);
+					pnode.setSkipNode(false);
 					pnode.setWorkFlow(workFlow);
 					Set<PWFUser> pactors=new HashSet<PWFUser>();
 					for(WFUser actor: node.getActors()) {
@@ -653,6 +657,35 @@ public class WorkFlowController extends BaseController {
 						}
 				}
 				
+			}
+			if(node.getSkipByRequest()==true) {
+				if(node.getSkipByRequestId()==null) {
+					res.setStatus("exception");
+					res.setException("Error al se debe seleccionar el estado a saltar.");
+				}
+			}else {
+				node.setSkipByRequestId(null);
+				node.setMotiveSkipR(null);
+			}
+			
+			if(node.getSkipReapprove()==true) {
+				if(node.getSkipReapproveId()==null) {
+					res.setStatus("exception");
+					res.setException("Error al se debe seleccionar el estado a saltar.");
+				}
+			}else {
+				node.setSkipReapproveId(null);
+				node.setMotiveSkipRA(null);
+			}
+			
+			if(node.getSkipNode()==true) {
+				if(node.getSkipId()==null) {
+					res.setStatus("exception");
+					res.setException("Error al se debe seleccionar el estado a saltar.");
+				}
+			}else {
+				node.setSkipId(null);
+				node.setMotiveSkip(null);
 			}
 			if (res.getStatus().equals("success")) {
 				if (profileActive().equals("oracle")) {
@@ -1324,5 +1357,22 @@ public class WorkFlowController extends BaseController {
 		}
 		return res;
 	}
+	/*
+	@RequestMapping(value = "/nextNode/{id}", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse nextNode(@PathVariable int id, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			ReleaseTrackingShow tracking = releaseService.findReleaseTracking(id);
+			res.setStatus("success");
+			res.setObj(tracking);
+		} catch (Exception e) {
+			Sentry.capture(e, "admin");
+			res.setStatus("exception");
+			res.setException("Error al procesar consulta: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}*/
 
 }

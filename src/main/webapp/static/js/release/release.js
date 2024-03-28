@@ -395,6 +395,7 @@ function changeSlide() {
 
 function openAddReleaseSection() {
 	$('#createRelease').show();
+	$('#createRelease').prop('disabled', false);
 	$('#copyRelease').hide();
 	$('#system_id').show();
 	formReleaseDraft.find('#system_idDiv').show();
@@ -410,6 +411,7 @@ function copyRelease(cellValue) {
 	formReleaseDraft.find('#description').val(rowData.description);
 	formReleaseDraft.find('#observations').val(rowData.observations);
 	$('#copyRelease').show();
+	$('#copyRelease').prop('disabled', false);
 	$('#createRelease').hide();
 	formReleaseDraft.find('#system_idDiv').hide();
 	formReleaseDraft.find('#divAddObjectOption').show();
@@ -523,6 +525,7 @@ function selectTableRelease(name) {
 }
 
 function createCopyRelease() {
+	$('#copyRelease').prop('disabled', true);
 	var cont = getCont();
 	if (validCreateRelease(false)) {
 		let requeriment = formReleaseDraft.find("input[name=group1]:checked")
@@ -565,10 +568,12 @@ function createCopyRelease() {
 					}); 
 					break;
 				case 'fail':
-					swal("Error!","A ocurrido un problema, por favor intente de nuevo.","error")
+					swal("Error!","A ocurrido un problema, por favor intente de nuevo.","error");
+					$('#copyRelease').prop('disabled', false);
 					break;
 				case 'exception':
-					swal("Error!", response.exception, "error")
+					swal("Error!", response.exception, "error");
+					$('#copyRelease').prop('disabled', false);
 					break;
 				default:
 					alert("default");
@@ -578,6 +583,8 @@ function createCopyRelease() {
 				notifyAjaxError(x, t, m);
 			}
 		});
+	}else{
+		$('#copyRelease').prop('disabled', true);
 	}
 }
 
@@ -590,7 +597,7 @@ function createRelease() {
 	var observations = $(form + " #observations").val();
 	var requeriment = $(form + " input[name=group1]:checked").val();
 	var requirement_name = $(form + " #requirement_name").val();
-
+	$('#createRelease').prop('disabled', true);
 	if (requeriment == 'TPO/BT') {
 		requirement_name = listLi();
 	}
@@ -629,10 +636,13 @@ function createRelease() {
 					swal(
 							"Error!",
 							"A ocurrido un problema, por favor intente de nuevo.",
-					"error")
+					"error");
+	                $('#createRelease').prop('disabled', false);
+					
 					break;
 				case 'exception':
-					swal("Error!", response.exception, "error")
+					swal("Error!", response.exception, "error");
+	                $('#createRelease').prop('disabled', false);
 					break;
 				default:
 					alert("default");
@@ -642,6 +652,8 @@ function createRelease() {
 				notifyAjaxError(x, t, m);
 			}
 		});
+	}else{
+		$('#createRelease').prop('disabled', false);
 	}
 }
 
@@ -794,8 +806,21 @@ function openReleaseTrackingModal(releaseId) {
 	var rowData = releaseTable.row(idRow).data();
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
-	loadTrackingRelease(rowData);
-	$('#trackingReleaseModal').modal('show');
+	$.ajax({
+		type : "GET",
+		url : getCont() + "release/tracking/"+ rowData.id ,
+		timeout : 600000,
+		data : {},
+		success : function(response) {
+			tracking=response.obj;
+			loadTrackingRelease(tracking);
+			$('#trackingReleaseModal').modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
+	
 }
 
 function loadTrackingRelease(rowData){

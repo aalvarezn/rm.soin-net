@@ -3,20 +3,25 @@ package com.soin.sgrm.service.pos;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import com.soin.sgrm.dao.BaseDao;
 import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PIncidence;
 import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
+import com.soin.sgrm.model.pos.PReleaseEditWithOutObjects;
 import com.soin.sgrm.model.pos.PRequestBaseR1;
 import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.model.pos.PUserInfo;
 import com.soin.sgrm.model.pos.wf.PWFIncidence;
 import com.soin.sgrm.model.pos.wf.PWFRFC;
 import com.soin.sgrm.model.pos.wf.PWFRelease;
+import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Incidence;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
+import com.soin.sgrm.model.ReleaseEditWithOutObjects;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
@@ -82,5 +87,6 @@ public interface PEmailTemplateService extends BaseDao<Integer, PEmailTemplate> 
 	void sendMailNotifyChangeUserIncidence(String numTicket, PUser userOperator, String motive, Timestamp timestamp,
 			PUser newUser, PEmailTemplate emailNotify);
 
+	void sendMail(PReleaseEditWithOutObjects releaseEmail, PEmailTemplate email) throws MessagingException;
 }
 

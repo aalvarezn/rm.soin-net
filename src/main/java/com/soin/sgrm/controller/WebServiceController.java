@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,16 +17,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.soin.sgrm.exception.Sentry;
@@ -36,11 +47,13 @@ import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.Impact;
 import com.soin.sgrm.model.Module;
 import com.soin.sgrm.model.Priority;
+import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseObjectEdit;
+import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.ReleaseUser;
 import com.soin.sgrm.model.ReleaseWS;
 import com.soin.sgrm.model.Releases_WithoutObj;
@@ -52,7 +65,7 @@ import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.TypeObject;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
-
+import com.soin.sgrm.model.wf.NodeRFC;
 import com.soin.sgrm.model.pos.PConfigurationItem;
 import com.soin.sgrm.model.pos.PDependency;
 import com.soin.sgrm.model.pos.PImpact;
@@ -76,6 +89,8 @@ import com.soin.sgrm.service.EmailReadService;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ModuleService;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.PriorityService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.RFCService;
 import com.soin.sgrm.service.ReleaseObjectService;
 import com.soin.sgrm.service.ReleaseService;
@@ -100,6 +115,7 @@ import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
 import com.soin.sgrm.utils.MyLevel;
+import com.soin.sgrm.utils.UpdateJiraIssueStatus;
 
 @RestController
 @RequestMapping("/ws")
@@ -139,6 +155,16 @@ public class WebServiceController extends BaseController {
 	SigesService sigesService;
 	@Autowired
 	UserInfoService userInfoService;
+	@Autowired
+	ParameterService paramService;
+	@Autowired
+	SigesService sigeService;
+	@Autowired
+	com.soin.sgrm.service.UserService userService ;
+  @Autowired  
+	private Environment env;
+	@Autowired
+	private ProjectService projectService;
 
 	@Autowired
 	PReleaseService preleaseService;
@@ -459,8 +485,6 @@ public class WebServiceController extends BaseController {
 			return release.getReleaseNumber();
 		}
 		return number_release;
-		
-		
 		
 	}
 
@@ -834,76 +858,8 @@ public class WebServiceController extends BaseController {
 			return res;
 		}
 
-		private String getSubject(EmailTemplate email, RFC rfc) {
-			String temp = "";
-			/* ------ Subject ------ */
-			if (email.getSubject().contains("{{rfcNumber}}")) {
-				email.setSubject(email.getSubject().replace("{{rfcNumber}}",
-						(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
-			}
-
-			if (email.getSubject().contains("{{priority}}")) {
-				email.setSubject(email.getSubject().replace("{{priority}}",
-						(rfc.getPriority().getName() != null ? rfc.getPriority().getName() : "")));
-			}
-
-			if (email.getSubject().contains("{{impact}}")) {
-				email.setSubject(email.getSubject().replace("{{impact}}",
-						(rfc.getImpact().getName() != null ? rfc.getImpact().getName() : "")));
-			}
-
-			if (email.getSubject().contains("{{typeChange}}")) {
-				email.setSubject(email.getSubject().replace("{{typeChange}}",
-						(rfc.getTypeChange().getName() != null ? rfc.getTypeChange().getName() : "")));
-			}
-
-			if (email.getHtml().contains("{{message}}")) {
-				email.setHtml(email.getHtml().replace("{{message}}", (rfc.getMessage() != null ? rfc.getMessage() : "NA")));
-			}
-
-			if (email.getSubject().contains("{{systemMain}}")) {
-				temp = "";
-				Siges codeSiges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
-
-				temp += codeSiges.getSystem().getName();
-
-				email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
-			}
-			return email.getSubject();
-		}
-
-		public String getSubject(EmailTemplate emailNotify, ReleaseEdit release) {
-
-			String tpo = "";
-			String releaseNumber = release.getReleaseNumber();
-			String[] parts = releaseNumber.split("\\.");
-			for (String part : parts) {
-				if (part.contains("TPO")) {
-					String[] partsTPO = part.split("TPO");
-					String[] partsNumber = part.split(partsTPO[1]);
-					tpo = partsNumber[0] + "-" + partsTPO[1];
-				}
-			}
-
-			new Request();
-			if (tpo != "") {
-				requestService.findByNameCode(tpo);
-			}
-			/* ------ Subject ------ */
-			if (emailNotify.getSubject().contains("{{tpoNumber}}")) {
-				emailNotify.setSubject(emailNotify.getSubject().replace("{{tpoNumber}}", (tpo != "" ? tpo : "")));
-			}
-			if (emailNotify.getSubject().contains("{{releaseNumber}}")) {
-				emailNotify.setSubject(emailNotify.getSubject().replace("{{releaseNumber}}",
-						(release.getReleaseNumber() != null ? release.getReleaseNumber() : "")));
-			}
-			if (emailNotify.getSubject().contains("{{version}}")) {
-				emailNotify.setSubject(emailNotify.getSubject().replace("{{version}}",
-						(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
-			}
-			return emailNotify.getSubject();
-		}
 	
+
 
 	public ArrayList<PReleaseObjectEdit> createObjects(String csv, PReleaseEdit release,
 			List<PConfigurationItem> configurationItemList, List<PTypeObject> typeObjectList) throws Exception {
@@ -933,5 +889,246 @@ public class WebServiceController extends BaseController {
 			objects.add(object);
 		}
 		return objects;
+	}
+
+	@RequestMapping(value = "/statusNow", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse getStatus(HttpServletRequest request, Model model,
+			@RequestParam(value = "name", required = true) String name,
+			@RequestParam(value = "type", required = true) Integer type) {
+		JsonResponse res = new JsonResponse();
+
+		if (type == 0) {
+			ReleaseEdit release = releaseService.findEditByName(name);
+			res.setStatus(release.getStatus().getName());
+		} else if (type == 1) {
+			RFC rfc = rfcService.findByKey("numRequest", name.trim());
+			res.setStatus(rfc.getStatus().getName());
+		}
+		return res;
+	}
+
+	@RequestMapping(value = "/sendMail", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse sendMail(HttpServletRequest request, Model model,
+			@RequestParam(value = "id", required = true) String id,
+			@RequestParam(value = "type", required = true) Integer type,
+			@RequestParam(value = "dateChange", required = false) String dateChange,
+			@RequestParam(value = "idUser", required = false) Integer idUser
+			) {
+		JsonResponse res = new JsonResponse();
+		Release release=null;
+		if(type==1) {
+			
+		
+		try {
+			release = releaseService.findReleaseById(Integer.parseInt(id));
+		} catch (NumberFormatException | SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Status status = statusService.findByName("Solicitado");
+
+		release.setStatus(status);
+		release.setMotive(status.getMotive());
+		User user=userService.findUserById(idUser);
+		release.setOperator(user.getFullName());
+		release.setUser(user);
+		if (Boolean.valueOf(paramService.findByCode(1).getParamValue())) {
+			if (release.getSystem().getEmailTemplate().iterator().hasNext()) {
+				EmailTemplate email = release.getSystem().getEmailTemplate().iterator().next();
+				Release releaseEmail = release;
+				Thread newThread = new Thread(() -> {
+					try {
+						emailService.sendMail(releaseEmail, email);
+					} catch (Exception e) {
+						Sentry.capture(e, "release");
+					}
+
+				});
+				newThread.start();
+			}
+		}
+		}else {
+			RFC rfc = null;
+
+			if (CommonUtils.isNumeric(id)) {
+				rfc = rfcService.findById((long) Integer.parseInt(id));
+			}
+			
+			StatusRFC status = statusRFCService.findByKey("name", "Solicitado");
+
+//			if (node != null)
+
+//				release.setNode(node);
+
+			rfc.setStatus(status);
+			rfc.setMotive(status.getReason());
+			rfc.setRequestDate((CommonUtils.getSystemTimestamp()));
+			Timestamp dateFormat = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
+			rfc.setRequestDate(dateFormat);
+			User user=userService.findUserById(idUser);
+			rfc.setOperator(user.getFullName());
+			rfc.setUser(user);
+			Siges siges = sigeService.findById(rfc.getSiges().getId());
+			if (Boolean.valueOf(parameterService.getParameterByCode(1).getParamValue())) {
+				if (siges.getEmailTemplate() != null) {
+					EmailTemplate email = siges.getEmailTemplate();
+					RFC rfcEmail = rfc;
+					Thread newThread = new Thread(() -> {
+						try {
+							emailService.sendMailRFC(rfcEmail, email);
+						} catch (Exception e) {
+							Sentry.capture(e, "rfc");
+						}
+
+					});
+					newThread.start();
+				}
+			}
+		}
+		return res;
+	}
+	
+
+
+	private String getSubject(EmailTemplate email, RFC rfc) {
+		String temp = "";
+		/* ------ Subject ------ */
+		if (email.getSubject().contains("{{rfcNumber}}")) {
+			email.setSubject(email.getSubject().replace("{{rfcNumber}}",
+					(rfc.getNumRequest() != null ? rfc.getNumRequest() : "")));
+		}
+
+		if (email.getSubject().contains("{{priority}}")) {
+			email.setSubject(email.getSubject().replace("{{priority}}",
+					(rfc.getPriority().getName() != null ? rfc.getPriority().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{impact}}")) {
+			email.setSubject(email.getSubject().replace("{{impact}}",
+					(rfc.getImpact().getName() != null ? rfc.getImpact().getName() : "")));
+		}
+
+		if (email.getSubject().contains("{{typeChange}}")) {
+			email.setSubject(email.getSubject().replace("{{typeChange}}",
+					(rfc.getTypeChange().getName() != null ? rfc.getTypeChange().getName() : "")));
+		}
+
+		if (email.getHtml().contains("{{message}}")) {
+			email.setHtml(email.getHtml().replace("{{message}}", (rfc.getMessage() != null ? rfc.getMessage() : "NA")));
+		}
+
+		if (email.getSubject().contains("{{systemMain}}")) {
+			temp = "";
+			Siges codeSiges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
+
+			temp += codeSiges.getSystem().getName();
+
+			email.setSubject(email.getSubject().replace("{{systemMain}}", (temp.equals("") ? "Sin sistema" : temp)));
+		}
+		return email.getSubject();
+	}
+
+	public String getSubject(EmailTemplate emailNotify, ReleaseEdit release) {
+
+		String tpo = "";
+		String releaseNumber = release.getReleaseNumber();
+		String[] parts = releaseNumber.split("\\.");
+		for (String part : parts) {
+			if (part.contains("TPO")) {
+				String[] partsTPO = part.split("TPO");
+				String[] partsNumber = part.split(partsTPO[1]);
+				tpo = partsNumber[0] + "-" + partsTPO[1];
+			}
+		}
+
+		new Request();
+		if (tpo != "") {
+			requestService.findByNameCode(tpo);
+		}
+		/* ------ Subject ------ */
+		if (emailNotify.getSubject().contains("{{tpoNumber}}")) {
+			emailNotify.setSubject(emailNotify.getSubject().replace("{{tpoNumber}}", (tpo != "" ? tpo : "")));
+		}
+		if (emailNotify.getSubject().contains("{{releaseNumber}}")) {
+			emailNotify.setSubject(emailNotify.getSubject().replace("{{releaseNumber}}",
+					(release.getReleaseNumber() != null ? release.getReleaseNumber() : "")));
+		}
+		if (emailNotify.getSubject().contains("{{version}}")) {
+			emailNotify.setSubject(emailNotify.getSubject().replace("{{version}}",
+					(release.getVersionNumber() != null ? release.getVersionNumber() : "")));
+		}
+		return emailNotify.getSubject();
+	}
+
+	@RequestMapping(value = { "/updateJira" }, method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public void updateJira() {
+		String jiraUrl = "https://soinlabs.atlassian.net";
+		String username = "releaseice@soin.co.cr";
+		String apiToken = "ATATT3xFfGF0n6uMxvmFJF1x_RI4ZiQVIrkPMnJ3eIIk1ykAzKsbPMymn2XroLX7HmgqWzvEIN-BLj1KShYhr3NHpxvhljAyOqUHGp5jO9v5tpzl3JrtTHN4jgl4yHdph1dmqX3GzmjwfNji61hz6hiZTIFoIXHo7CSZ5GjRBMO4drT6HLObhGI=098DCD93";
+		String issueKey = "NSPCCNS-541"; // Cambia esto al identificador de tu tarea
+		String newStatus = "21"; // Cambia esto al nuevo estado que deseas establecer
+
+	        HttpClient httpClient = HttpClients.createDefault();
+	        HttpPut request = new HttpPut(jiraUrl + "/rest/api/latest/issue/" + issueKey + "/transitions");
+
+	        // Configura las cabeceras de autenticación con el API token
+	        String authHeader = "Bearer " + apiToken;
+	        request.setHeader("Authorization", authHeader);
+	        request.setHeader("Content-Type", "application/json");
+
+	        try {
+	            // Construye el JSON con el nuevo estado
+	            ObjectMapper mapper = new ObjectMapper();
+	            String jsonBody = "{ \"transition\": { \"id\": \"" + newStatus + "\" } }";
+	            request.setEntity(new StringEntity(jsonBody));
+
+	            HttpResponse response = httpClient.execute(request);
+	            // Procesa la respuesta aquí
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+		
+		
+	}
+
+	@RequestMapping(value = { "/getStatusJira" }, method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public String getStatusJira() {
+		String jiraUrl = "https://soinlabs.atlassian.net";
+		String username = "releaseice@soin.co.cr";
+		String apiToken = "ATATT3xFfGF0n6uMxvmFJF1x_RI4ZiQVIrkPMnJ3eIIk1ykAzKsbPMymn2XroLX7HmgqWzvEIN-BLj1KShYhr3NHpxvhljAyOqUHGp5jO9v5tpzl3JrtTHN4jgl4yHdph1dmqX3GzmjwfNji61hz6hiZTIFoIXHo7CSZ5GjRBMO4drT6HLObhGI=098DCD93";
+		String issueKey = "NSPCCNS-541"; // Cambia esto al identificador de tu tarea
+
+		HttpClient httpClient = HttpClients.createDefault();
+		HttpGet request = new HttpGet(jiraUrl + "/rest/api/latest/issue/" + issueKey);
+
+		// Configura las cabeceras de autenticación
+		 String authHeader = "Bearer " + apiToken;
+	        request.setHeader("Authorization", authHeader);
+	        request.setHeader("Content-Type", "application/json");
+
+		try {
+			HttpResponse response = httpClient.execute(request);
+
+			if (response.getStatusLine().getStatusCode() == 200) {
+				// Procesa la respuesta JSON para obtener el estado
+				String responseBody = EntityUtils.toString(response.getEntity());
+				// Parsea el JSON para obtener el estado
+				// Por ejemplo, utilizando la biblioteca Jackson
+				 ObjectMapper mapper = new ObjectMapper();
+				 JsonNode jsonNode = mapper.readTree(responseBody);
+				 String status = jsonNode.get("fields").get("status").get("name").asText();
+				// System.out.println("Estado de la tarea: " + status);
+				return status;
+			} else {
+				System.out.println("Error al obtener el estado de la tarea. Código de estado: "
+						+ response.getStatusLine().getStatusCode());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
+
 	}
 }

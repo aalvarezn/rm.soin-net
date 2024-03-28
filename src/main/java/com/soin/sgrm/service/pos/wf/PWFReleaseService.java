@@ -16,14 +16,14 @@ public interface PWFReleaseService {
 			throws SQLException, ParseException;
 
 	JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] systemsId)
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] systemsId, Integer idUser)
 			throws SQLException, ParseException;
 
 	PWFRelease findWFReleaseById(Integer id);
-
+ 
 	void wfStatusRelease(PWFRelease release);
 
-	Integer countByType(String group, Object[] ids);
+	Integer countByType(String group, Object[] ids, Integer idUser);
 
 	void wfStatusReleaseWithOutMin(PWFRelease release);
 }

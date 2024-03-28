@@ -225,16 +225,23 @@ function dropDownChange(){
 	    var edges=rowData.node.edges;
 	   var veriStatus=false;
 		$.each(edges, function(i, value) {
-			console.log(value.nodeTo.status.name);
-			if(value.nodeTo.status.name==="Error"){
-				veriStatus=true;
+			console.log(value.nodeTo.status.name+ "aca estoy si sirvo");
+			if(status===value.nodeTo.label){
+				if(value.nodeTo.status.name==="Error"){
+					veriStatus=true;
+				}else{
+					veriStatus=false;
+				}
 			}
+
 
 		});
 
 		if(veriStatus){
+			console.log("aca estoy en false");
 			$('#divError').attr( "hidden",false);
 		}else{
+			console.log("aca estoy en true");
 			$('#divError').attr( "hidden",true);
 		}
 		
@@ -382,7 +389,20 @@ function openReleaseTrackingModal(releaseId) {
 	rowData = releaseTable.row(idRow).data();
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
-	loadTrackingRelease(rowData);
+	$.ajax({
+		type : "GET",
+		url : getCont() + "release/tracking/"+ rowData.id ,
+		timeout : 600000,
+		data : {},
+		success : function(response) {
+			tracking=response.obj;
+			loadTrackingRelease(tracking);
+			$('#trackingReleaseModal').modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
 	$('#trackingReleaseModal').modal('show');
 }
 

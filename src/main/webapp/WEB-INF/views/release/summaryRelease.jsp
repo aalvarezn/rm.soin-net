@@ -135,7 +135,7 @@
 				</div>
 
 				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-					<label for="email_address">Fecha de creación</label>
+					<label for="email_address">Fecha de actualización</label>
 					<div class="form-group m-b-0i">
 						<div class="form-line ">
 							<input type="text" readonly id="user" name="user"
@@ -202,11 +202,29 @@
 						</div>
 					</div>
 				</c:if>
-			</div>
 
+
+			</div>
+			<c:if test="${systemConfiguration.bugs}">
 			<div class="row clearfix m-t-10">
 				<div class="col-sm-12">
-					<h5 class="titulares">Detalles de la Solución</h5>
+					<h5 class="titulares">Secci&oacute;n bugs</h5>
+				</div>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<label for="email_address">Bugs</label>
+						<div class="form-group m-b-0i">
+						<div class="form-line">
+							<textarea readonly rows="" cols="" class="form-control"
+								placeholder="No Aplica." style="">${release.bugs}</textarea>
+						</div>
+						
+						</div>
+					</div>
+				</div>
+			</c:if>
+			<div class="row clearfix m-t-10">
+				<div class="col-sm-12">
+					<h5 class="titulares">Detalles de la Soluci&oacute;n</h5>
 				</div>
 
 				<div class="col-md-12 col-lg-12 col-xs-12 col-sm-12 m-b-10">

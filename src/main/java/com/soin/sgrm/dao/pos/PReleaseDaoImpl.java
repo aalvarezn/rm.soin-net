@@ -8,8 +8,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.ReleaseUserFast;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseEditWithOutObjects;
@@ -38,6 +42,7 @@ import com.soin.sgrm.model.pos.PReleaseTinySummary;
 import com.soin.sgrm.model.pos.PReleaseTrackingShow;
 import com.soin.sgrm.model.pos.PReleaseTrackingToError;
 import com.soin.sgrm.model.pos.PReleaseUser;
+import com.soin.sgrm.model.pos.PReleaseUserFast;
 import com.soin.sgrm.model.pos.PRelease_RFC;
 import com.soin.sgrm.model.pos.PRelease_RFCFast;
 import com.soin.sgrm.model.pos.PReleases_WithoutObj;
@@ -98,17 +103,17 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		JsonSheet json = new JsonSheet();
 
 		Criteria crit = criteriaByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,
-				statusId,false);
+				statusId, false);
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,
-				statusId,true);
+				statusId, true);
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
 
-		List<PReleaseUser> aaData = crit.list();
+		List<PReleaseUserFast> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -122,17 +127,17 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			Object[] ids, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch, ids, dateRange, systemId,
-				statusId,false);
+				statusId, false);
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch, ids, dateRange,
-				systemId, statusId,true);
+				systemId, statusId, true);
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
 
-		List<PReleaseUser> aaData = crit.list();
+		List<PReleaseUserFast> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -147,24 +152,41 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,false);
+				systemId, statusId, false);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,true);
+				systemId, statusId, true);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
 
-		List<PReleaseUser> aaData = crit.list();
+		List<PReleaseUserFast> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
 		json.setData(aaData);
 		return json;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Criteria addFilters(Criteria criteria, Map<String, Object> columns) {
+		if (columns == null)
+			return criteria;
+		for (Map.Entry<String, Object> column : columns.entrySet()) {
+			if (column.getValue().getClass().isArray())
+				criteria.add(Restrictions.in(column.getKey(), (Object[]) column.getValue()));
+			else if (column.getValue() instanceof List)
+				criteria.add(Restrictions.in(column.getKey(), ((List<Object>) column.getValue()).toArray()));
+			else if (column.getValue() instanceof Criterion)
+				criteria.add((Criterion) column.getValue());
+			else
+				criteria.add(Restrictions.eq(column.getKey(), column.getValue()));
+		}
+		return criteria;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -174,19 +196,19 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,false);
+				systemId, statusId, false);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaBySystems(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,true);
+				systemId, statusId, true);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
 		int recordsTotal = count.intValue();
 
-		List<PReleaseUser> aaData = crit.list();
+		List<PReleaseUserFast> aaData = crit.list();
 		json.setDraw(sEcho);
 		json.setRecordsTotal(recordsTotal);
 		json.setRecordsFiltered(recordsTotal);
@@ -353,11 +375,13 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			transObj = sessionObj.beginTransaction();
 
 			release.setAttributes(rc);
-			
+
 			for (ItemObject item : rc.getObjectItemConfiguration()) {
 				if (item.getIsSql().equals("1")) {
-					sql = String.format(" UPDATE \"SISTEMAS_OBJETO\" "
-							+ " SET \"OCUPA_EJECUTAR\" = %s , \"ESQUEMA\" = '%s' , \"PLAN_EJECUCION\" = %s " + " WHERE \"ID\" = %s ",
+					sql = String.format(
+							" UPDATE \"SISTEMAS_OBJETO\" "
+									+ " SET \"OCUPA_EJECUTAR\" = %s , \"ESQUEMA\" = '%s' , \"PLAN_EJECUCION\" = %s "
+									+ " WHERE \"ID\" = %s ",
 							item.getExecute(), item.getDbScheme(), item.getExecutePlan(), item.getId());
 					query = sessionObj.createSQLQuery(sql);
 					query.executeUpdate();
@@ -491,7 +515,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 	@SuppressWarnings("deprecation")
 	public Criteria criteriaByUser(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] dateRange, Integer systemId, Integer statusId,boolean count) throws ParseException {
+			String[] dateRange, Integer systemId, Integer statusId, boolean count) throws ParseException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleaseUser.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("status", "status");
@@ -525,18 +549,18 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (statusId != 0) {
 			crit.add(Restrictions.eq("status.id", statusId));
 		}
-		if(!count) {
+		if (!count) {
 			crit.addOrder(Order.desc("createDate"));
-			
+
 		}
-		
 
 		return crit;
 	}
 
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaByTeams(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			Object[] ids, String[] dateRange, Integer systemId, Integer statusId,boolean count) throws SQLException, ParseException {
+			Object[] ids, String[] dateRange, Integer systemId, Integer statusId, boolean count)
+			throws SQLException, ParseException {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleaseUser.class);
 		crit.createAlias("system", "system");
@@ -571,17 +595,16 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (statusId != 0) {
 			crit.add(Restrictions.eq("status.id", statusId));
 		}
-		if(!count) {
+		if (!count) {
 			crit.addOrder(Order.desc("createDate"));
 		}
-		
 
 		return crit;
 	}
 
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaBySystems(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,boolean count)
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, boolean count)
 			throws SQLException, ParseException {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleaseUser.class);
@@ -618,12 +641,12 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (statusId != 0) {
 			crit.add(Restrictions.eq("status.id", statusId));
 		}
-		if(!count) {
+		if (!count) {
 			crit.addOrder(Order.desc("createDate"));
 		}
 		return crit;
 	}
-	
+
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaByReport(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
@@ -720,12 +743,12 @@ public class PReleaseDaoImpl implements PReleaseDao {
 	public JsonSheet<?> listReleasesBySystem(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
 			Integer systemId) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
-		Criteria crit = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId,false);
+		Criteria crit = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId, false);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
-		Criteria critCount = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId,true);
+		Criteria critCount = criteriaBySystems1(sEcho, iDisplayStart, iDisplayLength, sSearch, systemId, true);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -743,7 +766,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 					release.getId());
 			query = getSession().createSQLQuery(sql);
 
-			BigInteger result  = (BigInteger) query.uniqueResult();
+			BigInteger result = (BigInteger) query.uniqueResult();
 			long num = result.longValue();
 			BigDecimal test = BigDecimal.valueOf(num);
 			release.setHaveDependecy(test.intValueExact());
@@ -773,7 +796,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 	}
 
 	public Criteria criteriaBySystems1(int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			Integer systemId,boolean count) throws SQLException, ParseException {
+			Integer systemId, boolean count) throws SQLException, ParseException {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleases_WithoutObj.class);
 		crit.createAlias("system", "system");
@@ -786,10 +809,9 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (systemId != 0) {
 			crit.add(Restrictions.eq("system.id", systemId));
 		}
-		if(!count) {
+		if (!count) {
 			crit.addOrder(Order.desc("createDate"));
 		}
-		
 
 		return crit;
 	}
@@ -888,8 +910,8 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 	@Override
 	public PReleaseReport findByIdReleaseReport(Integer id) {
-		PReleaseReport release = (PReleaseReport) sessionFactory.getCurrentSession().createCriteria(PReleaseReport.class)
-				.add(Restrictions.eq("id", id)).uniqueResult();
+		PReleaseReport release = (PReleaseReport) sessionFactory.getCurrentSession()
+				.createCriteria(PReleaseReport.class).add(Restrictions.eq("id", id)).uniqueResult();
 		return release;
 	}
 
@@ -905,16 +927,17 @@ public class PReleaseDaoImpl implements PReleaseDao {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public JsonSheet<?> listByAllWithObjects(String name, int sEcho, int iDisplayStart, int iDisplayLength,
-			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId) throws SQLException, ParseException {
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
+			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,projectId);
+				systemId, statusId, projectId);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,projectId);
+				systemId, statusId, projectId);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -955,11 +978,11 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (projectId != 0) {
 			crit.add(Restrictions.eq("proyect.id", projectId));
 		}
-		
+
 		if (systemId != 0) {
 			crit.add(Restrictions.eq("system.id", systemId));
 		}
-		
+
 		crit.add(Restrictions.not(Restrictions.in("status.name", Constant.FILTRED)));
 		crit.addOrder(Order.desc("createDate"));
 
@@ -968,13 +991,15 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 	@Override
 	public PRelease_RFCFast findRelease_RFCByIdFast(int id) {
-		PRelease_RFCFast release = (PRelease_RFCFast) sessionFactory.getCurrentSession().get(PRelease_RFCFast.class, id);
+		PRelease_RFCFast release = (PRelease_RFCFast) sessionFactory.getCurrentSession().get(PRelease_RFCFast.class,
+				id);
 		return release;
 	}
 
 	@Override
 	public PReleaseTrackingShow findReleaseTracking(int id) {
-		PReleaseTrackingShow release = (PReleaseTrackingShow) sessionFactory.getCurrentSession().get(PReleaseTrackingShow.class, id);
+		PReleaseTrackingShow release = (PReleaseTrackingShow) sessionFactory.getCurrentSession()
+				.get(PReleaseTrackingShow.class, id);
 		return release;
 	}
 
@@ -983,20 +1008,22 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		PReleaseSummaryFile release = (PReleaseSummaryFile) sessionFactory.getCurrentSession()
 				.createCriteria(PReleaseSummaryFile.class).add(Restrictions.eq("id", id)).uniqueResult();
 		return release;
-}
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public JsonSheet<?> listByAllWithOutTracking(String name, int sEcho, int iDisplayStart, int iDisplayLength,
-			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,Integer projectId) throws SQLException, ParseException {
+			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
+			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,projectId);
+				systemId, statusId, projectId);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId,projectId);
+				systemId, statusId, projectId);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -1008,5 +1035,147 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		json.setRecordsFiltered(recordsTotal);
 		json.setData(aaData);
 		return json;
+	}
+
+	@Override
+	public PReleaseUserFast findByIdReleaseUserFast(Integer idRelease) {
+		PReleaseUserFast release = (PReleaseUserFast) sessionFactory.getCurrentSession()
+				.createCriteria(PReleaseUserFast.class).add(Restrictions.eq("id", idRelease)).uniqueResult();
+		return release;
+	}
+
+	@Override
+	public void updateStatusReleaseUser(PReleaseUserFast release) {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		String sql = "";
+		Query query = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+
+			String dateChange = (release.getDateChange() != null && !release.getDateChange().equals("")
+					? "to_date('" + release.getDateChange() + "', 'DD-MM-YYYY HH:MI PM')"
+					: "CURRENT_TIMESTAMP");
+			sql = String.format(
+					"update \"RELEASES_RELEASE\" set \"ESTADO_ID\" = %s , \"REINTENTOS\" = %s , \"OPERADOR\" = '%s' , \"MOTIVO\" = '%s' , \"FECHA_CREACION\" = "
+							+ dateChange + "  where \"ID\" = %s",
+					release.getStatus().getId(), release.getRetries(), release.getOperator(), release.getMotive(),
+					release.getId());
+
+			query = sessionObj.createSQLQuery(sql);
+			query.executeUpdate();
+
+			transObj.commit();
+
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
+	}
+
+	@Override
+	public void requestRelease(PReleaseEditWithOutObjects release) {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		String sql = "";
+		Query query = null;
+
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+			sql = String.format(
+					"update \"RELEASES_RELEASE\" set \"ESTADO_ID\" = %s , \"NODO_ID\" = %s , \"OPERADOR\" = '%s' , \"MOTIVO\" = '%s' , \"FECHA_CREACION\" = CURRENT_TIMESTAMP where 	\"ID\" = %s",
+					release.getStatus().getId(), (release.getNode() != null ? release.getNode().getId() : null),
+					release.getOperator(), release.getMotive(), release.getId());
+			query = sessionObj.createSQLQuery(sql);
+			query.executeUpdate();
+
+			transObj.commit();
+
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
+	}
+
+	@Override
+	public String getLastStatusHistory(Integer releaseId) {
+		Session sessionObj = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			// Consulta SQL para obtener el último ID de historial basado en el ID de
+			// release y la máxima fecha
+			String sql = "SELECT \"ESTADO\" FROM \"RELEASES_RELEASE_HISTORIAL\" "
+					+ "WHERE \"ID\" = (SELECT MAX(\"ID\") FROM \"RELEASES_RELEASE_HISTORIAL\" WHERE \"RELEASE_ID\" = :releaseId)";
+			Query query = sessionObj.createSQLQuery(sql);
+			query.setParameter("releaseId", releaseId);
+			String nombreEstado = (String) query.uniqueResult();
+			return nombreEstado != null ? nombreEstado : ""; // Retornar cadena vacía si no hay resultados
+		} finally {
+			if (sessionObj != null) {
+				sessionObj.close();
+			}
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "unused" })
+	@Override
+	public JsonSheet<T> findAllFastRelease(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias,
+			Integer veri) {
+		JsonSheet<T> sheet = new JsonSheet<>();
+
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PReleaseUserFast.class);
+		if (veri == 1) {
+			criteria.addOrder(Order.desc("createDate"));
+		}
+
+		if (alias != null)
+			for (Map.Entry<String, String> aliasName : alias.entrySet())
+				criteria.createAlias(aliasName.getKey(), (String) aliasName.getValue());
+
+		for (Map.Entry<String, Object> column : columns.entrySet())
+			criteria = addFilters(criteria, columns);
+		if (iDisplayStart != null)
+			criteria.setFirstResult(iDisplayStart);
+		if (iDisplayLength != null)
+			criteria.setMaxResults(iDisplayLength);
+
+		Criteria criteriaCount = sessionFactory.getCurrentSession().createCriteria(PReleaseUserFast.class);
+		if (alias != null)
+			for (Map.Entry<String, String> aliasName : alias.entrySet())
+				criteriaCount.createAlias(aliasName.getKey(), (String) aliasName.getValue());
+		for (Map.Entry<String, Object> column : columns.entrySet())
+			criteriaCount = addFilters(criteriaCount, columns);
+
+		if (qSrch != null) {
+			criteria.add(qSrch);
+			criteriaCount.add(qSrch);
+		}
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		if (fetchs != null)
+			for (String itemModel : fetchs)
+				criteria.setFetchMode(itemModel, FetchMode.SELECT);
+
+		criteriaCount.setProjection(Projections.countDistinct("id"));
+
+		List<T> list = (List<T>) criteria.list();
+
+		Long count = (Long) criteriaCount.uniqueResult();
+		int recordsTotal = count.intValue();
+
+		if (sEcho != null)
+			sheet.setDraw(sEcho);
+		sheet.setRecordsTotal(recordsTotal);
+		sheet.setRecordsFiltered(recordsTotal);
+		sheet.setData(list);
+		return sheet;
 	}
 }
