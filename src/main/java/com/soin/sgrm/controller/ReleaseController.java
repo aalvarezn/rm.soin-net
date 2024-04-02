@@ -355,8 +355,12 @@ public class ReleaseController extends BaseController {
 					return releaseService.listByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,
 							statusId);
 				} else if (profileActive().equals("postgres")) {
-					return preleaseService.listByUser(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,
-							statusId);
+					JsonSheet<?> releases = new JsonSheet<>();		
+					String dateRange2 = request.getParameter("dateRange");
+					releases= preleaseService.findAll1(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange2,
+							systemId, statusId);
+					return releases;
+					
 				}
 			
 		} catch (SQLException ex) {
@@ -388,8 +392,13 @@ public class ReleaseController extends BaseController {
 				return releaseService.listByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
 						systemService.myTeams(name), dateRange, systemId, statusId);
 			} else if (profileActive().equals("postgres")) {
-				return preleaseService.listByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
-						systemService.myTeams(name), dateRange, systemId, statusId);
+				JsonSheet<?> releases = new JsonSheet<>();		
+				String dateRange2 = request.getParameter("dateRange");
+				releases= preleaseService.listByTeams(name, sEcho, iDisplayStart, iDisplayLength, sSearch,systemService.myTeams(name), dateRange2,
+						systemId, statusId);
+				return releases;
+				
+				
 			}
 			
 		} catch (Exception e) {
@@ -418,8 +427,13 @@ public class ReleaseController extends BaseController {
 				return releaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, Constant.FILTRED,
 						dateRange, systemId, statusId);
 			} else if (profileActive().equals("postgres")) {
-				return preleaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, Constant.FILTRED,
-						dateRange, systemId, statusId);
+				JsonSheet<?> releases = new JsonSheet<>();		
+				String dateRange2 = request.getParameter("dateRange");
+				releases= preleaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength,Constant.FILTRED, sSearch, dateRange2,
+						systemId, statusId);
+				return releases;
+				
+				
 			}
 			
 		} catch (Exception e) {
@@ -447,8 +461,12 @@ public class ReleaseController extends BaseController {
 				return releaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, Constant.FILTRED,
 						dateRange, systemId, statusId);
 			} else if (profileActive().equals("postgres")) {
-				return preleaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength, sSearch, Constant.FILTRED,
-						dateRange, systemId, statusId);
+				
+				JsonSheet<?> releases = new JsonSheet<>();		
+				String dateRange2 = request.getParameter("dateRange");
+				releases= preleaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength,Constant.FILTRED, sSearch, dateRange2,
+						systemId, statusId);
+				return releases;
 			}
 			
 		} catch (Exception e) {
@@ -476,8 +494,12 @@ public class ReleaseController extends BaseController {
 				return releaseService.listByAllSystemQA(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
 						Constant.FILTRED, dateRange, systemId, statusId);
 			} else if (profileActive().equals("postgres")) {
-				return preleaseService.listByAllSystemQA(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
-						Constant.FILTRED, dateRange, systemId, statusId);
+				
+				JsonSheet<?> releases = new JsonSheet<>();		
+				String dateRange2 = request.getParameter("dateRange");
+				releases= preleaseService.listByAllSystem(name, sEcho, iDisplayStart, iDisplayLength,Constant.FILTRED, sSearch, dateRange2,
+						systemId, statusId);
+				return releases;
 			}
 			
 		} catch (Exception e) {

@@ -445,6 +445,114 @@ public class PReleaseServiceImpl implements PReleaseService {
 		return dao.findAllFastRelease(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
 
 	}
+
+	@Override
+	public JsonSheet<?> listByTeams(String name, int sEcho, int iDisplayStart, Integer iDisplayLength, String sSearch,
+			Object[] ids, String dateRange, Integer systemId, Integer statusId) {
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+		
+		alias.put("system", "system");
+		alias.put("status", "status");
+		alias.put("user", "user");
+
+		// Valores de busqueda en la tabla
+		columns.put("ids",Restrictions.in("system.id", ids));
+		Criterion qSrch = null;
+		if (sSearch != null && sSearch.length() > 0) {
+			qSrch= Restrictions.or(Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase());
+		}
+		
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					columns.put("createDate", Restrictions.between("createDate", start, end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		
+		if (systemId != 0) {
+			columns.put("system", Restrictions.eq("system.id", systemId));
+			
+		}
+		if (statusId != 0) {
+			columns.put("status", Restrictions.eq("status.id", statusId));
+			
+		}
+		
+		List<String> fetchs = new ArrayList<String>();
+
+		return dao.findAllFastRelease(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
+	}
+
+	@Override
+	public JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String[] filtred,
+			String sSearch, String dateRange, Integer systemId, Integer statusId) {
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+		
+		alias.put("system", "system");
+		alias.put("status", "status");
+		alias.put("user", "user");
+
+		// Valores de busqueda en la tabla
+		if (filtred != null) {
+			columns.put("status2",Restrictions.not(Restrictions.in("status.name", filtred)));
+		}
+		Criterion qSrch = null;
+		if (sSearch != null && sSearch.length() > 0) {
+			qSrch= Restrictions.or(Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase());
+		}
+		
+		String[] range = (dateRange != null) ? dateRange.split("-") : null;
+		if (range != null) {
+			if (range.length > 1) {
+				try {
+					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(range[0]);
+					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(range[1]);
+					end.setHours(23);
+					end.setMinutes(59);
+					end.setSeconds(59);
+					columns.put("createDate", Restrictions.between("createDate", start, end));
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		
+		if (systemId != 0) {
+			columns.put("system", Restrictions.eq("system.id", systemId));
+			
+		}
+		if (statusId != 0) {
+			columns.put("status", Restrictions.eq("status.id", statusId));
+			
+		}
+		
+		List<String> fetchs = new ArrayList<String>();
+
+		return dao.findAllFastRelease(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
+	}
 	
 	
 

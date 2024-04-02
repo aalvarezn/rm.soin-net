@@ -129,6 +129,12 @@ public interface PReleaseService {
 			 String dateRange, Integer systemId, Integer statusId)
 			throws SQLException, ParseException;
 
+	JsonSheet<?> listByTeams(String name, int sEcho, int iDisplayStart, Integer iDisplayLength, String sSearch,
+			Object[] myTeams, String dateRange2, Integer systemId, Integer statusId);
+
+	JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String[] filtred,
+			String sSearch, String dateRange2, Integer systemId, Integer statusId);
+
 
 
 }
