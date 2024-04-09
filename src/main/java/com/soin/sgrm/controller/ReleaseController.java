@@ -2478,7 +2478,7 @@ public class ReleaseController extends BaseController {
 				userC.put("all", (userC.get("draft") + userC.get("requested") + userC.get("completed")));
 				request.setAttribute("userC", userC);
 
-				Object[] ids = systemService.myTeams(name);
+				Object[] ids = psystemService.myTeams(name);
 				Map<String, Integer> teamC = new HashMap<String, Integer>();
 
 				if (systems.size() == 0) {
