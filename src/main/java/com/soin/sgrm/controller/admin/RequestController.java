@@ -198,6 +198,7 @@ public class RequestController extends BaseController {
 				String profile = profileActive();
 				if (profile.equals("oracle")) {
 					request.setActive(true);
+					request.setAuto(0);
 					request.setProyect(projectService.findById(request.getProyectId()));
 					request.setTypeRequest(typeRequestService.findById(request.getTypeRequestId()));
 					requestService.save(request);
@@ -207,6 +208,7 @@ public class RequestController extends BaseController {
 					prequest.setActive(true);
 					prequest.setProyect(pprojectService.findById(request.getProyectId()));
 					prequest.setCode_ice(request.getCode_ice());
+					prequest.setAuto(0);
 					prequest.setCode_soin(request.getCode_soin());
 					prequest.setDescription(request.getDescription());
 					prequest.setLiderIce(request.getLiderIce());
@@ -265,7 +267,7 @@ public class RequestController extends BaseController {
 					requestOrigin.setLiderIce(request.getLiderIce());
 					requestOrigin.setSoinManagement(request.getSoinManagement());
 					requestOrigin.setIceManagement(request.getIceManagement());
-
+					requestOrigin.setAuto(requestOrigin.getAuto());
 					request.setProyect(projectService.findById(request.getProyectId()));
 					request.setTypeRequest(typeRequestService.findById(request.getTypeRequestId()));
 
@@ -281,7 +283,7 @@ public class RequestController extends BaseController {
 					prequestOrigin.setLiderIce(request.getLiderIce());
 					prequestOrigin.setSoinManagement(request.getSoinManagement());
 					prequestOrigin.setIceManagement(request.getIceManagement());
-
+					prequestOrigin.setAuto(prequestOrigin.getAuto());
 					prequestOrigin.setProyect(pprojectService.findById(request.getProyectId()));
 					prequestOrigin.setTypeRequest(ptypeRequestService.findById(request.getTypeRequestId()));
 
@@ -508,6 +510,11 @@ public class RequestController extends BaseController {
 								request.setProyect(proyect);
 								request.setTypeRequest(typeRequest);
 								request.setActive(true);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if (existRequest)
 									prequestService.update(request);
 								else
@@ -582,6 +589,11 @@ public class RequestController extends BaseController {
 								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if(request.getStatus().trim().equals("COMPLETADA")) {
 									request.setActive(false);
 								}else {
@@ -657,6 +669,11 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if(request.getStatus().trim().equals("COMPLETADA")) {
 									request.setActive(false);
 								}else {
@@ -731,6 +748,11 @@ public class RequestController extends BaseController {
 								request.setIceManagement((String) row.get(iceManagementIndex));
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if(request.getStatus().trim().equals("COMPLETADA")) {
 									request.setActive(false);
 								}else {
@@ -807,6 +829,11 @@ public class RequestController extends BaseController {
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								request.setActive(true);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if (existRequest) {
 									prequestService.update(request);
 								} else {
@@ -928,6 +955,11 @@ public class RequestController extends BaseController {
 								request.setProyect(proyect);
 								request.setTypeRequest(typeRequest);
 								request.setActive(true);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if (existRequest)
 									requestService.update(request);
 								else
@@ -1002,6 +1034,11 @@ public class RequestController extends BaseController {
 								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if(request.getStatus().trim().equals("COMPLETADA")) {
 									request.setActive(false);
 								}else {
@@ -1080,6 +1117,11 @@ public class RequestController extends BaseController {
 								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if(request.getStatus().trim().equals("COMPLETADA")) {
 									request.setActive(false);
 								}else {
@@ -1157,6 +1199,11 @@ public class RequestController extends BaseController {
 								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if(request.getStatus().trim().equals("COMPLETADA")) {
 									request.setActive(false);
 								}else {
@@ -1245,6 +1292,11 @@ public class RequestController extends BaseController {
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								request.setActive(true);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if (existRequest) {
 									requestService.update(request);
 								} else {
