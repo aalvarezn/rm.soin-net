@@ -132,6 +132,7 @@ public class RequestController extends BaseController {
 
 			if (res.getStatus().equals("success")) {
 				request.setActive(true);
+				request.setAuto(0);
 				request.setProyect(projectService.findById(request.getProyectId()));
 				request.setTypeRequest(typeRequestService.findById(request.getTypeRequestId()));
 				requestService.save(request);
@@ -179,7 +180,7 @@ public class RequestController extends BaseController {
 				requestOrigin.setLiderIce(request.getLiderIce());
 				requestOrigin.setSoinManagement(request.getSoinManagement());
 				requestOrigin.setIceManagement(request.getIceManagement());
-
+				requestOrigin.setAuto(request.getAuto());
 				request.setProyect(projectService.findById(request.getProyectId()));
 				request.setTypeRequest(typeRequestService.findById(request.getTypeRequestId()));
 
@@ -499,6 +500,12 @@ public class RequestController extends BaseController {
 								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if(request.getStatus().trim().equals("COMPLETADA")) {
 									request.setActive(false);
 								}else {
@@ -576,6 +583,11 @@ public class RequestController extends BaseController {
 								request.setUserManager(userManager.getId());
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if(request.getStatus().trim().equals("COMPLETADA")) {
 									request.setActive(false);
 								}else {
@@ -664,6 +676,11 @@ public class RequestController extends BaseController {
 								request.setTypeRequest(type);
 								request.setProyect(proyect);
 								request.setActive(true);
+								if(request.getAuto()!=null) {
+									request.setAuto(request.getAuto());
+								}else {
+									request.setAuto(0);
+								}
 								if (existRequest) {
 									requestService.update(request);
 								} else {
