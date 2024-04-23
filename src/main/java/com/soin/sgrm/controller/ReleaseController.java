@@ -559,9 +559,11 @@ public class ReleaseController extends BaseController {
 				if (release == null) {
 					return "redirect:/";
 				}
+				
 				PSystemConfiguration systemConfiguration = psystemConfigurationService
 						.findBySystemId(release.getSystem().getId());
 				List<PDocTemplate> docs = pdocsTemplateService.findBySystem(release.getSystem().getId());
+				
 				model.addAttribute("dependency", new PRelease());
 				model.addAttribute("doc", new PDocTemplate());
 				model.addAttribute("docs", docs);
@@ -584,12 +586,14 @@ public class ReleaseController extends BaseController {
 				} else {
 					model.addAttribute("cc", "");
 				}
+				
 			}
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
+			System.out.println(e.getMessage());
 			redirectAttributes.addFlashAttribute("data",
 					"Error en la carga de la pagina resumen release." + " ERROR: " + e.getMessage());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());

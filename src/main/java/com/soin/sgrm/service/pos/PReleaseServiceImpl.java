@@ -439,6 +439,9 @@ public class PReleaseServiceImpl implements PReleaseService {
 			columns.put("status", Restrictions.eq("status.id", statusId));
 			
 		}
+		if(name!="") {
+			columns.put("user", Restrictions.eq("user.username", name));
+		}
 		
 		List<String> fetchs = new ArrayList<String>();
 
