@@ -19,6 +19,7 @@ import com.soin.sgrm.model.RFC;
 import com.soin.sgrm.model.RFCReport;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestBaseTrackingShow;
 import com.soin.sgrm.model.RequestRM_P1_R1;
 import com.soin.sgrm.model.RequestReport;
 import com.soin.sgrm.model.System;
@@ -291,6 +292,14 @@ public class RequestBaseR1DaoImpl extends AbstractDao<Long, RequestBaseR1> imple
 		crit.addOrder(Order.desc("requestDate"));
 
 		return crit.list();
+	}
+
+
+	@Override
+	public RequestBaseTrackingShow findRequestTracking(Long id) {
+		return (RequestBaseTrackingShow) getSession().createCriteria(RequestBaseTrackingShow.class)
+	    		.add(Restrictions.eq("id", id))
+	    		.uniqueResult();
 	}
 	
 	

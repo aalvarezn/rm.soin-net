@@ -590,9 +590,21 @@ function openRequestTrackingModal(idRequest) {
 	
 	$trackingRequestForm.find('#idRequest').val(rowData.id);
 	$trackingRequestForm.find('#requestNumber').text(rowData.numRequest);
-	
-	loadTrackingRequest(rowData);
-	$('#trackingRequestModal').modal('show');
+
+	$.ajax({
+		type : "GET",
+		url : getCont() + "request/tracking/"+ rowData.id ,
+		timeout : 600000,
+		data : {},
+		success : function(response) {
+			tracking=response.obj;
+			loadTrackingRequest(tracking);
+			$('#trackingRequestModal').modal('show');
+		},
+		error : function(x, t, m) {
+			notifyAjaxError(x, t, m);
+		}
+	});
 }
 
 function loadTrackingRequest(rowData){

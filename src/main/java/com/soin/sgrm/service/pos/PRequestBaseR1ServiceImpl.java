@@ -23,6 +23,8 @@ import com.soin.sgrm.dao.pos.PRequestBaseR1Dao;
 import com.soin.sgrm.model.pos.PRequestReport;
 import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.model.pos.PRequestBaseR1;
+import com.soin.sgrm.model.pos.PRequestBaseTracking;
+import com.soin.sgrm.model.pos.PRequestBaseTrackingShow;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.Constant;
 
@@ -246,6 +248,11 @@ public class PRequestBaseR1ServiceImpl implements PRequestBaseR1Service {
 	public List<PRequestReport> listRequestReportFilter(int projectId, int systemId, Long typePetitionId,
 			String dateRange) throws ParseException {
 		return dao.listRequestReportFilter(projectId,systemId,typePetitionId,dateRange);
+	}
+	@Override
+	public PRequestBaseTrackingShow findRequestTracking(Long id) {
+		
+		return dao.findRequestTracking(id);
 	}
 
 }

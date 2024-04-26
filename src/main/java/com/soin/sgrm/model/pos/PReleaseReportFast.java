@@ -53,7 +53,7 @@ public class PReleaseReportFast implements Serializable {
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHA_CREACION")
 	private Timestamp createDate;
-
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ESTADO_ID\"", nullable = true)
 	private PStatus status;

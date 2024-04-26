@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 
 import com.soin.sgrm.model.pos.PRequestBaseR1;
+import com.soin.sgrm.model.pos.PRequestBaseTrackingShow;
 import com.soin.sgrm.model.pos.PRequestReport;
 import com.soin.sgrm.response.JsonSheet;
 
@@ -33,5 +34,8 @@ public interface PRequestBaseR1Service extends BaseService<Long, PRequestBaseR1>
 
 
 	List<PRequestReport> listRequestReportFilter(int projectId, int systemId, Long typePetitionId, String dateRange) throws ParseException;
+
+
+	PRequestBaseTrackingShow findRequestTracking(Long id);
 
 }

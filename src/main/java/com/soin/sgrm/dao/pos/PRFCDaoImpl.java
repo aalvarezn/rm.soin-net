@@ -59,7 +59,7 @@ public class PRFCDaoImpl extends AbstractDao<Long,PRFC> implements PRFCDao {
 			
 
 			String dateChangeUpdate = (dateChange != null && !dateChange.equals("")
-					? "to_date('" + dateChange + "', 'DD-MM-YYYY HH:MI PM')"
+					? "to_timestamp('" + dateChange + "', 'DD-MM-YYYY HH:MI PM')"
 					: "sysdate");
 
 			sql = String.format(

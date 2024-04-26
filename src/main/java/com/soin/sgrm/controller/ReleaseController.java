@@ -72,6 +72,7 @@ import com.soin.sgrm.model.pos.PReleaseSummary;
 import com.soin.sgrm.model.pos.PReleaseSummaryFile;
 import com.soin.sgrm.model.pos.PReleaseSummaryMin;
 import com.soin.sgrm.model.pos.PReleaseTinySummary;
+import com.soin.sgrm.model.pos.PReleaseTrackingShow;
 import com.soin.sgrm.model.pos.PReleaseUser;
 import com.soin.sgrm.model.pos.PRelease_Objects;
 import com.soin.sgrm.model.pos.PRequest;
@@ -359,6 +360,8 @@ public class ReleaseController extends BaseController {
 					String dateRange2 = request.getParameter("dateRange");
 					releases= preleaseService.findAll1(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange2,
 							systemId, statusId);
+					
+					
 					return releases;
 					
 				}
@@ -2597,9 +2600,16 @@ public class ReleaseController extends BaseController {
 			Model model, HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
-			ReleaseTrackingShow tracking = releaseService.findReleaseTracking(id);
-			res.setStatus("success");
-			res.setObj(tracking);
+			if (profileActive().equals("oracle")) {
+				ReleaseTrackingShow tracking = releaseService.findReleaseTracking(id);
+				res.setStatus("success");
+				res.setObj(tracking);
+			} else if (profileActive().equals("postgres")) {
+				PReleaseTrackingShow tracking = preleaseService.findReleaseTracking(id);
+				res.setStatus("success");
+				res.setObj(tracking);
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "admin");
 			res.setStatus("exception");

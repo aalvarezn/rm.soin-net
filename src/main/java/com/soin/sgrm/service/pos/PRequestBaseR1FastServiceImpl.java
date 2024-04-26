@@ -1,4 +1,4 @@
-package com.soin.sgrm.service;
+package com.soin.sgrm.service.pos;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,73 +14,70 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.dao.RequestBaseR1Dao;
-import com.soin.sgrm.model.RequestBaseR1;
-import com.soin.sgrm.model.RequestBaseTrackingShow;
-import com.soin.sgrm.model.RequestReport;
-import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.dao.pos.PRequestBaseR1FastDao;
+import com.soin.sgrm.model.pos.PSystemInfo;
+import com.soin.sgrm.model.pos.PRequestBaseR1Fast;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.utils.Constant;
 
-@Service("RequestBaseR1Service")
-@Transactional("transactionManager")
-public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
+@Service("PRequestBaseR1FastService")
+@Transactional("transactionManagerPos")
+public class PRequestBaseR1FastServiceImpl implements PRequestBaseR1FastService {
 
 	@Autowired
-	RequestBaseR1Dao dao;
+	PRequestBaseR1FastDao dao;
 	@Autowired
+	@Qualifier("sessionFactoryPos")
 	private SessionFactory sessionFactory;
 
-	public static final Logger logger = Logger.getLogger(RequestBaseR1ServiceImpl.class);
+	public static final Logger logger = Logger.getLogger(PRequestBaseR1FastServiceImpl.class);
 	@Override
-	public RequestBaseR1 findById(Long id) {
+	public PRequestBaseR1Fast findById(Long id) {
 		return dao.getById(id);
 	}
+
 	@Override
-	public RequestBaseR1 findByR1(Long id) {
-		return dao.getByIdR1(id);
-	}
-	@Override
-	public RequestBaseR1 findByKey(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+	public PRequestBaseR1Fast findByKey(String name, String value) {
+
+		return dao.getByKey(name,value);
 	}
 
 	@Override
-	public List<RequestBaseR1> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<PRequestBaseR1Fast> findAll() {
+	
+		return dao.findAll();
 	}
 
 	@Override
-	public void save(RequestBaseR1 model) {
+	public void save(PRequestBaseR1Fast model) {
 		dao.save(model);
 	}
 
 	@Override
 	public void delete(Long id) {
-		RequestBaseR1 model= findById(id);
+		PRequestBaseR1Fast model= findById(id);
 		dao.delete(model);
 	}
 
 	@Override
-	public void update(RequestBaseR1 model) {
+	public void update(PRequestBaseR1Fast model) {
 		dao.update(model);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	@Override
-	public JsonSheet<RequestBaseR1> findAllRequest(Integer id, Integer sEcho, Integer iDisplayStart,
+	public JsonSheet<PRequestBaseR1Fast> findAllRequest(Integer id, Integer sEcho, Integer iDisplayStart,
 			Integer iDisplayLength, String sSearch, Long statusId, String dateRange, Integer systemId,
 			Long typePetitionId) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
 		Map<String, String> alias = new HashMap<String, String>();
 
-		List<SystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(SystemInfo.class)
+		List<PSystemInfo> systems = sessionFactory.getCurrentSession().createCriteria(PSystemInfo.class)
 				.createAlias("managers", "managers").add(Restrictions.eq("managers.id", id)).list();
 		alias.put("status", "status");
 		alias.put("user", "user");
@@ -134,7 +131,7 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 
 		} else {
 			List<Integer> listaId = new ArrayList<Integer>();
-			for (SystemInfo system : systems) {
+			for (PSystemInfo system : systems) {
 				listaId.add(system.getId());
 			}
 			alias.put("systemInfo", "systemInfo");
@@ -153,8 +150,9 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 
 
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public JsonSheet<RequestBaseR1> findAllRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
+	public JsonSheet<PRequestBaseR1Fast> findAllRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			String sSearch, Long statusId, String dateRange, Integer systemId, Long typePetitionId) {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
@@ -220,34 +218,5 @@ public class RequestBaseR1ServiceImpl implements RequestBaseR1Service {
 		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,1);
 	}
 
-	@Override
-	public Integer countByType(Integer id, String type, int query, Object[] object) {
-		
-		return dao.countByType(id, type, query, object);
-	}
-	@Override
-	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			String sSearch, String dateRange, Integer systemId, Long typePetitionId) throws ParseException {
-		
-		return dao.findAllReportRequest( sEcho,  iDisplayStart,  iDisplayLength,
-			 sSearch,  dateRange,  systemId,  typePetitionId);
-	}
-	@Override
-	public com.soin.sgrm.utils.JsonSheet<?> findAllReportRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
-			String sSearch, String dateRange, List<Integer> systemsId, Long typePetitionId) throws ParseException {
-		
-		 return dao.findAllReportRequest( sEcho,  iDisplayStart,  iDisplayLength,
-				 sSearch,  dateRange,  systemsId,  typePetitionId);
-	}
-	@Override
-	public List<RequestReport> listRequestReportFilter(int projectId, int systemId, Long typePetitionId,
-			String dateRange) throws ParseException {
-		return dao.listRequestReportFilter(projectId,systemId,typePetitionId,dateRange);
-	}
-	@Override
-	public RequestBaseTrackingShow findRequestTracking(Long id) {
-		// TODO Auto-generated method stub
-		return dao.findRequestTracking(id);
-	}
 
 }
