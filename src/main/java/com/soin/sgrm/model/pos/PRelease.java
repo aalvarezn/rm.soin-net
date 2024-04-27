@@ -285,6 +285,9 @@ public class PRelease implements Serializable, Cloneable {
 	@Column(name = "MOTIVO")
 	private String motive;
 
+	@Column(name = "BUGS")
+	private String bugs;
+	
 	@Transient
 	private PNode nodeFinish;
 	
@@ -1074,6 +1077,14 @@ public class PRelease implements Serializable, Cloneable {
 
 	public void setNodeFinish(PNode nodeFinish) {
 		this.nodeFinish = nodeFinish;
+	}
+
+	public String getBugs() {
+		return bugs;
+	}
+
+	public void setBugs(String bugs) {
+		this.bugs = bugs;
 	}
 
 	

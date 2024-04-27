@@ -48,6 +48,7 @@ public class PReleaseObjectDaoImpl implements PReleaseObjectDao {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 			sessionObj.save(rObj);
+			sessionObj.flush();
 			sql = String.format(
 					"INSERT INTO \"RELEASES_RELEASE_OBJETOS\" ( \"RELEASE_ID\", \"OBJETO_ID\") VALUES (  %s, %s ) ",
 					release.getId(), rObj.getId());

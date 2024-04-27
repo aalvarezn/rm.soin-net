@@ -207,7 +207,8 @@ public class ReleaseController extends BaseController {
 	
 	@Autowired
 	private Environment env;
-
+	
+	@Autowired
 	private PUserInfoService ploginService;
 	@Autowired
 	private PSystemConfigurationService psystemConfigurationService;
@@ -575,7 +576,6 @@ public class ReleaseController extends BaseController {
 				model.addAttribute("status", new PStatus());
 				model.addAttribute("statuses", pstatusService.list());
 				model.addAttribute("errors", perrorService.findAll());
-
 				String textChanged = "No aplica";
 				if (release.getObservations() != null) {
 					textChanged = release.getObservations().replaceAll("(https?://\\S+)",
@@ -787,6 +787,7 @@ public class ReleaseController extends BaseController {
 				model.addAttribute("senders", release.getSenders());
 				model.addAttribute("message", release.getMessage());
 				model.addAttribute("releaseObject", listObjects);
+				model.addAttribute("bugs", release.getBugs());
 				if (release.getSystem().getEmailTemplate() != null) {
 					if (release.getSystem().getEmailTemplate().size() > 1) {
 						model.addAttribute("ccs", getCC(release.getSystem().getEmailTemplate().iterator().next().getCc()));
@@ -855,6 +856,7 @@ public class ReleaseController extends BaseController {
 				model.addAttribute("senders", release.getSenders());
 				model.addAttribute("message", release.getMessage());
 				model.addAttribute("releaseObject", listObjects);
+				model.addAttribute("bugs", release.getBugs());
 				if (release.getSystem().getEmailTemplate() != null) {
 					if (release.getSystem().getEmailTemplate().size() > 1) {
 						model.addAttribute("ccs", getCC(release.getSystem().getEmailTemplate().iterator().next().getCc()));
@@ -1076,7 +1078,9 @@ public class ReleaseController extends BaseController {
 				String number_release = "";
 				PRelease release = new PRelease();
 				PModule module = new PModule();
-				PUser user = ploginService.findUserById(getUserLogin().getId());
+				
+				Integer idUser=getUserLogin().getId();
+				PUser user = ploginService.findUserById(idUser);
 				
 				if (!requeriment.equals("TPO/BT")) {
 					number_release = preleaseService.generateReleaseNumber(requeriment, requirement_name, system_id);
@@ -1393,6 +1397,7 @@ public class ReleaseController extends BaseController {
 						rc.setMessage(release.getMessage());
 					}
 				}
+				release.setBugs(rc.getBugs());
 				preleaseService.saveRelease(release, rc);
 
 				res.setStatus("success");

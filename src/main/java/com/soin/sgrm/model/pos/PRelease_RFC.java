@@ -76,7 +76,7 @@ public class PRelease_RFC implements Serializable, Cloneable {
 	private Timestamp createDate;
 
 	@Column(name = "TIENE_CAMBIOS_EN_BASE_DE_DATOS")
-	private Boolean haveSQL;
+	private int has_changes_in_bd;
 
 	@Column(name = "MOTIVO")
 	private String motive;
@@ -188,12 +188,14 @@ public class PRelease_RFC implements Serializable, Cloneable {
 		this.motive = motive;
 	}
 
-	public Boolean getHaveSQL() {
-		return haveSQL;
+	
+	public int getHas_changes_in_bd() {
+		return has_changes_in_bd;
 	}
+	
 
-	public void setHaveSQL(Boolean haveSQL) {
-		this.haveSQL = haveSQL;
+	public void setHas_changes_in_bd(int has_changes_in_bd) {
+		this.has_changes_in_bd = has_changes_in_bd;
 	}
 
 	public String getDescription() {

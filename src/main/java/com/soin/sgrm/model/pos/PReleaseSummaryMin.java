@@ -222,6 +222,9 @@ public class PReleaseSummaryMin implements Serializable, Cloneable {
 	@Column(name = "NUMEROVERSION")
 	private String versionNumber;
 
+	@Column(name = "BUGS")
+	private String bugs;
+	
 	public int getId() {
 		return id;
 	}
@@ -722,6 +725,14 @@ public class PReleaseSummaryMin implements Serializable, Cloneable {
 				return true;
 		}
 		return false;
+	}
+
+	public String getBugs() {
+		return bugs;
+	}
+
+	public void setBugs(String bugs) {
+		this.bugs = bugs;
 	}
 
 }
