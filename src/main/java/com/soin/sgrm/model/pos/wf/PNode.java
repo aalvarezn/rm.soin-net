@@ -3,6 +3,7 @@ package com.soin.sgrm.model.pos.wf;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -254,9 +255,12 @@ public class PNode implements Serializable {
 	}
 
 	public void clearUsers() {
-		for (PWFUser user : this.users) {
-			this.users.remove(user);
-		}
+		
+	    Iterator<PWFUser> iterator = this.users.iterator();
+	    while (iterator.hasNext()) {
+	        iterator.next();
+	        iterator.remove(); // Elimina el usuario actual del conjunto de actores
+	    }
 	}
 
 	public void addUser(PWFUser user) {
@@ -288,9 +292,11 @@ public class PNode implements Serializable {
 	}
 	
 	public void clearActors() {
-		for (PWFUser user : this.actors) {
-			this.actors.remove(user);
-		}
+	    Iterator<PWFUser> iterator = this.actors.iterator();
+	    while (iterator.hasNext()) {
+	        iterator.next();
+	        iterator.remove(); // Elimina el usuario actual del conjunto de actores
+	    }
 	}
 
 	public void addActor(PWFUser user) {

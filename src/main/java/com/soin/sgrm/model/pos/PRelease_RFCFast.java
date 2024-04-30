@@ -69,7 +69,7 @@ public class PRelease_RFCFast implements Serializable, Cloneable {
 	private Timestamp createDate;
 
 	@Column(name = "TIENE_CAMBIOS_EN_BASE_DE_DATOS")
-	private Boolean haveSQL;
+	private int haveSQL;
 
 	@Column(name = "MOTIVO")
 	private String motive;
@@ -166,11 +166,11 @@ public class PRelease_RFCFast implements Serializable, Cloneable {
 		this.motive = motive;
 	}
 
-	public Boolean getHaveSQL() {
+	public int getHaveSQL() {
 		return haveSQL;
 	}
 
-	public void setHaveSQL(Boolean haveSQL) {
+	public void setHaveSQL(int haveSQL) {
 		this.haveSQL = haveSQL;
 	}
 

@@ -58,13 +58,13 @@ public class PWFReleaseDaoImpl implements PWFReleaseDao {
 
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, null,true,null);
+				systemId, statusId, null,false,null);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, null,false,null);
+				systemId, statusId, null,true,null);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -218,7 +218,10 @@ public class PWFReleaseDaoImpl implements PWFReleaseDao {
 
 			crit.add(Restrictions.eq("type.id", 1));
 			crit.add(Restrictions.isNotNull("node"));
-			crit.addOrder(Order.desc("createDate"));
+			if(!count) {
+				crit.addOrder(Order.desc("createDate"));
+			}
+			
 			
 		}
 		return crit;

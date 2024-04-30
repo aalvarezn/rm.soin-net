@@ -555,11 +555,11 @@ public class ErrorsManagementController extends BaseController {
 				}
 				return requestError;
 			} else if (profileActive().equals("postgres")) {
-				JsonSheet<RequestError> requestError = new JsonSheet<>();
+				JsonSheet<PRequestError> requestError = new JsonSheet<>();
 				if (systemId == 0) {
 
 					if (projectId == 0) {
-						requestError = requestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
+						requestError = prequestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
 								dateRange, typePetitionId, systemId);
 					} else {
 						List<System> systems = new ArrayList<>();
@@ -569,14 +569,14 @@ public class ErrorsManagementController extends BaseController {
 						for(System system:systems) {
 							systemsId.add(system.getId());
 						}
-						requestError = requestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
+						requestError = prequestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
 								dateRange, typePetitionId, systemsId);
 
 
 					}
 
 				} else {
-					requestError = requestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
+					requestError = prequestErrorService.findAll(sEcho, iDisplayStart, iDisplayLength, sSearch, errorId,
 							dateRange, typePetitionId, systemId);
 				}
 				return requestError;

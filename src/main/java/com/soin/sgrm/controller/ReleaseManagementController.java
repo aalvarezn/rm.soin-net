@@ -188,7 +188,7 @@ public class ReleaseManagementController extends BaseController {
 				JsonSheet<?> releases = new JsonSheet<>();		
 				String dateRange2 = request.getParameter("dateRange");
 				releases= preleaseService.findAll1(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange2,
-						systemId, statusId);
+						systemId, statusId,true);
 				return releases;
 			}
 				

@@ -388,7 +388,7 @@ public class PReleaseServiceImpl implements PReleaseService {
 
 	@Override
 	public JsonSheet<?> findAll1(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			 String dateRange, Integer systemId, Integer statusId)
+			 String dateRange, Integer systemId, Integer statusId, boolean all)
 			throws SQLException, ParseException {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
@@ -434,15 +434,21 @@ public class PReleaseServiceImpl implements PReleaseService {
 			columns.put("status", Restrictions.eq("status.id", statusId));
 			
 		}
-		if(name!="") {
-			columns.put("user", Restrictions.eq("user.username", name));
+		
+		if(!all) {
+			if(name!="") {
+				columns.put("user", Restrictions.eq("user.username", name));
+			}
 		}
+	
 		
 		List<String> fetchs = new ArrayList<String>();
 
 		return dao.findAllFastRelease(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
 
 	}
+	
+	
 
 	@Override
 	public JsonSheet<?> listByTeams(String name, int sEcho, int iDisplayStart, Integer iDisplayLength, String sSearch,
