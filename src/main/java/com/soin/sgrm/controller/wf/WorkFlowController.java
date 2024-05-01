@@ -424,6 +424,8 @@ public class WorkFlowController extends BaseController {
 					workFlow.setId(node.getWorkFlowId());
 					node.setSendEmail(false);
 					node.setSkipNode(false);
+					node.setSkipByRequest(false);
+					node.setSkipReapprove(false);
 					node.setWorkFlow(workFlow);
 					node = nodeService.save(node);
 					res.setObj(node);
@@ -433,6 +435,8 @@ public class WorkFlowController extends BaseController {
 					workFlow.setId(node.getWorkFlowId());
 					pnode.setSendEmail(false);
 					pnode.setSkipNode(false);
+					pnode.setSkipByRequest(false);
+					pnode.setSkipReapprove(false);
 					pnode.setWorkFlow(workFlow);
 					Set<PWFUser> pactors=new HashSet<PWFUser>();
 					for(WFUser actor: node.getActors()) {
