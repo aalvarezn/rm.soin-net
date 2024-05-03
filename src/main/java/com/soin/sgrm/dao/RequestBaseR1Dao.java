@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestBaseTrackingShow;
 import com.soin.sgrm.model.RequestReport;
 import com.soin.sgrm.utils.JsonSheet;
 
@@ -23,6 +24,8 @@ public interface RequestBaseR1Dao extends BaseDao<Long, RequestBaseR1> {
 	JsonSheet<?> findAllReportRequest(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
 			String dateRange, List<Integer> systemsId, Long typePetitionId) throws ParseException;
 
-	List<RequestReport> listRequestReportFilter(int projectId, int systemId, Long typePetitionId, String dateRange) throws ParseException; 
+	List<RequestReport> listRequestReportFilter(int projectId, int systemId, Long typePetitionId, String dateRange) throws ParseException;
+
+	RequestBaseTrackingShow findRequestTracking(Long id); 
 
 }

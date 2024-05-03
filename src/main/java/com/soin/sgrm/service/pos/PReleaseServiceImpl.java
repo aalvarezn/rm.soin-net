@@ -10,20 +10,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.soin.sgrm.controller.ReleaseController;
-import com.soin.sgrm.dao.ReleaseDao;
 import com.soin.sgrm.dao.pos.PReleaseDao;
 import com.soin.sgrm.exception.Sentry;
-import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseEditWithOutObjects;
@@ -393,7 +388,7 @@ public class PReleaseServiceImpl implements PReleaseService {
 
 	@Override
 	public JsonSheet<?> findAll1(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			 String dateRange, Integer systemId, Integer statusId)
+			 String dateRange, Integer systemId, Integer statusId, boolean all)
 			throws SQLException, ParseException {
 		Map<String, Object> columns = new HashMap<String, Object>();
 
@@ -440,11 +435,20 @@ public class PReleaseServiceImpl implements PReleaseService {
 			
 		}
 		
+		if(!all) {
+			if(name!="") {
+				columns.put("user", Restrictions.eq("user.username", name));
+			}
+		}
+	
+		
 		List<String> fetchs = new ArrayList<String>();
 
 		return dao.findAllFastRelease(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
 
 	}
+	
+	
 
 	@Override
 	public JsonSheet<?> listByTeams(String name, int sEcho, int iDisplayStart, Integer iDisplayLength, String sSearch,

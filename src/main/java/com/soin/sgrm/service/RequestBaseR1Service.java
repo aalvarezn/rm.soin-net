@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 
 import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestBaseTrackingShow;
 import com.soin.sgrm.model.RequestReport;
 import com.soin.sgrm.response.JsonSheet;
 
@@ -33,5 +34,8 @@ public interface RequestBaseR1Service extends BaseService<Long, RequestBaseR1>{
 
 
 	List<RequestReport> listRequestReportFilter(int projectId, int systemId, Long typePetitionId, String dateRange) throws ParseException;
+
+
+	RequestBaseTrackingShow findRequestTracking(Long id);
 
 }

@@ -23,7 +23,7 @@ import com.soin.sgrm.model.SystemInfo;
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "RELEASES_RELEASE")
-public class PReleaseSummaryMin implements Serializable {
+public class PReleaseSummaryMin implements Serializable, Cloneable {
 
 	@Id
 	@Column(name = "ID")
@@ -40,29 +40,30 @@ public class PReleaseSummaryMin implements Serializable {
 
 	// Tipos de reportes
 	@Column(name = "TIENE_ARTE")
-	private Boolean reportHaveArt;
+	private boolean reportHaveArt;
 
 	@Column(name = "REPORTE_TELEFONIA_FIJA")
-	private Boolean reportfixedTelephony;
+	private boolean reportfixedTelephony;
 
 	@Column(name = "REPORTE_TABLAS_HISTORICAS")
-	private Boolean reportHistoryTables;
+	private boolean reportHistoryTables;
 
 	@Column(name = "SIN_ARTE")
-	private Boolean reportNotHaveArt;
+	private boolean reportNotHaveArt;
 
 	@Column(name = "REPORTE_TELEFONIA_MOVIL")
-	private Boolean reportMobileTelephony;
+	private boolean reportMobileTelephony;
 
 	@Column(name = "REPORTE_TABLAS_TEMPORALES")
-	private Boolean reportTemporaryTables;
+	private boolean reportTemporaryTables;
 
 	@Column(name = "LLAMADAS_FACTURADAS")
-	private Boolean billedCalls;
+	private boolean billedCalls;
 
 	@Column(name = "LLAMADAS_POR_FACTURAR")
-	private Boolean notBilledCalls;
+	private boolean notBilledCalls;
 
+	
 	@Column(name = "SOLUCION_FUNCIONAL")
 	private String functionalSolution;
 
@@ -94,17 +95,18 @@ public class PReleaseSummaryMin implements Serializable {
 	@Column(name = "POST_CONDICIONES")
 	private String postConditions;
 
-	@Lob
+	
 	@Column(name = "INSTRUCCIONES_DE_INSTALACION")
 	private String installation_instructions;
 
-	@Lob
+	
 	@Column(name = "INSTRUCCIONES_DE_VERIFICACION")
 	private String verification_instructions;
 
-	@Lob
+	
 	@Column(name = "PLAN_DE_ROLLBACK")
 	private String rollback_plan;
+	
 
 	@Column(name = "REQUIERE_BAJAR")
 	private boolean down_required;
@@ -131,7 +133,7 @@ public class PReleaseSummaryMin implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"IMPACTO_ID\"", nullable = true)
 	private PImpact impact;
-
+	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "RELEASES_RELEASE_REQUERIMIENTO", joinColumns = {
 			@JoinColumn(name = "\"RELEASE_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"REQUERIMIENTO_ID\"") })
@@ -157,6 +159,7 @@ public class PReleaseSummaryMin implements Serializable {
 			@JoinColumn(name = "\"RELEASE_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"ARCHIVO_ID\"") })
 	private Set<PReleaseFile> files = new HashSet<PReleaseFile>();
 
+	
 	@Column(name = "INCIDENTES")
 	private String incidents;
 
@@ -186,6 +189,7 @@ public class PReleaseSummaryMin implements Serializable {
 			@JoinColumn(name = "\"RELEASE_ID\"") }, inverseJoinColumns = { @JoinColumn(name = "\"COMPONENTEMODIFICADO_ID\"") })
 	private Set<PModifiedComponent> modifiedComponents = new HashSet<PModifiedComponent>();
 
+	
 	// Instrucciones de Instalación de Base de Datos
 	@Column(name = "INSTRUCCIONES_DE_INSTALACI93F7")
 	private String certInstallationInstructions;
@@ -218,6 +222,9 @@ public class PReleaseSummaryMin implements Serializable {
 	@Column(name = "NUMEROVERSION")
 	private String versionNumber;
 
+	@Column(name = "BUGS")
+	private String bugs;
+	
 	public int getId() {
 		return id;
 	}
@@ -250,67 +257,67 @@ public class PReleaseSummaryMin implements Serializable {
 		this.observations = observations;
 	}
 
-	public Boolean getReportHaveArt() {
+	public boolean getReportHaveArt() {
 		return reportHaveArt;
 	}
 
-	public void setReportHaveArt(Boolean reportHaveArt) {
+	public void setReportHaveArt(boolean reportHaveArt) {
 		this.reportHaveArt = reportHaveArt;
 	}
 
-	public Boolean getReportfixedTelephony() {
+	public boolean getReportfixedTelephony() {
 		return reportfixedTelephony;
 	}
 
-	public void setReportfixedTelephony(Boolean reportfixedTelephony) {
+	public void setReportfixedTelephony(boolean reportfixedTelephony) {
 		this.reportfixedTelephony = reportfixedTelephony;
 	}
 
-	public Boolean getReportHistoryTables() {
+	public boolean getReportHistoryTables() {
 		return reportHistoryTables;
 	}
 
-	public void setReportHistoryTables(Boolean reportHistoryTables) {
+	public void setReportHistoryTables(boolean reportHistoryTables) {
 		this.reportHistoryTables = reportHistoryTables;
 	}
 
-	public Boolean getReportNotHaveArt() {
+	public boolean getReportNotHaveArt() {
 		return reportNotHaveArt;
 	}
 
-	public void setReportNotHaveArt(Boolean reportNotHaveArt) {
+	public void setReportNotHaveArt(boolean reportNotHaveArt) {
 		this.reportNotHaveArt = reportNotHaveArt;
 	}
 
-	public Boolean getReportMobileTelephony() {
+	public boolean getReportMobileTelephony() {
 		return reportMobileTelephony;
 	}
 
-	public void setReportMobileTelephony(Boolean reportMobileTelephony) {
+	public void setReportMobileTelephony(boolean reportMobileTelephony) {
 		this.reportMobileTelephony = reportMobileTelephony;
 	}
 
-	public Boolean getReportTemporaryTables() {
+	public boolean getReportTemporaryTables() {
 		return reportTemporaryTables;
 	}
 
-	public void setReportTemporaryTables(Boolean reportTemporaryTables) {
+	public void setReportTemporaryTables(boolean reportTemporaryTables) {
 		this.reportTemporaryTables = reportTemporaryTables;
 	}
 
-	public Boolean getBilledCalls() {
+	public boolean getBilledCalls() {
 		return billedCalls;
 	}
 
-	public void setBilledCalls(Boolean billedCalls) {
+	public void setBilledCalls(boolean billedCalls) {
 		this.billedCalls = billedCalls;
 	}
 
-	public Boolean getNotBilledCalls() {
+	public boolean getNotBilledCalls() {
 		return notBilledCalls;
 	}
 
-	public void setNotBilledCalls(Boolean notBilledCalls) {
+	public void setNotBilledCalls(boolean notBilledCalls) {
 		this.notBilledCalls = notBilledCalls;
 	}
 
@@ -712,12 +719,20 @@ public class PReleaseSummaryMin implements Serializable {
 		return list;
 	}
 
-	public Boolean existComponent(String name) {
+	public boolean existComponent(String name) {
 		for (PModifiedComponent component : modifiedComponents) {
 			if (component.getName().equalsIgnoreCase(name))
 				return true;
 		}
 		return false;
+	}
+
+	public String getBugs() {
+		return bugs;
+	}
+
+	public void setBugs(String bugs) {
+		this.bugs = bugs;
 	}
 
 }

@@ -5,9 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -17,7 +21,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.soin.sgrm.model.pos.PRFCReport;
+import com.soin.sgrm.model.pos.PReleaseUserFast;
 import com.soin.sgrm.model.pos.PRequestBaseR1;
+import com.soin.sgrm.model.pos.PRequestBaseR1Fast;
+import com.soin.sgrm.model.pos.PRequestBaseTracking;
+import com.soin.sgrm.model.pos.PRequestBaseTrackingShow;
 import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PRequestReport;
 
@@ -111,7 +119,7 @@ public class PRequestBaseR1DaoImpl extends AbstractDao<Long, PRequestBaseR1> imp
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByReport( sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange,
-				systemId,typePetitionId,false);
+				systemId,typePetitionId,true);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -293,6 +301,13 @@ public class PRequestBaseR1DaoImpl extends AbstractDao<Long, PRequestBaseR1> imp
 		crit.addOrder(Order.desc("requestDate"));
 
 		return crit.list();
+	}
+
+	@Override
+	public PRequestBaseTrackingShow findRequestTracking(Long id) {
+		   return (PRequestBaseTrackingShow) getSession().createCriteria(PRequestBaseTrackingShow.class)
+		    		.add(Restrictions.eq("id", id))
+		    		.uniqueResult();
 	}
 	
 	

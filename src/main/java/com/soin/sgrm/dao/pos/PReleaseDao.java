@@ -9,8 +9,6 @@ import java.util.Map;
 import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.criterion.Criterion;
 
-import com.soin.sgrm.model.ReleaseEditWithOutObjects;
-import com.soin.sgrm.model.ReleaseUserFast;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseEditWithOutObjects;

@@ -215,6 +215,9 @@ public class PReleaseTinySummary implements Serializable {
 	@Column(name = "NUMEROVERSION")
 	private String versionNumber;
 
+	@Column(name = "BUGS")
+	private String bugs;
+	
 	public int getId() {
 		return id;
 	}
@@ -717,4 +720,13 @@ public class PReleaseTinySummary implements Serializable {
 		return false;
 	}
 
+	public String getBugs() {
+		return bugs;
+	}
+
+	public void setBugs(String bugs) {
+		this.bugs = bugs;
+	}
+
+	
 }

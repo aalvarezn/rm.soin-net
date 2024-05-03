@@ -297,7 +297,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			transObj = sessionObj.beginTransaction();
 
 			String dateChange = (release.getDateChange() != null && !release.getDateChange().equals("")
-					? "to_date('" + release.getDateChange() + "', 'DD-MM-YYYY HH:MI PM')"
+					? "to_timestamp('" + release.getDateChange() + "', 'DD-MM-YYYY HH:MI PM')"
 					: "CURRENT_TIMESTAMP");
 			sql = String.format(
 					"update \"RELEASES_RELEASE\" set \"ESTADO_ID\" = %s , \"REINTENTOS\" = %s , \"OPERADOR\" = '%s' , \"MOTIVO\" = '%s' , \"FECHA_CREACION\" = "
@@ -330,7 +330,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			transObj = sessionObj.beginTransaction();
 
 			String dateChange = (release.getErrorDate() != null && !release.getErrorDate().equals("")
-					? "to_date('" + release.getErrorDate() + "', 'DD-MM-YYYY HH:MI PM')"
+					? "to_timestamp('" + release.getErrorDate() + "', 'DD-MM-YYYY HH:MI PM')"
 					: "CURRENT_TIMESTAMP");
 			/*
 			 * sql = String.format( "INSERT INTO RELEASE_ERROR (ID, RELEASE_ID, ERROR_ID,
@@ -649,7 +649,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 	@SuppressWarnings({ "deprecation" })
 	public Criteria criteriaByReport(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId)
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Integer projectId,boolean count)
 			throws SQLException, ParseException {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleaseReportFast.class);
@@ -690,7 +690,10 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		if (projectId != 0) {
 			crit.add(Restrictions.eq("proyect.id", projectId));
 		}
-		crit.addOrder(Order.desc("createDate"));
+		if(count) {
+			crit.addOrder(Order.desc("createDate"));
+		}
+		
 
 		return crit;
 	}
@@ -931,13 +934,13 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, projectId);
+				systemId, statusId, projectId,true);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, projectId);
+				systemId, statusId, projectId,false);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -1017,13 +1020,13 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, projectId);
+				systemId, statusId, projectId,true);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByReport(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, projectId);
+				systemId, statusId, projectId,false);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -1055,7 +1058,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			transObj = sessionObj.beginTransaction();
 
 			String dateChange = (release.getDateChange() != null && !release.getDateChange().equals("")
-					? "to_date('" + release.getDateChange() + "', 'DD-MM-YYYY HH:MI PM')"
+					? "to_timestamp('" + release.getDateChange() + "', 'DD-MM-YYYY HH:MI PM')"
 					: "CURRENT_TIMESTAMP");
 			sql = String.format(
 					"update \"RELEASES_RELEASE\" set \"ESTADO_ID\" = %s , \"REINTENTOS\" = %s , \"OPERADOR\" = '%s' , \"MOTIVO\" = '%s' , \"FECHA_CREACION\" = "

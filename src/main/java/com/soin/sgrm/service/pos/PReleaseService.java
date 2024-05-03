@@ -126,7 +126,7 @@ public interface PReleaseService {
 
 
 	JsonSheet<?> findAll1(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			 String dateRange, Integer systemId, Integer statusId)
+			 String dateRange, Integer systemId, Integer statusId,boolean all)
 			throws SQLException, ParseException;
 
 	JsonSheet<?> listByTeams(String name, int sEcho, int iDisplayStart, Integer iDisplayLength, String sSearch,
@@ -134,6 +134,7 @@ public interface PReleaseService {
 
 	JsonSheet<?> listByAllSystem(String name, int sEcho, int iDisplayStart, int iDisplayLength, String[] filtred,
 			String sSearch, String dateRange2, Integer systemId, Integer statusId);
+
 
 
 

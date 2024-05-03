@@ -72,6 +72,7 @@ import com.soin.sgrm.model.pos.PReleaseSummary;
 import com.soin.sgrm.model.pos.PReleaseSummaryFile;
 import com.soin.sgrm.model.pos.PReleaseSummaryMin;
 import com.soin.sgrm.model.pos.PReleaseTinySummary;
+import com.soin.sgrm.model.pos.PReleaseTrackingShow;
 import com.soin.sgrm.model.pos.PReleaseUser;
 import com.soin.sgrm.model.pos.PRelease_Objects;
 import com.soin.sgrm.model.pos.PRequest;
@@ -206,7 +207,8 @@ public class ReleaseController extends BaseController {
 	
 	@Autowired
 	private Environment env;
-
+	
+	@Autowired
 	private PUserInfoService ploginService;
 	@Autowired
 	private PSystemConfigurationService psystemConfigurationService;
@@ -358,7 +360,9 @@ public class ReleaseController extends BaseController {
 					JsonSheet<?> releases = new JsonSheet<>();		
 					String dateRange2 = request.getParameter("dateRange");
 					releases= preleaseService.findAll1(name, sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange2,
-							systemId, statusId);
+							systemId, statusId,false);
+					
+					
 					return releases;
 					
 				}
@@ -559,9 +563,11 @@ public class ReleaseController extends BaseController {
 				if (release == null) {
 					return "redirect:/";
 				}
+				
 				PSystemConfiguration systemConfiguration = psystemConfigurationService
 						.findBySystemId(release.getSystem().getId());
 				List<PDocTemplate> docs = pdocsTemplateService.findBySystem(release.getSystem().getId());
+				
 				model.addAttribute("dependency", new PRelease());
 				model.addAttribute("doc", new PDocTemplate());
 				model.addAttribute("docs", docs);
@@ -570,7 +576,6 @@ public class ReleaseController extends BaseController {
 				model.addAttribute("status", new PStatus());
 				model.addAttribute("statuses", pstatusService.list());
 				model.addAttribute("errors", perrorService.findAll());
-
 				String textChanged = "No aplica";
 				if (release.getObservations() != null) {
 					textChanged = release.getObservations().replaceAll("(https?://\\S+)",
@@ -584,12 +589,14 @@ public class ReleaseController extends BaseController {
 				} else {
 					model.addAttribute("cc", "");
 				}
+				
 			}
 		} catch (SQLException ex) {
 			Sentry.capture(ex, "release");
 			throw ex;
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
+			System.out.println(e.getMessage());
 			redirectAttributes.addFlashAttribute("data",
 					"Error en la carga de la pagina resumen release." + " ERROR: " + e.getMessage());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -780,6 +787,7 @@ public class ReleaseController extends BaseController {
 				model.addAttribute("senders", release.getSenders());
 				model.addAttribute("message", release.getMessage());
 				model.addAttribute("releaseObject", listObjects);
+				model.addAttribute("bugs", release.getBugs());
 				if (release.getSystem().getEmailTemplate() != null) {
 					if (release.getSystem().getEmailTemplate().size() > 1) {
 						model.addAttribute("ccs", getCC(release.getSystem().getEmailTemplate().iterator().next().getCc()));
@@ -848,6 +856,7 @@ public class ReleaseController extends BaseController {
 				model.addAttribute("senders", release.getSenders());
 				model.addAttribute("message", release.getMessage());
 				model.addAttribute("releaseObject", listObjects);
+				model.addAttribute("bugs", release.getBugs());
 				if (release.getSystem().getEmailTemplate() != null) {
 					if (release.getSystem().getEmailTemplate().size() > 1) {
 						model.addAttribute("ccs", getCC(release.getSystem().getEmailTemplate().iterator().next().getCc()));
@@ -1069,7 +1078,9 @@ public class ReleaseController extends BaseController {
 				String number_release = "";
 				PRelease release = new PRelease();
 				PModule module = new PModule();
-				PUser user = ploginService.findUserById(getUserLogin().getId());
+				
+				Integer idUser=getUserLogin().getId();
+				PUser user = ploginService.findUserById(idUser);
 				
 				if (!requeriment.equals("TPO/BT")) {
 					number_release = preleaseService.generateReleaseNumber(requeriment, requirement_name, system_id);
@@ -1386,6 +1397,7 @@ public class ReleaseController extends BaseController {
 						rc.setMessage(release.getMessage());
 					}
 				}
+				release.setBugs(rc.getBugs());
 				preleaseService.saveRelease(release, rc);
 
 				res.setStatus("success");
@@ -2593,9 +2605,16 @@ public class ReleaseController extends BaseController {
 			Model model, HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
-			ReleaseTrackingShow tracking = releaseService.findReleaseTracking(id);
-			res.setStatus("success");
-			res.setObj(tracking);
+			if (profileActive().equals("oracle")) {
+				ReleaseTrackingShow tracking = releaseService.findReleaseTracking(id);
+				res.setStatus("success");
+				res.setObj(tracking);
+			} else if (profileActive().equals("postgres")) {
+				PReleaseTrackingShow tracking = preleaseService.findReleaseTracking(id);
+				res.setStatus("success");
+				res.setObj(tracking);
+			}
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "admin");
 			res.setStatus("exception");

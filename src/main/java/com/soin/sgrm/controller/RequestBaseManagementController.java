@@ -25,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_Requests;
+import com.soin.sgrm.model.ReleaseTrackingShow;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestBaseReference;
@@ -38,7 +39,9 @@ import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PErrors_Requests;
 import com.soin.sgrm.model.pos.PRequestBase;
 import com.soin.sgrm.model.pos.PRequestBaseR1;
+import com.soin.sgrm.model.pos.PRequestBaseR1Fast;
 import com.soin.sgrm.model.pos.PRequestBaseReference;
+import com.soin.sgrm.model.pos.PRequestBaseTracking;
 import com.soin.sgrm.model.pos.PRequestError;
 import com.soin.sgrm.model.pos.PRequest_Estimate;
 import com.soin.sgrm.model.pos.PStatusRequest;
@@ -63,6 +66,7 @@ import com.soin.sgrm.service.pos.PAmbientService;
 import com.soin.sgrm.service.pos.PEmailTemplateService;
 import com.soin.sgrm.service.pos.PErrorRequestService;
 import com.soin.sgrm.service.pos.PParameterService;
+import com.soin.sgrm.service.pos.PRequestBaseR1FastService;
 import com.soin.sgrm.service.pos.PRequestBaseR1Service;
 import com.soin.sgrm.service.pos.PRequestBaseService;
 import com.soin.sgrm.service.pos.PRequestErrorService;
@@ -76,6 +80,7 @@ import com.soin.sgrm.service.pos.PUserService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
+
 
 @Controller
 @RequestMapping("/management/request")
@@ -120,11 +125,10 @@ public class RequestBaseManagementController extends BaseController {
 
 	@Autowired
 	RequestErrorService requestErrorService;
-	
+
 	@Autowired
 	Request_EstimateService requestEstimateService;
-	
-	
+
 	@Autowired
 	PSystemService psystemService;
 
@@ -139,6 +143,9 @@ public class RequestBaseManagementController extends BaseController {
 
 	@Autowired
 	PRequestBaseR1Service prequestBaseR1Service;
+	
+	@Autowired
+	PRequestBaseR1FastService prequestBaseR1FastService;
 
 	@Autowired
 	PTypePetitionService ptypePetitionService;
@@ -163,10 +170,10 @@ public class RequestBaseManagementController extends BaseController {
 
 	@Autowired
 	PRequestErrorService prequestErrorService;
-	
+
 	@Autowired
 	PRequest_EstimateService prequestEstimateService;
-	
+
 	private final Environment environment;
 
 	@Autowired
@@ -181,7 +188,6 @@ public class RequestBaseManagementController extends BaseController {
 		}
 		return "";
 	}
-
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
@@ -209,7 +215,6 @@ public class RequestBaseManagementController extends BaseController {
 				model.addAttribute("systems", systems);
 			}
 
-		
 		} catch (Exception e) {
 			Sentry.capture(e, "request");
 			e.printStackTrace();
@@ -220,7 +225,7 @@ public class RequestBaseManagementController extends BaseController {
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = { "/list" }, method = RequestMethod.GET)
 	public @ResponseBody JsonSheet list(HttpServletRequest request, Locale locale, Model model) {
-		
+
 		try {
 
 			Integer sEcho = Integer.parseInt(request.getParameter("sEcho"));
@@ -257,13 +262,13 @@ public class RequestBaseManagementController extends BaseController {
 						dateRange, systemId, typePetitionId);
 				return requests;
 			} else if (profileActive().equals("postgres")) {
-				JsonSheet<PRequestBaseR1> requests = new JsonSheet<>();
-				requests = prequestBaseR1Service.findAllRequest(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
+				
+				JsonSheet<?> requests = new JsonSheet<>();
+				requests = prequestBaseR1FastService.findAllRequest(sEcho, iDisplayStart, iDisplayLength, sSearch, statusId,
 						dateRange, systemId, typePetitionId);
 				return requests;
 			}
 
-		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -353,21 +358,22 @@ public class RequestBaseManagementController extends BaseController {
 					requestBaseNew.setMotive(motive);
 					requestBaseNew.setRequestDate(dateFormat2);
 				}
-				
-				if(status != null && status.getName().equals("En proceso")) {
-					Request_Estimate requestEstimate=requestEstimateService.findByIdRequest(idRequest);
-					Timestamp dateFormatRequestDate = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
-					Timestamp dateFormatRequestDateEstimate = CommonUtils.convertStringToTimestamp(requestDateEstimate, "dd/MM/yyyy hh:mm a");
-					if(requestEstimate!=null) {
-						
-					
+
+				if (status != null && status.getName().equals("En proceso")) {
+					Request_Estimate requestEstimate = requestEstimateService.findByIdRequest(idRequest);
+					Timestamp dateFormatRequestDate = CommonUtils.convertStringToTimestamp(dateChange,
+							"dd/MM/yyyy hh:mm a");
+					Timestamp dateFormatRequestDateEstimate = CommonUtils.convertStringToTimestamp(requestDateEstimate,
+							"dd/MM/yyyy hh:mm a");
+					if (requestEstimate != null) {
+
 						requestEstimate.setRequestDate(dateFormatRequestDate);
 						requestEstimate.setRequestDateEstimate(dateFormatRequestDateEstimate);
 						requestEstimate.setRequestDateFinal(null);
 						requestEstimateService.update(requestEstimate);
-					}else {
-						RequestBaseReference requestBaseReference=new RequestBaseReference();
-					    requestEstimate=new Request_Estimate();
+					} else {
+						RequestBaseReference requestBaseReference = new RequestBaseReference();
+						requestEstimate = new Request_Estimate();
 						requestBaseReference.setId(idRequest);
 						requestEstimate.setRequestBase(requestBaseReference);
 						requestEstimate.setRequestDate(dateFormatRequestDate);
@@ -375,7 +381,7 @@ public class RequestBaseManagementController extends BaseController {
 						requestEstimate.setRequestDateFinal(null);
 						requestEstimateService.save(requestEstimate);
 					}
-					
+
 				}
 
 				requestBaseService.update(requestBaseNew);
@@ -400,8 +406,8 @@ public class RequestBaseManagementController extends BaseController {
 							try {
 								emailService.sendMailNotifyChangeStatus(requestBaseNew.getNumRequest(),
 										" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
-										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin, senders,
-										emailNotify, subject, requestBaseNew.getMotive(), note,
+										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin,
+										senders, emailNotify, subject, requestBaseNew.getMotive(), note,
 										"RM-P2-R5|Registro evidencia de instalación");
 							} catch (Exception e) {
 								Sentry.capture(e, "request");
@@ -427,8 +433,8 @@ public class RequestBaseManagementController extends BaseController {
 							try {
 								emailService.sendMailNotifyChangeStatusError(typeError, requestBaseNew.getNumRequest(),
 										" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
-										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin, senders,
-										emailNotify, subject, requestBaseNew.getMotive(), note,
+										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin,
+										senders, emailNotify, subject, requestBaseNew.getMotive(), note,
 										"RM-P2-R5|Registro evidencia de instalación");
 							} catch (Exception e) {
 								Sentry.capture(e, "release");
@@ -507,21 +513,22 @@ public class RequestBaseManagementController extends BaseController {
 					requestBaseNew.setMotive(motive);
 					requestBaseNew.setRequestDate(dateFormat2);
 				}
-				
-				if(status != null && status.getName().equals("En proceso")) {
-					PRequest_Estimate requestEstimate=prequestEstimateService.findByIdRequest(idRequest);
-					Timestamp dateFormatRequestDate = CommonUtils.convertStringToTimestamp(dateChange, "dd/MM/yyyy hh:mm a");
-					Timestamp dateFormatRequestDateEstimate = CommonUtils.convertStringToTimestamp(requestDateEstimate, "dd/MM/yyyy hh:mm a");
-					if(requestEstimate!=null) {
-						
-					
+
+				if (status != null && status.getName().equals("En proceso")) {
+					PRequest_Estimate requestEstimate = prequestEstimateService.findByIdRequest(idRequest);
+					Timestamp dateFormatRequestDate = CommonUtils.convertStringToTimestamp(dateChange,
+							"dd/MM/yyyy hh:mm a");
+					Timestamp dateFormatRequestDateEstimate = CommonUtils.convertStringToTimestamp(requestDateEstimate,
+							"dd/MM/yyyy hh:mm a");
+					if (requestEstimate != null) {
+
 						requestEstimate.setRequestDate(dateFormatRequestDate);
 						requestEstimate.setRequestDateEstimate(dateFormatRequestDateEstimate);
 						requestEstimate.setRequestDateFinal(null);
 						prequestEstimateService.update(requestEstimate);
-					}else {
-						PRequestBaseReference requestBaseReference=new PRequestBaseReference();
-					    requestEstimate=new PRequest_Estimate();
+					} else {
+						PRequestBaseReference requestBaseReference = new PRequestBaseReference();
+						requestEstimate = new PRequest_Estimate();
 						requestBaseReference.setId(idRequest);
 						requestEstimate.setRequestBase(requestBaseReference);
 						requestEstimate.setRequestDate(dateFormatRequestDate);
@@ -529,7 +536,7 @@ public class RequestBaseManagementController extends BaseController {
 						requestEstimate.setRequestDateFinal(null);
 						prequestEstimateService.save(requestEstimate);
 					}
-					
+
 				}
 
 				prequestBaseService.update(requestBaseNew);
@@ -554,8 +561,8 @@ public class RequestBaseManagementController extends BaseController {
 							try {
 								pemailService.sendMailNotifyChangeStatus(requestBaseNew.getNumRequest(),
 										" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
-										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin, senders,
-										emailNotify, subject, requestBaseNew.getMotive(), note,
+										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin,
+										senders, emailNotify, subject, requestBaseNew.getMotive(), note,
 										"RM-P2-R5|Registro evidencia de instalación");
 							} catch (Exception e) {
 								Sentry.capture(e, "request");
@@ -581,8 +588,8 @@ public class RequestBaseManagementController extends BaseController {
 							try {
 								pemailService.sendMailNotifyChangeStatusError(typeError, requestBaseNew.getNumRequest(),
 										" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
-										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin, senders,
-										emailNotify, subject, requestBaseNew.getMotive(), note,
+										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin,
+										senders, emailNotify, subject, requestBaseNew.getMotive(), note,
 										"RM-P2-R5|Registro evidencia de instalación");
 							} catch (Exception e) {
 								Sentry.capture(e, "release");
@@ -593,8 +600,6 @@ public class RequestBaseManagementController extends BaseController {
 					}
 				}
 			}
-			
-			
 
 		} catch (Exception e) {
 			Sentry.capture(e, "requestManagement");
@@ -638,7 +643,7 @@ public class RequestBaseManagementController extends BaseController {
 					res.setException("La acción no se pudo completar, la solicitud no esta en estado de Borrador.");
 				}
 			}
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "release");
 			res.setStatus("exception");
@@ -668,7 +673,7 @@ public class RequestBaseManagementController extends BaseController {
 				requestBase.setMotive(status.getReason());
 				prequestBaseService.update(requestBase);
 			}
-			
+
 			res.setStatus("success");
 
 		} catch (Exception e) {
@@ -696,7 +701,6 @@ public class RequestBaseManagementController extends BaseController {
 			rfcC.put("all", (rfcC.get("draft") + rfcC.get("requested") + rfcC.get("completed")));
 			request.setAttribute("rfcC", rfcC);
 		}
-	
 
 	}
 
@@ -809,7 +813,7 @@ public class RequestBaseManagementController extends BaseController {
 
 		return email.getSubject();
 	}
-	
+
 	public String getSubject(PEmailTemplate email, PRequestBase request) {
 		String temp = "";
 		if (request.getTypePetition().getCode().equals("RM-P1-R4")) {
@@ -919,5 +923,7 @@ public class RequestBaseManagementController extends BaseController {
 
 		return email.getSubject();
 	}
+
+
 
 }

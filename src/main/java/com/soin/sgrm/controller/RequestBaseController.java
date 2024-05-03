@@ -33,6 +33,7 @@ import com.soin.sgrm.model.Priority;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RequestBase;
 import com.soin.sgrm.model.RequestBaseR1;
+import com.soin.sgrm.model.RequestBaseTrackingShow;
 import com.soin.sgrm.model.RequestRM_P1_R1;
 import com.soin.sgrm.model.RequestRM_P1_R2;
 import com.soin.sgrm.model.RequestRM_P1_R3;
@@ -53,6 +54,8 @@ import com.soin.sgrm.model.pos.PPriority;
 import com.soin.sgrm.model.pos.PProject;
 import com.soin.sgrm.model.pos.PRequestBase;
 import com.soin.sgrm.model.pos.PRequestBaseR1;
+import com.soin.sgrm.model.pos.PRequestBaseTracking;
+import com.soin.sgrm.model.pos.PRequestBaseTrackingShow;
 import com.soin.sgrm.model.pos.PRequestRM_P1_R1;
 import com.soin.sgrm.model.pos.PRequestRM_P1_R2;
 import com.soin.sgrm.model.pos.PRequestRM_P1_R3;
@@ -89,6 +92,7 @@ import com.soin.sgrm.service.pos.PEmailTemplateService;
 import com.soin.sgrm.service.pos.PErrorRequestService;
 import com.soin.sgrm.service.pos.PParameterService;
 import com.soin.sgrm.service.pos.PProjectService;
+import com.soin.sgrm.service.pos.PRequestBaseR1FastService;
 import com.soin.sgrm.service.pos.PRequestBaseR1Service;
 import com.soin.sgrm.service.pos.PRequestBaseService;
 import com.soin.sgrm.service.pos.PRequestRM_P1_R1Service;
@@ -186,6 +190,9 @@ public class RequestBaseController extends BaseController {
 
 	@Autowired
 	PRequestBaseR1Service prequestBaseR1Service;
+	
+	@Autowired
+	PRequestBaseR1FastService prequestBaseR1FastService;
 
 	@Autowired
 	PTypePetitionService ptypePetitionService;
@@ -326,8 +333,8 @@ public class RequestBaseController extends BaseController {
 						statusId, dateRange, systemId, typePetitionId);
 				return requests;
 			} else if (profileActive().equals("postgres")) {
-				JsonSheet<PRequestBaseR1> requests = new JsonSheet<>();
-				requests = prequestBaseR1Service.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
+				JsonSheet<?> requests = new JsonSheet<>();
+				requests = prequestBaseR1FastService.findAllRequest(name, sEcho, iDisplayStart, iDisplayLength, sSearch,
 						statusId, dateRange, systemId, typePetitionId);
 				return requests;
 			}
@@ -1934,5 +1941,29 @@ public class RequestBaseController extends BaseController {
 			}
 		}
 		return getCC;
+	}
+	
+	@RequestMapping(value = "/tracking/{id}", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse tracking(@PathVariable Long id, HttpServletRequest request, Locale locale,
+			Model model, HttpSession session) {
+		JsonResponse res = new JsonResponse();
+		try {
+			if (profileActive().equals("oracle")) {
+				RequestBaseTrackingShow tracking = requestBaseR1Service.findRequestTracking(id);
+				res.setStatus("success");
+				res.setObj(tracking);
+			} else if (profileActive().equals("postgres")) {
+				PRequestBaseTrackingShow tracking = prequestBaseR1Service.findRequestTracking(id);
+				res.setStatus("success");
+				res.setObj(tracking);
+			}
+			
+		} catch (Exception e) {
+			Sentry.capture(e, "admin");
+			res.setStatus("exception");
+			res.setException("Error al procesar consulta: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 }
