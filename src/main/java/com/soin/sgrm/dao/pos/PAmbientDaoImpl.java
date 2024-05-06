@@ -27,7 +27,7 @@ public class PAmbientDaoImpl implements PAmbientDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<PAmbient> list(Integer id) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Ambient.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PAmbient.class);
 		crit.createCriteria("system").add(Restrictions.eq("id", id));
 		List<PAmbient> list = crit.list();
 		return list;

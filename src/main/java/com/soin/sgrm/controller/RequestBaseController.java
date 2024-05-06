@@ -467,6 +467,7 @@ public class RequestBaseController extends BaseController {
 						if(codeSiges==null) {
 							codeSiges=psigeService.findByKey("codeSiges", addRequest.getCodeProyect());
 						}
+						
 						paddRequest.setSiges(codeSiges);
 						paddRequest.setCodeProyect(codeSiges.getCodeSiges());
 						paddRequest.setSystemInfo(psystemService.findById(addRequest.getSystemId()));
@@ -567,7 +568,6 @@ public class RequestBaseController extends BaseController {
 				PProject proyect = pprojectService.findById(paddSystem.getProyectId());
 				if (!psystemService.checkUniqueCode(paddSystem.getCode(), paddSystem.getProyectId(), 1)) {
 					res.setStatus("error");
-
 					res.setMessage("Error al crear sistema codigo ya utilizado para un mismo proyecto!");
 				} else if (!psystemService.checkUniqueCode(paddSystem.getName(), paddSystem.getProyectId(), 0)) {
 					res.setStatus("error");

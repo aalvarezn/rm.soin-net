@@ -151,6 +151,9 @@ public class PSystem implements Serializable {
 	@Transient
 	String sigesCode;
 	
+	@Transient
+	Long sigesId;
+	
 	
 	public int getId() {
 		return id;
@@ -520,6 +523,14 @@ public class PSystem implements Serializable {
 
 	public void setSigesCode(String sigesCode) {
 		this.sigesCode = sigesCode;
+	}
+
+	public Long getSigesId() {
+		return sigesId;
+	}
+
+	public void setSigesId(Long sigesId) {
+		this.sigesId = sigesId;
 	}
 	
 	

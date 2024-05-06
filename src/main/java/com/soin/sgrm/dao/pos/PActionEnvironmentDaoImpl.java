@@ -51,8 +51,9 @@ public class PActionEnvironmentDaoImpl implements PActionEnvironmentDao {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 			sessionObj.saveOrUpdate(action);
+			sessionObj.flush();
 			sql = String.format(
-					" INSERT INTO releases_release_accion ( id, accion_id, release_id ) VALUES (null, %s , %s )",
+					" INSERT INTO \"RELEASES_RELEASE_ACCION\" (  \"ACCION_ID\", \"RELEASE_ID\" ) VALUES ( %s , %s )",
 					action.getId(), release_id);
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();
