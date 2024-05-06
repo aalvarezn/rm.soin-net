@@ -280,6 +280,8 @@ public class PSystemDaoImpl implements PSystemDao {
 			siges.setCodeSiges(addSystem.getSigesCode());
 			siges.setEmailTemplate(emailTemplate);
 			session.save(siges);
+			Long idSiges=siges.getId();
+			addSystem.setSigesId(idSiges);
 		} catch (Exception e) {
 
 			throw e;

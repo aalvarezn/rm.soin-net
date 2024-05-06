@@ -466,7 +466,6 @@ public class ReleaseComponentsController extends BaseController {
 				res.setData(action.getId() + "");
 			}else if(profileActive().equals("postgres")) {
 				PReleaseActionEdit paction=new PReleaseActionEdit();
-				paction.setId(action.getId());
 				paction.setAction(action.getAction());
 				paction.setEnvironment(action.getEnvironment());
 				paction.setObservation(action.getObservation());
