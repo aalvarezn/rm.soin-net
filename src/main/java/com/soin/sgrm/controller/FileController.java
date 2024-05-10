@@ -635,7 +635,7 @@ public class FileController extends BaseController {
 		RFC rfc;
 		try {
 			rfc = rfcService.findById(id);
-			Siges siges = sigesService.findByKey("codeSiges", rfc.getCodeProyect());
+			Siges siges = sigesService.findById(rfc.getSiges().getId());
 			SystemInfo system= siges.getSystem();
 			String path = system.getName() + "/" +siges.getCodeSiges()  + "/";
 
