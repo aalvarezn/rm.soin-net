@@ -261,13 +261,13 @@ public class PWFReleaseDaoImpl implements PWFReleaseDao {
 			Object[] systemsId,Integer idUser) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, systemsId,true,idUser);
+				systemId, statusId, systemsId,false,idUser);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, systemsId,false,idUser);
+				systemId, statusId, systemsId,true,idUser);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
