@@ -107,6 +107,7 @@ import com.soin.sgrm.service.pos.PModuleService;
 import com.soin.sgrm.service.pos.PRFCService;
 import com.soin.sgrm.service.pos.PReleaseObjectService;
 import com.soin.sgrm.service.pos.PReleaseService;
+import com.soin.sgrm.service.pos.PRequestService;
 import com.soin.sgrm.service.pos.PStatusService;
 import com.soin.sgrm.service.pos.PTypeObjectService;
 import com.soin.sgrm.service.pos.PUserInfoService;
@@ -183,7 +184,8 @@ public class WebServiceController extends BaseController {
 	@Autowired
 	PDependencyService pdependencyService;
 	private final Environment environment;
-
+	@Autowired
+	PRequestService prequestService;
 	@Autowired
 	public WebServiceController(Environment environment) {
 		this.environment = environment;
@@ -391,11 +393,15 @@ public class WebServiceController extends BaseController {
 				res.setStatus("success");
 
 				if (!releaseWs.getRequirement().equals("TPO/BT")) {
-					number_release = releaseService.generateReleaseNumber(releaseWs.getRequirement(),
+					number_release = preleaseService.generateReleaseNumber(releaseWs.getRequirement(),
 							releaseWs.getRequirementName().toUpperCase(), releaseWs.getSystem());
 				} else {
-					number_release = releaseService.generateTPO_BT_ReleaseNumber(releaseWs.getSystem(),
-							releaseWs.getRequirementName().toUpperCase());
+					String [] codes= releaseWs.getRequirementName().split("_");
+					String codeSoin=codes[0];
+					String codeIce=codes[1];
+					Integer idRequeriment =prequestService.findIDRequeriment(codeSoin,codeIce);
+ 					number_release = preleaseService.generateTPO_BT_ReleaseNumber(releaseWs.getSystem(),
+ 							idRequeriment.toString());
 				}
 				PStatus status = pstatusService.findByName("Borrador");
 				String systemModule = releaseWs.getSystem();

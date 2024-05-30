@@ -33,6 +33,8 @@ public interface PRequestService {
 
 	PRequest findByNameCode(String tpo);
 
+	Integer findIDRequeriment(String codeSoin, String codeIce) throws SQLException;
+
 
 
 
