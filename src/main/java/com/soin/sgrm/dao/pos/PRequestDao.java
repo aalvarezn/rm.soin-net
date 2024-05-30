@@ -35,6 +35,8 @@ public interface PRequestDao {
 
 	PRequest findByNameCode(String code_soin);
 
+	Integer idRequeriment(String codeSoin, String codeICE) throws SQLException;
+
 
 
 }
