@@ -388,7 +388,7 @@ public class WebServiceController extends BaseController {
 				userInfo = ploginService.getUserByUsername("admin");
 			}
 			user.setId(userInfo.getId());
-
+			Integer idRequeriment=0;
 			try {
 				res.setStatus("success");
 
@@ -397,9 +397,9 @@ public class WebServiceController extends BaseController {
 							releaseWs.getRequirementName().toUpperCase(), releaseWs.getSystem());
 				} else {
 					String [] codes= releaseWs.getRequirementName().split("_");
-					String codeSoin=codes[0];
-					String codeIce=codes[1];
-					Integer idRequeriment =prequestService.findIDRequeriment(codeSoin,codeIce);
+					String codeSoin=codes[0].trim();
+					String codeIce=codes[1].trim();
+					 idRequeriment =prequestService.findIDRequeriment(codeSoin,codeIce);
  					number_release = preleaseService.generateTPO_BT_ReleaseNumber(releaseWs.getSystem(),
  							idRequeriment.toString());
 				}
@@ -472,7 +472,8 @@ public class WebServiceController extends BaseController {
 				if (!releaseWs.getRequirement().equals("TPO/BT")) {
 					preleaseService.save(release, "-1");
 				} else {
-					preleaseService.save(release, releaseWs.getRequirementName());
+					
+					preleaseService.save(release, idRequeriment.toString());
 				}
 				res.setData(release.getReleaseNumber() + "");
 
