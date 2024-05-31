@@ -303,7 +303,7 @@ public class WebServiceController extends BaseController {
 
 				releaseService.save(release, "-1");
 			} else {
-				releaseService.save(release, releaseWs.getRequirementName());
+				releaseService.save(release, idRequeriment.toString());
 			}
 			res.setData(release.getReleaseNumber() + "");
 			String basePath = env.getProperty("fileStore.path");
