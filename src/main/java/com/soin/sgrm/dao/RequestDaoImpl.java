@@ -63,6 +63,33 @@ public class RequestDaoImpl implements RequestDao {
 		}
 		return null;
 	}
+	
+	@Override
+	public Integer idRequeriment(String codeSoin,String codeICE) throws SQLException {
+
+
+		Session sessionObj = null;
+		String sql = "";
+		try {
+			sessionObj = sessionFactory.openSession();
+			sql = String.format(
+					"SELECT ID FROM REQUERIMIENTOS_REQUERIMIENTO WHERE CODIGO_SOIN=:codeSoin AND CODIGO_ICE=:codeICE ",
+					 codeSoin , codeICE);
+
+			SQLQuery query = (SQLQuery) sessionObj.createSQLQuery(sql)
+					.addScalar("ID", StandardBasicTypes.INTEGER)
+					.setParameter("codeSoin", codeSoin)
+	                .setParameter("codeICE", codeICE);
+			Integer id = (Integer) query.uniqueResult();
+			return id;
+
+		} catch (Exception e) {
+			Sentry.capture(e, "idRequest");
+		} finally {
+			sessionObj.close();
+		}
+		return null;
+	}
 
 	@Override
 	public Request findById(Integer id) {
