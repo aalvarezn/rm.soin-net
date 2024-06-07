@@ -167,16 +167,16 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 	@Override
 	public JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength,
 			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,
-			List<Integer> listIdRelease, Integer userId) throws SQLException, ParseException {
+			List<Integer> listIdRelease, Integer userId,Object[] systemIds) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, listIdRelease, userId);
+				systemId, statusId, listIdRelease, userId,systemIds);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, listIdRelease,userId);
+				systemId, statusId, listIdRelease,userId,systemIds);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -192,7 +192,7 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 
 	@SuppressWarnings("unchecked")
 	private Criteria criteriaByWorkFlow(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,List<Integer> listIdRelease, Integer userId)
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,List<Integer> listIdRelease, Integer userId,Object[] systemIds)
 			throws ParseException {
 		List<String> fetchs = new ArrayList<String>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFRelease.class);
@@ -205,9 +205,15 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 			crit.createAlias("node", "node");
 			crit.createAlias("node.workFlow", "workFlow");
 			crit.createAlias("node.workFlow.type", "type");
-
-			
+			List<Integer> listIdSystem=new ArrayList<Integer>();
+			if(!listIdRelease.isEmpty()) {
 			crit.add(Restrictions.in("id",listIdRelease));
+			}else {
+				
+				for(Object system: systemIds ) {
+					listIdSystem.add((Integer) system);
+				}
+			}
 			if (filtred != null) {
 				crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
 			}
@@ -237,10 +243,12 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 			}
 			if (systemId != 0) {
 				crit.add(Restrictions.eq("system.id", systemId));
+			}else {
+				if(listIdRelease.isEmpty()) {
+					crit.add(Restrictions.in("system.id", listIdSystem));
+				}
 			}
-			if (statusId != 0) {
-				crit.add(Restrictions.eq("status.id", statusId));
-			}
+	
 			fetchs.add("node");
 			fetchs.add("workFlow");
 			fetchs.add("type");
@@ -263,7 +271,7 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 
 
 	@Override
-	public Integer countByType(String group,List<Integer> listIdRelease,Integer userId) {
+	public Integer countByType(String group,List<Integer> listIdRelease,Integer userId,Object[] systemIds) {
 	
 
 			Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFRelease.class);
@@ -273,7 +281,16 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 			crit.createAlias("workFlow.type", "type");
 			crit.add(Restrictions.eq("type.id", 1));
 			crit.add(Restrictions.isNotNull("node"));
-			crit.add(Restrictions.in("id", listIdRelease));
+			List<Integer> listIdSystem=new ArrayList<Integer>();
+			for(Object system: systemIds ) {
+				listIdSystem.add((Integer) system);
+			}
+			if(!listIdRelease.isEmpty()) {
+				crit.add(Restrictions.in("id", listIdRelease));
+			}else {
+				crit.add(Restrictions.in("system.id", listIdSystem));
+			}
+			
 			crit.add(Restrictions.eq("node.group", group));
 			List<String> fetchs = new ArrayList<String>();
 
