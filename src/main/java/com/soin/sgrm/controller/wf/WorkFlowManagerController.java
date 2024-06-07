@@ -126,13 +126,15 @@ public class WorkFlowManagerController extends BaseController {
 			RedirectAttributes redirectAttributes) {
 		try {
 			String name = getUserLogin().getUsername();
+			Integer idUser=getUserLogin().getId();
 			Object[] systemIds = systemService.myTeams(name);
+			List<Integer> listIdRelease =releaseService.findByIdManager(idUser);
 			model.addAttribute("system", new SystemUser());
 			model.addAttribute("systems", systemService.listSystemUserByIds(systemIds));
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
 			model.addAttribute("errors", errorReleaseService.findAll());
-			loadCountsRelease(request, systemIds, getUserLogin().getId());
+			loadCountsRelease(request, listIdRelease, getUserLogin().getId());
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
 			redirectAttributes.addFlashAttribute("data",
@@ -822,11 +824,11 @@ public class WorkFlowManagerController extends BaseController {
 		request.setAttribute("wfCount", wfCount);
 	}
 
-	public void loadCountsRelease(HttpServletRequest request, Object[] systemIds, Integer idUser) {
+	public void loadCountsRelease(HttpServletRequest request, List<Integer> listIdRelease, Integer idUser) {
 		Map<String, Integer> wfCount = new HashMap<String, Integer>();
-		wfCount.put("start", wfReleaseService.countByType("start", systemIds, idUser));
-		wfCount.put("action", wfReleaseService.countByType("action", systemIds, idUser));
-		wfCount.put("finish", wfReleaseService.countByType("finish", systemIds, idUser));
+		wfCount.put("start", wfReleaseService.countByType("start", listIdRelease, idUser));
+		wfCount.put("action", wfReleaseService.countByType("action", listIdRelease, idUser));
+		wfCount.put("finish", wfReleaseService.countByType("finish", listIdRelease, idUser));
 		wfCount.put("all", (wfCount.get("start") + wfCount.get("action") + wfCount.get("finish")));
 		request.setAttribute("wfCount", wfCount);
 	}
