@@ -37,6 +37,7 @@ import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.RequestFast;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
@@ -115,6 +116,8 @@ public class WorkFlowManagerController extends BaseController {
 	private RFCService rfcService;
 	@Autowired
 	private RequestNewService requestNewService;
+	@Autowired
+	private RequestService requestService;
 	@Autowired
 	private TypeRequestService typeRequestService;
 
@@ -305,15 +308,17 @@ public class WorkFlowManagerController extends BaseController {
 			String range = request.getParameter("dateRange");
 			String[] dateRange = (range != null) ? range.split("-") : null;
 			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
-			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
+			Integer statusId = Integer.parseInt(request.getParameter("statusId")); 
 
 			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
 			Integer idUser = getUserLogin().getId();
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+		
+			List<Integer> listIdRelease =releaseService.findByIdManager(idUser);
 			return wfReleaseService.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
-					dateRange, systemId, statusId, systemService.myTeams(name), idUser);
+					dateRange, systemId, statusId, listIdRelease, idUser);
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());

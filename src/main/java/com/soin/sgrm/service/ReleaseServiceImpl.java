@@ -383,4 +383,10 @@ public class ReleaseServiceImpl implements ReleaseService {
 	public String getLastStatusHistory(Integer releaseId) {
 		return dao.getLastStatusHistory(releaseId);
 	}
+
+	@Override
+	public List<Integer> findByIdManager(Integer idUser) {
+		
+		return dao.findByIdManager(idUser);
+	}
 }

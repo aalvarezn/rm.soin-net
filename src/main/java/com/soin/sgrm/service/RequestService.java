@@ -35,6 +35,4 @@ public interface RequestService {
 
 	Integer findIDRequeriment(String codeSoin, String codeIce) throws SQLException;
 
-
-
 }

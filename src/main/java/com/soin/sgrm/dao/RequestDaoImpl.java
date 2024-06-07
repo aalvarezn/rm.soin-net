@@ -162,4 +162,5 @@ public class RequestDaoImpl implements RequestDao {
 		return (Request) crit.uniqueResult();
 	}
 
+
 }

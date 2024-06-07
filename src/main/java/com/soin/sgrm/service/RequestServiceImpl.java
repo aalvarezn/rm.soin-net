@@ -85,6 +85,8 @@ public class RequestServiceImpl implements RequestService {
 		return dao.idRequeriment(codeSoin, codeIce);
 	}
 
+	
+
 
 
 }
