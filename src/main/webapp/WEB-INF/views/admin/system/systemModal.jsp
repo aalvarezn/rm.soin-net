@@ -47,10 +47,10 @@
 									<label for="name">Código</label>
 									<div class="form-group">
 										<div class="form-line">
-											<input type="text" maxlength="10" class="form-control"
+											<input type="text" maxlength="20" class="form-control"
 												id="code" name="code" placeholder="Ingrese un código"
 												style="height: 49px;">
-											<div class="help-info">Máx. 10 caracteres</div>
+											<div class="help-info">Máx. 20 caracteres</div>
 										</div>
 										<label id="code_error" class="error fieldError" for="name"
 											style="visibility: hidden">Campo Requerido.</label>

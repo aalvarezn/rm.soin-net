@@ -649,7 +649,7 @@ function initSigesFormValidation() {
 			'sCode' : {
 				required : true,
 				minlength : 1,
-				maxlength : 10,
+				maxlength : 20,
 				remote: {
                     url: getCont() + "/request/sysName", // URL para
 															// verificar la
