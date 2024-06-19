@@ -20,8 +20,10 @@ import com.soin.sgrm.utils.Constant;
 public class TypeAmbient implements Serializable {
 
 	@Id
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	@Column(name = "ID")
-	private int id;
+	private Integer id;
 
 	@Column(name = "NOMBRE")
 	@NotEmpty(message = Constant.EMPTY)
@@ -32,11 +34,11 @@ public class TypeAmbient implements Serializable {
 	@NotEmpty(message = Constant.EMPTY)
 	private String description;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

@@ -6,7 +6,11 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
@@ -183,4 +187,22 @@ public class CommonUtils {
 		
 
 	}
+	  public static String combinedEmails(String cadena1, String cadena2) {
+	        // Dividir las cadenas en arrays
+	        String[] correosArray1 = cadena1.split(",");
+	        String[] correosArray2 = cadena2.split(",");
+
+	        // Combinar ambos arrays usando un Set para eliminar duplicados
+	        Set<String> combinados = new HashSet<>();
+	        combinados.addAll(Arrays.asList(correosArray1));
+	        combinados.addAll(Arrays.asList(correosArray2));
+
+	        // Convertir de vuelta a cadena
+	        StringJoiner joiner = new StringJoiner(",");
+	        for (String correo : combinados) {
+	            joiner.add(correo);
+	        }
+
+	        return joiner.toString();
+	    }
 }
