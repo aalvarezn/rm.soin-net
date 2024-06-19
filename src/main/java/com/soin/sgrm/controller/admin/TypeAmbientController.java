@@ -71,6 +71,7 @@ public class TypeAmbientController extends BaseController {
 				res.setStatus("fail");
 			}
 			if (res.getStatus().equals("success")) {
+				typeAmbient.setId(null);
 				typeAmbientService.save(typeAmbient);
 				res.setObj(typeAmbient);
 			}

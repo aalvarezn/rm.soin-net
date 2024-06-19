@@ -44,7 +44,7 @@ public class System implements Serializable {
 
 	@Column(name = "CODIGO")
 	@NotEmpty(message = Constant.EMPTY)
-	@Size(max = 10, message = "Máximo 10 caracteres.")
+	@Size(max = 20, message = "Máximo 20 caracteres.")
 	private String code;
 
 	@Column(name = "NOMBRE")

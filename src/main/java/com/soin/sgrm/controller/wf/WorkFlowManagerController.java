@@ -37,6 +37,7 @@ import com.soin.sgrm.model.Release_RFC;
 import com.soin.sgrm.model.Release_RFCFast;
 import com.soin.sgrm.model.Releases_WithoutObj;
 import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.RequestFast;
 import com.soin.sgrm.model.Status;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.System;
@@ -116,6 +117,8 @@ public class WorkFlowManagerController extends BaseController {
 	@Autowired
 	private RequestNewService requestNewService;
 	@Autowired
+	private RequestService requestService;
+	@Autowired
 	private TypeRequestService typeRequestService;
 
 	@RequestMapping(value = "/release/", method = RequestMethod.GET)
@@ -123,13 +126,15 @@ public class WorkFlowManagerController extends BaseController {
 			RedirectAttributes redirectAttributes) {
 		try {
 			String name = getUserLogin().getUsername();
+			Integer idUser=getUserLogin().getId();
 			Object[] systemIds = systemService.myTeams(name);
+			List<Integer> listIdRelease =releaseService.findByIdManager(idUser);
 			model.addAttribute("system", new SystemUser());
 			model.addAttribute("systems", systemService.listSystemUserByIds(systemIds));
 			model.addAttribute("status", new Status());
 			model.addAttribute("statuses", statusService.list());
 			model.addAttribute("errors", errorReleaseService.findAll());
-			loadCountsRelease(request, systemIds, getUserLogin().getId());
+			loadCountsRelease(request, listIdRelease, getUserLogin().getId(),systemIds);
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
 			redirectAttributes.addFlashAttribute("data",
@@ -305,15 +310,18 @@ public class WorkFlowManagerController extends BaseController {
 			String range = request.getParameter("dateRange");
 			String[] dateRange = (range != null) ? range.split("-") : null;
 			Integer systemId = Integer.parseInt(request.getParameter("systemId"));
-			Integer statusId = Integer.parseInt(request.getParameter("statusId"));
+			Integer statusId = Integer.parseInt(request.getParameter("statusId")); 
 
 			String name = getUserLogin().getUsername(), sSearch = request.getParameter("sSearch");
+			Object[] systemIds = systemService.myTeams(name);
 			Integer idUser = getUserLogin().getId();
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+		
+			List<Integer> listIdRelease =releaseService.findByIdManager(idUser);
 			return wfReleaseService.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
-					dateRange, systemId, statusId, systemService.myTeams(name), idUser);
+					dateRange, systemId, statusId, listIdRelease, idUser,systemIds);
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManager");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -817,11 +825,11 @@ public class WorkFlowManagerController extends BaseController {
 		request.setAttribute("wfCount", wfCount);
 	}
 
-	public void loadCountsRelease(HttpServletRequest request, Object[] systemIds, Integer idUser) {
+	public void loadCountsRelease(HttpServletRequest request, List<Integer> listIdRelease, Integer idUser, Object[] systemIds ) {
 		Map<String, Integer> wfCount = new HashMap<String, Integer>();
-		wfCount.put("start", wfReleaseService.countByType("start", systemIds, idUser));
-		wfCount.put("action", wfReleaseService.countByType("action", systemIds, idUser));
-		wfCount.put("finish", wfReleaseService.countByType("finish", systemIds, idUser));
+		wfCount.put("start", wfReleaseService.countByType("start", listIdRelease, idUser,systemIds));
+		wfCount.put("action", wfReleaseService.countByType("action", listIdRelease, idUser,systemIds));
+		wfCount.put("finish", wfReleaseService.countByType("finish", listIdRelease, idUser,systemIds));
 		wfCount.put("all", (wfCount.get("start") + wfCount.get("action") + wfCount.get("finish")));
 		request.setAttribute("wfCount", wfCount);
 	}

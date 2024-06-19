@@ -140,10 +140,11 @@ function showSendEmail(){
 		}
 		});
 }
-function changeStatusRequest(requestId, requestNumRequest,cc) {
+function changeStatusRequest(requestId, requestNumRequest,ccs) {
 	$formChangeStatus[0].reset();
 	$formChangeStatus.find('#idRequest').val(requestId);
-	$('.tagInitMail#senders').importTags(cc ? cc : "" );
+	console.log(ccs);
+	$('.tagInitMail#senders').importTags(ccs ? ccs : "" );
 	$formChangeStatus.find('#requestNumRequest').val(requestNumRequest);
     $formChangeStatus.find('#note').val("");
 	$formChangeStatus.find('.selectpicker').selectpicker('refresh');

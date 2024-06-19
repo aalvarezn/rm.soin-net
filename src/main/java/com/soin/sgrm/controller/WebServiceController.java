@@ -217,16 +217,21 @@ public class WebServiceController extends BaseController {
 			userInfo = loginService.getUserByUsername("admin");
 		}
 		user.setId(userInfo.getId());
-
+		Integer idRequeriment=0;
 		try {
 			res.setStatus("success");
 
 			if (!releaseWs.getRequirement().equals("TPO/BT")) {
+				
 				number_release = releaseService.generateReleaseNumber(releaseWs.getRequirement(),
 						releaseWs.getRequirementName().toUpperCase(), releaseWs.getSystem());
 			} else {
+				String [] codes= releaseWs.getRequirementName().split("_");
+				String codeSoin=codes[0].trim();
+				String codeIce=codes[1].trim();
+				 idRequeriment =requestService.findIDRequeriment(codeSoin,codeIce);
 				number_release = releaseService.generateTPO_BT_ReleaseNumber(releaseWs.getSystem(),
-						releaseWs.getRequirementName().toUpperCase());
+						idRequeriment.toString());
 			}
 			Status status = statusService.findByName("Borrador");
 			String systemModule = releaseWs.getSystem();
@@ -295,9 +300,10 @@ public class WebServiceController extends BaseController {
 				release.setOperative_support("SO-ICE" + releaseWs.getRequirementName());
 
 			if (!releaseWs.getRequirement().equals("TPO/BT")) {
+
 				releaseService.save(release, "-1");
 			} else {
-				releaseService.save(release, releaseWs.getRequirementName());
+				releaseService.save(release, idRequeriment.toString());
 			}
 			res.setData(release.getReleaseNumber() + "");
 			String basePath = env.getProperty("fileStore.path");
