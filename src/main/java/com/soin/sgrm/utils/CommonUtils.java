@@ -190,25 +190,30 @@ public class CommonUtils {
 
 	}
 	  public static String combinedEmails(String cadena1, String cadena2) {
+	        // Manejar casos donde las cadenas son null
+	        if (cadena1 == null) {
+	            cadena1 = "";
+	        }
+	        if (cadena2 == null) {
+	            cadena2 = "";
+	        }
+
 	        // Dividir las cadenas en arrays
-		  	if(cadena1==null) {
-		  		cadena1="";
-		  	}
-		  	if(cadena2==null) {
-		  		cadena2="";
-		  	}
 	        String[] correosArray1 = cadena1.split(",");
 	        String[] correosArray2 = cadena2.split(",");
 
-	        // Combinar ambos arrays usando un Set para eliminar duplicados
+	        // Crear un Set para combinar y eliminar duplicados
 	        Set<String> combinados = new HashSet<>();
 	        combinados.addAll(Arrays.asList(correosArray1));
 	        combinados.addAll(Arrays.asList(correosArray2));
 
+	        // Filtrar entradas vacías
+	        combinados.removeIf(String::isEmpty);
+
 	        // Convertir de vuelta a cadena
 	        StringJoiner joiner = new StringJoiner(",");
 	        for (String correo : combinados) {
-	            joiner.add(correo);
+	            joiner.add(correo.trim()); // Eliminar espacios en blanco alrededor
 	        }
 
 	        return joiner.toString();
