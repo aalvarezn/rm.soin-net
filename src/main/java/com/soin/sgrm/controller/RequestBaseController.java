@@ -2,12 +2,14 @@ package com.soin.sgrm.controller;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -63,6 +65,8 @@ import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyError;
 import com.soin.sgrm.utils.MyLevel;
+
+import antlr.Utils;
 
 @Controller
 @RequestMapping(value = "/request")
@@ -322,7 +326,7 @@ public class RequestBaseController extends BaseController {
 				Set<User> managersNews = new HashSet<>();
 				User manager= new User();
 				manager.setId(getUserLogin().getId());
-				managersNews.add(leader);
+				managersNews.add(manager);
 				
 				addSystem.checkManagersExists(managersNews);
 				systemService.saveAndSiges(addSystem);
@@ -520,7 +524,7 @@ public class RequestBaseController extends BaseController {
 			if (requestEdit == null) {
 				return "/plantilla/404";
 			}
-
+			
 			if (!requestEdit.getStatus().getName().equals("Borrador")) {
 				redirectAttributes.addFlashAttribute("data", "Solicitud no disponible para editar.");
 				String referer = request.getHeader("Referer");
@@ -900,6 +904,8 @@ public class RequestBaseController extends BaseController {
 
 			List<Errors_Requests> errors = errorService.findAll();
 			model.addAttribute("errors", errors);
+			String ccs=CommonUtils.combinedEmails(requestEdit.getTypePetition().getEmailTemplate().getCc(),requestEdit.getSenders());
+			model.addAttribute("ccs",ccs );
 			if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
 				model.addAttribute("request", requestEdit);
 				RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
@@ -960,6 +966,7 @@ public class RequestBaseController extends BaseController {
 		return "/rfc/summaryRFC";
 	}
 
+  
 	public ArrayList<MyError> validSections(RequestRM_P1_R1 request, ArrayList<MyError> errors) {
 
 		if (request.getTimeAnswer() == "" || request.getTimeAnswer() == null) {
