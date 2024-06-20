@@ -191,6 +191,12 @@ public class CommonUtils {
 	}
 	  public static String combinedEmails(String cadena1, String cadena2) {
 	        // Dividir las cadenas en arrays
+		  	if(cadena1==null) {
+		  		cadena1="";
+		  	}
+		  	if(cadena2==null) {
+		  		cadena2="";
+		  	}
 	        String[] correosArray1 = cadena1.split(",");
 	        String[] correosArray2 = cadena2.split(",");
 
