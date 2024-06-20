@@ -1296,8 +1296,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 		}
-		ccUserFinal=CommonUtils.combinedEmails(ccUserFinal, requestEmail.getSenders());
+
 		for (String ccUser : ccUserFinal.split(",")) {
+			
 			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 		}
 
@@ -2244,6 +2245,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			ccs=CommonUtils.combinedEmails(ccs,user.getEmail());
 			
 			for (String ccUser : ccs.split(",")) {
+				if(!userEmailRequest.equals(ccUser))
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 			}
 			
@@ -2342,6 +2344,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			String ccs=CommonUtils.combinedEmails(senders,email.getCc());
 			ccs=CommonUtils.combinedEmails(ccs,email.getTo());
 			for (String ccUser : ccs.split(",")) {
+				if(!ccUser.equals(emailUserRequest))
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 			}
 
