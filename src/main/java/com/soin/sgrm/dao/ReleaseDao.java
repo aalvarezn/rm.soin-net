@@ -120,6 +120,5 @@ public interface ReleaseDao {
 
 	List<Integer> findByIdManager(Integer idUser);
 
-	
 
 }

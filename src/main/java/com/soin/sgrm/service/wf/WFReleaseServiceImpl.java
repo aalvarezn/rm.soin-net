@@ -62,4 +62,10 @@ public class WFReleaseServiceImpl implements WFReleaseService {
 		
 	}
 
+	@Override
+	public void updateReleaseNode(WFRelease release) throws Exception {
+		dao.updateReleaseNode(release);
+		
+	}
+
 }

@@ -24,4 +24,6 @@ public interface WFReleaseService {
 	Integer countByType(String group, List<Integer> listIdRelease, Integer idUser, Object[] systemIds);
 
 	void wfStatusReleaseWithOutMin(WFRelease release);
+
+	void updateReleaseNode(WFRelease release) throws Exception;
 }
