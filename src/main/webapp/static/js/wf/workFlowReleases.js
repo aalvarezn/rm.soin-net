@@ -139,6 +139,11 @@ function loadTableRelease() {
 							{
 								mRender : function(data, type, row) {
 									var options = '<div class="iconLine"> ';
+									
+									if(row.node != null) {
+										options = options
+										+ '<a onclick="confirmCancelWorkFlow('+row.id+')" title="Eliminar trámite"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
+									}
 									options = options
 									+ '<a onclick="changeStatusRelease('+row.id+')" title="Trámite"><i class="material-icons gris" style="font-size: 25px;">fact_check</i></a>';
 									options = options
@@ -162,9 +167,9 @@ function loadTableRelease() {
 					});
 }
 
-function confirmCancelRelease(index){
+function confirmCancelWorkFlow(index){
 	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea cancelar el release?',
+		title: '\u00BFEst\u00e1s seguro que desea eliminar el tramite?',
 		text: "Esta acci\u00F3n no se puede reversar.",
 		icon: 'question',
 		showCancelButton: true,
@@ -180,11 +185,13 @@ function confirmCancelRelease(index){
 	});
 }
 
+
+
 function cancelRelease(index) {
 	blockUI();
 	$.ajax({
 		type : "GET",
-		url : getCont() + "management/release/" + "cancelRelease",
+		url : getCont() + "management/wf/" + "cancelWorflow",
 		timeout : 60000,
 		data : {
 			idRelease : index
@@ -201,7 +208,7 @@ function cancelRelease(index) {
 function responseCancelRelease(response) {
 	switch (response.status) {
 	case 'success':
-		swal("Correcto!", "El release ha sido anulado exitosamente.",
+		swal("Correcto!", "El tramite ha sido eliminado exitosamente.",
 				"success", 2000)
 				releaseTable.ajax.reload();
 		break;
