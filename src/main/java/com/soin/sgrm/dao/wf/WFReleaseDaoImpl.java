@@ -162,7 +162,24 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 		}
 
 	}
+	@Override
+	public void updateReleaseNode(WFRelease releaseEdit) throws Exception {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+			sessionObj.update(releaseEdit);
 
+			transObj.commit();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
+	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength,
