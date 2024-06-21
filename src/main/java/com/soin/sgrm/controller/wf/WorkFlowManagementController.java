@@ -29,6 +29,7 @@ import com.soin.sgrm.model.Errors_Release;
 import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.RFCError;
 import com.soin.sgrm.model.RFC_WithoutRelease;
+import com.soin.sgrm.model.ReleaseEdit;
 import com.soin.sgrm.model.ReleaseError;
 import com.soin.sgrm.model.ReleaseTracking;
 import com.soin.sgrm.model.ReleaseTrackingShow;
@@ -716,6 +717,29 @@ public class WorkFlowManagementController extends BaseController {
 			Sentry.capture(e, "node");
 			res.setStatus("exception");
 			res.setException("Error al procesar consulta: " + e.toString());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	
+	@RequestMapping(value = "/cancelWorflow", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse cancelRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "idRelease", required = true) Integer idRelease) {
+		JsonResponse res = new JsonResponse();
+		try {
+			WFRelease release = wfReleaseService.findWFReleaseById(idRelease);
+			release.setNode(null);
+			wfReleaseService.updateReleaseNode(release);
+			res.setStatus("success");
+
+		} catch (SQLException ex) {
+			Sentry.capture(ex, "releaseManagement");
+			res.setStatus("exception");
+			res.setException("Problemas de conexión con la base de datos, favor intente más tarde.");
+		} catch (Exception e) {
+			Sentry.capture(e, "releaseManagement");
+			res.setStatus("exception");
+			res.setException("Error al cancelar el release: " + e.getMessage());
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
