@@ -147,7 +147,7 @@ public class RequestController extends BaseController {
 		return res;
 	}
 
-	@RequestMapping(value = "/updateRequest/", method = RequestMethod.POST)
+	@RequestMapping(value = "/updateRequest", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateRequest(HttpServletRequest req,
 			@Valid @ModelAttribute("Request") Request request, BindingResult errors, ModelMap model, Locale locale,
 			HttpSession session) {
@@ -248,6 +248,7 @@ public class RequestController extends BaseController {
 				}
 				syncTPOsSupport(configs, type, requestService.listByType(type));
 			});
+			
 			Thread syncTPOsMonthly = new Thread(() -> {
 				TypeRequest type = null;
 				for (TypeRequest typeRequest : typeRequests) {
@@ -256,6 +257,7 @@ public class RequestController extends BaseController {
 				}
 				syncTPOsMonthly(configs, type, requestService.listByType(type));
 			});
+			
 			Thread syncBTs = new Thread(() -> {
 				TypeRequest type = null;
 				for (TypeRequest typeRequest : typeRequests) {
@@ -480,12 +482,18 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (Request req : requests) {
-								if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())) {
-									request = req;
-									existRequest = true;
+							try {
+								for (Request req : requests) {
+									if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())) {
+										request = req;
+										existRequest = true;
+									}
 								}
+							}catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
+						
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new Request() : request;
