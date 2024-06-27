@@ -142,7 +142,7 @@ function loadTableRelease() {
 									
 									if(row.node != null) {
 										options = options
-										+ '<a onclick="confirmCancelWorkFlow('+row.id+')" title="Eliminar trámite"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
+										+ '<a onclick="confirmCancelWorkFlow('+row.id+')" title="Eliminar tramite"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
 									}
 									options = options
 									+ '<a onclick="changeStatusRelease('+row.id+')" title="Trámite"><i class="material-icons gris" style="font-size: 25px;">fact_check</i></a>';
