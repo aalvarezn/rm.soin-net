@@ -163,7 +163,7 @@ public class HibernateConfiguration {
 			}
 		} else {
 			// --- qa ---
-			if (path.contains("sgrm_qa")) {
+			if (path.contains("sgrm_qa_post")) {
 				DataSource dataSource;
 				try {
 					dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_qa_pos");
@@ -173,7 +173,7 @@ public class HibernateConfiguration {
 				}
 
 			} else {
-				if (path.contains("sgrm_demos")) {
+				if (path.contains("sgrm_demos_post")) {
 					DataSource dataSource;
 					try {
 						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_demos_pos");
@@ -186,7 +186,7 @@ public class HibernateConfiguration {
 					// --- desa ---
 					DataSource dataSource;
 					try {
-						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgm_desa_pos");
+						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_desa_pos");
 						return dataSource;
 					} catch (NamingException e) {
 						Sentry.capture(e, "hibernate");
