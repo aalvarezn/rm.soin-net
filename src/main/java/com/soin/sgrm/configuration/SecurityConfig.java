@@ -25,18 +25,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/static/**").permitAll().antMatchers("/admin/**", "/info/")
-				.hasRole("Admin").antMatchers("/management/**", "/info/")
-				.hasRole("Release Manager")
-				.antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel" ,"/ws/**").permitAll().anyRequest()
-				.hasRole("Gestores").antMatchers("/manager/**").permitAll().anyRequest()
-				.authenticated().and().formLogin().loginPage("/login").failureUrl("/login?error=true")
-				.defaultSuccessUrl("/successLogin").permitAll().and().logout()// default logout handling
-				.logoutSuccessUrl("/login")// our new logout success url, we are not replacing other defaults.
-				.permitAll().and().headers().frameOptions().sameOrigin();
-		
-		http.csrf().ignoringAntMatchers("/ws/**");
-		http.csrf().ignoringAntMatchers("/manager/**");
+	    http.authorizeRequests()
+	        // Permitir acceso a recursos estáticos
+	        .antMatchers("/static/**").permitAll()
+	        // Configurar accesos por roles
+	        .antMatchers("/admin/**", "/info/").hasRole("Admin")
+	        .antMatchers("/management/**", "/info/").hasRole("Release Manager")
+	        .antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel", "/ws/**").permitAll()
+	        .antMatchers("/manager/**").permitAll()  // Asegurar que las reglas específicas van antes de `anyRequest`
+	        .anyRequest().hasRole("Gestores")  // Aplicar rol específico
+	        .and()
+	        // Configuración de inicio de sesión
+	        .formLogin()
+	            .loginPage("/login")
+	            .failureUrl("/login?error=true")
+	            .defaultSuccessUrl("/successLogin", true)  // Redirigir siempre al éxito, manejando redirección cíclica
+	            .permitAll()
+	        .and()
+	        // Configuración de cierre de sesión
+	        .logout()
+	            .logoutSuccessUrl("/login")
+	            .permitAll()
+	        .and()
+	        // Configuración de encabezados
+	        .headers()
+	            .frameOptions().sameOrigin()
+	        .and()
+	        // Configuración de CSRF
+	        .csrf()
+	            .ignoringAntMatchers("/ws/**", "/manager/**");  // Combinar antMatchers para ignorar CSRF
 	}
 	@Autowired
 	public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
