@@ -303,7 +303,7 @@ function deleteRequest(element) {
 	var cont = getCont();
 	$.ajax({
 		type : "DELETE",
-		url : cont + "request/" + "deleteRequest /" + element,
+		url : cont + "request/" + "deleteRequest/" + element,
 		timeout : 60000,
 		data : {},
 		success : function(response) {

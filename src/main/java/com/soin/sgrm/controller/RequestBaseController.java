@@ -884,7 +884,32 @@ public class RequestBaseController extends BaseController {
 
 		return "redirect:/homeRequest";
 	}
+	@RequestMapping(value = "/deleteRequest/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteRequest(@PathVariable Long id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			RequestBase requestBase = requestBaseService.findById(id);
+			if (requestBase.getStatus().getName().equals("Borrador")) {
 
+				StatusRequest status = statusService.findByKey("name", "Anulado");
+				requestBase.setStatus(status);
+				requestBase.setMotive(status.getReason());
+				requestBase.setOperator(getUserLogin().getFullName());
+				requestBaseService.update(requestBase);
+
+			} else {
+				res.setStatus("fail");
+				res.setException("La acción no se pudo completar, la solicitud no esta en estado de Borrador.");
+			}
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			res.setStatus("exception");
+			res.setException("La acción no se pudo completar correctamente.");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
 	@RequestMapping(value = "/summaryRequest-{id}", method = RequestMethod.GET)
 	public String summmary(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,
 			HttpSession session, RedirectAttributes redirectAttributes) throws SQLException {
