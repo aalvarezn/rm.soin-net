@@ -72,11 +72,11 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	void sendMailIncidence(WFIncidence incidenceEmail, EmailTemplate email, String motive);
 
 	void sendMailNotifyChangeStatus(String numRequest, String type, String statusName, String operator,
-			Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate emailNotify,String subject, String motive, String note, String title);
+			Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate emailNotify,String subject, String motive, String note, String title, String email);
 
 	void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
 			String operator, Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate emailNotify,String subject,
-			String motive, String note, String title);
+			String motive, String note, String title, String email);
 
 	void sendMailNotifyChangeUserIncidence(String numTicket, User userOperator, String motive, Timestamp timestamp,
 			User newUser, EmailTemplate emailNotify);

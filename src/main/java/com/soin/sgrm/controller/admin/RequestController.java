@@ -231,7 +231,7 @@ public class RequestController extends BaseController {
 		return res;
 	}
 
-	@RequestMapping(value = "/updateRequest", method = RequestMethod.POST)
+	@RequestMapping(value = "/updateRequest/", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse updateRequest(HttpServletRequest req,
 			@Valid @ModelAttribute("Request") Request request, BindingResult errors, ModelMap model, Locale locale,
 			HttpSession session) {

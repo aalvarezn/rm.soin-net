@@ -551,7 +551,7 @@ public class RequestBaseController extends BaseController {
 					Set<User> managersNews = new HashSet<>();
 					User manager = new User();
 					manager.setId(getUserLogin().getId());
-					managersNews.add(leader);
+					managersNews.add(manager);
 
 					addSystem.checkManagersExists(managersNews);
 					systemService.saveAndSiges(addSystem);
@@ -902,6 +902,50 @@ public class RequestBaseController extends BaseController {
 		}
 		return res;
 	}
+	
+	@RequestMapping(value = "/deleteRequest/{id}", method = RequestMethod.DELETE)
+	public @ResponseBody JsonResponse deleteRequest(@PathVariable Long id, Model model) {
+		JsonResponse res = new JsonResponse();
+		try {
+			res.setStatus("success");
+			if (profileActive().equals("oracle")) {
+				RequestBase requestBase = requestBaseService.findById(id);
+				if (requestBase.getStatus().getName().equals("Borrador")) {
+
+					StatusRequest status = statusService.findByKey("name", "Anulado");
+					requestBase.setStatus(status);
+					requestBase.setMotive(status.getReason());
+					requestBase.setOperator(getUserLogin().getFullName());
+					requestBaseService.update(requestBase);
+
+				} else {
+					res.setStatus("fail");
+					res.setException("La acción no se pudo completar, la solicitud no esta en estado de Borrador.");
+				}
+			} else if (profileActive().equals("postgres")) {
+				PRequestBase requestBase = prequestBaseService.findById(id);
+				if (requestBase.getStatus().getName().equals("Borrador")) {
+					PStatusRequest status = pstatusService.findByKey("name", "Anulado");
+					requestBase.setStatus(status);
+					requestBase.setMotive(status.getReason());
+					requestBase.setOperator(getUserLogin().getFullName());
+					prequestBaseService.update(requestBase);
+
+				} else {
+					res.setStatus("fail");
+					res.setException("La acción no se pudo completar, la solicitud no esta en estado de Borrador.");
+				}
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			res.setStatus("exception");
+			res.setException("La acción no se pudo completar correctamente.");
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+
 
 	@RequestMapping(value = "/tiny/{id}", method = RequestMethod.GET)
 	public String indexSumm(@PathVariable Long id, HttpServletRequest request, Locale locale, Model model,

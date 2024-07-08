@@ -139,8 +139,12 @@ function loadTableRelease() {
 							{
 								mRender : function(data, type, row) {
 									var options = '<div class="iconLine"> ';
+									if(row.node != null) {
+										options = options
+										+ '<a onclick="confirmCancelWorkFlow('+row.id+')" title="Eliminar tramite"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
+									}
 									options = options
-									+ '<a onclick="changeStatusRelease('+row.id+')" title="Trámite"><i class="material-icons gris" style="font-size: 25px;">fact_check</i></a>';
+									+ '<a onclick="changeStatusRelease('+row.id+')" title="Tramite"><i class="material-icons gris" style="font-size: 25px;">fact_check</i></a>';
 									options = options
 									options = options
 									+ '<a onclick="openReleaseTrackingModal('
@@ -161,7 +165,23 @@ function loadTableRelease() {
 							info : true
 					});
 }
-
+function confirmCancelWorkFlow(index){
+	Swal.fire({
+		title: '\u00BFEst\u00e1s seguro que desea eliminar el tramite?',
+		text: "Esta acci\u00F3n no se puede reversar.",
+		icon: 'question',
+		showCancelButton: true,
+		customClass: 'swal-wide',
+		cancelButtonText: 'Cancelar',
+		cancelButtonColor: '#f14747',
+		confirmButtonColor: '#3085d6',
+		confirmButtonText: 'Aceptar',
+	}).then((result) => {
+		if(result.value){
+			cancelRelease(index);
+		}		
+	});
+}
 function confirmCancelRelease(index){
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea cancelar el release?',
@@ -184,7 +204,7 @@ function cancelRelease(index) {
 	blockUI();
 	$.ajax({
 		type : "GET",
-		url : getCont() + "management/release/" + "cancelRelease",
+		url : getCont() + "management/wf/" + "cancelWorflow",
 		timeout : 60000,
 		data : {
 			idRelease : index
@@ -201,7 +221,7 @@ function cancelRelease(index) {
 function responseCancelRelease(response) {
 	switch (response.status) {
 	case 'success':
-		swal("Correcto!", "El release ha sido anulado exitosamente.",
+		swal("Correcto!", "El tramite ha sido eliminado exitosamente.",
 				"success", 2000)
 				releaseTable.ajax.reload();
 		break;
