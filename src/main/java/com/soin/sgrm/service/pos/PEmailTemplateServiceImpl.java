@@ -2179,7 +2179,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	@Override
 	public void sendMailNotifyChangeStatus(String numRequest, String type, String name, String operator,
 			Timestamp requestDate, UserLogin user, String senders, PEmailTemplate email, String subject, String motive,
-			String note, String title) {
+			String note, String title,String emailUserRequest) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -2233,22 +2233,23 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
 
+		
 			String[] split = senders.split(",");
 
 			boolean verify = ArrayUtils.contains(split, user.getEmail());
 			if (!verify) {
 				senders = senders + "," + user.getEmail();
 			}
-			for (String ccUser : senders.split(",")) {
+			
+			String ccs=CommonUtils.combinedEmails(senders,email.getCc());
+			ccs=CommonUtils.combinedEmails(ccs,email.getTo());
+			for (String ccUser : ccs.split(",")) {
+				if(!ccUser.equals(emailUserRequest))
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
-
 			}
 
-			if (email.getCc() != null) {
-				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(email.getCc()));
-			}
-
-			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email.getTo()));
+			mimeMessage.addRecipient(Message.RecipientType.TO,
+					new InternetAddress(emailUserRequest));
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
@@ -2263,7 +2264,7 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 	@Override
 	public void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
 			String operator, Timestamp requestDate, UserLogin userLogin, String senders, PEmailTemplate email,
-			String subject, String motive, String note, String title) {
+			String subject, String motive, String note, String title,String emailUserRequest) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -2328,16 +2329,17 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			if (!verify) {
 				senders = senders + "," + userLogin.getEmail();
 			}
-
-			for (String ccUser : senders.split(",")) {
-
+			
+			String ccs=CommonUtils.combinedEmails(senders,email.getCc());
+			ccs=CommonUtils.combinedEmails(ccs,email.getTo());
+			for (String ccUser : ccs.split(",")) {
+				if(!ccUser.equals(emailUserRequest))
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			}
 
-			}
-			if (email.getCc() != null) {
-				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(email.getCc()));
-			}
-			mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email.getTo()));
+			mimeMessage.addRecipient(Message.RecipientType.TO,
+					new InternetAddress(emailUserRequest));
+
 
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {

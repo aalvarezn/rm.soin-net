@@ -408,7 +408,7 @@ public class RequestBaseManagementController extends BaseController {
 										" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
 										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin,
 										senders, emailNotify, subject, requestBaseNew.getMotive(), note,
-										"RM-P2-R5|Registro evidencia de instalación");
+										"RM-P2-R5|Registro evidencia de instalación",requestBaseNew.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "request");
 							}
@@ -435,7 +435,7 @@ public class RequestBaseManagementController extends BaseController {
 										" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
 										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin,
 										senders, emailNotify, subject, requestBaseNew.getMotive(), note,
-										"RM-P2-R5|Registro evidencia de instalación");
+										"RM-P2-R5|Registro evidencia de instalación",requestBaseNew.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "release");
 							}
@@ -563,7 +563,7 @@ public class RequestBaseManagementController extends BaseController {
 										" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
 										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin,
 										senders, emailNotify, subject, requestBaseNew.getMotive(), note,
-										"RM-P2-R5|Registro evidencia de instalación");
+										"RM-P2-R5|Registro evidencia de instalación",requestBaseNew.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "request");
 							}
@@ -590,7 +590,7 @@ public class RequestBaseManagementController extends BaseController {
 										" de la Solicitud " + requestBaseNew.getTypePetition().getCode(), statusName,
 										requestBaseNew.getOperator(), requestBaseNew.getRequestDate(), userLogin,
 										senders, emailNotify, subject, requestBaseNew.getMotive(), note,
-										"RM-P2-R5|Registro evidencia de instalación");
+										"RM-P2-R5|Registro evidencia de instalación",requestBaseNew.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "release");
 							}

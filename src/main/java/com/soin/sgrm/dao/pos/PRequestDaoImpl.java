@@ -67,6 +67,30 @@ public class PRequestDaoImpl implements PRequestDao {
 		}
 		return null;
 	}
+	@Override
+	public Integer idRequeriment(String codeSoin,String codeICE) throws SQLException {
+
+
+		Session sessionObj = null;
+		String sql = "";
+		try {
+			sessionObj = sessionFactory.openSession();
+			sql = String.format(
+					"select rr.\"ID\"  from \"REQUERIMIENTOS_REQUERIMIENTO\" rr  where rr.\"CODIGO_SOIN\"='%s' and rr.\"CODIGO_ICE\" = '%s'; ",
+					 codeSoin , codeICE);
+
+			SQLQuery query = (SQLQuery) sessionObj.createSQLQuery(sql)
+					.addScalar("ID", StandardBasicTypes.INTEGER);
+			Integer id = (Integer) query.uniqueResult();
+			return id;
+
+		} catch (Exception e) {
+			Sentry.capture(e, "idRequest");
+		} finally {
+			sessionObj.close();
+		}
+		return null;
+	}
 
 	@Override
 	public PRequest findById(Integer id) {

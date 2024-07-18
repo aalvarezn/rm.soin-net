@@ -25,4 +25,6 @@ public interface WFReleaseDao {
 
 	void wfStatusReleaseWithOutMin(WFRelease release);
 
+	void updateReleaseNode(WFRelease release);
+
 }

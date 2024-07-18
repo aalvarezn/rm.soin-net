@@ -476,13 +476,20 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (PRequest req : requests) {
-								if (CommonUtils.equalsWithNulls(row.get(tpoIndex), req.getCode_soin())
-										&& CommonUtils.equalsWithNulls(row.get(idIceIndex), req.getCode_ice())) {
-									request = req;
-									existRequest = true;
+							try {
+								for (PRequest req : requests) {
+									if (CommonUtils.equalsWithNulls(row.get(tpoIndex), req.getCode_soin())
+											&& CommonUtils.equalsWithNulls(row.get(idIceIndex), req.getCode_ice())) {
+										request = req;
+										existRequest = true;
+									}
 								}
+							}catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
+				
+					
 							try {
 								typeRequest = null;
 								// Se obtiene el tipo de requerimiento
@@ -567,6 +574,7 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
+							
 							PRequest req = prequestService.listByTypeAndCodeSoin(type,
 									((String) row.get(tpoIndex)).trim());
 
@@ -652,12 +660,18 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (PRequest req : requests) {
-								if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())) {
-									request = req;
-									existRequest = true;
+							try {
+								for (PRequest req : requests) {
+									if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())) {
+										request = req;
+										existRequest = true;
+									}
 								}
+							}catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
+				
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new PRequest() : request;
@@ -730,13 +744,19 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (PRequest req : requests) {
-								if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())
-										&& (((String) row.get(idIceIndex)).trim()).equals(req.getCode_ice().trim())) {
-									request = req;
-									existRequest = true;
+							try {
+								for (PRequest req : requests) {
+									if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())
+											&& (((String) row.get(idIceIndex)).trim()).equals(req.getCode_ice().trim())) {
+										request = req;
+										existRequest = true;
+									}
 								}
+							}catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
+						
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new PRequest() : request;
@@ -811,12 +831,18 @@ public class RequestController extends BaseController {
 						if (btIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (PRequest req : requests) {
-								if ((((String) row.get(btIndex)).trim()).equals(req.getCode_soin().trim())) {
-									request = req;
-									existRequest = true;
+							try {
+								for (PRequest req : requests) {
+									if ((((String) row.get(btIndex)).trim()).equals(req.getCode_soin().trim())) {
+										request = req;
+										existRequest = true;
+									}
 								}
+							}catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
+						
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new PRequest() : request;
@@ -921,13 +947,19 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (Request req : requests) {
-								if (CommonUtils.equalsWithNulls(row.get(tpoIndex), req.getCode_soin())
-										&& CommonUtils.equalsWithNulls(row.get(idIceIndex), req.getCode_ice())) {
-									request = req;
-									existRequest = true;
+							try {
+								for (Request req : requests) {
+									if (CommonUtils.equalsWithNulls(row.get(tpoIndex), req.getCode_soin())
+											&& CommonUtils.equalsWithNulls(row.get(idIceIndex), req.getCode_ice())) {
+										request = req;
+										existRequest = true;
+									}
 								}
+							}catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
+					
 							try {
 								typeRequest = null;
 								// Se obtiene el tipo de requerimiento
@@ -1097,12 +1129,18 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (Request req : requests) {
-								if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())) {
-									request = req;
-									existRequest = true;
+							try {
+								for (Request req : requests) {
+									if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())) {
+										request = req;
+										existRequest = true;
+									}
 								}
+							}catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
+				
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new Request() : request;
@@ -1178,13 +1216,19 @@ public class RequestController extends BaseController {
 						if (tpoIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (Request req : requests) {
-								if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())
-										&& (((String) row.get(idIceIndex)).trim()).equals(req.getCode_ice().trim())) {
-									request = req;
-									existRequest = true;
+							try {
+								for (Request req : requests) {
+									if ((((String) row.get(tpoIndex)).trim()).equals(req.getCode_soin().trim())
+											&& (((String) row.get(idIceIndex)).trim()).equals(req.getCode_ice().trim())) {
+										request = req;
+										existRequest = true;
+									}
 								}
+							}catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
+				
 							try {
 								// Se crea en caso de que no exista
 								request = (!existRequest) ? new Request() : request;
@@ -1263,12 +1307,19 @@ public class RequestController extends BaseController {
 						if (btIndex != -1) {
 							// Se verfica si el requerimiento ya existe
 							existRequest = false;
-							for (Request req : requests) {
-								if ((((String) row.get(btIndex)).trim()).equals(req.getCode_soin().trim())) {
-									request = req;
-									existRequest = true;
+							try {
+								for (Request req : requests) {
+									if ((((String) row.get(btIndex)).trim()).equals(req.getCode_soin().trim())) {
+										request = req;
+										existRequest = true;
+									}
 								}
+							}catch (Exception e) {
+								Sentry.capture(e, "request");
+								logger.log(MyLevel.RELEASE_ERROR, e.toString());
 							}
+				
+						
 							
 							if(count==74) {
 								System.out.println("Aca");

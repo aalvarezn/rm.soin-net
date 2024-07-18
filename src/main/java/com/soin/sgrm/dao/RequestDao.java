@@ -33,6 +33,9 @@ public interface RequestDao {
 
 	Request findByNameCode(String code_soin);
 
+	Integer findIDRequeriment(String codeSoin, String codeICE) throws SQLException;
+
+
 
 
 }
