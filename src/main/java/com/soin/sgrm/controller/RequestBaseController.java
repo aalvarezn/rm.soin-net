@@ -1645,6 +1645,8 @@ public class RequestBaseController extends BaseController {
 
 				List<Errors_Requests> errors = errorService.findAll();
 				model.addAttribute("errors", errors);
+				String ccs=CommonUtils.combinedEmails(requestEdit.getTypePetition().getEmailTemplate().getCc(),requestEdit.getSenders());
+				model.addAttribute("ccs",ccs );
 				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
 					model.addAttribute("request", requestEdit);
 					RequestRM_P1_R1 requestR1 = requestServiceRm1.requestRm1(requestEdit.getId());
@@ -1707,6 +1709,8 @@ public class RequestBaseController extends BaseController {
 
 				List<PErrors_Requests> errors = perrorService.findAll();
 				model.addAttribute("errors", errors);
+				String ccs=CommonUtils.combinedEmails(requestEdit.getTypePetition().getEmailTemplate().getCc(),requestEdit.getSenders());
+				model.addAttribute("ccs",ccs );
 				if (requestEdit.getTypePetition().getCode().equals("RM-P1-R1")) {
 					model.addAttribute("request", requestEdit);
 					PRequestRM_P1_R1 requestR1 = prequestServiceRm1.requestRm1(requestEdit.getId());

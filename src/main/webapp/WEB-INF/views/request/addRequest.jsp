@@ -109,7 +109,7 @@
 							placeholder="Escriba un texto corto '_' para separarlo"
 							style="height: 60px; padding-bottom: 20px;"
 							onkeypress="return verifyLetters(event)">
-						<div class="help-info">Máx. 50 caracteres</div>
+						<div class="help-info">M&acute;x. 50 caracteres</div>
 					</div>
 
 				</div>

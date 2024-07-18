@@ -211,6 +211,7 @@ public class WebServiceController extends BaseController {
 			InputStream fileData = file.getInputStream();
 			JsonParser jsonParser = new JsonParser();
 			JsonObject jsonObject = (JsonObject) jsonParser.parse(new InputStreamReader(fileData, "UTF-8"));
+			System.out.print(jsonObject);
 			ReleaseWS releaseWs = new ReleaseWS();
 			releaseWs.setDesc(jsonObject.get("desc").toString().replace("\\r\\n", "\n").replace("\"", ""));
 			releaseWs.setObservations(jsonObject.get("observacion").toString().replace("\\r\\n", "\n").replace("\"", ""));
@@ -226,6 +227,7 @@ public class WebServiceController extends BaseController {
 			releaseWs.setUserId(jsonObject.get("userId").toString().replace("\"", ""));
 			String objects = jsonObject.get("objects").toString();
 			objects = objects.replace("Base Datos", "Base_Datos");
+			objects = objects.replace(" .", ".");
 			objects = objects.replace(" ", "\n");
 			objects = objects.replace("\"", "");
 			objects = objects.replace("Base_Datos", "Base Datos");
@@ -248,16 +250,21 @@ public class WebServiceController extends BaseController {
 				userInfo = loginService.getUserByUsername("admin");
 			}
 			user.setId(userInfo.getId());
-
+			Integer idRequeriment=0;
 			try {
 				res.setStatus("success");
 
 				if (!releaseWs.getRequirement().equals("TPO/BT")) {
+					
 					number_release = releaseService.generateReleaseNumber(releaseWs.getRequirement(),
 							releaseWs.getRequirementName().toUpperCase(), releaseWs.getSystem());
 				} else {
+					String [] codes= releaseWs.getRequirementName().split("_");
+					String codeSoin=codes[0].trim();
+					String codeIce=codes[1].trim();
+					 idRequeriment =requestService.findIDRequeriment(codeSoin,codeIce);
 					number_release = releaseService.generateTPO_BT_ReleaseNumber(releaseWs.getSystem(),
-							releaseWs.getRequirementName().toUpperCase());
+							idRequeriment.toString());
 				}
 				Status status = statusService.findByName("Borrador");
 				String systemModule = releaseWs.getSystem();
@@ -316,7 +323,6 @@ public class WebServiceController extends BaseController {
 									? "PR" + releaseWs.getRequirementName()
 									: releaseWs.getRequirementName());
 
-
 				if (releaseWs.getRequirement().equals("SS"))
 					release.setService_requests(
 							(!releaseWs.getRequirementName().substring(0, 2).toString().toUpperCase().equals("SS"))
@@ -327,13 +333,21 @@ public class WebServiceController extends BaseController {
 					release.setOperative_support("SO-ICE" + releaseWs.getRequirementName());
 
 				if (!releaseWs.getRequirement().equals("TPO/BT")) {
+
 					releaseService.save(release, "-1");
 				} else {
-					releaseService.save(release, releaseWs.getRequirementName());
+					releaseService.save(release, idRequeriment.toString());
 				}
 				res.setData(release.getReleaseNumber() + "");
-
-
+				String basePath = env.getProperty("fileStore.path");
+				ReleaseSummaryFile releaseSummary = releaseService.findByIdSummaryFile(release.getId());
+				Project project = projectService.findById(release.getSystem().getProyectId());
+				res.setPath(CommonUtils.createPath(release.getId(),basePath,releaseSummary,project));
+				if (addObjects(releaseWs.getObjects(), release.getId())) {
+					System.out.print("si");
+				} else {
+					System.out.print("no");
+				}
 				return release.getReleaseNumber();
 			} catch (SQLException ex) {
 				Sentry.capture(ex, "release");

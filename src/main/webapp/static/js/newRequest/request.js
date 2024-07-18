@@ -303,7 +303,7 @@ function deleteRequest(element) {
 	var cont = getCont();
 	$.ajax({
 		type : "DELETE",
-		url : cont + "request/" + "deleteRequest /" + element,
+		url : cont + "request/" + "deleteRequest/" + element,
 		timeout : 60000,
 		data : {},
 		success : function(response) {
@@ -590,7 +590,7 @@ function openRequestTrackingModal(idRequest) {
 	
 	$trackingRequestForm.find('#idRequest').val(rowData.id);
 	$trackingRequestForm.find('#requestNumber').text(rowData.numRequest);
-
+	
 	$.ajax({
 		type : "GET",
 		url : getCont() + "request/tracking/"+ rowData.id ,
@@ -661,7 +661,7 @@ function initSigesFormValidation() {
 			'sCode' : {
 				required : true,
 				minlength : 1,
-				maxlength : 10,
+				maxlength : 20,
 				remote: {
                     url: getCont() + "/request/sysName", // URL para
 															// verificar la
@@ -751,7 +751,7 @@ function saveSystem(){
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "request/savesys" ,
+				url : getCont() + "/request/savesys" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
@@ -803,7 +803,6 @@ function saveSystem(){
 					}
 				},
 				error : function(x, t, m) {
-					console.log(response);
 					unblockUI();
 					notifyMs(response.message, response.status);
 				}

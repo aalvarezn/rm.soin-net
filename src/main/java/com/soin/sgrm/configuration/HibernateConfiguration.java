@@ -186,7 +186,7 @@ public class HibernateConfiguration {
 					// --- desa ---
 					DataSource dataSource;
 					try {
-						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgm_desa_pos");
+						dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_desa_pos");
 						return dataSource;
 					} catch (NamingException e) {
 						Sentry.capture(e, "hibernate");

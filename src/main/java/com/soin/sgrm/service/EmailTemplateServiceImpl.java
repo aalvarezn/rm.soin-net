@@ -63,7 +63,6 @@ import com.soin.sgrm.model.Risk;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
-import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRFC;
 import com.soin.sgrm.model.wf.WFRelease;
@@ -1297,7 +1296,9 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			}
 
 		}
+
 		for (String ccUser : ccUserFinal.split(",")) {
+			
 			mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 		}
 
@@ -2177,7 +2178,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	@Override
 	public void sendMailNotifyChangeStatus(String numRequest, String type, String name, String operator,
 			Timestamp requestDate, UserLogin user, String senders, EmailTemplate email,String subject, String motive,
-			String note, String title) {
+			String note, String title,String userEmailRequest) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -2240,18 +2241,16 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 			mimeMessage.setSender(new InternetAddress(envConfig.getEntry("mailUser")));
 			mimeMessage.setFrom(new InternetAddress(envConfig.getEntry("mailUser")));
 			
+			String ccs=CommonUtils.combinedEmails(senders,email.getCc());
+			ccs=CommonUtils.combinedEmails(ccs,user.getEmail());
 			
-			for (String ccUser : senders.split(",")) {
+			for (String ccUser : ccs.split(",")) {
+				if(!userEmailRequest.equals(ccUser))
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
 			}
-
-			if(email.getCc()!=null) {
-				mimeMessage.addRecipient(Message.RecipientType.CC,
-						new InternetAddress(email.getCc()));
-			}
-		
+			
 			mimeMessage.addRecipient(Message.RecipientType.TO,
-					new InternetAddress(user.getEmail()));
+					new InternetAddress(userEmailRequest));
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
@@ -2266,7 +2265,7 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 	@Override
 	public void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
 			String operator, Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate email,String subject,
-			String motive, String note, String title) {
+			String motive, String note, String title,String emailUserRequest) {
 		try {
 			MimeMessage mimeMessage = mailSender.createMimeMessage();
 			mimeMessage.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -2342,17 +2341,15 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 				senders = senders + "," + userLogin.getEmail();
 			}
 			
-			for (String ccUser : senders.split(",")) {
-				
+			String ccs=CommonUtils.combinedEmails(senders,email.getCc());
+			ccs=CommonUtils.combinedEmails(ccs,email.getTo());
+			for (String ccUser : ccs.split(",")) {
+				if(!ccUser.equals(emailUserRequest))
 				mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(ccUser));
+			}
 
-			}
-			if(email.getCc()!=null) {
-				mimeMessage.addRecipient(Message.RecipientType.CC,
-						new InternetAddress(email.getCc()));
-			}
 			mimeMessage.addRecipient(Message.RecipientType.TO,
-					new InternetAddress(email.getTo()));
+					new InternetAddress(emailUserRequest));
 
 			mailSender.send(mimeMessage);
 		} catch (AddressException e) {
@@ -2629,4 +2626,3 @@ public class EmailTemplateServiceImpl implements EmailTemplateService {
 		mailSender.send(mimeMessage);
 	}
 }
-

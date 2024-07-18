@@ -79,6 +79,11 @@ public class RequestServiceImpl implements RequestService {
 		return dao.findByNameCode(tpo);
 	}
 
+	@Override
+	public Integer findIDRequeriment(String codeSoin, String codeIce) throws SQLException {
+		return dao.findIDRequeriment(codeSoin,codeIce);
+	}
+
 
 
 }

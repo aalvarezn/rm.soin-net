@@ -16,8 +16,6 @@ import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.StatusRFC;
 import com.soin.sgrm.model.User;
 import com.soin.sgrm.model.UserInfo;
-import com.soin.sgrm.model.pos.PEmailTemplate;
-import com.soin.sgrm.model.pos.PRFC;
 import com.soin.sgrm.model.wf.Node;
 import com.soin.sgrm.model.wf.WFIncidence;
 import com.soin.sgrm.model.wf.WFRFC;
@@ -72,11 +70,11 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 	void sendMailIncidence(WFIncidence incidenceEmail, EmailTemplate email, String motive);
 
 	void sendMailNotifyChangeStatus(String numRequest, String type, String statusName, String operator,
-			Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate emailNotify,String subject, String motive, String note, String title, String email);
+			Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate emailNotify,String subject, String motive, String note, String title,String emailUserRequest);
 
 	void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
 			String operator, Timestamp requestDate, UserLogin userLogin, String senders, EmailTemplate emailNotify,String subject,
-			String motive, String note, String title, String email);
+			String motive, String note, String title, String emailUserRequest);
 
 	void sendMailNotifyChangeUserIncidence(String numTicket, User userOperator, String motive, Timestamp timestamp,
 			User newUser, EmailTemplate emailNotify);
@@ -85,8 +83,8 @@ public interface EmailTemplateService extends BaseDao<Integer, EmailTemplate> {
 			Timestamp convertStringToTimestamp, UserInfo user, String senders, EmailTemplate emailNotify,
 			String subject, String motive, String link, String title);
 
-
 	void sendMail(ReleaseEditWithOutObjects releaseEmail, EmailTemplate email) throws MessagingException;
 
-}
 
+
+}

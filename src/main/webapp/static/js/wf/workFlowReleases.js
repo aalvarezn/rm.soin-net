@@ -141,7 +141,7 @@ function loadTableRelease() {
 									var options = '<div class="iconLine"> ';
 									if(row.node != null) {
 										options = options
-										+ '<a onclick="confirmCancelWorkFlow('+row.id+')" title="Eliminar tramite"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
+										+ '<a onclick="confirmCancelWorkFlow('+row.id+')" title="Eliminar tr&acute;mite"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
 									}
 									options = options
 									+ '<a onclick="changeStatusRelease('+row.id+')" title="Tramite"><i class="material-icons gris" style="font-size: 25px;">fact_check</i></a>';
@@ -167,7 +167,7 @@ function loadTableRelease() {
 }
 function confirmCancelWorkFlow(index){
 	Swal.fire({
-		title: '\u00BFEst\u00e1s seguro que desea eliminar el tramite?',
+		title: '\u00BFEst\u00e1s seguro que desea eliminar el tr&acute;mite?',
 		text: "Esta acci\u00F3n no se puede reversar.",
 		icon: 'question',
 		showCancelButton: true,
@@ -221,7 +221,7 @@ function cancelRelease(index) {
 function responseCancelRelease(response) {
 	switch (response.status) {
 	case 'success':
-		swal("Correcto!", "El tramite ha sido eliminado exitosamente.",
+		swal("Correcto!", "El tr&acute;mite ha sido eliminado exitosamente.",
 				"success", 2000)
 				releaseTable.ajax.reload();
 		break;

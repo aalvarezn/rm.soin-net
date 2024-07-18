@@ -192,8 +192,8 @@ public class WorkFlowManagementController extends BaseController {
 	@Autowired
 	private PSigesService psigesService;
 	@Autowired
-	private PProjectService pprojectService;	
-	
+	private PProjectService pprojectService;
+
 	private final Environment environment;
 
 	@Autowired
@@ -226,7 +226,7 @@ public class WorkFlowManagementController extends BaseController {
 				model.addAttribute("statuses", pstatusService.list());
 				model.addAttribute("errors", perrorService.findAll());
 			}
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
 			redirectAttributes.addFlashAttribute("data",
@@ -241,7 +241,7 @@ public class WorkFlowManagementController extends BaseController {
 	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
-			
+
 			if (profileActive().equals("oracle")) {
 				model.addAttribute("system", new SystemUser());
 				model.addAttribute("systems", systemService.listSystemUser());
@@ -255,7 +255,7 @@ public class WorkFlowManagementController extends BaseController {
 				model.addAttribute("statuses", pstatusRFCService.findAll());
 				model.addAttribute("errors", perrorService.findAll());
 			}
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
 			redirectAttributes.addFlashAttribute("data",
@@ -286,7 +286,7 @@ public class WorkFlowManagementController extends BaseController {
 				return pwfReleaseService.listWorkFlowRelease(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
 						dateRange, systemId, statusId);
 			}
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -315,7 +315,7 @@ public class WorkFlowManagementController extends BaseController {
 				return pwfrfcService.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
 						dateRange, systemId, statusId, systemService.myTeams(name));
 			}
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "wfRFCManager");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
@@ -329,8 +329,7 @@ public class WorkFlowManagementController extends BaseController {
 			@RequestParam(value = "idRelease", required = true) Integer idRelease,
 			@RequestParam(value = "idNode", required = true) Integer idNode,
 			@RequestParam(value = "motive", required = true) String motive,
-			@RequestParam(value = "idError", required = false) Long idError
-			) {
+			@RequestParam(value = "idError", required = false) Long idError) {
 		JsonResponse res = new JsonResponse();
 		try {
 			if (profileActive().equals("oracle")) {
@@ -412,7 +411,6 @@ public class WorkFlowManagementController extends BaseController {
 					release.setStatus(node.getStatus());
 					release.setOperator(getUserLogin().getFullName());
 
-					
 					Request requestVer = null;
 					int nodeId1 = node.getId();
 					boolean firstTime = true;
@@ -551,7 +549,6 @@ public class WorkFlowManagementController extends BaseController {
 					release.setStatus(node.getStatus());
 					release.setOperator(getUserLogin().getFullName());
 
-					
 					PRequest requestVer = null;
 					int nodeId1 = node.getId();
 					boolean firstTime = true;
@@ -615,7 +612,6 @@ public class WorkFlowManagementController extends BaseController {
 				res.setStatus("success");
 
 			}
-			
 
 			res.setStatus("success");
 		} catch (Exception e) {
@@ -754,7 +750,7 @@ public class WorkFlowManagementController extends BaseController {
 		return null;
 
 	}
-	
+
 	private PNode checkNode(PNode node, PWFRelease release, PRequest requestVer, boolean firstTime, String newMotive)
 			throws SQLException {
 		String motive = "";
@@ -900,7 +896,7 @@ public class WorkFlowManagementController extends BaseController {
 		}
 		wfReleaseService.wfStatusRelease(release);
 	}
-	
+
 	public void updateRelease(PNode node, PWFRelease release, PRequest requestVer, String motive) {
 
 		release.setStatus(node.getStatus());
@@ -924,20 +920,19 @@ public class WorkFlowManagementController extends BaseController {
 			@RequestParam(value = "idRFC", required = true) Long idRFC,
 			@RequestParam(value = "idNode", required = true) Integer idNode,
 			@RequestParam(value = "motive", required = true) String motive,
-			@RequestParam(value = "idError", required = false) Long idError
-			) {
+			@RequestParam(value = "idError", required = false) Long idError) {
 		JsonResponse res = new JsonResponse();
-		String newMotive=motive;
+		String newMotive = motive;
 		try {
 			if (profileActive().equals("oracle")) {
 				WFRFC rfc = wfrfcService.findWFRFCById(idRFC);
 				NodeRFC node = nodeService.findByIdNoRFC(idNode);
-				
+
 				node.getStatus().setReason(newMotive);
 
 				rfc.setNode(node);
 				rfc.setStatus(node.getStatus());
-				
+
 				String user = getUserLogin().getFullName();
 				rfc.setOperator(user);
 				if (node.getStatus() != null && node.getStatus().getName().equals("Borrador")) {
@@ -946,13 +941,13 @@ public class WorkFlowManagementController extends BaseController {
 						release.setStatus(release.getStatusBefore());
 						release.setMotive("Devuelto al estado " + release.getStatus().getName());
 						releaseService.updateStatusReleaseRFC(release, user);
-					} 
+					}
 
 					/*
 					 * if (release.getStatus().getId() != status.getId())
 					 * release.setRetries(release.getRetries() + 1);
 					 */
-				}else if (node.getStatus() != null && node.getStatus().getName().equals("Error")) {
+				} else if (node.getStatus() != null && node.getStatus().getName().equals("Error")) {
 					Errors_RFC error = errorRFCService.findById(idError);
 					RFCError rfcError = new RFCError();
 					rfcError.setSystem(rfc.getSystemInfo());
@@ -973,7 +968,7 @@ public class WorkFlowManagementController extends BaseController {
 					rfc.setRequestDate(dateFormat);
 
 					wfrfcService.wfStatusRFCWithOutMin(rfc);
-					StatusRFC statusChange = statusRFCService.findByKey("name","Borrador");
+					StatusRFC statusChange = statusRFCService.findByKey("name", "Borrador");
 					rfc.setStatus(statusChange);
 
 					if (statusChange != null && statusChange.getName().equals("Borrador")) {
@@ -982,15 +977,14 @@ public class WorkFlowManagementController extends BaseController {
 							release.setStatus(release.getStatusBefore());
 							release.setMotive("Devuelto al estado " + release.getStatus().getName());
 							releaseService.updateStatusReleaseRFC(release, user);
-						} 
+						}
 					}
 					newMotive = "Paso a borrador por " + error.getName();
-					
+
 					node.getStatus().setReason(newMotive);
 					rfc.setNode(node);
 				}
 				wfrfcService.wfStatusRFC(rfc);
-
 
 				// Si esta marcado para enviar correo
 				if (node.getSendEmail()) {
@@ -1023,16 +1017,15 @@ public class WorkFlowManagementController extends BaseController {
 					newThread.start();
 				}
 
-
 			} else if (profileActive().equals("postgres")) {
 				PWFRFC rfc = pwfrfcService.findWFRFCById(idRFC);
 				PNodeRFC node = pnodeService.findByIdNoRFC(idNode);
-				
+
 				node.getStatus().setReason(newMotive);
 
 				rfc.setNode(node);
 				rfc.setStatus(node.getStatus());
-				
+
 				String user = getUserLogin().getFullName();
 				rfc.setOperator(user);
 				if (node.getStatus() != null && node.getStatus().getName().equals("Borrador")) {
@@ -1041,13 +1034,13 @@ public class WorkFlowManagementController extends BaseController {
 						release.setStatus(release.getStatusBefore());
 						release.setMotive("Devuelto al estado " + release.getStatus().getName());
 						preleaseService.updateStatusReleaseRFC(release, user);
-					} 
+					}
 
 					/*
 					 * if (release.getStatus().getId() != status.getId())
 					 * release.setRetries(release.getRetries() + 1);
 					 */
-				}else if (node.getStatus() != null && node.getStatus().getName().equals("Error")) {
+				} else if (node.getStatus() != null && node.getStatus().getName().equals("Error")) {
 					PErrors_RFC error = perrorRFCService.findById(idError);
 					PRFCError rfcError = new PRFCError();
 					rfcError.setSystem(rfc.getSystemInfo());
@@ -1068,7 +1061,7 @@ public class WorkFlowManagementController extends BaseController {
 					rfc.setRequestDate(dateFormat);
 
 					pwfrfcService.wfStatusRFCWithOutMin(rfc);
-					PStatusRFC statusChange = pstatusRFCService.findByKey("name","Borrador");
+					PStatusRFC statusChange = pstatusRFCService.findByKey("name", "Borrador");
 					rfc.setStatus(statusChange);
 
 					if (statusChange != null && statusChange.getName().equals("Borrador")) {
@@ -1077,15 +1070,14 @@ public class WorkFlowManagementController extends BaseController {
 							release.setStatus(release.getStatusBefore());
 							release.setMotive("Devuelto al estado " + release.getStatus().getName());
 							preleaseService.updateStatusReleaseRFC(release, user);
-						} 
+						}
 					}
 					newMotive = "Paso a borrador por " + error.getName();
-					
+
 					node.getStatus().setReason(newMotive);
 					rfc.setNode(node);
 				}
 				pwfrfcService.wfStatusRFC(rfc);
-
 
 				// Si esta marcado para enviar correo
 				if (node.getSendEmail()) {
@@ -1118,9 +1110,8 @@ public class WorkFlowManagementController extends BaseController {
 					newThread.start();
 				}
 
-				
 			}
-			
+
 			res.setStatus("success");
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
@@ -1130,6 +1121,7 @@ public class WorkFlowManagementController extends BaseController {
 		}
 		return res;
 	}
+
 	@RequestMapping(path = "/workFlowIncidence", method = RequestMethod.GET)
 	public @ResponseBody JsonSheet<?> getIncidences(HttpServletRequest request, Locale locale, Model model,
 			HttpSession session) {
@@ -1150,13 +1142,39 @@ public class WorkFlowManagementController extends BaseController {
 				return pwfReleaseService.listWorkFlowRelease(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
 						dateRange, systemId, statusId);
 			}
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 			return null;
 		}
 		return null;
+	}
+
+	@RequestMapping(value = "/cancelWorflow", method = RequestMethod.GET)
+	public @ResponseBody JsonResponse cancelRelease(HttpServletRequest request, Model model,
+			@RequestParam(value = "idRelease", required = true) Integer idRelease) {
+		JsonResponse res = new JsonResponse();
+		try {
+			if (profileActive().equals("oracle")) {
+				WFRelease release = wfReleaseService.findWFReleaseById(idRelease);
+				release.setNode(null);
+				wfReleaseService.updateReleaseNode(release);
+				res.setStatus("success");
+			}
+			if (profileActive().equals("postgres")) {
+				PWFRelease release = pwfReleaseService.findWFReleaseById(idRelease);
+				release.setNode(null);
+				pwfReleaseService.updateReleaseNode(release);
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "releaseManagement");
+			res.setStatus("exception");
+			res.setException("Error al cancelar el release: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
 	}
 
 	@RequestMapping(value = "/wfStatusIncidence", method = RequestMethod.POST)
@@ -1213,7 +1231,6 @@ public class WorkFlowManagementController extends BaseController {
 					newThread.start();
 				}
 			}
-			
 
 			res.setStatus("success");
 		} catch (Exception e) {
@@ -1229,7 +1246,7 @@ public class WorkFlowManagementController extends BaseController {
 	public String indexIncidence(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
-			
+
 			if (profileActive().equals("oracle")) {
 				model.addAttribute("system", new SystemUser());
 				model.addAttribute("systems", systemService.listSystemUser());
@@ -1241,8 +1258,7 @@ public class WorkFlowManagementController extends BaseController {
 				model.addAttribute("status", new PStatusIncidence());
 				model.addAttribute("statuses", pstatusIncidenceService.findAll());
 			}
-			
-			
+
 		} catch (Exception e) {
 			Sentry.capture(e, "wfReleaseManagement");
 			redirectAttributes.addFlashAttribute("data",

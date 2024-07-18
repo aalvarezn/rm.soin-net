@@ -328,7 +328,7 @@ public class ReleaseManagementController extends BaseController {
 								emailService.sendMailNotifyChangeStatus(release.getReleaseNumber(), " del Release",
 										statusName, release.getOperator(),
 										CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
-										userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+										userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación",release.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "release");
 							}
@@ -354,7 +354,7 @@ public class ReleaseManagementController extends BaseController {
 								emailService.sendMailNotifyChangeStatusError(typeError, release.getReleaseNumber(),
 										" del Release", statusName, release.getOperator(),
 										CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
-										userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+										userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación",release.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "release");
 							}
@@ -437,7 +437,7 @@ public class ReleaseManagementController extends BaseController {
 								pemailService.sendMailNotifyChangeStatus(release.getReleaseNumber(), " del Release",
 										statusName, release.getOperator(),
 										CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
-										userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+										userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación",release.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "release");
 							}
@@ -460,7 +460,7 @@ public class ReleaseManagementController extends BaseController {
 								pemailService.sendMailNotifyChangeStatusError(typeError, release.getReleaseNumber(),
 										" del Release", statusName, release.getOperator(),
 										CommonUtils.convertStringToTimestamp(release.getDateChange(), "dd/MM/yyyy hh:mm a"),
-										userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+										userLogin, senders, emailNotify,subject, release.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación",release.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "release");
 							}

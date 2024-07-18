@@ -25,5 +25,7 @@ public interface WFReleaseService {
 
 	void wfStatusReleaseWithOutMin(WFRelease release);
 
+	void updateReleaseNode(WFRelease release);
+
 	
 }
