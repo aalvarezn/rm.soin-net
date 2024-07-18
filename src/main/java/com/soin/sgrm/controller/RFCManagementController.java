@@ -394,7 +394,7 @@ public class RFCManagementController extends BaseController {
 					String subject=getSubject(email,rfc);
 					Thread newThread = new Thread(() -> {
 						try {
-							emailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+							emailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación",rfc.getUser().getEmail());
 						} catch (Exception e) {
 							Sentry.capture(e, "rfc");
 						}
@@ -414,7 +414,7 @@ public class RFCManagementController extends BaseController {
 						String subject=getSubject(email,rfc);
 						Thread newThread = new Thread(() -> {
 							try {
-								emailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+								emailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación",rfc.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "rfc");
 							}
@@ -508,7 +508,7 @@ public class RFCManagementController extends BaseController {
 					String subject=getSubject(email,rfc);
 					Thread newThread = new Thread(() -> {
 						try {
-							pemailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+							pemailService.sendMailNotifyChangeStatus(rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación",rfc.getUser().getEmail());
 						} catch (Exception e) {
 							Sentry.capture(e, "rfc");
 						}
@@ -528,7 +528,7 @@ public class RFCManagementController extends BaseController {
 						String subject=getSubject(email,rfc);
 						Thread newThread = new Thread(() -> {
 							try {
-								pemailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación");
+								pemailService.sendMailNotifyChangeStatusError(typeError,rfc.getNumRequest()," del RFC",statusName,rfc.getOperator(),rfc.getRequestDate(),userLogin,senders,emailNotify,subject,rfc.getMotive(),note,"RM-P2-R5|Registro evidencia de instalación",rfc.getUser().getEmail());
 							} catch (Exception e) {
 								Sentry.capture(e, "rfc");
 							}

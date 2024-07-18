@@ -439,4 +439,23 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 			sessionObj.close();
 		}
 	}
+
+	@Override
+	public void updateReleaseNode(WFRelease release) {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+			sessionObj.update(release);
+
+			transObj.commit();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
+	}
 }

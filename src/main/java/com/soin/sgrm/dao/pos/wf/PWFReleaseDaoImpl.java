@@ -332,4 +332,23 @@ public class PWFReleaseDaoImpl implements PWFReleaseDao {
 			sessionObj.close();
 		}
 	}
+
+	@Override
+	public void updateReleaseNode(PWFRelease release) {
+		Transaction transObj = null;
+		Session sessionObj = null;
+		try {
+			sessionObj = sessionFactory.openSession();
+			transObj = sessionObj.beginTransaction();
+			sessionObj.update(release);
+
+			transObj.commit();
+		} catch (Exception e) {
+			Sentry.capture(e, "release");
+			transObj.rollback();
+			throw e;
+		} finally {
+			sessionObj.close();
+		}
+	}
 }

@@ -303,8 +303,8 @@ function changeStatusRequest(idRequest) {
 	var idRow = dtRequests.fnFindCellRowIndexes(idRequest, 0); // idRow
 	var rowData = $dtRequests.row(idRow[0]).data();
 	$formChangeStatus[0].reset();
-	console.log(rowData.typePetition.emailTemplate.cc ? rowData.typePetition.emailTemplate.cc : "" );
-	$('.tagInitMail#senders').importTags(rowData.typePetition.emailTemplate.cc ? rowData.typePetition.emailTemplate.cc : "" );
+	let resultado=fusionarCorreos(rowData.typePetition.emailTemplate.cc ? rowData.typePetition.emailTemplate.cc:"",rowData.senders?rowData.senders:"");
+	$('.tagInitMail#senders').importTags(resultado ? resultado : "" );
 	$formChangeStatus.find('#idRequest').val(idRequest);
 	$formChangeStatus.find('#note').val("");
 	$formChangeStatus.find('#requestNumRequest').val(rowData.numRequest);
@@ -321,6 +321,20 @@ function changeStatusRequest(idRequest) {
 	$('#divDateEstimate').attr( "hidden",true);
 	$('#changeStatusModal').modal('show');
 	
+}
+function fusionarCorreos(cadena1, cadena2) {
+    // Dividir las cadenas en arrays
+    let correosArray1 = cadena1.split(",");
+    let correosArray2 = cadena2.split(",");
+
+    // Combinar ambos arrays
+    let combinados = correosArray1.concat(correosArray2);
+
+    // Eliminar duplicados usando un Set
+    let sinDuplicados = [...new Set(combinados)];
+
+    // Convertir de vuelta a cadena
+    return sinDuplicados.join(",");
 }
 
 function dropDownChange(){

@@ -283,7 +283,7 @@
 											</button>
 										</c:if>
 										<button type="button" class="btn btn-default setIcon"
-											onclick="changeStatusRequest(${request.id}, '${request.numRequest}' )"
+											onclick="changeStatusRequest(${request.id}, '${request.numRequest}','${ccs}' )"
 											title="Borrador"
 											style="background-color: #00294c !important; color: #fff; border: none !important;">
 											<span>CAMBIAR ESTADO</span><span style="margin-left: 10px;"><i

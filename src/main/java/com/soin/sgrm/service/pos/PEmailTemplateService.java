@@ -78,11 +78,11 @@ public interface PEmailTemplateService extends BaseDao<Integer, PEmailTemplate> 
 	void sendMailIncidence(PWFIncidence incidenceEmail, PEmailTemplate email, String motive);
 
 	void sendMailNotifyChangeStatus(String numRequest, String type, String statusName, String operator,
-			Timestamp requestDate, UserLogin userLogin, String senders, PEmailTemplate emailNotify,String subject, String motive, String note, String title);
+			Timestamp requestDate, UserLogin userLogin, String senders, PEmailTemplate emailNotify,String subject, String motive, String note, String title, String email);
 
 	void sendMailNotifyChangeStatusError(String typeError, String numRequest, String type, String statusName,
 			String operator, Timestamp requestDate, UserLogin userLogin, String senders, PEmailTemplate emailNotify,String subject,
-			String motive, String note, String title);
+			String motive, String note, String title, String email);
 
 	void sendMailNotifyChangeUserIncidence(String numTicket, PUser userOperator, String motive, Timestamp timestamp,
 			PUser newUser, PEmailTemplate emailNotify);

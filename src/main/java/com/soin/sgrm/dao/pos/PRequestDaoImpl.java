@@ -77,12 +77,10 @@ public class PRequestDaoImpl implements PRequestDao {
 			sessionObj = sessionFactory.openSession();
 			sql = String.format(
 					"select rr.\"ID\"  from \"REQUERIMIENTOS_REQUERIMIENTO\" rr  where rr.\"CODIGO_SOIN\"='%s' and rr.\"CODIGO_ICE\" = '%s'; ",
-					"'%" + codeSoin + "%'", codeICE);
+					 codeSoin , codeICE);
 
 			SQLQuery query = (SQLQuery) sessionObj.createSQLQuery(sql)
-					.addScalar("codeSoin", StandardBasicTypes.STRING)
-					.addScalar("codeICE", StandardBasicTypes.STRING)
-					.setResultTransformer(Transformers.aliasToBean(Request.class));
+					.addScalar("ID", StandardBasicTypes.INTEGER);
 			Integer id = (Integer) query.uniqueResult();
 			return id;
 

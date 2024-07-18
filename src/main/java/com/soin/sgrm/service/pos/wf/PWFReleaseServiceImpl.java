@@ -61,4 +61,10 @@ public class PWFReleaseServiceImpl implements PWFReleaseService {
 		return dao.countByType(group, ids,idUser);
 	}
 
+	@Override
+	public void updateReleaseNode(PWFRelease release) {
+		dao.updateReleaseNode(release);
+		
+	}
+
 }

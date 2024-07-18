@@ -26,4 +26,6 @@ public interface PWFReleaseService {
 	Integer countByType(String group, Object[] ids, Integer idUser);
 
 	void wfStatusReleaseWithOutMin(PWFRelease release);
+
+	void updateReleaseNode(PWFRelease release);
 }
