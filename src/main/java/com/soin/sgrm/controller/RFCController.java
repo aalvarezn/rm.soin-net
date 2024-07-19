@@ -888,7 +888,7 @@ public class RFCController extends BaseController {
 					return "redirect:" + referer;
 				}
 				Integer idManager = getUserLogin().getId();
-				Integer countByManager = rfcService.countByManager(idManager, rfcEdit.getId());
+				Integer countByManager = prfcService.countByManager(idManager, rfcEdit.getId());
 				if (countByManager == 0) {
 					redirectAttributes.addFlashAttribute("data",
 							"No tiene permisos sobre el rfc ya que no formas parte de este equipo.");
@@ -1451,7 +1451,7 @@ public class RFCController extends BaseController {
 		if (rfc.getRequestDateBegin().trim().equals(""))
 			errors.add(new MyError("dateBegin", "Valor requerido."));
 			
-		if (rfc.getRequestDateBegin().trim().equals(""))
+		if (rfc.getRequestDateFinish().trim().equals(""))
 			errors.add(new MyError("dateFinish", "Valor requerido."));
 
 		if (rfc.getReasonChange().trim().equals(""))
