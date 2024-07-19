@@ -166,7 +166,7 @@ public class HibernateConfiguration {
 			if (path.contains("sgrm_qa_post")) {
 				DataSource dataSource;
 				try {
-					dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_qa_pos");
+					dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_qa_post");
 					return dataSource;
 				} catch (NamingException e) {
 					Sentry.capture(e, "hibernate");
