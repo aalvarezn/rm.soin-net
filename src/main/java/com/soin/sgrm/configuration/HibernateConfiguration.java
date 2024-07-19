@@ -163,7 +163,7 @@ public class HibernateConfiguration {
 			}
 		} else {
 			// --- qa ---
-			if (path.contains("sgrm_qa_pos")) {
+			if (path.contains("sgrm_qa_post")) {
 				DataSource dataSource;
 				try {
 					dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrm_qa_pos");
