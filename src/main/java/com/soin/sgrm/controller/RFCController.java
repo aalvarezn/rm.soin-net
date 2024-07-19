@@ -816,7 +816,7 @@ public class RFCController extends BaseController {
 		if (rfc.getRequestDateBegin().trim().equals(""))
 			errors.add(new MyError("dateBegin", "Valor requerido."));
 			
-		if (rfc.getRequestDateBegin().trim().equals(""))
+		if (rfc.getRequestDateFinish().trim().equals(""))
 			errors.add(new MyError("dateFinish", "Valor requerido."));
 
 		if (rfc.getReasonChange().trim().equals(""))
