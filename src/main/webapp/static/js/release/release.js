@@ -803,6 +803,7 @@ function listRequirement() {
 function openReleaseTrackingModal(releaseId) {
 	var dtReleases = $('#dtReleases').dataTable(); // tabla
 	var idRow = dtReleases.fnFindCellRowIndexes(releaseId, 0); // idRow
+	console.log(releaseId);
 	var rowData = releaseTable.row(idRow).data();
 	trackingReleaseForm.find('#idRelease').val(rowData.id);
 	trackingReleaseForm.find('#releaseNumber').text(rowData.releaseNumber);
@@ -813,11 +814,14 @@ function openReleaseTrackingModal(releaseId) {
 		data : {},
 		success : function(response) {
 			tracking=response.obj;
+			console.log(response);
 			loadTrackingRelease(tracking);
 			$('#trackingReleaseModal').modal('show');
 		},
 		error : function(x, t, m) {
-			notifyAjaxError(x, t, m);
+            	notifyAjaxError(x, t, m);
+            
+			
 		}
 	});
 	
