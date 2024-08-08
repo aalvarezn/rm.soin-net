@@ -16,7 +16,7 @@
 							data-live-search="true">
 							<option value="">-- Seleccione una opci&oacute;n --</option>
 							<c:forEach items="${systems}" var="system">
-								<option value="${system.id }">${system.code }</option>
+								<option value="${system.id }">${system.name }</option>
 							</c:forEach>
 							</select>
 							
