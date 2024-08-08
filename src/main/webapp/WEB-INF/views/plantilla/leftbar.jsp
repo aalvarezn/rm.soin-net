@@ -60,7 +60,7 @@
 					<c:set var="releaseAccess" value="true"></c:set>
 				</c:if>
 				<c:if
-					test="${authority.name == 'Gestores' or authority.name == 'Lider Tecnico'}">
+					test="${authority.name == 'Gestores' or authority.name == 'Lider Tecnico' or authority.name=='Tramites'}">
 					<c:set var="tramiteAccess" value="true"></c:set>
 				</c:if>
 				<c:if test="${authority.name == 'Gestores'}">
