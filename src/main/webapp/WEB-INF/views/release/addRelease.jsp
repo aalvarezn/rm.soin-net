@@ -20,7 +20,7 @@
 							data-live-search="true">
 							<option value="">-- Seleccione una opci&oacute;n --</option>
 							<c:forEach items="${systems}" var="system">
-								<option value="${system.code }">${system.code }</option>
+								<option value="${system.code }">${system.name }</option>
 							</c:forEach>
 						</select> <label id="system_id_error" class="error" for="name"
 							style="visibility: hidden">Campo Requerido.</label>
