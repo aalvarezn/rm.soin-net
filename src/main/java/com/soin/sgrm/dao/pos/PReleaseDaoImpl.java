@@ -14,6 +14,7 @@ import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -22,6 +23,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -1180,5 +1182,41 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		sheet.setRecordsFiltered(recordsTotal);
 		sheet.setData(list);
 		return sheet;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> findByIdManager(Integer idUser) {
+		 Session sessionObj = null;
+		    try {
+		    	
+		        sessionObj = sessionFactory.openSession();
+		        // Define the SQL query with a placeholder for the parameter
+		        String sql = "SELECT rrrc.\"RELEASE_ID\" " +
+		                     "FROM \"RELEASES_RELEASE_REQUERIMIENTO\" rrrc " +
+		                     "JOIN \"RELEASES_RELEASE\" rr ON rrrc.\"RELEASE_ID\" = rr.\"ID\" " +
+		                     "WHERE rrrc.\"REQUERIMIENTO_ID\" IN (" +
+		                     "    SELECT \"ID\" FROM \"REQUERIMIENTOS_REQUERIMIENTO\" WHERE \"GESTOR_ID\" = :idManager" +
+		                     ") AND rr.\"NODO_ID\" IS NOT NULL";
+
+		        // Create the SQLQuery object with the parameterized query
+		        SQLQuery query = (SQLQuery) sessionObj.createSQLQuery(sql)
+		                .addScalar("\"RELEASE_ID\"", StandardBasicTypes.INTEGER)
+		                .setParameter("idManager", idUser);
+
+		        // Execute the query and retrieve the result list
+		        List<Integer> idList = query.list();
+		        return idList;
+
+		    } catch (Exception e) {
+		        Sentry.capture(e, "idRequest");
+		    } finally {
+		        // Close the session in the finally block to ensure resource cleanup
+		        if (sessionObj != null) {
+		            sessionObj.close();
+		        }
+		    }
+
+		    return null; // Return null if an exception occurs
 	}
 }

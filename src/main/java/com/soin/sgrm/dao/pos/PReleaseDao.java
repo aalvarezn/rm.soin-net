@@ -125,5 +125,7 @@ public interface PReleaseDao {
 	
 	JsonSheet<T> findAllFastRelease(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength,
 			Map<String, Object> columns, Criterion qSrch, List<String> fetchs, Map<String, String> alias, Integer veri);
+
+	List<Integer> findByIdManager(Integer idUser);
 	
 }

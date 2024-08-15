@@ -139,9 +139,10 @@ function loadTableRelease() {
 							{
 								mRender : function(data, type, row) {
 									var options = '<div class="iconLine"> ';
+									
 									if(row.node != null) {
 										options = options
-										+ '<a onclick="confirmCancelWorkFlow('+row.id+')" title="Eliminar tr&acute;mite"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
+										+ '<a onclick="confirmCancelWorkFlow('+row.id+')" title="Eliminar tr&aacute;mite"><i class="material-icons gris" style="font-size: 25px;">highlight_off</i></a>';
 									}
 									options = options
 									+ '<a onclick="changeStatusRelease('+row.id+')" title="Tramite"><i class="material-icons gris" style="font-size: 25px;">fact_check</i></a>';
