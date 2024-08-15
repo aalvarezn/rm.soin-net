@@ -166,16 +166,16 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 	@Override
 	public JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength,
 			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,
-			Object[] systemsId, Integer userId) throws SQLException, ParseException {
+			List<Integer> listIdRelease, Integer userId,Object[] systemIds) throws SQLException, ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, systemsId, userId);
+				systemId, statusId, listIdRelease, userId,systemIds);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByWorkFlow(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange,
-				systemId, statusId, systemsId,userId);
+				systemId, statusId, listIdRelease,userId,systemIds);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -191,103 +191,32 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 
 	@SuppressWarnings("unchecked")
 	private Criteria criteriaByWorkFlow(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] ids, Integer userId)
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId,List<Integer> listIdRelease, Integer userId,Object[] systemIds)
 			throws ParseException {
 		List<String> fetchs = new ArrayList<String>();
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(WFRelease.class);
-		Criteria crit2 = sessionFactory.getCurrentSession().createCriteria(RequestFast.class);
-		crit2.add(Restrictions.eq("userManager", userId));
-		List<RequestFast> requestList = crit2.list();
-		Disjunction disjunction = Restrictions.disjunction();
-		// Valores de busqueda en la tabla
-		if(sSearch.equals("")) {
-		for (RequestFast request : requestList) {
-			String codeSoing=request.getCode_soin().replaceFirst("-", "");
-			if (!codeSoing.equals("")) {
-				disjunction.add(Restrictions.like("releaseNumber", codeSoing, MatchMode.ANYWHERE).ignoreCase());
-		    }
-			
-		}
-		}
+
 		
-		if(requestList.size()!=0 || !sSearch.equals("")) {
+	
 			crit.createAlias("system", "system");
 			crit.createAlias("status", "status");
 			crit.createAlias("user", "user");
 			crit.createAlias("node", "node");
 			crit.createAlias("node.workFlow", "workFlow");
 			crit.createAlias("node.workFlow.type", "type");
-			if (ids != null)
-				crit.add(Restrictions.in("system.id", ids));
-			
-			
-			
-			if (filtred != null) {
-				crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
-			}
-			if(sSearch.equals("")) {
-				crit.add(disjunction);
-				crit.add(Restrictions.or(
-						Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-						Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-						Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase()));
+			List<Integer> listIdSystem=new ArrayList<Integer>();
+			if(!listIdRelease.isEmpty()) {
+			crit.add(Restrictions.in("id",listIdRelease));
 			}else {
-				crit.add(Restrictions.or(
-						Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-						Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-						Restrictions.like("system.code", sSearch, MatchMode.ANYWHERE).ignoreCase(),
-						Restrictions.like("releaseNumber", sSearch, MatchMode.ANYWHERE).ignoreCase()));
-			}
-			
-			if (dateRange != null) {
-				if (dateRange.length > 1) {
-					Date start = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[0]);
-					Date end = new SimpleDateFormat("dd/MM/yyyy").parse(dateRange[1]);
-					end.setHours(23);
-					end.setMinutes(59);
-					end.setSeconds(59);
-					crit.add(Restrictions.ge("createDate", start));
-					crit.add(Restrictions.le("createDate", end));
-				}
-			}
-			if (systemId != 0) {
-				crit.add(Restrictions.eq("system.id", systemId));
-			}
-			if (statusId != 0) {
-				crit.add(Restrictions.eq("status.id", statusId));
-			}
-			fetchs.add("node");
-			fetchs.add("workFlow");
-			fetchs.add("type");
-			fetchs.add("system");
-			fetchs.add("status");
-			fetchs.add("user");
-			if (fetchs != null)
-				for (String itemModel : fetchs)
-					crit.setFetchMode(itemModel, FetchMode.SELECT);
-
-			crit.add(Restrictions.eq("type.id", 1));
-			crit.add(Restrictions.isNotNull("node"));
-			crit.addOrder(Order.desc("createDate"));
-		}else {
-			//crit.add(Restrictions.eq("id", null));
-			
-			crit.createAlias("system", "system");
-			crit.createAlias("status", "status");
-			crit.createAlias("user", "user");
-			crit.createAlias("node", "node");
-			crit.createAlias("node.workFlow", "workFlow");
-			crit.createAlias("node.workFlow.type", "type");
-			if (ids != null)
-				crit.add(Restrictions.in("system.id", ids));
-			
-			
-			
-			if (filtred != null) {
-				crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
-			}
-			if(sSearch.equals("")) {
 				
+				for(Object system: systemIds ) {
+					listIdSystem.add((Integer) system);
+				}
+			}
+			if (filtred != null) {
+				crit.add(Restrictions.not(Restrictions.in("status.name", filtred)));
+			}
+			if(sSearch.equals("")) {
 				crit.add(Restrictions.or(
 						Restrictions.like("status.name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
 						Restrictions.like("user.fullName", sSearch, MatchMode.ANYWHERE).ignoreCase(),
@@ -313,10 +242,12 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 			}
 			if (systemId != 0) {
 				crit.add(Restrictions.eq("system.id", systemId));
+			}else {
+				if(listIdRelease.isEmpty()) {
+					crit.add(Restrictions.in("system.id", listIdSystem));
+				}
 			}
-			if (statusId != 0) {
-				crit.add(Restrictions.eq("status.id", statusId));
-			}
+	
 			fetchs.add("node");
 			fetchs.add("workFlow");
 			fetchs.add("type");
@@ -330,8 +261,7 @@ public class WFReleaseDaoImpl implements WFReleaseDao {
 			crit.add(Restrictions.eq("type.id", 1));
 			crit.add(Restrictions.isNotNull("node"));
 			crit.addOrder(Order.desc("createDate"));
-			
-		}
+	
 		
 
 		return crit;

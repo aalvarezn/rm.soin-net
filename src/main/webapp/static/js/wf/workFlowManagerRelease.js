@@ -138,6 +138,7 @@ function loadTableRelease() {
 								mRender : function(data, type, row) {
 									let userId = $('#userInfo_Id').val();
 									var options = '<div class="iconLine"> ';
+									console.log(row);
 									if(row.node.actors.find(element => element.id == userId)){
 										options = options
 										+ '<a onclick="changeStatusRelease('+row.id+')" title="Tr\u00E1mite"><i class="material-icons gris" style="font-size: 25px;">fact_check</i></a>';

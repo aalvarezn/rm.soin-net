@@ -129,6 +129,8 @@ public interface ReleaseService {
 
 	String getLastStatusHistory(Integer releaseId);
 
+	List<Integer> findByIdManager(Integer idUser);
+
 	
 
 
