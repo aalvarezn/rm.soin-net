@@ -473,7 +473,7 @@ public class WorkFlowManagerController extends BaseController {
 		return "/wf/workFlow/workFlowManagerRFC";
 
 	}
-
+	
 	@RequestMapping(path = "/workFlowRelease", method = RequestMethod.GET)
 	public @ResponseBody JsonSheet<?> getSystemRelease(HttpServletRequest request, Locale locale, Model model,
 			HttpSession session) {
@@ -487,13 +487,21 @@ public class WorkFlowManagerController extends BaseController {
 			int sEcho = Integer.parseInt(request.getParameter("sEcho")),
 					iDisplayStart = Integer.parseInt(request.getParameter("iDisplayStart")),
 					iDisplayLength = Integer.parseInt(request.getParameter("iDisplayLength"));
+			
 			Integer idUser = getUserLogin().getId();
 			if (profileActive().equals("oracle")) {
+				Object[] systemIds = systemService.myTeams(name);
+				List<Integer> listIdRelease =releaseService.findByIdManager(idUser);
 				return wfReleaseService.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
-						dateRange, systemId, statusId, systemService.myTeams(name), idUser);
+						dateRange, systemId, statusId, listIdRelease, idUser,systemIds);
+				
 			} else if (profileActive().equals("postgres")) {
+				
+				Object[] systemIds = psystemService.myTeams(name);
+				List<Integer> listIdRelease =preleaseService.findByIdManager(idUser);
+				
 				return pwfReleaseService.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, null,
-						dateRange, systemId, statusId, systemService.myTeams(name), idUser);
+						dateRange, systemId, statusId, listIdRelease, idUser,systemIds);
 			}
 
 		} catch (Exception e) {
