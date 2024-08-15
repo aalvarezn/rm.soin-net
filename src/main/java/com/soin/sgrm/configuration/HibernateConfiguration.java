@@ -153,7 +153,7 @@ public class HibernateConfiguration {
 		String path = context.getContextPath();
 		JndiTemplate jndiTemplate = new JndiTemplate();
 		// --- prd ---
-		if (path.contains("sgrm_prd_post")) {
+		if (path.contains("sgrmprod")) {
 			DataSource dataSource;
 			try {
 				dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/sgrmpos");
