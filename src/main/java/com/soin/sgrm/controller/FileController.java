@@ -63,6 +63,7 @@ import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.pos.PBaseKnowledge;
 import com.soin.sgrm.model.pos.PBaseKnowledgeFile;
+import com.soin.sgrm.model.pos.PDocTemplate;
 import com.soin.sgrm.model.pos.PIncidence;
 import com.soin.sgrm.model.pos.PIncidenceFile;
 import com.soin.sgrm.model.pos.PRFC;
@@ -680,7 +681,7 @@ public class FileController extends BaseController {
 					FileCopyUtils.copy(inputStream, response.getOutputStream());
 				}
 			} else if (profileActive().equals("postgres")) {
-				DocTemplate docFile = docsTemplateService.findById(docId);
+				PDocTemplate docFile = pdocsTemplateService.findById(docId);
 				PReleaseSummary release = preleaseService.findById(releaseId);
 
 				if (docFile != null) {
@@ -703,7 +704,7 @@ public class FileController extends BaseController {
 					Docx docx = new Docx(outFile.getPath());
 					docx.setVariablePattern(new VariablePattern("{{", "}}"));
 					// preparing variables
-					docxVariables = new DocxVariables();
+					pdocxVariables = new PDocxVariables();
 
 					if (docFile.getComponentGenerator().equals("GenerarDocumentoAIA")) {
 						generateAIADocument(release, docFile.getTemplateName());
@@ -730,7 +731,7 @@ public class FileController extends BaseController {
 						generateBRM_IFW_BODocument(release, docFile.getTemplateName());
 					}
 
-					docx.fillTemplate(docxVariables.getVariables());
+					docx.fillTemplate(pdocxVariables.getVariables());
 					docx.save(outFile.getPath());
 					XWPFDocument document = docx.getXWPFDocument();
 					lineBreak(document, outFile);

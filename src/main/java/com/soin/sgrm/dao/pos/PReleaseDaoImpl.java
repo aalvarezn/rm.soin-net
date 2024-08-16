@@ -439,6 +439,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			transObj = sessionObj.beginTransaction();
 			for (int i = 0; i < objects.size(); i++) {
 				sessionObj.save(objects.get(i));
+				 sessionObj.flush();
 				sql = String.format(
 						" INSERT INTO \"RELEASES_RELEASE_OBJETOS\" (  \"RELEASE_ID\",\"OBJETO_ID\" ) VALUES (  %s , %s )",
 						release_id, objects.get(i).getId());
