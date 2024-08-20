@@ -469,11 +469,12 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 			sessionObj.save(release);
+			sessionObj.flush();
 			if (!tpos.equalsIgnoreCase("-1")) {
 				for (int i = 0; i < ids.length; i++) {
 					id = Integer.parseInt(ids[i]);
 					sql = String.format(
-							"INSERT INTO \"RELEASES_RELEASE_REQUERIMIENTO\" ( \"ID\",\"RELEASE_ID\",\"REQUERIMIENTO_ID\") VALUES ( null, %s, %s ) ",
+							"INSERT INTO \"RELEASES_RELEASE_REQUERIMIENTO\" ( \"RELEASE_ID\",\"REQUERIMIENTO_ID\") VALUES (  %s, %s ) ",
 							release.getId(), id);
 					query = sessionObj.createSQLQuery(sql);
 					query.executeUpdate();
