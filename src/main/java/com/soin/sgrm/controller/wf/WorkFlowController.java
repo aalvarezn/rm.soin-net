@@ -753,28 +753,34 @@ public class WorkFlowController extends BaseController {
 						if (temp != null)
 							pnode.addUser(temp);
 					}
-					if(node.getSkipByRequest()==null){
+					if(node.getSkipByRequest()==false){
 						pnode.setSkipByRequest(false);
 						pnode.setSkipByRequestId(node.getSkipByRequestId());
+						node.setMotiveSkipR(null);
 					}else {
 						pnode.setSkipByRequest(true);
 						pnode.setSkipByRequestId(node.getSkipByRequestId());
+						node.setMotiveSkipR(node.getMotiveSkipRA());
 					}
 					
-					if(node.getSkipReapprove()==null){
+					if(node.getSkipReapprove()==false){
 						pnode.setSkipReapprove(false);
 						pnode.setSkipReapproveId(node.getSkipReapproveId());
+						node.setMotiveSkipRA(null);
 					}else {
 						pnode.setSkipReapprove(true);
 						pnode.setSkipReapproveId(node.getSkipReapproveId());
+						node.setMotiveSkipRA(node.getMotiveSkipRA());
 					}
 					
-					if(node.getSkipNode()==null){
+					if(node.getSkipNode()==false){
 						pnode.setSkipNode(false);
 						pnode.setSkipId(node.getSkipId());
+						node.setMotiveSkip(null);
 					}else {
 						pnode.setSkipNode(true);
 						pnode.setSkipId(node.getSkipId());
+						node.setMotiveSkip(node.getMotiveSkip());
 					}
 				   
 					pnode.setId(node.getId());
