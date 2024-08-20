@@ -24,6 +24,8 @@ import com.soin.sgrm.model.Project;
 import com.soin.sgrm.model.Release;
 import com.soin.sgrm.model.ReleaseSummaryFile;
 import com.soin.sgrm.model.Request;
+import com.soin.sgrm.model.pos.PReleaseSummaryFile;
+import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.ReleaseService;
 
@@ -189,6 +191,26 @@ public class CommonUtils {
 		
 
 	}
+	
+	public static String createPath(Integer id,String basePath, PReleaseSummaryFile release, Project project) throws SQLException {
+		
+		
+		String path = project.getCode() + "/" + release.getSystem().getName() + "/";
+		if (release.getRequestList().size() != 0) {
+			PRequest request = release.getRequestList().iterator().next();
+			if (request.getCode_ice() != null) {
+				path += request.getCode_soin().replace(" ","") + "_" + request.getCode_ice().replace(" ","") + "/";
+			} else {
+				path += request.getCode_soin().replace(" ","") + "/";
+			}
+		}
+		path += release.getReleaseNumber() + "/";
+		path=path.trim();
+		new File(basePath + path).mkdirs();
+		return path;
+	
+
+}
 	
 	  public static String combinedEmails(String cadena1, String cadena2) {
 	        // Manejar casos donde las cadenas son null
