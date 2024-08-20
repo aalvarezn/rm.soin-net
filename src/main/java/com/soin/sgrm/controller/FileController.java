@@ -1053,6 +1053,7 @@ public class FileController extends BaseController {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void preloadCommands(PReleaseSummary release, File fileTemplate, File outFile) throws Exception {
+		
 		pcontext = new PDocxContext();
 		pcontext.loadCrontabs(release, systemService);
 		pcontext.loadButtonCommands(release, systemService);
@@ -1061,7 +1062,7 @@ public class FileController extends BaseController {
 		DocxStamper stamper = new DocxStamperConfiguration().build();
 		InputStream inputstream = new FileInputStream(fileTemplate);
 		OutputStream os = new FileOutputStream(outFile);
-		stamper.stamp(inputstream, context, os);
+		stamper.stamp(inputstream, pcontext, os);
 		os.close();
 	}
 	
