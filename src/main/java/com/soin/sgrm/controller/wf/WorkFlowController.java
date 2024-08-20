@@ -1,5 +1,7 @@
 package com.soin.sgrm.controller.wf;
 
+import static org.hamcrest.CoreMatchers.is;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -751,7 +753,30 @@ public class WorkFlowController extends BaseController {
 						if (temp != null)
 							pnode.addUser(temp);
 					}
+					if(node.getSkipByRequest()==null){
+						pnode.setSkipByRequest(false);
+						pnode.setSkipByRequestId(node.getSkipByRequestId());
+					}else {
+						pnode.setSkipByRequest(true);
+						pnode.setSkipByRequestId(node.getSkipByRequestId());
+					}
 					
+					if(node.getSkipReapprove()==null){
+						pnode.setSkipReapprove(false);
+						pnode.setSkipReapproveId(node.getSkipReapproveId());
+					}else {
+						pnode.setSkipReapprove(true);
+						pnode.setSkipReapproveId(node.getSkipReapproveId());
+					}
+					
+					if(node.getSkipNode()==null){
+						pnode.setSkipNode(false);
+						pnode.setSkipId(node.getSkipId());
+					}else {
+						pnode.setSkipNode(true);
+						pnode.setSkipId(node.getSkipId());
+					}
+				   
 					pnode.setId(node.getId());
 					pnode.setLabel(node.getLabel());
 					pnode.setX(node.getX());
