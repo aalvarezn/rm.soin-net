@@ -792,13 +792,13 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		String sql = "";
 		Query query = null;
 		sql = String.format(
-				"SELECT COUNT(rr.\"ID\") FROM \"RELEASES_RELEASE\" rr WHERE rr.\"ID\" IN (SELECT rrd.\"TO_RELEASE_ID\"  FROM \"RELEASES_RELEASE_DEPENDENCIAS\" rrd WHERE \"FROM_RELEASE_ID\" =%s) AND rr.\"ESTADO_ID\" IN(SELECT re.ID FROM \"RELEASES_ESTADO\" re WHERE re.\"NOMBRE\" IN('Borrador', 'Solicitado'))",
+				"SELECT COUNT(rr.\"ID\") FROM \"RELEASES_RELEASE\" rr WHERE rr.\"ID\" IN (SELECT rrd.\"TO_RELEASE_ID\"  FROM \"RELEASES_RELEASE_DEPENDENCIAS\" rrd WHERE \"FROM_RELEASE_ID\" =%s) AND rr.\"ESTADO_ID\" IN(SELECT re.\"ID\" FROM \"RELEASES_ESTADO\" re WHERE re.\"NOMBRE\" IN('Borrador', 'Solicitado'))",
 				id);
 		query = getSession().createSQLQuery(sql);
 
-		BigDecimal test = (BigDecimal) query.uniqueResult();
-
-		return test.intValueExact();
+	
+		Number result = (Number) query.uniqueResult();
+		return result.intValue();
 
 	}
 
