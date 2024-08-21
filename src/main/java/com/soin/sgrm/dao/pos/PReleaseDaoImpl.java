@@ -807,7 +807,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion")))
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"),Restrictions.eq("statuses.name", "Preproduccion")))
 				.add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla

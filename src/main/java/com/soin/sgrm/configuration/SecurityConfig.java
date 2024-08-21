@@ -29,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 				.hasRole("Admin").antMatchers("/management/**", "/info/").hasRole("Release Manager")
 				.antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel", "/ws/**").permitAll()
-				.anyRequest().hasRole("Gestores").antMatchers("/manager/**").permitAll().anyRequest().authenticated()
+				.anyRequest().hasAnyRole("Gestores","Tramites").antMatchers("/manager/**").permitAll().anyRequest().authenticated()
 				.and().formLogin().loginPage("/login").failureUrl("/login?error=true")
 				.defaultSuccessUrl("/successLogin").permitAll().and().logout()// default logout handling
 				.logoutSuccessUrl("/login")// our new logout success url, we are not replacing other defaults.
