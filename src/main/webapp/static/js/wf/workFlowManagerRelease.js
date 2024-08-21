@@ -290,6 +290,8 @@ function changeStatusRelease(releaseId) {
 }
 
 function saveChangeStatusModal(){
+	console.log( formChangeStatus.find('#idRelease').val());
+	console.log( "Awdawdaw");
 	if (!validStatusRelease())
 		return false;
 	blockUI();
