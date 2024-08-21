@@ -44,7 +44,7 @@ public class PReleaseFileDaoImpl implements PReleaseFileDao {
 			} else {
 				// si no existe, se crea y se agrega la referencia intermedia
 				sessionObj.saveOrUpdate(releaseFile);
-
+				sessionObj.flush();
 				sql = String.format(
 						"INSERT INTO \"RELEASES_RELEASE_ARCHIVOS\" ( \"RELEASE_ID\", \"ARCHIVO_ID\") VALUES (  %s, %s ) ",
 						id, releaseFile.getId());
