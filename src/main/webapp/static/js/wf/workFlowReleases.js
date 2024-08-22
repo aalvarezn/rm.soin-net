@@ -211,7 +211,6 @@ function cancelRelease(index) {
 			idRelease : index
 		},
 		success : function(response) {
-			console.log(response.status);
 			responseCancelRelease(response);
 		},
 		error : function(x, t, m) {
