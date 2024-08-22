@@ -1166,6 +1166,7 @@ public class WorkFlowManagementController extends BaseController {
 				PWFRelease release = pwfReleaseService.findWFReleaseById(idRelease);
 				release.setNode(null);
 				pwfReleaseService.updateReleaseNode(release);
+				res.setStatus("success");
 			}
 
 		} catch (Exception e) {
