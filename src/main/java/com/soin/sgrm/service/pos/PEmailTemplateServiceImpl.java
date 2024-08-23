@@ -855,6 +855,11 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 			if (email.getHtml().contains("{{operator}}")) {
 				email.setHtml(email.getHtml().replace("{{operator}}", (user != null ? user : "")));
 			}
+			
+			if (email.getHtml().contains("{{motive}}")) {
+				email.setHtml(email.getHtml().replace("{{motive}}", (releaseEmail.getMotive() != null ? user : "N/M")));
+			}
+
 
 			if (email.getHtml().contains("{{updateAt}}")) {
 				DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
@@ -1022,9 +1027,9 @@ public class PEmailTemplateServiceImpl implements PEmailTemplateService {
 		}
 
 		if (email.getHtml().contains("{{requestDateFinish}}")) {
-			String minimalEvidence = rfc.getRequestDateFinish() != null ? rfc.getRequestDateFinish() : "";
-			minimalEvidence = minimalEvidence.replace("\n", "<br>");
-			email.setHtml(email.getHtml().replace("{{requestDateFinish}}", minimalEvidence));
+			String requestDateFinish = rfc.getRequestDateFinish() != null ? rfc.getRequestDateFinish() : "";
+			requestDateFinish = requestDateFinish.replace("\n", "<br>");
+			email.setHtml(email.getHtml().replace("{{requestDateFinish}}", requestDateFinish));
 		}
 
 		if (email.getHtml().contains("{{effect}}")) {
