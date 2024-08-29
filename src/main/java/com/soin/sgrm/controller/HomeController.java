@@ -201,6 +201,12 @@ public class HomeController extends BaseController {
 		return "/forgetPassword";
 	}
 
+	@RequestMapping(value = "/createUser", method = RequestMethod.GET)
+	public String createUser(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		return "/createUser";
+	}
+
+	
 	@RequestMapping(value = "/recoverPassword", method = RequestMethod.POST)
 	public String recoverPassword(HttpServletRequest request, @ModelAttribute("UserInfo") UserInfo user, ModelMap model,
 			Locale locale, HttpSession session) {

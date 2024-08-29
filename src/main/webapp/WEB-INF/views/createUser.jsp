@@ -18,6 +18,7 @@
 <!-- Custom Css -->
 <link href="<c:url value='/static/css/style.css'/>" rel="stylesheet"
 	type="text/css">
+
 </head>
 
 <body class="login-page">
@@ -45,29 +46,77 @@
 				<form name='loginForm' accept-charset="ISO-8859-1"
 					action="<c:url value='/login' />" method='POST'>
 
-					<div class="msg">Ingrese al Sistema</div>
+					<div class="msg">Crear usuario</div>
 					<div class="input-group">
 						<span class="input-group-addon"> <i
 							class="material-icons gris">person</i>
 						</span>
 						<div class="form-line">
 							<input type="text" class="form-control" name="username"
-								maxlength="30" id="username" placeholder="USUARIO" required
+								maxlength="30" id="username" placeholder="NOMBRE COMPLETO"
+								required title="Campo requerido"
+								oninvalid="this.setCustomValidity('Complete este campo')"
+								oninput="setCustomValidity('')" autofocus>
+						</div>
+					</div>
+					<div class="input-group">
+						<span class="input-group-addon"> <i
+							class="material-icons gris">alternate_email</i>
+						</span>
+						<div class="form-line">
+							<input type="text" class="form-control" name="username"
+								maxlength="30" id="username" placeholder="CORREO" required
 								title="Campo requerido"
 								oninvalid="this.setCustomValidity('Complete este campo')"
 								oninput="setCustomValidity('')" autofocus>
 						</div>
 					</div>
-					<div class="input-group" style="margin-bottom: 50px !important;">
+					<div class="input-group">
 						<span class="input-group-addon"> <i
-							class="material-icons gris">lock</i>
+							class="fab fa-github gris"></i>
 						</span>
 						<div class="form-line">
-							<input type="password" class="form-control" name="password"
-								maxlength="30" id="password"
+							<input type="text" class="form-control" name="username"
+								maxlength="30" id="username" placeholder="USUARIO GIT" required
+								title="Campo requerido"
 								oninvalid="this.setCustomValidity('Complete este campo')"
-								oninput="setCustomValidity('')" placeholder="CONTRASEÑA"
-								required title="Campo requerido">
+								oninput="setCustomValidity('')" autofocus>
+						</div>
+					</div>
+					<div class="input-group">
+						<span class="input-group-addon"> <i
+							class="material-icons gris">work</i>
+						</span>
+						<div class="form-line">
+							<select class="form-control" name="project" id="project" required
+								title="Campo requerido"
+								oninvalid="this.setCustomValidity('Seleccione una opción')"
+								oninput="setCustomValidity('')" autofocus>
+								<option value="" disabled selected>Seleccione un
+									proyecto</option>
+								<option value="proyecto1">Proyecto 1</option>
+								<option value="proyecto2">Proyecto 2</option>
+								<option value="proyecto3">Proyecto 3</option>
+								<!-- Agrega más opciones aquí según sea necesario -->
+							</select>
+						</div>
+					</div>
+				<div class="input-group">
+						<span class="input-group-addon"> <i
+							class="material-icons gris">settings</i>
+						</span>
+						<div class="form-line">
+							<select class="form-control" name="project" id="project" required
+								title="Campo requerido"
+								oninvalid="this.setCustomValidity('Seleccione una opción')"
+								oninput="setCustomValidity('')" autofocus>
+								<option value="" disabled selected>Seleccione un
+									sistema</option>
+								<option value="proyecto1">Sistema 1</option>
+								<option value="proyecto2">Sistema 2</option>
+								<option value="proyecto3">Sistema 3</option>
+								<!-- Agrega más opciones aquí según sea necesario -->
+							</select>
 						</div>
 					</div>
 					<div class="row">
@@ -76,14 +125,13 @@
 							<input type="hidden" name="${_csrf.parameterName}"
 								value="${_csrf.token}" /> <a href="index.html"><button
 									class="btn btn-block bg-blue waves-effect" type="submit"
-									name="submit">INGRESAR</button></a>
+									name="submit">REGISTRARSE</button></a>
 						</div>
+
 						<div class="col-xs-12" style="">
 							<p style="text-align: center">
-								<a href="<c:url value='/forgetPassword' />" style="color: #00538d;">¿Olvidó su contraseña?</a>
-							</p>
-							<p style="text-align: center">
-								<a href="<c:url value='/createUser' />" style="color: #00538d;">Crear cuenta</a>
+								<a href="<c:url value='/' />" style="color: #00538d;">¿Regresar
+									al inicio?</a>
 							</p>
 						</div>
 					</div>
