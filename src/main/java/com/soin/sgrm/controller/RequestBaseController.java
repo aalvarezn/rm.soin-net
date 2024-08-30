@@ -2014,4 +2014,98 @@ public class RequestBaseController extends BaseController {
 		}
 		return res;
 	}
+	
+	/*
+	public @ResponseBody JsonResponse draftRFC(HttpServletRequest request, Model model,
+			@RequestParam(value = "idSystem", required = true) Long idSystem,
+			@RequestParam(value = "fullName", required = true) Long fullName,
+			@RequestParam(value = "userName", required = false) String userName,
+			@RequestParam(value = "email", required = true) String email,
+			@RequestParam(value = "userGit", required = false) Long userGit) {
+		JsonResponse res = new JsonResponse();
+		try {
+
+			if (profileActive().equals("oracle")) {
+				User user = userService.getUserByUsername(getUserLogin().getUsername());
+				ArrayList<MyError> errors = new ArrayList<MyError>();
+				RequestBase requestMod = requestBaseService.findById(addRequest.getId());
+				addRequest.setTypePetition(requestMod.getTypePetition());
+				errors = validSections(addRequest, errors);
+
+				addRequest.setUser(requestMod.getUser());
+				addRequest.setNumRequest(requestMod.getNumRequest());
+				addRequest.setCodeProyect(requestMod.getCodeProyect());
+				addRequest.setSiges(requestMod.getSiges());
+				addRequest.setOperator(user.getFullName());
+				addRequest.setStatus(requestMod.getStatus());
+				addRequest.setUser(requestMod.getUser());
+				addRequest.setRequestDate(requestMod.getRequestDate());
+				if (addRequest.getSenders().length() < 256) {
+					addRequest.setSenders(addRequest.getSenders());
+				} else {
+					addRequest.setSenders(requestMod.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					addRequest.setMessage(addRequest.getMessage());
+				} else {
+					addRequest.setMessage(requestMod.getMessage());
+				}
+				addRequest.setSystemInfo(requestMod.getSystemInfo());
+				requestBaseService.update(addRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
+			} else if (profileActive().equals("postgres")) {
+				
+				PRequestBase paddRequest = new PRequestBase();
+				PUser user = puserService.getUserByUsername(getUserLogin().getUsername());
+				ArrayList<MyError> errors = new ArrayList<MyError>();
+				PRequestBase requestMod = prequestBaseService.findById(addRequest.getId());
+				paddRequest.setTypePetition(requestMod.getTypePetition());
+				TypePetition typePetition=new TypePetition();
+				typePetition.setCode(paddRequest.getTypePetition().getCode());
+				addRequest.setTypePetition(typePetition);
+				errors = validSections(addRequest, errors);
+				paddRequest.setId(addRequest.getId());
+				paddRequest.setCodeOpportunity(requestMod.getCodeOpportunity());
+				paddRequest.setUser(requestMod.getUser());
+				paddRequest.setNumRequest(requestMod.getNumRequest());
+				paddRequest.setCodeProyect(requestMod.getCodeProyect());
+				paddRequest.setSiges(requestMod.getSiges());
+				paddRequest.setOperator(user.getFullName());
+				paddRequest.setStatus(requestMod.getStatus());
+				paddRequest.setUser(requestMod.getUser());
+				paddRequest.setRequestDate(requestMod.getRequestDate());
+				if (addRequest.getSenders().length() < 256) {
+					paddRequest.setSenders(addRequest.getSenders());
+				} else {
+					paddRequest.setSenders(requestMod.getSenders());
+				}
+				if (addRequest.getMessage().length() < 256) {
+					paddRequest.setMessage(addRequest.getMessage());
+				} else {
+					paddRequest.setMessage(requestMod.getMessage());
+				}
+				paddRequest.setSystemInfo(requestMod.getSystemInfo());
+				prequestBaseService.update(paddRequest);
+				res.setStatus("success");
+				if (errors.size() > 0) {
+					// Se adjunta lista de errores
+					res.setStatus("fail");
+					res.setErrors(errors);
+				}
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "request");
+			res.setStatus("exception");
+			res.setException("Error al guardar la solicitud: " + e.getMessage());
+			logger.log(MyLevel.RELEASE_ERROR, e.toString());
+		}
+		return res;
+	}
+	*/
 }
