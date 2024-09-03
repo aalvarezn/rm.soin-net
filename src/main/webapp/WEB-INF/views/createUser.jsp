@@ -44,7 +44,7 @@
 				style="position: absolute; height: 5px; width: 100%; border-top-left-radius: 5px; border-top-right-radius: 5px; background-color: #009fe4;"></div>
 			<div class="body">
 				<form name='loginForm' accept-charset="ISO-8859-1"
-					action="<c:url value='/login' />" method='POST'>
+					action="<c:url value='/createUserNew' />" method='POST'>
 
 					<div class="msg">Crear usuario</div>
 					<div class="input-group">
@@ -52,8 +52,8 @@
 							class="material-icons gris">person</i>
 						</span>
 						<div class="form-line">
-							<input type="text" class="form-control" name="username"
-								maxlength="30" id="username" placeholder="NOMBRE COMPLETO"
+							<input type="text" class="form-control" name="fullName" value="${user.fullName }"
+								maxlength="30" id="fullName" placeholder="NOMBRE COMPLETO"
 								required title="Campo requerido"
 								oninvalid="this.setCustomValidity('Complete este campo')"
 								oninput="setCustomValidity('')" autofocus>
@@ -64,8 +64,8 @@
 							class="material-icons gris">alternate_email</i>
 						</span>
 						<div class="form-line">
-							<input type="text" class="form-control" name="username"
-								maxlength="30" id="username" placeholder="CORREO" required
+								<input type="text" class="form-control email" name="emailAddress" value="${user.emailAddress }"
+								maxlength="30" id="emailAddress" placeholder="usuario@soin.co.cr" required
 								title="Campo requerido"
 								oninvalid="this.setCustomValidity('Complete este campo')"
 								oninput="setCustomValidity('')" autofocus>
@@ -76,8 +76,8 @@
 							class="fab fa-github gris"></i>
 						</span>
 						<div class="form-line">
-							<input type="text" class="form-control" name="username"
-								maxlength="30" id="username" placeholder="USUARIO GIT" required
+							<input type="text" class="form-control" name="gitusername" value="${user.gitusername }"
+								maxlength="30" id="gitusername" placeholder="USUARIO GIT" required
 								title="Campo requerido"
 								oninvalid="this.setCustomValidity('Complete este campo')"
 								oninput="setCustomValidity('')" autofocus>
@@ -88,15 +88,15 @@
 							class="material-icons gris">work</i>
 						</span>
 						<div class="form-line">
-							<select class="form-control" name="project" id="project" required
+							<select class="form-control" name="projectId" id="projectId" required
 								title="Campo requerido"
 								oninvalid="this.setCustomValidity('Seleccione una opción')"
 								oninput="setCustomValidity('')" autofocus>
-								<option value="" disabled selected>Seleccione un
+							<option value="0">Seleccione un
 									proyecto</option>
-								<option value="proyecto1">Proyecto 1</option>
-								<option value="proyecto2">Proyecto 2</option>
-								<option value="proyecto3">Proyecto 3</option>
+								<c:forEach items="${projects}" var="project">
+									<option value="${project.id }">${project.code}</option>
+								</c:forEach>
 								<!-- Agrega más opciones aquí según sea necesario -->
 							</select>
 						</div>
@@ -106,15 +106,11 @@
 							class="material-icons gris">settings</i>
 						</span>
 						<div class="form-line">
-							<select class="form-control" name="project" id="project" required
+							<select class="form-control" disabled name="systemId" id="systemId" required
 								title="Campo requerido"
 								oninvalid="this.setCustomValidity('Seleccione una opción')"
 								oninput="setCustomValidity('')" autofocus>
-								<option value="" disabled selected>Seleccione un
-									sistema</option>
-								<option value="proyecto1">Sistema 1</option>
-								<option value="proyecto2">Sistema 2</option>
-								<option value="proyecto3">Sistema 3</option>
+								<option value="0">Seleccione un sistema</option>
 								<!-- Agrega más opciones aquí según sea necesario -->
 							</select>
 						</div>

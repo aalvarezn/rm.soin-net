@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -35,17 +36,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_Requests;
 import com.soin.sgrm.model.Parameter;
 import com.soin.sgrm.model.UserInfo;
 import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PParameter;
+import com.soin.sgrm.model.pos.PProject;
 import com.soin.sgrm.model.pos.PUserInfo;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.ProjectService;
 import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.service.corp.RMReleaseFileService;
 import com.soin.sgrm.service.pos.PEmailTemplateService;
 import com.soin.sgrm.service.pos.PParameterService;
+import com.soin.sgrm.service.pos.PProjectService;
 import com.soin.sgrm.service.pos.PUserInfoService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.EnviromentConfig;
@@ -90,6 +95,9 @@ public class HomeController extends BaseController {
 
 	@Autowired
 	private PParameterService pparamService;
+	
+	@Autowired
+	private PProjectService pprojectService;
 
 	EnviromentConfig envConfig = new EnviromentConfig();
 
@@ -203,6 +211,8 @@ public class HomeController extends BaseController {
 
 	@RequestMapping(value = "/createUser", method = RequestMethod.GET)
 	public String createUser(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		List<PProject> projects = pprojectService.listAll();
+		model.addAttribute("projects", projects);
 		return "/createUser";
 	}
 
@@ -270,6 +280,72 @@ public class HomeController extends BaseController {
 		}
 
 		return "/forgetPassword";
+	}
+	
+	
+	@RequestMapping(value = "/createUserNew", method = RequestMethod.POST)
+	public String createUserNew(HttpServletRequest request, @ModelAttribute("UserInfo") UserInfo user, ModelMap model,
+			Locale locale, HttpSession session) {
+		try {
+			if (CommonUtils.isValidEmailAddress(user.getEmailAddress())) {
+				
+				if(profileActive().equals("oracle")) {
+					UserInfo userInfo = userService.getUserByEmail(user.getEmailAddress());
+					if (userInfo != null) {
+						String code = "soin" + CommonUtils.getRandom();
+						String newPassword = encoder.encode(code);
+						userInfo.setPassword(newPassword);
+						Parameter param = paramService.findByCode(2);
+						if (param != null) {
+							EmailTemplate email = emailService.findById(Integer.parseInt(param.getParamValue()));
+							if (email != null) {
+								userService.changePassword(userInfo);
+								emailService.sendMail(userInfo, code, email);
+								model.addAttribute("successMessge", "Correo de restablecimiento enviado!");
+							} else {
+								model.addAttribute("errorMessge", "Correo definido no existe!");
+							}
+						} else {
+							model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+						}
+					} else {
+						model.addAttribute("errorMessge", "Correo ingresado no existe!");
+					}
+				}else if(profileActive().equals("postgres")) {
+					PUserInfo userInfo = puserService.getUserByEmail(user.getEmailAddress());
+					if (userInfo == null) {
+						String code = "soin" + CommonUtils.getRandom();
+						String newPassword = encoder.encode(code);
+						user.setPassword(newPassword);
+						PParameter param = pparamService.findByCode(2);
+						if (param != null) {
+							PEmailTemplate email = pemailService.findById(Integer.parseInt(param.getParamValue()));
+							if (email != null) {
+								puserService.changePassword(userInfo);
+								pemailService.sendMail(userInfo, code, email);
+								model.addAttribute("successMessge", "Correo de restablecimiento enviado!");
+							} else {
+								model.addAttribute("errorMessge", "Correo definido no existe!");
+							}
+						} else {
+							model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+						}
+					} else {
+						model.addAttribute("errorMessge", "El correo ingresado ya tiene una cuenta asociada!");
+					}
+				}
+			
+
+			} else {
+				model.addAttribute("errorMessge", "Correo ingresado invalido!");
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "home");
+			model.addAttribute("errorMessge", "Error: " + e.toString());
+		}
+		model.addAttribute("user", user);
+		return "/createUser";
 	}
 
 	@RequestMapping(value = "/info", method = RequestMethod.GET)
