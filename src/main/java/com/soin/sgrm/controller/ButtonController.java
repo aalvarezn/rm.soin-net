@@ -161,7 +161,7 @@ public class ButtonController extends BaseController {
 					PDetailButtonCommand pdetail = new PDetailButtonCommand();
 					pdetail.setId(detail.getId());
 					pdetail.setName(detail.getName());
-					pdetail.setDescription(detail.getName());
+					pdetail.setDescription(detail.getDescription());
 					pdetail.setTypeName(detail.getTypeName());
 					pdetail.setTypeText(detail.getTypeText());
 					pdetail.setIsRequired(detail.getIsRequired());
