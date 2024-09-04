@@ -269,6 +269,7 @@ public class ButtonController extends BaseController {
 			} else if (profileActive().equals("postgres")) {
 				PButtonCommand button = pbuttonService.findById(id);
 				/* TODO: Hacer la validación por el ContrabID */
+				if(button.getHaveCrontab()!=null) {
 				if (button.getHaveCrontab()) {
 					res.setStatus("fail");
 					PCrontab crontab;
@@ -276,6 +277,9 @@ public class ButtonController extends BaseController {
 					res.setException("El Botón esta asociado al Crontab " + crontab.getDescriptionCron());
 					return res;
 				}
+				pbuttonService.deleteButton(button);
+				res.setData(id + "");
+			}
 				pbuttonService.deleteButton(button);
 				res.setData(id + "");
 			}
@@ -381,7 +385,7 @@ public class ButtonController extends BaseController {
 					PDetailButtonCommand pdetail = new PDetailButtonCommand();
 					pdetail.setId(detail.getId());
 					pdetail.setName(detail.getName());
-					pdetail.setDescription(detail.getDescription());
+					pdetail.setDescription(detail.getName());
 					pdetail.setTypeName(detail.getTypeName());
 					pdetail.setTypeText(detail.getTypeText());
 					pdetail.setIsRequired(detail.getIsRequired());
@@ -684,7 +688,7 @@ public class ButtonController extends BaseController {
 					PDetailButtonFile pdetail = new PDetailButtonFile();
 					pdetail.setId(detail.getId());
 					pdetail.setName(detail.getName());
-					pdetail.setDescription(detail.getName());
+					pdetail.setDescription(detail.getDescription());
 					pdetail.setTypeName(detail.getTypeName());
 					pdetail.setTypeText(detail.getTypeText());
 					pdetail.setIsRequired(detail.getIsRequired());
