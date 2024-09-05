@@ -53,7 +53,7 @@
 						</span>
 						<div class="form-line">
 							<input type="text" class="form-control" name="fullName" value="${user.fullName }"
-								maxlength="30" id="fullName" placeholder="NOMBRE COMPLETO"
+								maxlength="30" id="fullName" placeholder="Nombre completo"
 								required title="Campo requerido"
 								oninvalid="this.setCustomValidity('Complete este campo')"
 								oninput="setCustomValidity('')" autofocus>
@@ -73,12 +73,11 @@
 					</div>
 					<div class="input-group">
 						<span class="input-group-addon"> <i
-							class="fab fa-github gris"></i>
+							class="fab fa-github material-icons gris"></i>
 						</span>
 						<div class="form-line">
 							<input type="text" class="form-control" name="gitusername" value="${user.gitusername }"
-								maxlength="30" id="gitusername" placeholder="USUARIO GIT" required
-								title="Campo requerido"
+								maxlength="30" id="gitusername" placeholder="Usuario git(opcional)" 
 								oninvalid="this.setCustomValidity('Complete este campo')"
 								oninput="setCustomValidity('')" autofocus>
 						</div>
