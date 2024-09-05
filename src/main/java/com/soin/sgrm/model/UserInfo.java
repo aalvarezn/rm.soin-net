@@ -89,6 +89,12 @@ public class UserInfo implements Serializable {
 
 	@Column(name = "DATE_JOINED")
 	private Timestamp dateJoined;
+	
+	@Transient
+	Integer systemId;
+	
+	@Transient
+	Integer projectId;
 
 	@Transient
 	List<Integer> rolesId;
@@ -232,4 +238,20 @@ public class UserInfo implements Serializable {
 		this.dateJoined = dateJoined;
 	}
 
+	public Integer getSystemId() {
+		return systemId;
+	}
+
+	public void setSystemId(Integer systemId) {
+		this.systemId = systemId;
+	}
+
+	public Integer getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(Integer projectId) {
+		this.projectId = projectId;
+	}
+	
 }

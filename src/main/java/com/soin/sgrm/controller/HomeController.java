@@ -8,10 +8,14 @@ import java.io.InputStream;
 import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -32,25 +36,32 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.EmailTemplate;
 import com.soin.sgrm.model.Errors_Requests;
 import com.soin.sgrm.model.Parameter;
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.pos.PAuthority;
 import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PParameter;
 import com.soin.sgrm.model.pos.PProject;
+import com.soin.sgrm.model.pos.PSystem;
 import com.soin.sgrm.model.pos.PUserInfo;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
 import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.service.corp.RMReleaseFileService;
+import com.soin.sgrm.service.pos.PAuthorityService;
 import com.soin.sgrm.service.pos.PEmailTemplateService;
 import com.soin.sgrm.service.pos.PParameterService;
 import com.soin.sgrm.service.pos.PProjectService;
+import com.soin.sgrm.service.pos.PSystemService;
 import com.soin.sgrm.service.pos.PUserInfoService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.EnviromentConfig;
@@ -74,7 +85,7 @@ public class HomeController extends BaseController {
 
 	@Autowired
 	UserInfoService userService;
-	
+
 	@Autowired
 	PUserInfoService puserService;
 
@@ -89,15 +100,24 @@ public class HomeController extends BaseController {
 
 	@Autowired
 	private ParameterService paramService;
-	
+
 	@Autowired
 	private PEmailTemplateService pemailService;
 
 	@Autowired
 	private PParameterService pparamService;
-	
+
 	@Autowired
 	private PProjectService pprojectService;
+
+	@Autowired
+	SystemService systemService;
+
+	@Autowired
+	PSystemService psystemService;
+
+	@Autowired
+	PAuthorityService pauthorityService;
 
 	EnviromentConfig envConfig = new EnviromentConfig();
 
@@ -115,6 +135,7 @@ public class HomeController extends BaseController {
 		}
 		return "";
 	}
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
@@ -129,7 +150,7 @@ public class HomeController extends BaseController {
 		}
 		return "redirect:/release/";
 	}
-	
+
 	@RequestMapping(value = "/homeRFC", method = RequestMethod.GET)
 	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
@@ -139,6 +160,7 @@ public class HomeController extends BaseController {
 
 		return "redirect:/rfc/";
 	}
+
 	@RequestMapping(value = "/homeRequest", method = RequestMethod.GET)
 	public String indexRequest(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
@@ -148,25 +170,22 @@ public class HomeController extends BaseController {
 
 		return "redirect:/request/";
 	}
-	
+
 	@RequestMapping(value = "/homeIncidence", method = RequestMethod.GET)
 	public String indexIncidence(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		return "redirect:/incidence/";
 	}
-	
+
 	@RequestMapping(value = "/homeIncidenceAttention", method = RequestMethod.GET)
 	public String indexIncidenceAttention(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		return "redirect:/incidenceManagement/";
 	}
-	
+
 	@RequestMapping(value = "/homeBaseKnowledge", method = RequestMethod.GET)
 	public String indexBaseKnow(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
-
-
 		return "redirect:/baseKnowledge/";
 	}
-
 
 	@RequestMapping(value = "/successLogin", method = RequestMethod.GET)
 	public String successLogin(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
@@ -176,7 +195,6 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
 			return "redirect:/baseKnowledge/";
 		}
-		
 
 		return "redirect:/";
 	}
@@ -216,14 +234,13 @@ public class HomeController extends BaseController {
 		return "/createUser";
 	}
 
-	
 	@RequestMapping(value = "/recoverPassword", method = RequestMethod.POST)
 	public String recoverPassword(HttpServletRequest request, @ModelAttribute("UserInfo") UserInfo user, ModelMap model,
 			Locale locale, HttpSession session) {
 		try {
 			if (CommonUtils.isValidEmailAddress(user.getEmailAddress())) {
-				
-				if(profileActive().equals("oracle")) {
+
+				if (profileActive().equals("oracle")) {
 					UserInfo userInfo = userService.getUserByEmail(user.getEmailAddress());
 					if (userInfo != null) {
 						String code = "soin" + CommonUtils.getRandom();
@@ -245,7 +262,7 @@ public class HomeController extends BaseController {
 					} else {
 						model.addAttribute("errorMessge", "Correo ingresado no existe!");
 					}
-				}else if(profileActive().equals("postgres")) {
+				} else if (profileActive().equals("postgres")) {
 					PUserInfo userInfo = puserService.getUserByEmail(user.getEmailAddress());
 					if (userInfo != null) {
 						String code = "soin" + CommonUtils.getRandom();
@@ -268,7 +285,6 @@ public class HomeController extends BaseController {
 						model.addAttribute("errorMessge", "Correo ingresado no existe!");
 					}
 				}
-			
 
 			} else {
 				model.addAttribute("errorMessge", "Correo ingresado invalido!");
@@ -281,15 +297,14 @@ public class HomeController extends BaseController {
 
 		return "/forgetPassword";
 	}
-	
-	
+
 	@RequestMapping(value = "/createUserNew", method = RequestMethod.POST)
 	public String createUserNew(HttpServletRequest request, @ModelAttribute("UserInfo") UserInfo user, ModelMap model,
 			Locale locale, HttpSession session) {
 		try {
 			if (CommonUtils.isValidEmailAddress(user.getEmailAddress())) {
-				
-				if(profileActive().equals("oracle")) {
+
+				if (profileActive().equals("oracle")) {
 					UserInfo userInfo = userService.getUserByEmail(user.getEmailAddress());
 					if (userInfo != null) {
 						String code = "soin" + CommonUtils.getRandom();
@@ -311,30 +326,55 @@ public class HomeController extends BaseController {
 					} else {
 						model.addAttribute("errorMessge", "Correo ingresado no existe!");
 					}
-				}else if(profileActive().equals("postgres")) {
+				} else if (profileActive().equals("postgres")) {
 					PUserInfo userInfo = puserService.getUserByEmail(user.getEmailAddress());
 					if (userInfo == null) {
 						String code = "soin" + CommonUtils.getRandom();
 						String newPassword = encoder.encode(code);
 						user.setPassword(newPassword);
 						PParameter param = pparamService.findByCode(2);
-						if (param != null) {
-							PEmailTemplate email = pemailService.findById(Integer.parseInt(param.getParamValue()));
-							if (email != null) {
-								puserService.changePassword(userInfo);
-								pemailService.sendMail(userInfo, code, email);
-								model.addAttribute("successMessge", "Correo de restablecimiento enviado!");
-							} else {
-								model.addAttribute("errorMessge", "Correo definido no existe!");
-							}
-						} else {
-							model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+						PAuthority temp = null;
+						PUserInfo puserInfo = new PUserInfo();
+						Set<PAuthority> pauthsNews = new HashSet<>();
+						PAuthority rol = pauthorityService.findByName("General");
+						pauthsNews.add(rol);
+						puserInfo.setAuthorities(pauthsNews);
+						puserInfo.setActive(true);
+						puserInfo.setIsReleaseManager(0);
+						puserInfo.setIsSuperUser(0);
+						puserInfo.setStaff(false);
+						puserInfo.setPassword(user.getPassword());
+						puserInfo.setDateJoined(CommonUtils.getSystemTimestamp());
+						puserInfo.setUsername(user.getEmailAddress().split("@")[0]);
+						puserInfo.setGitusername(user.getGitusername());
+						puserInfo.setShortName(user.getShortName());
+						puserInfo.setEmailAddress(user.getEmailAddress());
+						puserInfo.setFullName(user.getFullName());
+
+						if (!puserService.uniqueGitUsername(puserInfo)) {
+							model.addAttribute("errorMessge", "El nombre de usuario de git ya se encuentra en uso");
+							model.addAttribute("user", user);
+							List<PProject> projects = pprojectService.listAll();
+							model.addAttribute("projects", projects);
+							return "/createUser";
 						}
+						puserService.saveUserInfo(puserInfo);
+						model.addAttribute("successMessge", "Usuario creado correctamente");
+						return "/login";
+						/*
+						 * if (param != null) { PEmailTemplate email =
+						 * pemailService.findById(Integer.parseInt(param.getParamValue())); if (email !=
+						 * null) { puserService.changePassword(userInfo);
+						 * pemailService.sendMail(userInfo, code, email);
+						 * model.addAttribute("successMessge", "Correo de restablecimiento enviado!"); }
+						 * else { model.addAttribute("errorMessge", "Correo definido no existe!"); } }
+						 * else { model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+						 * }
+						 */
 					} else {
 						model.addAttribute("errorMessge", "El correo ingresado ya tiene una cuenta asociada!");
 					}
 				}
-			
 
 			} else {
 				model.addAttribute("errorMessge", "Correo ingresado invalido!");
@@ -345,6 +385,9 @@ public class HomeController extends BaseController {
 			model.addAttribute("errorMessge", "Error: " + e.toString());
 		}
 		model.addAttribute("user", user);
+
+		List<PProject> projects = pprojectService.listAll();
+		model.addAttribute("projects", projects);
 		return "/createUser";
 	}
 
@@ -487,4 +530,26 @@ public class HomeController extends BaseController {
 		FileCopyUtils.copy(inputStream, response.getOutputStream());
 	}
 
+	@RequestMapping(value = { "/getSystem/{id}" }, method = RequestMethod.GET)
+	public @ResponseBody List<?> getSystem(@PathVariable Integer id, Locale locale, Model model) {
+
+		try {
+			if (profileActive().equals("oracle")) {
+				List<System> systems = new ArrayList<>();
+				systems = systemService.getSystemByProject(id);
+				return systems;
+			} else if (profileActive().equals("postgres")) {
+				List<PSystem> systems = new ArrayList<>();
+				systems = psystemService.getSystemByProject(id);
+				return systems;
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "system");
+
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 }

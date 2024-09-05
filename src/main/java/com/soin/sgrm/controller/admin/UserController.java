@@ -268,7 +268,7 @@ public class UserController extends BaseController {
 						pauthsNews.add(temp);
 					}
 				}
-
+				puserInfo.setAuthorities(pauthsNews);
 				puserInfo.setActive(true);
 				puserInfo.setIsReleaseManager(0);
 				puserInfo.setIsSuperUser(0);
