@@ -35,7 +35,7 @@ function dropDownChange(){
 					$('#systemId').prop('disabled', false);
 					//$('#systemId').selectpicker('refresh');
 				}else{
-					resetDropPriorityMain();
+					resetDrop();
 				}
 				
 				
@@ -59,6 +59,15 @@ function resetDropPriorityMain(){
 
 }
 
+function resetDrop(){
+
+	var s = '';
+	s+='<option value="0">Sin sistemas disponibles/option>';
+	$('#systemId').html(s);
+	$('#systemId').prop('disabled',true);
+	//$('#systemId').selectpicker('refresh');
+
+}
 function getCont() {
 	var fullUrl = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
 	return fullUrl;

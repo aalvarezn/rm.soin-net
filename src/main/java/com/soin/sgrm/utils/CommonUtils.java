@@ -134,7 +134,10 @@ public class CommonUtils {
 	public static boolean isValidEmailAddress(String email) {
 		return EmailValidator.getInstance().isValid(email);
 	}
-
+	  public static boolean isValidEmail(String email) {
+	        String requiredDomain = "@soin.co.cr";
+	        return email.endsWith(requiredDomain);
+	    }
 	public static String getRandom() {
 		// define the range
 		int max = 9, min = 1;

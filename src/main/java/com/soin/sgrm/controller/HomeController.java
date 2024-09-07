@@ -148,6 +148,10 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
 			return "redirect:/baseKnowledge/";
 		}
+		
+		if (request.isUserInRole("ROLE_General")) {
+			return "redirect:/general/";
+		}
 		return "redirect:/release/";
 	}
 
@@ -303,8 +307,9 @@ public class HomeController extends BaseController {
 			Locale locale, HttpSession session) {
 		try {
 			if (CommonUtils.isValidEmailAddress(user.getEmailAddress())) {
-
+				if(CommonUtils.isValidEmail(user.getEmailAddress())) {
 				if (profileActive().equals("oracle")) {
+				
 					UserInfo userInfo = userService.getUserByEmail(user.getEmailAddress());
 					if (userInfo != null) {
 						String code = "soin" + CommonUtils.getRandom();
@@ -332,7 +337,7 @@ public class HomeController extends BaseController {
 						String code = "soin" + CommonUtils.getRandom();
 						String newPassword = encoder.encode(code);
 						user.setPassword(newPassword);
-						PParameter param = pparamService.findByCode(2);
+						PParameter param = pparamService.findByCode(33);
 						PAuthority temp = null;
 						PUserInfo puserInfo = new PUserInfo();
 						Set<PAuthority> pauthsNews = new HashSet<>();
@@ -359,7 +364,16 @@ public class HomeController extends BaseController {
 							return "/createUser";
 						}
 						puserService.saveUserInfo(puserInfo);
-						model.addAttribute("successMessge", "Usuario creado correctamente");
+						
+						 if (param != null) { PEmailTemplate email =
+								  pemailService.findById(Integer.parseInt(param.getParamValue())); if (email !=
+								 null) { puserService.changePassword(puserInfo);
+								  pemailService.sendMail(puserInfo, code, email);
+								  model.addAttribute("successMessge", "Correo de restablecimiento enviado!"); }
+								 else { model.addAttribute("errorMessge", "Correo definido no existe!"); } }
+								  else { model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+								  }
+						model.addAttribute("successMessge", "Usuario creado correctamente revisar su correo con los credenciales");
 						return "/login";
 						/*
 						 * if (param != null) { PEmailTemplate email =
@@ -375,11 +389,13 @@ public class HomeController extends BaseController {
 						model.addAttribute("errorMessge", "El correo ingresado ya tiene una cuenta asociada!");
 					}
 				}
-
+				}else {
+					model.addAttribute("errorMessge", "Correo ingresado no pertenece a un dominio valido!");
+				}
 			} else {
 				model.addAttribute("errorMessge", "Correo ingresado invalido!");
 			}
-
+			
 		} catch (Exception e) {
 			Sentry.capture(e, "home");
 			model.addAttribute("errorMessge", "Error: " + e.toString());
