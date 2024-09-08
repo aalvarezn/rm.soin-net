@@ -38,6 +38,15 @@
 				${errorMessge}
 			</div>
 		</c:if>
+		<c:if test="${not empty successMessge}">
+			<div class="alert bg-blue alert-dismissible" role="alert">
+				<button type="button" class="close" data-dismiss="alert"
+					aria-label="Close">
+					<span aria-hidden="true">X</span>
+				</button>
+				${successMessge}
+			</div>
+		</c:if>
 		<div class="card" style="border-radius: 5px;">
 			<div
 				style="position: absolute; height: 5px; width: 100%; border-top-left-radius: 5px; border-top-right-radius: 5px; background-color: #009fe4;"></div>

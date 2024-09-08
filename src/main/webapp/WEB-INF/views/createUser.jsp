@@ -87,8 +87,7 @@
 							class="material-icons gris">work</i>
 						</span>
 						<div class="form-line">
-							<select class="form-control" name="projectId" id="projectId" required
-								title="Campo requerido"
+							<select class="form-control" name="projectId" id="projectId"
 								oninvalid="this.setCustomValidity('Seleccione una opción')"
 								oninput="setCustomValidity('')" autofocus>
 							<option value="0">Seleccione un
@@ -105,8 +104,7 @@
 							class="material-icons gris">settings</i>
 						</span>
 						<div class="form-line">
-							<select class="form-control" disabled name="systemId" id="systemId" required
-								title="Campo requerido"
+							<select class="form-control" disabled name="systemId" id="systemId"
 								oninvalid="this.setCustomValidity('Seleccione una opción')"
 								oninput="setCustomValidity('')" autofocus>
 								<option value="0">Seleccione un sistema</option>
