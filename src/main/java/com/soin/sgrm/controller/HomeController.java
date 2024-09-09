@@ -442,10 +442,8 @@ public class HomeController extends BaseController {
 									paddRequest.setStatus(status);
 									paddRequest.setUser(manager);
 									paddRequest.setRequestDate(CommonUtils.getSystemTimestamp());
-
 									paddRequest.setMotive("Inicio de Solicitud");
 									paddRequest.setOperator(user.getFullName());
-
 									paddRequest.setSiges(siges);
 									paddRequest.setCodeProyect(siges.getCodeSiges());
 									paddRequest.setSystemInfo(psystemService.findById(user.getSystemId()));
@@ -454,6 +452,7 @@ public class HomeController extends BaseController {
 											paddRequest.getCodeProyect(), paddRequest.getTypePetition().getCode(),
 											paddRequest.getSystemInfo().getCode()));
 									prequestBaseService.save(paddRequest);
+									//Insercion de usuario a la solicitud 
 									PRequestRM_P1_R4 puserRequestAdd = new PRequestRM_P1_R4();
 									puserRequestAdd.setEspec("Por favor brindar acceso en el SGRM al usuario "+puserInfo.getFullName()+" y ligarlo al sistema "+systemUsersManager.getCode());
 									puserRequestAdd.setName(puserInfo.getFullName());
