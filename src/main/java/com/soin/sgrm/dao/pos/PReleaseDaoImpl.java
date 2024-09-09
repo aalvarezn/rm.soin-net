@@ -469,11 +469,12 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 			sessionObj.save(release);
+			sessionObj.flush();
 			if (!tpos.equalsIgnoreCase("-1")) {
 				for (int i = 0; i < ids.length; i++) {
 					id = Integer.parseInt(ids[i]);
 					sql = String.format(
-							"INSERT INTO \"RELEASES_RELEASE_REQUERIMIENTO\" ( \"ID\",\"RELEASE_ID\",\"REQUERIMIENTO_ID\") VALUES ( null, %s, %s ) ",
+							"INSERT INTO \"RELEASES_RELEASE_REQUERIMIENTO\" ( \"RELEASE_ID\",\"REQUERIMIENTO_ID\") VALUES (  %s, %s ) ",
 							release.getId(), id);
 					query = sessionObj.createSQLQuery(sql);
 					query.executeUpdate();
@@ -791,13 +792,13 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		String sql = "";
 		Query query = null;
 		sql = String.format(
-				"SELECT COUNT(rr.\"ID\") FROM \"RELEASES_RELEASE\" rr WHERE rr.\"ID\" IN (SELECT rrd.\"TO_RELEASE_ID\"  FROM \"RELEASES_RELEASE_DEPENDENCIAS\" rrd WHERE \"FROM_RELEASE_ID\" =%s) AND rr.\"ESTADO_ID\" IN(SELECT re.ID FROM \"RELEASES_ESTADO\" re WHERE re.\"NOMBRE\" IN('Borrador', 'Solicitado'))",
+				"SELECT COUNT(rr.\"ID\") FROM \"RELEASES_RELEASE\" rr WHERE rr.\"ID\" IN (SELECT rrd.\"TO_RELEASE_ID\"  FROM \"RELEASES_RELEASE_DEPENDENCIAS\" rrd WHERE \"FROM_RELEASE_ID\" =%s) AND rr.\"ESTADO_ID\" IN(SELECT re.\"ID\" FROM \"RELEASES_ESTADO\" re WHERE re.\"NOMBRE\" IN('Borrador', 'Solicitado'))",
 				id);
 		query = getSession().createSQLQuery(sql);
 
-		BigDecimal test = (BigDecimal) query.uniqueResult();
-
-		return test.intValueExact();
+	
+		Number result = (Number) query.uniqueResult();
+		return result.intValue();
 
 	}
 
@@ -806,7 +807,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion")))
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"),Restrictions.eq("statuses.name", "Preproduccion")))
 				.add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla

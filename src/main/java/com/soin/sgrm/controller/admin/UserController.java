@@ -182,11 +182,13 @@ public class UserController extends BaseController {
 				}
 				puserInfo.checkAuthoritiesExists(pauthsNews);
 
-				if (!puserService.uniqueGitUsername(puserInfo)) {
-					res.setStatus("exception");
-					res.setException("El nombre de usuario de git ya se encuentra en uso ");
+				if(!puserInfo.getGitusername().isEmpty()) {
+					if (!puserService.uniqueGitUsername(puserInfo)) {
+						res.setStatus("exception");
+						res.setException("El nombre de usuario de git ya se encuentra en uso ");
+					}
 				}
-				
+			
 				if (!puserService.uniqueUsername(puserInfo)) {
 					res.setStatus("exception");
 					res.setException("El nombre de usuario ya se encuentra en uso ");
@@ -266,7 +268,7 @@ public class UserController extends BaseController {
 						pauthsNews.add(temp);
 					}
 				}
-
+				puserInfo.setAuthorities(pauthsNews);
 				puserInfo.setActive(true);
 				puserInfo.setIsReleaseManager(0);
 				puserInfo.setIsSuperUser(0);

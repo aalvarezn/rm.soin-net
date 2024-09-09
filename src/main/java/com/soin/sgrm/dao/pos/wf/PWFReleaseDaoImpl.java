@@ -157,7 +157,10 @@ public class PWFReleaseDaoImpl implements PWFReleaseDao {
 
 			crit.add(Restrictions.eq("type.id", 1));
 			crit.add(Restrictions.isNotNull("node"));
-			crit.addOrder(Order.desc("createDate"));
+			if(!count) {
+				crit.addOrder(Order.desc("createDate"));
+			}
+			
 		}else {
 			//crit.add(Restrictions.eq("id", null));
 			
