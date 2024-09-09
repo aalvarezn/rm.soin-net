@@ -62,7 +62,7 @@ function resetDropPriorityMain(){
 function resetDrop(){
 
 	var s = '';
-	s+='<option value="0">Sin sistemas disponibles/option>';
+	s+='<option value="0">Sin sistemas disponibles</option>';
 	$('#systemId').html(s);
 	$('#systemId').prop('disabled',true);
 	//$('#systemId').selectpicker('refresh');
