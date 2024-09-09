@@ -15,7 +15,7 @@ public interface WFReleaseService {
 			String[] filtred, String[] dateRange, Integer systemId, Integer statusId) throws SQLException, ParseException;
 	
 	JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength, String sSearch,
-			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, Object[] systemsId, Integer idUser) throws SQLException, ParseException;
+			String[] filtred, String[] dateRange, Integer systemId, Integer statusId, List<Integer> listIdRelease, Integer idUser, Object[] systemIds) throws SQLException, ParseException;
 	
 	WFRelease findWFReleaseById(Integer id);
 
@@ -26,6 +26,8 @@ public interface WFReleaseService {
 	void wfStatusReleaseWithOutMin(WFRelease release);
 
 	void updateReleaseNode(WFRelease release);
+
+
 
 	
 }

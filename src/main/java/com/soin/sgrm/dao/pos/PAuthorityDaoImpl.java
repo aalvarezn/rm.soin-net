@@ -51,4 +51,11 @@ public class PAuthorityDaoImpl implements PAuthorityDao {
 		sessionFactory.getCurrentSession().delete(authority);
 	}
 
+	@Override
+	public PAuthority findByName(String name) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PAuthority.class);
+		crit.add(Restrictions.eq("name", name));
+		return (PAuthority) crit.uniqueResult();
+	}
+
 }

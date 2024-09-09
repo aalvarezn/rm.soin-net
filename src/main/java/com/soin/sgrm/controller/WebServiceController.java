@@ -74,6 +74,7 @@ import com.soin.sgrm.model.pos.PPriority;
 import com.soin.sgrm.model.pos.PRelease;
 import com.soin.sgrm.model.pos.PReleaseEdit;
 import com.soin.sgrm.model.pos.PReleaseObjectEdit;
+import com.soin.sgrm.model.pos.PReleaseSummaryFile;
 import com.soin.sgrm.model.pos.PReleaseUser;
 import com.soin.sgrm.model.pos.PRisk;
 import com.soin.sgrm.model.pos.PStatus;
@@ -490,7 +491,15 @@ public class WebServiceController extends BaseController {
 					preleaseService.save(release, idRequeriment.toString());
 				}
 				res.setData(release.getReleaseNumber() + "");
-
+				String basePath = env.getProperty("fileStore.path");
+				PReleaseSummaryFile releaseSummary = preleaseService.findByIdSummaryFile(release.getId());
+				Project project = projectService.findById(release.getSystem().getProyectId());
+				res.setPath(CommonUtils.createPath(release.getId(),basePath,releaseSummary,project));
+				if (addObjects(releaseWs.getObjects(), release.getId())) {
+					System.out.print("si");
+				} else {
+					System.out.print("no");
+				}
 
 				return release.getReleaseNumber();
 			} catch (SQLException ex) {

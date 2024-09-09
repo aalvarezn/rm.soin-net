@@ -118,4 +118,6 @@ public interface ReleaseDao {
 
 	String getLastStatusHistory(Integer releaseId);
 
+	List<Integer> findByIdManager(Integer idUser);
+
 }

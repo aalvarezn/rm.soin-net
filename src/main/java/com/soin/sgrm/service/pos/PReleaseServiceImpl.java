@@ -557,6 +557,12 @@ public class PReleaseServiceImpl implements PReleaseService {
 
 		return dao.findAllFastRelease(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias, 1);
 	}
+
+	@Override
+	public List<Integer> findByIdManager(Integer idUser) {
+		
+		return dao.findByIdManager(idUser);
+	}
 	
 	
 

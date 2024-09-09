@@ -231,7 +231,7 @@ public class CrontabController extends BaseController {
 				for (PDetailButtonCommand detail : pcrontrab.getButton().getDetailsButtonCommands()) {
 					detail.setButton(null);
 				}
-				res.setObj(crontab);
+				res.setObj(pcrontrab);
 			}
 		
 		} catch (SQLException ex) {

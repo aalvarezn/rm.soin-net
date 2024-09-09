@@ -63,6 +63,7 @@ import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.SystemInfo;
 import com.soin.sgrm.model.pos.PBaseKnowledge;
 import com.soin.sgrm.model.pos.PBaseKnowledgeFile;
+import com.soin.sgrm.model.pos.PDocTemplate;
 import com.soin.sgrm.model.pos.PIncidence;
 import com.soin.sgrm.model.pos.PIncidenceFile;
 import com.soin.sgrm.model.pos.PRFC;
@@ -680,7 +681,7 @@ public class FileController extends BaseController {
 					FileCopyUtils.copy(inputStream, response.getOutputStream());
 				}
 			} else if (profileActive().equals("postgres")) {
-				DocTemplate docFile = docsTemplateService.findById(docId);
+				PDocTemplate docFile = pdocsTemplateService.findById(docId);
 				PReleaseSummary release = preleaseService.findById(releaseId);
 
 				if (docFile != null) {
@@ -703,7 +704,7 @@ public class FileController extends BaseController {
 					Docx docx = new Docx(outFile.getPath());
 					docx.setVariablePattern(new VariablePattern("{{", "}}"));
 					// preparing variables
-					docxVariables = new DocxVariables();
+					pdocxVariables = new PDocxVariables();
 
 					if (docFile.getComponentGenerator().equals("GenerarDocumentoAIA")) {
 						generateAIADocument(release, docFile.getTemplateName());
@@ -730,7 +731,7 @@ public class FileController extends BaseController {
 						generateBRM_IFW_BODocument(release, docFile.getTemplateName());
 					}
 
-					docx.fillTemplate(docxVariables.getVariables());
+					docx.fillTemplate(pdocxVariables.getVariables());
 					docx.save(outFile.getPath());
 					XWPFDocument document = docx.getXWPFDocument();
 					lineBreak(document, outFile);
@@ -1052,6 +1053,7 @@ public class FileController extends BaseController {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void preloadCommands(PReleaseSummary release, File fileTemplate, File outFile) throws Exception {
+		
 		pcontext = new PDocxContext();
 		pcontext.loadCrontabs(release, systemService);
 		pcontext.loadButtonCommands(release, systemService);
@@ -1060,7 +1062,7 @@ public class FileController extends BaseController {
 		DocxStamper stamper = new DocxStamperConfiguration().build();
 		InputStream inputstream = new FileInputStream(fileTemplate);
 		OutputStream os = new FileOutputStream(outFile);
-		stamper.stamp(inputstream, context, os);
+		stamper.stamp(inputstream, pcontext, os);
 		os.close();
 	}
 	

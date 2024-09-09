@@ -14,6 +14,7 @@ import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -22,6 +23,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -437,6 +439,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			transObj = sessionObj.beginTransaction();
 			for (int i = 0; i < objects.size(); i++) {
 				sessionObj.save(objects.get(i));
+				 sessionObj.flush();
 				sql = String.format(
 						" INSERT INTO \"RELEASES_RELEASE_OBJETOS\" (  \"RELEASE_ID\",\"OBJETO_ID\" ) VALUES (  %s , %s )",
 						release_id, objects.get(i).getId());
@@ -466,11 +469,12 @@ public class PReleaseDaoImpl implements PReleaseDao {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
 			sessionObj.save(release);
+			sessionObj.flush();
 			if (!tpos.equalsIgnoreCase("-1")) {
 				for (int i = 0; i < ids.length; i++) {
 					id = Integer.parseInt(ids[i]);
 					sql = String.format(
-							"INSERT INTO \"RELEASES_RELEASE_REQUERIMIENTO\" ( \"ID\",\"RELEASE_ID\",\"REQUERIMIENTO_ID\") VALUES ( null, %s, %s ) ",
+							"INSERT INTO \"RELEASES_RELEASE_REQUERIMIENTO\" ( \"RELEASE_ID\",\"REQUERIMIENTO_ID\") VALUES (  %s, %s ) ",
 							release.getId(), id);
 					query = sessionObj.createSQLQuery(sql);
 					query.executeUpdate();
@@ -788,13 +792,13 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		String sql = "";
 		Query query = null;
 		sql = String.format(
-				"SELECT COUNT(rr.\"ID\") FROM \"RELEASES_RELEASE\" rr WHERE rr.\"ID\" IN (SELECT rrd.\"TO_RELEASE_ID\"  FROM \"RELEASES_RELEASE_DEPENDENCIAS\" rrd WHERE \"FROM_RELEASE_ID\" =%s) AND rr.\"ESTADO_ID\" IN(SELECT re.ID FROM \"RELEASES_ESTADO\" re WHERE re.\"NOMBRE\" IN('Borrador', 'Solicitado'))",
+				"SELECT COUNT(rr.\"ID\") FROM \"RELEASES_RELEASE\" rr WHERE rr.\"ID\" IN (SELECT rrd.\"TO_RELEASE_ID\"  FROM \"RELEASES_RELEASE_DEPENDENCIAS\" rrd WHERE \"FROM_RELEASE_ID\" =%s) AND rr.\"ESTADO_ID\" IN(SELECT re.\"ID\" FROM \"RELEASES_ESTADO\" re WHERE re.\"NOMBRE\" IN('Borrador', 'Solicitado'))",
 				id);
 		query = getSession().createSQLQuery(sql);
 
-		BigDecimal test = (BigDecimal) query.uniqueResult();
-
-		return test.intValueExact();
+	
+		Number result = (Number) query.uniqueResult();
+		return result.intValue();
 
 	}
 
@@ -803,7 +807,7 @@ public class PReleaseDaoImpl implements PReleaseDao {
 
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PReleases_WithoutObj.class);
 		crit.createAlias("system", "system");
-		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion")))
+		crit.createAlias("status", "statuses").add(Restrictions.or(Restrictions.eq("statuses.name", "Certificacion"),Restrictions.eq("statuses.name", "Preproduccion")))
 				.add(Restrictions.eq("system.id", systemId));
 
 		// Valores de busqueda en la tabla
@@ -1180,5 +1184,41 @@ public class PReleaseDaoImpl implements PReleaseDao {
 		sheet.setRecordsFiltered(recordsTotal);
 		sheet.setData(list);
 		return sheet;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Integer> findByIdManager(Integer idUser) {
+		 Session sessionObj = null;
+		    try {
+		    	
+		        sessionObj = sessionFactory.openSession();
+		        // Define the SQL query with a placeholder for the parameter
+		        String sql = "SELECT rrrc.\"RELEASE_ID\" " +
+		                     "FROM \"RELEASES_RELEASE_REQUERIMIENTO\" rrrc " +
+		                     "JOIN \"RELEASES_RELEASE\" rr ON rrrc.\"RELEASE_ID\" = rr.\"ID\" " +
+		                     "WHERE rrrc.\"REQUERIMIENTO_ID\" IN (" +
+		                     "    SELECT \"ID\" FROM \"REQUERIMIENTOS_REQUERIMIENTO\" WHERE \"GESTOR_ID\" = :idManager" +
+		                     ") AND rr.\"NODO_ID\" IS NOT NULL";
+
+		        // Create the SQLQuery object with the parameterized query
+		        SQLQuery query = (SQLQuery) sessionObj.createSQLQuery(sql)
+		                .addScalar("\"RELEASE_ID\"", StandardBasicTypes.INTEGER)
+		                .setParameter("idManager", idUser);
+
+		        // Execute the query and retrieve the result list
+		        List<Integer> idList = query.list();
+		        return idList;
+
+		    } catch (Exception e) {
+		        Sentry.capture(e, "idRequest");
+		    } finally {
+		        // Close the session in the finally block to ensure resource cleanup
+		        if (sessionObj != null) {
+		            sessionObj.close();
+		        }
+		    }
+
+		    return null; // Return null if an exception occurs
 	}
 }
