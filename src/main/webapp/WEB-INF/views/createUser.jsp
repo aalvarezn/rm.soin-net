@@ -52,9 +52,9 @@
 							class="material-icons gris">person</i>
 						</span>
 						<div class="form-line">
-							<input type="text" class="form-control" name="fullName" value="${user.fullName }"
-								maxlength="30" id="fullName" placeholder="Nombre completo"
-								required title="Campo requerido"
+							<input type="text" class="form-control" name="fullName"
+								value="${user.fullName }" maxlength="30" id="fullName"
+								placeholder="Nombre completo" required title="Campo requerido"
 								oninvalid="this.setCustomValidity('Complete este campo')"
 								oninput="setCustomValidity('')" autofocus>
 						</div>
@@ -64,11 +64,12 @@
 							class="material-icons gris">alternate_email</i>
 						</span>
 						<div class="form-line">
-								<input type="text" class="form-control email" name="emailAddress" value="${user.emailAddress }"
-								maxlength="30" id="emailAddress" placeholder="usuario@soin.co.cr" required
+							<input type="text" class="form-control email" name="emailAddress"
+								value="${user.emailAddress }" maxlength="30" id="emailAddress"
+								placeholder="usuario@soin.co.cr" required
 								title="Campo requerido"
-								oninvalid="this.setCustomValidity('Complete este campo')"
-								oninput="setCustomValidity('')" autofocus>
+								
+								oninput="validateEmail(this)" autofocus>
 						</div>
 					</div>
 					<div class="input-group">
@@ -76,8 +77,9 @@
 							class="fab fa-github material-icons gris"></i>
 						</span>
 						<div class="form-line">
-							<input type="text" class="form-control" name="gitusername" value="${user.gitusername }"
-								maxlength="30" id="gitusername" placeholder="Usuario git(opcional)" 
+							<input type="text" class="form-control" name="gitusername"
+								value="${user.gitusername }" maxlength="30" id="gitusername"
+								placeholder="Usuario git(opcional)"
 								oninvalid="this.setCustomValidity('Complete este campo')"
 								oninput="setCustomValidity('')" autofocus>
 						</div>
@@ -90,8 +92,7 @@
 							<select class="form-control" name="projectId" id="projectId"
 								oninvalid="this.setCustomValidity('Seleccione una opción')"
 								oninput="setCustomValidity('')" autofocus>
-							<option value="0">Seleccione un
-									proyecto</option>
+								<option value="0">Seleccione un proyecto</option>
 								<c:forEach items="${projects}" var="project">
 									<option value="${project.id }">${project.code}</option>
 								</c:forEach>
@@ -99,12 +100,13 @@
 							</select>
 						</div>
 					</div>
-				<div class="input-group">
+					<div class="input-group">
 						<span class="input-group-addon"> <i
 							class="material-icons gris">settings</i>
 						</span>
 						<div class="form-line">
-							<select class="form-control" disabled name="systemId" id="systemId"
+							<select class="form-control" disabled name="systemId"
+								id="systemId"
 								oninvalid="this.setCustomValidity('Seleccione una opción')"
 								oninput="setCustomValidity('')" autofocus>
 								<option value="0">Seleccione un sistema</option>
@@ -133,7 +135,26 @@
 			</div>
 		</div>
 	</div>
+	<script>
+    function validateEmail(input) {
+        const email = input.value;
+        const domainRegex = /^[a-zA-Z0-9._%+-]+@soin.co.cr$/; // Valida que termine con @soin.co.cr
+        const generalEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Valida formato general de correo
+        const noInvalidSymbolsRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // No permite espacios ni símbolos raros
 
+        if (email === "") {
+            input.setCustomValidity('El correo no puede estar vacío');
+        } else if (!generalEmailRegex.test(email)) {
+            input.setCustomValidity('Correo inválido. Asegúrese de que el correo tiene un formato válido');
+        } else if (!domainRegex.test(email)) {
+            input.setCustomValidity('El correo no pertenece a un dominio permitido');
+        } else if (!noInvalidSymbolsRegex.test(email)) {
+            input.setCustomValidity('El correo no debe contener espacios ni símbolos no permitidos');
+        } else {
+            input.setCustomValidity(''); // Email válido
+        }
+    }
+	</script>
 	<!-- Jquery Core Js -->
 	<script src="<c:url value='/static/plugins/jquery/jquery.min.js'/>"></script>
 

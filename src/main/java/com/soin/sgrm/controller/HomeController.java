@@ -344,6 +344,7 @@ public class HomeController extends BaseController {
 	public String createUserNew(HttpServletRequest request, @ModelAttribute("UserInfo") UserInfo user, ModelMap model,
 			Locale locale, HttpSession session) {
 		try {
+			user.setEmailAddress(user.getEmailAddress().toLowerCase());
 			if (CommonUtils.isValidEmailAddress(user.getEmailAddress())) {
 				if (CommonUtils.isValidEmail(user.getEmailAddress())) {
 					if (profileActive().equals("oracle")) {
