@@ -22,7 +22,7 @@
 								<div class="form-line">
 									<input type="text" class="form-control" id="sCode"
 										onpaste="return false" onkeypress="return verifyCode(event)"
-										maxlength="10" name="sCode"
+										maxlength="50" name="sCode"
 										placeholder="Ingrese un c&oacute;digo de sistema"
 										style="height: 60px;">
 									
