@@ -78,6 +78,7 @@
 						</span>
 						<div class="form-line">
 							<input type="text" class="form-control" name="gitusername"
+								title="Ingrese el nombre de usuario de github(opcional)"
 								value="${user.gitusername }" maxlength="30" id="gitusername"
 								placeholder="Usuario git(opcional)"
 								oninvalid="this.setCustomValidity('Complete este campo')"
@@ -91,6 +92,7 @@
 						<div class="form-line">
 							<select class="form-control" name="projectId" id="projectId"
 								oninvalid="this.setCustomValidity('Seleccione una opción')"
+								title="Seleccione un proyecto para desplegar los sistemas al cual puede pertenecer(opcional)"
 								oninput="setCustomValidity('')" autofocus>
 								<option value="0">Seleccione un proyecto</option>
 								<c:forEach items="${projects}" var="project">
@@ -107,6 +109,7 @@
 						<div class="form-line">
 							<select class="form-control" disabled name="systemId"
 								id="systemId"
+								title="Seleccione el sistema al cual quieres pertenecer(opcional)"
 								oninvalid="this.setCustomValidity('Seleccione una opción')"
 								oninput="setCustomValidity('')" autofocus>
 								<option value="0">Seleccione un sistema</option>
