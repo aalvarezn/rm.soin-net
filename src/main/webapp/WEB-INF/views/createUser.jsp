@@ -61,7 +61,7 @@
 					</div>
 					<div class="input-group">
 						<span class="input-group-addon"> <i
-							class="material-icons gris">alternate_email</i>
+							class="material-icons gris">email</i>
 						</span>
 						<div class="form-line">
 							<input type="text" class="form-control email" name="emailAddress"
