@@ -37,7 +37,10 @@
 						href="<c:url value='/management/request/'/> "> <span>Gesti&oacute;n
 								Solicitudes</span>
 					</a></li>
-
+					<li><a id="managerButtonItem"
+						href="<c:url value='/management/buttonInfra/'/> "> <span>Gesti&oacute;n
+								Botones</span>
+					</a></li>
 					<li class=""><a id="errorItem" href="javascript:void(0);"
 						class="menu-toggle"> <span>Gesti&oacute;n Salidas</span>
 					</a>
