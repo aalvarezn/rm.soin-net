@@ -48,7 +48,7 @@
 										<a onclick="deleteReleaseFile(${fileRFC.id})" download
 											class=""> <i class="material-icons gris"
 											style="font-size: 30px;">delete</i>
-										</a> <a href="<c:url value='/file/singleDownload-${fileRFC.id}'/>"
+										</a> <a href="<c:url value='/file/singleDownloadRFC-${fileRFC.id}'/>"
 											download class=""> <i class="material-icons gris"
 											style="font-size: 30px;">cloud_download</i>
 										</a>

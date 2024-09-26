@@ -18,25 +18,36 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.exception.Sentry;
+import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Project;
+import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.StatusRFC;
+import com.soin.sgrm.model.SystemInfo;
+import com.soin.sgrm.model.pos.PButtonInfra;
+import com.soin.sgrm.model.pos.PEmailTemplate;
+import com.soin.sgrm.model.pos.PProject;
+import com.soin.sgrm.model.pos.PSiges;
 import com.soin.sgrm.model.pos.PStatusRFC;
+import com.soin.sgrm.model.pos.PSystemInfo;
 import com.soin.sgrm.response.JsonSheet;
 import com.soin.sgrm.service.StatusRFCService;
+import com.soin.sgrm.service.pos.PButtonInfraService;
 import com.soin.sgrm.service.pos.PStatusRFCService;
 import com.soin.sgrm.service.pos.PStatusService;
+import com.soin.sgrm.service.pos.PSystemService;
 import com.soin.sgrm.utils.JsonResponse;
 import com.soin.sgrm.utils.MyLevel;
 
 @Controller
-@RequestMapping("/admin/statusRFC")
+@RequestMapping("/management/buttonInfra")
 public class ButtonManagerController extends BaseController {
 	public static final Logger logger = Logger.getLogger(ButtonManagerController.class);
 
 	@Autowired
-	StatusRFCService statusRFCService;
+	PButtonInfraService pButtonInfraService;
 
 	@Autowired
-	PStatusRFCService pstatusRFCService;
+	PSystemService psystemService;
 
 	private final Environment environment;
 
@@ -56,7 +67,13 @@ public class ButtonManagerController extends BaseController {
 	@RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
-		return "/admin/statusRFC/statusRFC";
+		String profile = profileActive();
+
+		model.addAttribute("systems", psystemService.listAll());
+		model.addAttribute("system", new PProject());
+		model.addAttribute("emailTemplate", new PEmailTemplate());
+
+		return "/admin/siges/siges";
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -65,16 +82,10 @@ public class ButtonManagerController extends BaseController {
 
 		try {
 			String profile = profileActive();
-			if (profile.equals("oracle")) {
-				JsonSheet<StatusRFC> statusRFCs = new JsonSheet<>();
-				statusRFCs.setData(statusRFCService.findAll());
-				return statusRFCs;
 
-			} else if (profile.equals("postgres")) {
-				JsonSheet<PStatusRFC> statusRFCs = new JsonSheet<>();
-				statusRFCs.setData(pstatusRFCService.findAll());
-				return statusRFCs;
-			}
+			JsonSheet<PButtonInfra> buttons = new JsonSheet<>();
+			buttons.setData(pButtonInfraService.findAll());
+			return buttons;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -84,60 +95,32 @@ public class ButtonManagerController extends BaseController {
 	}
 
 	@RequestMapping(path = "", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody StatusRFC addStatusRFC) {
+	public @ResponseBody JsonResponse save(HttpServletRequest request, @RequestBody Siges addSiges) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
 			String profile = profileActive();
-			if (profile.equals("oracle")) {
-				statusRFCService.save(addStatusRFC);
-			} else if (profile.equals("postgres")) {
-				PStatusRFC paddStatusRFC=new PStatusRFC();
-				paddStatusRFC.setName(addStatusRFC.getName());
-				paddStatusRFC.setCode(addStatusRFC.getCode());
-				paddStatusRFC.setReason(addStatusRFC.getReason());
-				paddStatusRFC.setDescription(addStatusRFC.getDescription());
-				
-				pstatusRFCService.save(paddStatusRFC);
-			}
-			
 
-			res.setMessage("Estado RFC agregado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "statusRFC");
-			res.setStatus("exception");
-			res.setMessage("Error al agregar Estado RFC!");
+			Sentry.capture(e, "siges");
+			res.setStatus("error");
+			res.setMessage("Error al agregar siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody StatusRFC uptStatusRFC) {
+	public @ResponseBody JsonResponse update(HttpServletRequest request, @RequestBody Siges uptSiges) {
 		JsonResponse res = new JsonResponse();
 		try {
 			res.setStatus("success");
 			String profile = profileActive();
-			if (profile.equals("oracle")) {
-				statusRFCService.update(uptStatusRFC);
 
-			} else if (profile.equals("postgres")) {
-				PStatusRFC puptStatusRFC=new PStatusRFC();
-				puptStatusRFC.setCode(uptStatusRFC.getCode());
-				puptStatusRFC.setDescription(uptStatusRFC.getDescription());
-				puptStatusRFC.setId(uptStatusRFC.getId());
-				puptStatusRFC.setReason(uptStatusRFC.getReason());
-				puptStatusRFC.setName(uptStatusRFC.getName());
-				pstatusRFCService.update(puptStatusRFC);
-
-			}
-			
-
-			res.setMessage("Estado RFC modificado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "statusRFC");
-			res.setStatus("exception");
-			res.setMessage("Error al modificar estado RFC!");
+			Sentry.capture(e, "siges");
+			res.setStatus("error");
+			res.setMessage("Error al modificar siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
@@ -149,17 +132,13 @@ public class ButtonManagerController extends BaseController {
 		try {
 			res.setStatus("success");
 			String profile = profileActive();
-			if (profile.equals("oracle")) {
-				statusRFCService.delete(id);
-			} else if (profile.equals("postgres")) {
-				pstatusRFCService.delete(id);
-			}
-			
-			res.setMessage("Estado RFC eliminado!");
+			pButtonInfraService.delete(id);
+
+			res.setMessage("Siges eliminado!");
 		} catch (Exception e) {
-			Sentry.capture(e, "statusRFC");
-			res.setStatus("exception");
-			res.setMessage("Error al eliminar el estado RFC!");
+			Sentry.capture(e, "siges");
+			res.setStatus("error");
+			res.setMessage("Error al eliminar el siges!");
 			logger.log(MyLevel.RELEASE_ERROR, e.toString());
 		}
 		return res;
