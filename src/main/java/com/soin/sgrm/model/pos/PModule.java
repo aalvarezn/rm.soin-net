@@ -28,8 +28,8 @@ public class PModule implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sistema_modulo_seq")
+	@SequenceGenerator(name = "sistema_modulo_seq", sequenceName = "sistema_modulo_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Integer id;
 

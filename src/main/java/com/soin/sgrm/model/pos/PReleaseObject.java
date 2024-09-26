@@ -26,8 +26,8 @@ import org.springframework.beans.factory.annotation.Value;
 public class PReleaseObject implements Serializable, Cloneable {
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sistemas_objeto_seq")
+	@SequenceGenerator(name = "sistemas_objeto_seq", sequenceName = "sistemas_objeto_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 

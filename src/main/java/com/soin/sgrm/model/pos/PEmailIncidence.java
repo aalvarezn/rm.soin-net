@@ -24,8 +24,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class PEmailIncidence implements Serializable {
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "incidencia_mensaje_seq")
+	@SequenceGenerator(name = "incidencia_mensaje_seq", sequenceName = "incidencia_mensaje_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Long id;
 

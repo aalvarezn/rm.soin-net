@@ -21,8 +21,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class PIncidenceFile implements Serializable {
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "archivoincidencia_seq")
+	@SequenceGenerator(name = "archivoincidencia_seq", sequenceName = "archivoincidencia_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Long id;
 

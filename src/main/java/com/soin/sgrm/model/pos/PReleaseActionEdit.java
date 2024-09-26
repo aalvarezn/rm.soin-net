@@ -20,8 +20,8 @@ public class PReleaseActionEdit implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sistemas_accion_seq")
+	@SequenceGenerator(name = "sistemas_accion_seq", sequenceName = "sistemas_accion_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Integer id;
 

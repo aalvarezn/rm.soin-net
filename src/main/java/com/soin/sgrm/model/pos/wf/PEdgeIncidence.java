@@ -28,7 +28,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.soin.sgrm.utils.Constant;
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "TRAMITES_ENLACE_INC")
 public class PEdgeIncidence implements Serializable {
@@ -36,8 +35,8 @@ public class PEdgeIncidence implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tramites_enlace_inc_seq")
+	@SequenceGenerator(name = "tramites_enlace_inc_seq", sequenceName = "tramites_enlace_inc_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 

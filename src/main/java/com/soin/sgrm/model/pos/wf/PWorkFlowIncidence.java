@@ -32,8 +32,8 @@ import com.soin.sgrm.utils.Constant;
 public class PWorkFlowIncidence implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TRAMITES_TRAMITE_SQ")
-	@SequenceGenerator(name = "TRAMITES_TRAMITE_SQ", sequenceName = "TRAMITES_TRAMITE_SQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tramites_tramite_seq")
+	@SequenceGenerator(name = "tramites_tramite_seq", sequenceName = "tramites_tramite_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 

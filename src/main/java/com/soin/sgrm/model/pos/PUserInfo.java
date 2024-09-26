@@ -40,8 +40,8 @@ public class PUserInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seguridad_customuser_seq")
+	@SequenceGenerator(name = "seguridad_customuser_seq", sequenceName = "seguridad_customuser_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Integer id;
 

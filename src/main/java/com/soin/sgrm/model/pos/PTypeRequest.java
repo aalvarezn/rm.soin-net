@@ -23,8 +23,8 @@ public class PTypeRequest implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tipo_req_seq")
+	@SequenceGenerator(name = "tipo_req_seq", sequenceName = "tipo_req_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Integer id;
 

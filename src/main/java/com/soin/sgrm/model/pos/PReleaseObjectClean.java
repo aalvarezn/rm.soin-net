@@ -27,8 +27,8 @@ public class PReleaseObjectClean implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sistemas_objeto_seq")
+	@SequenceGenerator(name = "sistemas_objeto_seq", sequenceName = "sistemas_objeto_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 
