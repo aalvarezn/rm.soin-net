@@ -945,9 +945,9 @@ public class ReleaseController extends BaseController {
 				PReleaseEdit releaseCopy = (PReleaseEdit) release.clone();
 				if (!requeriment.equals("TPO/BT")) {
 					number_release = preleaseService.generateReleaseNumber(requeriment, requirement_name,
-							releaseCopy.getSystem().getName());
+							releaseCopy.getSystem().getCode());
 				} else {
-					number_release = preleaseService.generateTPO_BT_ReleaseNumber((releaseCopy.getSystem().getName()),
+					number_release = preleaseService.generateTPO_BT_ReleaseNumber((releaseCopy.getSystem().getCode()),
 							requirement_name);
 				}
 

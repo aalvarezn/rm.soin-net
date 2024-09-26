@@ -26,10 +26,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers("/static/**").permitAll().antMatchers("/admin/**", "/info/")
-
 				.hasRole("Admin").antMatchers("/management/**", "/info/").hasRole("Release Manager")
-				.antMatchers("/forgetPassword", "/recoverPassword", "/admin/request/syncExcel", "/ws/**").permitAll()
-				.anyRequest().hasRole("Gestores").antMatchers("/manager/**").permitAll().anyRequest().authenticated()
+				.antMatchers("/general/**").hasRole("General")
+				.antMatchers("/forgetPassword","/createUser","/createUserNew","/getSystem/**", "/recoverPassword", "/admin/request/syncExcel", "/ws/**").permitAll()
+				.anyRequest().hasAnyRole("Gestores","Tramites").antMatchers("/manager/**").permitAll().anyRequest().authenticated()
 				.and().formLogin().loginPage("/login").failureUrl("/login?error=true")
 				.defaultSuccessUrl("/successLogin").permitAll().and().logout()// default logout handling
 				.logoutSuccessUrl("/login")// our new logout success url, we are not replacing other defaults.

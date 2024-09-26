@@ -17,4 +17,6 @@ public interface PAuthorityService {
 
 	void delete(Integer id);
 
+	PAuthority findByName(String name);
+
 }

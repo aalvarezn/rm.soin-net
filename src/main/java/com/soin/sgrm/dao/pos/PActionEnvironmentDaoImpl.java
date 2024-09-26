@@ -73,12 +73,12 @@ public class PActionEnvironmentDaoImpl implements PActionEnvironmentDao {
 	public void deleteReleaseDependency(Integer action_id, Integer release_id) {
 		Transaction transObj = null;
 		Session sessionObj = null;
-		String sql = "";
+		String sql = "RELEASE_ID";
 		Query query = null;
 		try {
 			sessionObj = sessionFactory.openSession();
 			transObj = sessionObj.beginTransaction();
-			sql = String.format("  DELETE FROM releases_release_accion WHERE accion_id = %s AND release_id = %s ",
+			sql = String.format("  DELETE FROM \"RELEASES_RELEASE_ACCION\" WHERE \"ACCION_ID\" = %s AND \"RELEASE_ID\" = %s ",
 					action_id, release_id);
 			query = sessionObj.createSQLQuery(sql);
 			query.executeUpdate();

@@ -307,7 +307,7 @@ public class PReleaseObjectDaoImpl implements PReleaseObjectDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<PRelease_Objects> listObjects(Integer id) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Release_Objects.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PRelease_Objects.class);
 		crit.createAlias("objects", "objects")
 		.add(Restrictions.eq("releaseId", id));
 		

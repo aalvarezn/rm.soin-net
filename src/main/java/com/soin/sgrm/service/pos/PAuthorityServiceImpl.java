@@ -41,4 +41,10 @@ public class PAuthorityServiceImpl implements PAuthorityService {
 		dao.delete(id);
 	}
 
+	@Override
+	public PAuthority findByName(String name) {
+		
+		return dao.findByName(name);
+	}
+
 }

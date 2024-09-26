@@ -47,8 +47,8 @@ public class WFReleaseServiceImpl implements WFReleaseService {
 	@Override
 	public JsonSheet<?> listWorkFlowManager(String name, int sEcho, int iDisplayStart, int iDisplayLength,
 			String sSearch, String[] filtred, String[] dateRange, Integer systemId, Integer statusId,
-			Object[] systemsId,Integer userId) throws SQLException, ParseException {
-		return dao.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId, statusId, systemsId,userId);
+			List<Integer> listIdRelease,Integer userId,Object[] systemIds) throws SQLException, ParseException {
+		return dao.listWorkFlowManager(name, sEcho, iDisplayStart, iDisplayLength, sSearch, filtred, dateRange, systemId, statusId, listIdRelease,userId,systemIds);
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import com.soin.sgrm.model.pos.PDetailButtonFile;
 import com.soin.sgrm.model.pos.PReleaseAction;
 import com.soin.sgrm.model.pos.PReleaseObject;
 import com.soin.sgrm.model.pos.PReleaseSummary;
+import com.soin.sgrm.model.pos.PRequest;
 import com.soin.sgrm.model.pos.PSystemModule;
 import com.soin.sgrm.service.RequestService;
 import com.soin.sgrm.service.SystemService;
@@ -128,7 +129,7 @@ public class PDocxVariables {
 
 		if (!release.getRequestList().isEmpty()) {
 			iter = release.getRequestList().iterator();
-			typeRequest = ((((Request) iter.next()).getCode_soin().contains("TPO")) ? "TPO:" : "BT:");
+			typeRequest = ((((PRequest) iter.next()).getCode_soin().contains("TPO")) ? "TPO:" : "BT:");
 			requestName = release.getTPO_BT();
 		}
 

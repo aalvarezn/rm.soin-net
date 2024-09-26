@@ -8,9 +8,14 @@ import java.io.InputStream;
 import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -31,22 +36,48 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.controller.BaseController;
 import com.soin.sgrm.model.EmailTemplate;
+import com.soin.sgrm.model.Errors_Requests;
 import com.soin.sgrm.model.Parameter;
+import com.soin.sgrm.model.System;
 import com.soin.sgrm.model.UserInfo;
+import com.soin.sgrm.model.pos.PAuthority;
 import com.soin.sgrm.model.pos.PEmailTemplate;
 import com.soin.sgrm.model.pos.PParameter;
+import com.soin.sgrm.model.pos.PProject;
+import com.soin.sgrm.model.pos.PRequestBase;
+import com.soin.sgrm.model.pos.PRequestRM_P1_R4;
+import com.soin.sgrm.model.pos.PSiges;
+import com.soin.sgrm.model.pos.PStatusRequest;
+import com.soin.sgrm.model.pos.PSystem;
+import com.soin.sgrm.model.pos.PSystemUser;
+import com.soin.sgrm.model.pos.PTypePetition;
+import com.soin.sgrm.model.pos.PUser;
 import com.soin.sgrm.model.pos.PUserInfo;
 import com.soin.sgrm.service.EmailTemplateService;
 import com.soin.sgrm.service.ParameterService;
+import com.soin.sgrm.service.ProjectService;
+import com.soin.sgrm.service.SystemService;
 import com.soin.sgrm.service.UserInfoService;
 import com.soin.sgrm.service.corp.RMReleaseFileService;
+import com.soin.sgrm.service.pos.PAmbientService;
+import com.soin.sgrm.service.pos.PAuthorityService;
 import com.soin.sgrm.service.pos.PEmailTemplateService;
 import com.soin.sgrm.service.pos.PParameterService;
+import com.soin.sgrm.service.pos.PProjectService;
+import com.soin.sgrm.service.pos.PRequestBaseService;
+import com.soin.sgrm.service.pos.PRequestRM_P1_R4Service;
+import com.soin.sgrm.service.pos.PSigesService;
+import com.soin.sgrm.service.pos.PStatusRequestService;
+import com.soin.sgrm.service.pos.PSystemService;
+import com.soin.sgrm.service.pos.PTypePetitionR4Service;
+import com.soin.sgrm.service.pos.PTypePetitionService;
 import com.soin.sgrm.service.pos.PUserInfoService;
+import com.soin.sgrm.service.pos.PUserService;
 import com.soin.sgrm.utils.CommonUtils;
 import com.soin.sgrm.utils.EnviromentConfig;
 
@@ -69,10 +100,12 @@ public class HomeController extends BaseController {
 
 	@Autowired
 	UserInfoService userService;
-	
+
 	@Autowired
 	PUserInfoService puserService;
 
+	@Autowired
+	PUserService pusersService;
 	@Autowired
 	RMReleaseFileService rmReleaseSerivce;
 
@@ -84,13 +117,46 @@ public class HomeController extends BaseController {
 
 	@Autowired
 	private ParameterService paramService;
-	
+
 	@Autowired
 	private PEmailTemplateService pemailService;
 
 	@Autowired
 	private PParameterService pparamService;
 
+	@Autowired
+	private PProjectService pprojectService;
+
+	@Autowired
+	PRequestBaseService prequestBaseService;
+
+	@Autowired
+	SystemService systemService;
+
+	@Autowired
+	PSystemService psystemService;
+
+	@Autowired
+	PSigesService sigesService;
+
+	@Autowired
+	PAuthorityService pauthorityService;
+
+	@Autowired
+	PTypePetitionService ptypePetitionService;
+	
+	@Autowired
+	PStatusRequestService pstatusRequestService;
+	
+	@Autowired
+	PTypePetitionR4Service ptypePetitionR4Service;
+	
+	@Autowired
+	PAmbientService pambientService;
+	
+	@Autowired
+	PRequestRM_P1_R4Service	prequestServiceRm4;
+	
 	EnviromentConfig envConfig = new EnviromentConfig();
 
 	private final Environment environment;
@@ -107,6 +173,7 @@ public class HomeController extends BaseController {
 		}
 		return "";
 	}
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
@@ -119,9 +186,13 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
 			return "redirect:/baseKnowledge/";
 		}
+
+		if (request.isUserInRole("ROLE_General")) {
+			return "redirect:/general/";
+		}
 		return "redirect:/release/";
 	}
-	
+
 	@RequestMapping(value = "/homeRFC", method = RequestMethod.GET)
 	public String indexRFC(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
@@ -131,6 +202,7 @@ public class HomeController extends BaseController {
 
 		return "redirect:/rfc/";
 	}
+
 	@RequestMapping(value = "/homeRequest", method = RequestMethod.GET)
 	public String indexRequest(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
@@ -140,25 +212,22 @@ public class HomeController extends BaseController {
 
 		return "redirect:/request/";
 	}
-	
+
 	@RequestMapping(value = "/homeIncidence", method = RequestMethod.GET)
 	public String indexIncidence(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		return "redirect:/incidence/";
 	}
-	
+
 	@RequestMapping(value = "/homeIncidenceAttention", method = RequestMethod.GET)
 	public String indexIncidenceAttention(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 		return "redirect:/incidenceManagement/";
 	}
-	
+
 	@RequestMapping(value = "/homeBaseKnowledge", method = RequestMethod.GET)
 	public String indexBaseKnow(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
 
-
-
 		return "redirect:/baseKnowledge/";
 	}
-
 
 	@RequestMapping(value = "/successLogin", method = RequestMethod.GET)
 	public String successLogin(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
@@ -168,7 +237,6 @@ public class HomeController extends BaseController {
 		if (request.isUserInRole("ROLE_Gestor Incidencias")) {
 			return "redirect:/baseKnowledge/";
 		}
-		
 
 		return "redirect:/";
 	}
@@ -201,13 +269,20 @@ public class HomeController extends BaseController {
 		return "/forgetPassword";
 	}
 
+	@RequestMapping(value = "/createUser", method = RequestMethod.GET)
+	public String createUser(HttpServletRequest request, Locale locale, Model model, HttpSession session) {
+		List<PProject> projects = pprojectService.listAll();
+		model.addAttribute("projects", projects);
+		return "/createUser";
+	}
+
 	@RequestMapping(value = "/recoverPassword", method = RequestMethod.POST)
 	public String recoverPassword(HttpServletRequest request, @ModelAttribute("UserInfo") UserInfo user, ModelMap model,
 			Locale locale, HttpSession session) {
 		try {
 			if (CommonUtils.isValidEmailAddress(user.getEmailAddress())) {
-				
-				if(profileActive().equals("oracle")) {
+
+				if (profileActive().equals("oracle")) {
 					UserInfo userInfo = userService.getUserByEmail(user.getEmailAddress());
 					if (userInfo != null) {
 						String code = "soin" + CommonUtils.getRandom();
@@ -229,7 +304,7 @@ public class HomeController extends BaseController {
 					} else {
 						model.addAttribute("errorMessge", "Correo ingresado no existe!");
 					}
-				}else if(profileActive().equals("postgres")) {
+				} else if (profileActive().equals("postgres")) {
 					PUserInfo userInfo = puserService.getUserByEmail(user.getEmailAddress());
 					if (userInfo != null) {
 						String code = "soin" + CommonUtils.getRandom();
@@ -252,7 +327,6 @@ public class HomeController extends BaseController {
 						model.addAttribute("errorMessge", "Correo ingresado no existe!");
 					}
 				}
-			
 
 			} else {
 				model.addAttribute("errorMessge", "Correo ingresado invalido!");
@@ -264,6 +338,168 @@ public class HomeController extends BaseController {
 		}
 
 		return "/forgetPassword";
+	}
+
+	@RequestMapping(value = "/createUserNew", method = RequestMethod.POST)
+	public String createUserNew(HttpServletRequest request, @ModelAttribute("UserInfo") UserInfo user, ModelMap model,
+			Locale locale, HttpSession session) {
+		try {
+			user.setEmailAddress(user.getEmailAddress().toLowerCase());
+			if (CommonUtils.isValidEmailAddress(user.getEmailAddress())) {
+				if (CommonUtils.isValidEmail(user.getEmailAddress())) {
+					if (profileActive().equals("oracle")) {
+
+						UserInfo userInfo = userService.getUserByEmail(user.getEmailAddress());
+						if (userInfo != null) {
+							String code = "soin" + CommonUtils.getRandom();
+							String newPassword = encoder.encode(code);
+							userInfo.setPassword(newPassword);
+							Parameter param = paramService.findByCode(2);
+							if (param != null) {
+								EmailTemplate email = emailService.findById(Integer.parseInt(param.getParamValue()));
+								if (email != null) {
+									userService.changePassword(userInfo);
+									emailService.sendMail(userInfo, code, email);
+									model.addAttribute("successMessge", "Correo de restablecimiento enviado!");
+								} else {
+									model.addAttribute("errorMessge", "Correo definido no existe!");
+								}
+							} else {
+								model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+							}
+						} else {
+							model.addAttribute("errorMessge", "Correo ingresado no existe!");
+						}
+					} else if (profileActive().equals("postgres")) {
+						PUserInfo userInfo = puserService.getUserByEmail(user.getEmailAddress());
+						if (userInfo == null) {
+							String code = "soin" + CommonUtils.getRandom();
+							String newPassword = encoder.encode(code);
+							user.setPassword(newPassword);
+							PParameter param = pparamService.findByCode(33);
+							PAuthority temp = null;
+							PUserInfo puserInfo = new PUserInfo();
+							Set<PAuthority> pauthsNews = new HashSet<>();
+							PAuthority rol = pauthorityService.findByName("General");
+							pauthsNews.add(rol);
+							puserInfo.setAuthorities(pauthsNews);
+							puserInfo.setActive(true);
+							puserInfo.setIsReleaseManager(0);
+							puserInfo.setIsSuperUser(0);
+							puserInfo.setStaff(false);
+							puserInfo.setPassword(user.getPassword());
+							puserInfo.setDateJoined(CommonUtils.getSystemTimestamp());
+							puserInfo.setUsername(user.getEmailAddress().split("@")[0]);
+							puserInfo.setGitusername(user.getGitusername());
+							puserInfo.setShortName(user.getShortName());
+							puserInfo.setEmailAddress(user.getEmailAddress());
+							puserInfo.setFullName(user.getFullName());
+
+							if (!puserService.uniqueGitUsername(puserInfo)) {
+								model.addAttribute("errorMessge", "El nombre de usuario de git ya se encuentra en uso");
+								model.addAttribute("user", user);
+								List<PProject> projects = pprojectService.listAll();
+								model.addAttribute("projects", projects);
+								return "/createUser";
+							}
+							puserService.saveUserInfo(puserInfo);
+
+							if (param != null) {
+								PEmailTemplate email = pemailService.findById(Integer.parseInt(param.getParamValue()));
+								if (email != null) {
+									puserService.changePassword(puserInfo);
+									pemailService.sendMail(puserInfo, code, email);
+									model.addAttribute("successMessge", "Correo de restablecimiento enviado!");
+								} else {
+									model.addAttribute("errorMessge", "Correo definido no existe!");
+								}
+							} else {
+								model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+							}
+							model.addAttribute("successMessge",
+									"Usuario creado correctamente revisar su correo con los credenciales");
+							if (user.getSystemId() == null) {
+								return "/login";
+							} else if (user.getSystemId() == 0) {
+								return "/login";
+							} else {
+
+								List<PSiges> listSiges = sigesService.listCodeSiges(user.getSystemId());
+								PSiges siges = listSiges.get(0);
+								if (siges != null) {
+
+									PSystemUser systemUsersManager = psystemService
+											.findSystemDocumentInfo(user.getSystemId());
+									Set<PUser> managers = systemUsersManager.getManagers();
+
+									PTypePetition ptyPetition = ptypePetitionService.findByKey("code", "RM-P1-R4");
+									PStatusRequest status = pstatusRequestService.findByKey("code", "draft");
+									PRequestBase paddRequest = new PRequestBase();
+									paddRequest.setTypePetition(ptypePetitionService.findById(ptyPetition.getId()));
+									PUser manager = new PUser();
+									if (managers != null) {
+										manager = managers.iterator().next();
+									}
+									paddRequest.setStatus(status);
+									paddRequest.setUser(manager);
+									paddRequest.setRequestDate(CommonUtils.getSystemTimestamp());
+									paddRequest.setMotive("Inicio de Solicitud");
+									paddRequest.setOperator(user.getFullName());
+									paddRequest.setSiges(siges);
+									paddRequest.setCodeProyect(siges.getCodeSiges());
+									paddRequest.setSystemInfo(psystemService.findById(user.getSystemId()));
+									paddRequest.setTypePetition(ptyPetition);
+									paddRequest.setNumRequest(prequestBaseService.generateRequestNumber(
+											paddRequest.getCodeProyect(), paddRequest.getTypePetition().getCode(),
+											paddRequest.getSystemInfo().getCode()));
+									prequestBaseService.save(paddRequest);
+									//Insercion de usuario a la solicitud 
+									PRequestRM_P1_R4 puserRequestAdd = new PRequestRM_P1_R4();
+									puserRequestAdd.setEspec("Por favor brindar acceso en el SGRM al usuario "+puserInfo.getFullName()+" y ligarlo al sistema "+systemUsersManager.getCode());
+									puserRequestAdd.setName(puserInfo.getFullName());
+									puserRequestAdd.setPermissions("Acceso");
+									puserRequestAdd.setEmail(puserInfo.getEmailAddress());
+									puserRequestAdd.setUserGit(puserInfo.getGitusername());
+									puserRequestAdd.setAmbient(pambientService.findById(896));
+									puserRequestAdd.setType(ptypePetitionR4Service.findById((long) 2));
+									puserRequestAdd.setRequestBase(prequestBaseService.findById(paddRequest.getId()));
+									prequestServiceRm4.save(puserRequestAdd);
+
+								}
+
+								return "/login";
+							}
+
+							/*
+							 * if (param != null) { PEmailTemplate email =
+							 * pemailService.findById(Integer.parseInt(param.getParamValue())); if (email !=
+							 * null) { puserService.changePassword(userInfo);
+							 * pemailService.sendMail(userInfo, code, email);
+							 * model.addAttribute("successMessge", "Correo de restablecimiento enviado!"); }
+							 * else { model.addAttribute("errorMessge", "Correo definido no existe!"); } }
+							 * else { model.addAttribute("errorMessge", "Parámetro de correo no definido!");
+							 * }
+							 */
+						} else {
+							model.addAttribute("errorMessge", "El correo ingresado ya tiene una cuenta asociada!");
+						}
+					}
+				} else {
+					model.addAttribute("errorMessge", "Correo ingresado no pertenece a un dominio valido!");
+				}
+			} else {
+				model.addAttribute("errorMessge", "Correo ingresado invalido!");
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "home");
+			model.addAttribute("errorMessge", "Error: " + e.toString());
+		}
+		model.addAttribute("user", user);
+
+		List<PProject> projects = pprojectService.listAll();
+		model.addAttribute("projects", projects);
+		return "/createUser";
 	}
 
 	@RequestMapping(value = "/info", method = RequestMethod.GET)
@@ -405,4 +641,26 @@ public class HomeController extends BaseController {
 		FileCopyUtils.copy(inputStream, response.getOutputStream());
 	}
 
+	@RequestMapping(value = { "/getSystem/{id}" }, method = RequestMethod.GET)
+	public @ResponseBody List<?> getSystem(@PathVariable Integer id, Locale locale, Model model) {
+
+		try {
+			if (profileActive().equals("oracle")) {
+				List<System> systems = new ArrayList<>();
+				systems = systemService.getSystemByProject(id);
+				return systems;
+			} else if (profileActive().equals("postgres")) {
+				List<PSystem> systems = new ArrayList<>();
+				systems = psystemService.getSystemByProject(id);
+				return systems;
+			}
+
+		} catch (Exception e) {
+			Sentry.capture(e, "system");
+
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 }

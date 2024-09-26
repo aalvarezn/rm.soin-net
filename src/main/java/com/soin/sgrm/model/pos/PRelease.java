@@ -123,15 +123,15 @@ public class PRelease implements Serializable, Cloneable {
 	private Boolean notBilledCalls;
 
 	// Datos de instalacion
-	@Lob
+	
 	@Column(name = "INSTRUCCIONES_DE_INSTALACION")
 	private String installation_instructions;
 
-	@Lob
+	
 	@Column(name = "INSTRUCCIONES_DE_VERIFICACION")
 	private String verification_instructions;
 
-	@Lob
+	
 	@Column(name = "PLAN_DE_ROLLBACK")
 	private String rollback_plan;
 	

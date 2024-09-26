@@ -16,4 +16,6 @@ public interface PAuthorityDao {
 
 	void delete(Integer id);
 
+	PAuthority findByName(String name);
+
 }
