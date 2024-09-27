@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -17,6 +18,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -27,24 +29,24 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "SOLICITUD")
-public class PRequestBaseR1Fast implements Serializable  {
-private static final long serialVersionUID = 1L;
-	
+public class PRequestBaseR1Fast implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "solicitud_seq")
+	@SequenceGenerator(name = "solicitud_seq", sequenceName = "solicitud_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Long id;
-	
+
 	@Column(name = "CODIGO_PROYECTO")
 	private String codeProyect;
 
 	@Column(name = "NUM_SOLICITUD")
 	private String numRequest;
-	
+
 	@Column(name = "OPERADOR")
 	private String operator;
-	
+
 	@Column(name = "MOTIVO")
 	private String motive;
 
@@ -53,39 +55,35 @@ private static final long serialVersionUID = 1L;
 
 	@Column(name = "MENSAJE_GESTOR")
 	private String message;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ID_USUARIO\"", nullable = false)
 	private PUser user;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ID_SOLICITUDTIPO\"", nullable = false)
 	private PTypePetition typePetition;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ID_ESTADO\"", nullable = false)
 	private PStatusRequest status;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ID_SISTEMA\"", nullable = false)
 	private PSystemInfo systemInfo;
 
-	
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
-	
 
-	
 	@Transient
 	private Long typePetitionId;
 
 	@Transient
 	private Integer systemId;
-	
+
 	@Transient
 	private String codeOpportunity;
-
 
 	public Long getId() {
 		return id;
@@ -150,6 +148,7 @@ private static final long serialVersionUID = 1L;
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
+
 	public PSystemInfo getSystemInfo() {
 		return systemInfo;
 	}
@@ -205,8 +204,5 @@ private static final long serialVersionUID = 1L;
 	public void setCodeOpportunity(String codeOpportunity) {
 		this.codeOpportunity = codeOpportunity;
 	}
-
-	
-	
 
 }

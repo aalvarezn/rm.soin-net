@@ -6,41 +6,41 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "SOLICITUD_ESTIMACIONES")
-public class PRequest_Estimate implements Serializable  {
-private static final long serialVersionUID = 1L;
-	
+public class PRequest_Estimate implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "solicitud_estimaciones_seq")
+	@SequenceGenerator(name = "solicitud_estimaciones_seq", sequenceName = "solicitud_estimaciones_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Long id;
-	
+
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHASOLICITUD")
 	private Timestamp requestDate;
-	
+
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHAESTIFINALIZACION")
 	private Timestamp requestDateEstimate;
-	
+
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
 	@Column(name = "FECHAFINALIZACION")
 	private Timestamp requestDateFinal;
-	
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"ID_SOLICITUD\"", nullable = true)
 	private PRequestBaseReference requestBase;
-	
 
 	public Long getId() {
 		return id;
@@ -81,9 +81,5 @@ private static final long serialVersionUID = 1L;
 	public void setRequestBase(PRequestBaseReference requestBase) {
 		this.requestBase = requestBase;
 	}
-	
-
-	
-	
 
 }

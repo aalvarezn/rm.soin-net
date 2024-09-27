@@ -24,8 +24,8 @@ public class PProject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "proyectos_proyecto_seq")
+	@SequenceGenerator(name = "proyectos_proyecto_seq", sequenceName = "proyectos_proyecto_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 
