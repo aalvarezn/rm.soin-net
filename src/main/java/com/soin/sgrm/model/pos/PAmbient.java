@@ -33,8 +33,8 @@ public class PAmbient implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ambientes_ambiente_seq")
+	@SequenceGenerator(name = "ambientes_ambiente_seq", sequenceName = "ambientes_ambiente_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Integer id;
 

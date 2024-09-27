@@ -25,8 +25,8 @@ public class PStatus implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "releases_estado_seq")
+	@SequenceGenerator(name = "releases_estado_seq", sequenceName = "releases_estado_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 

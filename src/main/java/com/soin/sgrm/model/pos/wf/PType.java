@@ -5,7 +5,9 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -20,8 +22,8 @@ import com.soin.sgrm.utils.Constant;
 public class PType implements Serializable {
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tramites_tipo_seq")
+	@SequenceGenerator(name = "tramites_tipo_seq", sequenceName = "tramites_tipo_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 

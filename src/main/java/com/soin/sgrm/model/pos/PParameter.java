@@ -6,7 +6,9 @@ import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -23,8 +25,8 @@ public class PParameter implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "parametros_parametro_seq")
+	@SequenceGenerator(name = "parametros_parametro_seq", sequenceName = "parametros_parametro_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Integer id;
 

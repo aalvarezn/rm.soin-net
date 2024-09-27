@@ -25,8 +25,8 @@ public class PDependency implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "releases_dependencias_seq")
+	@SequenceGenerator(name = "releases_dependencias_seq", sequenceName = "releases_dependencias_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 

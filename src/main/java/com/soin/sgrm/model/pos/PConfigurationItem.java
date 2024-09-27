@@ -6,9 +6,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
@@ -26,8 +28,8 @@ public class PConfigurationItem implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ambientes_configurationitem_seq")
+	@SequenceGenerator(name = "ambientes_configurationitem_seq", sequenceName = "ambientes_configurationitem_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Integer id;
 

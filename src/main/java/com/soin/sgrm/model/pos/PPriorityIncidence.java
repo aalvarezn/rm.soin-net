@@ -22,8 +22,8 @@ import com.soin.sgrm.utils.Constant;
 public class PPriorityIncidence implements Serializable {
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "incidencia_prioridad_seq")
+	@SequenceGenerator(name = "incidencia_prioridad_seq", sequenceName = "incidencia_prioridad_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Long id;
 

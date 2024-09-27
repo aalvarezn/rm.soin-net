@@ -26,8 +26,8 @@ import com.soin.sgrm.utils.Constant;
 public class PDocTemplate implements Serializable {
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generador_docs_seq")
+	@SequenceGenerator(name = "generador_docs_seq", sequenceName = "generador_docs_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private int id;
 

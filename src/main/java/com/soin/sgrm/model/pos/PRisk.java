@@ -23,8 +23,8 @@ public class PRisk implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "releases_riesgo_seq")
+	@SequenceGenerator(name = "releases_riesgo_seq", sequenceName = "releases_riesgo_id_seq", allocationSize = 1)
 	@Column(name = "ID")
 	private Integer id;
 
