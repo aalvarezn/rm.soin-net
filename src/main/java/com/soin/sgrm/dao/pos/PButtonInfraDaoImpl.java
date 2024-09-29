@@ -48,5 +48,26 @@ public class PButtonInfraDaoImpl extends  AbstractDao<Long, PButtonInfra> implem
 	    return count > 0;
 	}
 
+	@Override
+	public boolean existsBySystemId(Integer systemId) {
+		Criteria crit = getSession().createCriteria(PButtonInfra.class);
+		crit.createAlias("system","systems");
+		crit.add(Restrictions.eq("system.id", systemId));
+		crit.setProjection(Projections.rowCount());
+	    Long count = (Long) crit.uniqueResult();
+		return count > 0;
+	}
+
+	@Override
+	public boolean existsBySystemIdandId(Long sId, Integer systemId) {
+		Criteria crit = getSession().createCriteria(PButtonInfra.class);
+		crit.createAlias("system","systems");
+		crit.add(Restrictions.eq("system.id", systemId));
+		crit.add(Restrictions.ne("id", sId));
+		crit.setProjection(Projections.rowCount());
+	    Long count = (Long) crit.uniqueResult();
+		return !(count > 0);
+	}
+
 
 }

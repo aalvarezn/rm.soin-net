@@ -1,17 +1,18 @@
 
-var $dtStatusRFC;
-var $mdStatusRFC = $('#statusRFCModal');
-var $fmStatusRFC = $('#statusRFCModalForm');
+var $dtbutton;
+var $mdbutton = $('#buttonModal');
+var $fmbutton = $('#buttonModalForm');
 
 $(function() {
-	activeItemMenu("statusRFCItem", true);
+	
+	activeItemMenu("managerButtonItem");
 	initDataTable();
-	initStatusRFCFormValidation();
+	initbuttonFormValidation();
 });
 
 
 function initDataTable() {
-	$dtStatusRFC = $('#statusRFCTable')
+	$dtbutton = $('#buttonTable')
 	.DataTable(
 			{
 				lengthMenu : [ [ 10, 25, 50, -1 ],
@@ -19,7 +20,7 @@ function initDataTable() {
 					"iDisplayLength" : 10,
 					"language" : optionLanguaje,
 					"iDisplayStart" : 0,
-					"sAjaxSource" : getCont() + "admin/statusRFC/list",
+					"sAjaxSource" : getCont() + "management/buttonInfra/list",
 					"fnServerParams" : function(aoData) {
 					},
 					"aoColumns" : [
@@ -27,24 +28,23 @@ function initDataTable() {
 							"mDataProp" : 'name'
 						},
 						{
-							"mDataProp" : 'code'
-						},
-						{
-							"mDataProp" : 'reason'
+							"mDataProp" : 'rute'
 						},
 						{
 							"mDataProp" : 'description'
 						},
-						
+						{
+							"mDataProp" : 'system.name'
+						},
 						{
 							render : function(data, type, row, meta) {
 								var options = '<div class="iconLineC">';
 
-								options += '<a onclick="showStatusRFC('
+								options += '<a onclick="showbutton('
 									+ meta.row
 									+ ')" title="Editar"><i class="material-icons gris">mode_edit</i></a>';
 
-								options += '<a onclick="deleteStatusRFC('
+								options += '<a onclick="deletebutton('
 									+ meta.row
 									+ ')" title="Borrar"><i class="material-icons gris">delete</i></a>';
 
@@ -57,22 +57,24 @@ function initDataTable() {
 			});
 }
 
-function showStatusRFC(index){
-	$fmStatusRFC.validate().resetForm();
-	$fmStatusRFC[0].reset();
-	var obj = $dtStatusRFC.row(index).data();
-	$fmStatusRFC.find('#sId').val(obj.id);
-	$fmStatusRFC.find('#sName').val(obj.name);
-	$fmStatusRFC.find('#sCode').val(obj.code);
-	$fmStatusRFC.find('#sMotive').val(obj.reason);
-	$fmStatusRFC.find('#sDescription').val(obj.description);
-	$mdStatusRFC.find('#update').show();
-	$mdStatusRFC.find('#save').hide();
-	$mdStatusRFC.modal('show');
+function showbutton(index){
+	$fmbutton.validate().resetForm();
+	$fmbutton[0].reset();
+	var obj = $dtbutton.row(index).data();
+	$fmbutton.find('#sId').val(obj.id);
+	$fmbutton.find('#sName').val(obj.name);
+	$fmbutton.find('#sRute').val(obj.rute);
+	$mdbutton.find('#largeModalLabel').text("Editar Boton Infra");
+	$fmbutton.find('#sDescription').val(obj.description);
+	$fmbutton.find('#systemId').selectpicker('val',obj.system.id);
+	$('#systemId').prop('disabled', true);
+	$mdbutton.find('#update').show();
+	$mdbutton.find('#save').hide();
+	$mdbutton.modal('show');
 }
 
-function updateStatusRFC() {
-	if (!$fmStatusRFC.valid())
+function updatebutton() {
+	if (!$fmbutton.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea actualizar el registro?',
@@ -83,22 +85,22 @@ function updateStatusRFC() {
 			blockUI();
 			$.ajax({
 				type : "PUT",
-				url : getCont() + "admin/statusRFC/" ,
+				url : getCont() + "management/buttonInfra/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					id : $fmStatusRFC.find('#sId').val(),
-					name : $fmStatusRFC.find('#sName').val(),
-					code : $fmStatusRFC.find('#sCode').val(),
-					reason :$fmStatusRFC.find('#sMotive').val(),
-					description:$fmStatusRFC.find('#sDescription').val(),
+					id : $fmbutton.find('#sId').val(),
+					name : $fmbutton.find('#sName').val(),
+					systemId :$fmbutton.find('#systemId').val(),
+					rute :$fmbutton.find('#sRute').val(),
+					description:$fmbutton.find('#sDescription').val(),
 				}),
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtStatusRFC.ajax.reload();
-					$mdStatusRFC.modal('hide');
+					$dtbutton.ajax.reload();
+					$mdbutton.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -110,9 +112,9 @@ function updateStatusRFC() {
 }
 
 
-function saveStatusRFC() {
+function savebutton() {
 	
-	if (!$fmStatusRFC.valid())
+	if (!$fmbutton.valid())
 		return;
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea crear el registro?',
@@ -123,21 +125,26 @@ function saveStatusRFC() {
 			blockUI();
 			$.ajax({
 				type : "POST",
-				url : getCont() + "admin/statusRFC/" ,
+				url : getCont() + "management/buttonInfra/" ,
 				dataType : "json",
 				contentType: "application/json; charset=utf-8",
 				timeout : 60000,
 				data : JSON.stringify({
-					name : $fmStatusRFC.find('#sName').val(),
-					code : $fmStatusRFC.find('#sCode').val(),
-					reason :$fmStatusRFC.find('#sMotive').val(),
-					description:$fmStatusRFC.find('#sDescription').val(),
+					name : $fmbutton.find('#sName').val(),
+					rute : $fmbutton.find('#sRute').val(),
+					systemId :$fmbutton.find('#systemId').val(),
+					description:$fmbutton.find('#sDescription').val(),
 				}),
 				success : function(response) {
 					unblockUI();
-					notifyMs(response.message, response.status)
-					$dtStatusRFC.ajax.reload();
-					$mdStatusRFC.modal('hide');
+					if(response.status==="error"){
+						notifyMs(response.message, response.status)
+					}else{
+						notifyMs(response.message, response.status)
+						$dtbutton.ajax.reload();
+						$mdbutton.modal('hide');
+					}
+					
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -148,8 +155,8 @@ function saveStatusRFC() {
 	});
 }
 
-function deleteStatusRFC(index) {
-	var obj = $dtStatusRFC.row(index).data();
+function deletebutton(index) {
+	var obj = $dtbutton.row(index).data();
 	Swal.fire({
 		title: '\u00BFEst\u00e1s seguro que desea eliminar el registro?',
 		text: 'Esta acci\u00F3n no se puede reversar.',
@@ -159,14 +166,14 @@ function deleteStatusRFC(index) {
 			blockUI();
 			$.ajax({
 				type : "DELETE",
-				url : getCont() + "admin/statusRFC/"+obj.id ,
+				url : getCont() + "management/buttonInfra/"+obj.id ,
 				timeout : 60000,
 				data : {},
 				success : function(response) {
 					unblockUI();
 					notifyMs(response.message, response.status)
-					$dtStatusRFC.ajax.reload();
-					$mdStatusRFC.modal('hide');
+					$dtbutton.ajax.reload();
+					$mdbutton.modal('hide');
 				},
 				error : function(x, t, m) {
 					unblockUI();
@@ -177,42 +184,64 @@ function deleteStatusRFC(index) {
 	});
 }
 
-function addStatusRFC(){
-	$fmStatusRFC.validate().resetForm();
-	$fmStatusRFC[0].reset();
-	$mdStatusRFC.find('#save').show();
-	$mdStatusRFC.find('#update').hide();
-	$mdStatusRFC.modal('show');
+function addbutton(){
+	$fmbutton.validate().resetForm();
+	$fmbutton[0].reset();
+	$fmbutton.find('#systemId').selectpicker('val',"");
+	$mdbutton.find('#save').show();
+	$mdbutton.find('#update').hide();
+	$mdbutton.find('#largeModalLabel').text("Agregar Boton Infra");
+	$('#systemId').prop('disabled', false);
+	$mdbutton.modal('show');
 }
 
-function closeStatusRFC(){
-	$mdStatusRFC.modal('hide');
+function closebutton(){
+	$mdbutton.modal('hide');
 }
 
-function initStatusRFCFormValidation() {
-	$fmStatusRFC.validate({
+function initbuttonFormValidation() {
+	$fmbutton.validate({
 		rules : {
-			'sCode' : {
+			'sRute' : {
 				required : true,
 				minlength : 1,
-				maxlength : 20,
+				maxlength : 100,
 			},
 			'sName' : {
 				required : true,
-				minlength : 1,
-				maxlength : 20,
-			},
-			'sMotive' : {
 				minlength : 1,
 				maxlength : 50,
 			},
 			'sDescription' : {
 				minlength : 1,
 				maxlength : 100,
+			},
+			'systemId':{
+				required:true,
+				remote: {
+                    url: getCont() + 'management/buttonInfra/validateSystemId', // Cambia esta URL al endpoint de tu servidor
+                    type: 'post', // Método HTTP que envía la solicitud (POST o GET)
+                    data: {
+                        systemId: function() {
+                            return $('#systemId').val(); // Valor del campo 'systemId'
+                        },
+                        sId: function() {
+                            return $('#sId').val(); 
+                    },
+                    dataFilter: function(response) {
+                        // Procesar la respuesta del servidor (true o false)
+                        if (response === "true") {
+                            return true; // El systemId es válido
+                        } else {
+                            return false; // El systemId ya está en uso
+                        }
+                    }
 			}
+				}
+		}
 		},
 		messages : {
-			'sCode' : {
+			'sRute' : {
 				required :  "Ingrese un valor",
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
@@ -222,14 +251,14 @@ function initStatusRFCFormValidation() {
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
-			'sMotive' : {
-				minlength : "Ingrese un valor",
-				maxlength : "No puede poseer mas de {0} caracteres"
-			},
 			'sDescription' : {
 				minlength : "Ingrese un valor",
 				maxlength : "No puede poseer mas de {0} caracteres"
 			},
+			'systemId':{
+				required :  "Ingrese un valor",
+				 remote: "Este ID ya esta en uso. Por favor, elija otro."
+			}
 		},
 		highlight,
 		unhighlight,

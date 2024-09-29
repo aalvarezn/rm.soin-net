@@ -13,7 +13,7 @@ import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.pos.PButtonInfra;
 import com.soin.sgrm.model.pos.PSiges;
 
-@Service("PsigesService")
+@Service("PButtonInfraService")
 @Transactional("transactionManagerPos")
 public class PButtonInfraServiceImpl implements PButtonInfraService{
 
@@ -70,6 +70,18 @@ public class PButtonInfraServiceImpl implements PButtonInfraService{
 	@Override
 	public boolean veryUpdateSigesCodeDif(Long id, String codeSiges) {
 		return dao.veryUpdateSigesCodeDif(id,codeSiges);
+	}
+
+	@Override
+	public boolean existsBySystemId(Integer systemId) {
+		
+		return dao.existsBySystemId(systemId);
+	}
+
+	@Override
+	public boolean existsBySystemIdandId(Long sId, Integer systemId) {
+		// TODO Auto-generated method stub
+		return dao.existsBySystemIdandId(sId,systemId);
 	}
 
 

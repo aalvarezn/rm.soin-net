@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <html>
 <head>
-<%@include file=../plantilla/header.jsp"%>
+<%@include file="../plantilla/header.jsp"%>
 <!-- Style Section -->
 <%@include file="../plantilla/styleSection.jsp"%>
 <!-- #END# Style Section -->
@@ -19,21 +19,22 @@
 	<div class="overlay"></div>
 	<!-- #END# Overlay For Sidebars -->
 
+	<!-- #END# Page Loader -->
+
+	<!-- Overlay For Sidebars -->
+	<div class="overlay"></div>
+	<!-- #END# Overlay For Sidebars -->
+
 	<!-- Top Bar -->
-	<%@include file="../plantilla/admin/topbar.jsp"%>
+	<%@include file="../plantilla/topbar.jsp"%>
 	<!-- #Top Bar -->
-
-	<section>
-		<!-- EmailModal -->
-		<%@include file="../buttons/buttonModal.jsp"%>
-		<!-- #END# EmailModal -->
-	</section>
-
+<%@include file="../buttons/buttonModal.jsp"%>
 	<section>
 		<!-- Left Sidebar -->
-		<%@include file="../plantilla/admin/leftbar.jsp"%>
+		<%@include file="../plantilla/leftbar.jsp"%>
 		<!-- #END# Left Sidebar -->
 	</section>
+
 	<section class="content m-t-90I">
 		<div class="container-fluid">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-b-20">
@@ -54,8 +55,8 @@
 								<tr>
 									<th>Nombre</th>
 									<th>Comando</th>
-									<th>Motivo</th>
 									<th>Descripción</th>
+									<th>Sistema</th>
 									<th class="actCol" style="text-align: center;">Acciones</th>
 								</tr>
 							</thead>
@@ -69,7 +70,7 @@
 		</div>
 		<a id="buttonAddSiges" type="button"
 			class="btn btn-primary btn-fab waves-effect fixedDown"
-			onclick="addStatusRFC()"> <i class="material-icons lh-1-8">add</i>
+			onclick="addbutton()"> <i class="material-icons lh-1-8">add</i>
 		</a>
 	</section>
 

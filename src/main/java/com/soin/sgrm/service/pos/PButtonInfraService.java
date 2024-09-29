@@ -13,5 +13,9 @@ public interface PButtonInfraService extends BaseService<Long, PButtonInfra>{
 
 	boolean veryUpdateSigesCode(Long id, String codeSiges);
 
+	public boolean existsBySystemId(Integer systemId);
+
+	public boolean existsBySystemIdandId(Long sId, Integer systemId);
+
 
 }

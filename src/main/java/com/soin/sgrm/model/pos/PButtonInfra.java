@@ -37,8 +37,7 @@ public class PButtonInfra implements Serializable{
 	@Column(name = "DESCRIPCION")
 	private String description;
 	
-	
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "\"SISTEMA_ID\"")
 	private PSystemInfo system;
