@@ -81,6 +81,9 @@
 				<c:if test="${authority.name == 'Gestor Incidencias'}">
 					<c:set var="managerIncidenceAccess" value="true"></c:set>
 				</c:if>
+					<c:if test="${authority.name == 'Infra'}">
+					<c:set var="infraAccess" value="true"></c:set>
+				</c:if>
 				<c:if
 					test="${authority.name == 'Gestor Basecono'or authority.name == 'Release Manager'}">
 					<c:set var="managerKnowledgeAccess" value="true"></c:set>
@@ -168,6 +171,11 @@
 			<c:if test="${incidenceAccess}">
 				<li><a id="incidenceItem" href="<c:url value='/incidence/'/> ">
 						<span>Mis tickets</span>
+				</a></li>
+			</c:if>
+			<c:if test="${infraAccess}">
+				<li><a id="buttonInfraItem" href="<c:url value='/incidence/'/> ">
+						<span>Mis botones</span>
 				</a></li>
 			</c:if>
 
