@@ -7,12 +7,14 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.soin.sgrm.exception.Sentry;
@@ -32,7 +34,7 @@ public class ButtonInfraController extends BaseController {
 
 	@Autowired
 	PSystemService psystemService;
-	
+
 	@Autowired
 	PButtonInfraService pbuttonInfraService;
 
@@ -57,8 +59,8 @@ public class ButtonInfraController extends BaseController {
 	public String index(HttpServletRequest request, Locale locale, Model model, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		try {
-				List<PSystem> systems = psystemService.listProjectsall(getUserLogin().getId());
-				model.addAttribute("systems", systems);
+			List<PSystem> systems = psystemService.listProjectsall(getUserLogin().getId());
+			model.addAttribute("systems", systems);
 		} catch (Exception e) {
 			Sentry.capture(e, "buttonInfra");
 			e.printStackTrace();
@@ -84,26 +86,31 @@ public class ButtonInfraController extends BaseController {
 			}
 
 			String dateRange = request.getParameter("dateRange");
-				JsonSheet<?> buttons = new JsonSheet<>();
-				List<PSystem> systems = psystemService.listProjectsall(getUserLogin().getId());
-				buttons = pbuttonInfraService.findAllButton(sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange, systemId,systems);
-				return buttons;
-			
+			JsonSheet<?> buttons = new JsonSheet<>();
+			List<PSystem> systems = psystemService.listProjectsall(getUserLogin().getId());
+			buttons = pbuttonInfraService.findAllButton(sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange,
+					systemId, systems);
+			return buttons;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	@RequestMapping(value = "/action/{id}", method = RequestMethod.GET)
 	public @ResponseBody JsonResponse actionButton(@PathVariable Long id, HttpServletRequest request, Locale locale,
 			Model model, HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
-			//Aca se realizara la consulta o activacion del boton
-			
-			
+			// Aca se realizara la consulta o activacion del boton
+			RestTemplate restTemplate = new RestTemplate();
+			String url = "https://api.agify.io?name=michael";
+			ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+			res.setData(response.getBody());
+			res.setStatus("success");
+			return res;
+
 		} catch (Exception e) {
 			Sentry.capture(e, "buttonAction");
 			res.setStatus("exception");

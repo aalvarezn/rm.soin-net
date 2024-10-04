@@ -103,7 +103,8 @@ function actionButton(element) {
 			switch (response.status) {
 			case 'success':
 				swal("Correcto!", "La accion se ha sido realizado exitosamente.",
-						"success", 2000)
+						"success", 2000);
+				console.log(response.data);
 						
 				break;
 			case 'fail':
