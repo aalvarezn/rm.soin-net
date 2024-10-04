@@ -1,7 +1,16 @@
 package com.soin.sgrm.service.pos;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +21,10 @@ import com.soin.sgrm.dao.pos.PSigesDao;
 import com.soin.sgrm.model.Siges;
 import com.soin.sgrm.model.pos.PButtonInfra;
 import com.soin.sgrm.model.pos.PSiges;
+import com.soin.sgrm.model.pos.PSystem;
+import com.soin.sgrm.model.pos.PSystemInfo;
+import com.soin.sgrm.response.JsonSheet;
+import com.soin.sgrm.utils.Constant;
 
 @Service("PButtonInfraService")
 @Transactional("transactionManagerPos")
@@ -80,8 +93,48 @@ public class PButtonInfraServiceImpl implements PButtonInfraService{
 
 	@Override
 	public boolean existsBySystemIdandId(Long sId, Integer systemId) {
-		// TODO Auto-generated method stub
 		return dao.existsBySystemIdandId(sId,systemId);
+	}
+
+	@Override
+	public JsonSheet<?> findAllButton(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
+			String dateRange, Integer systemId,List<PSystem> systems) {
+		
+		Map<String, Object> columns = new HashMap<String, Object>();
+
+		Map<String, String> alias = new HashMap<String, String>();
+
+		alias.put("system", "system");
+
+		Criterion qSrch = null;
+		if (sSearch != null && sSearch.length() > 0) {
+			qSrch = Restrictions.or(
+
+					Restrictions.like("name", sSearch, MatchMode.ANYWHERE).ignoreCase(),
+					Restrictions.like("description", sSearch, MatchMode.ANYWHERE).ignoreCase()
+
+			);
+		}
+		if (systemId != 0) {
+			
+			columns.put("system", Restrictions.or(Restrictions.eq("system.id", systemId)));
+
+		} else {
+			List<Integer> listaId = new ArrayList<Integer>();
+			for (PSystem system : systems) {
+				listaId.add(system.getId());
+			}
+			
+			columns.put("system", (Restrictions.in("system.id", listaId)));
+		}
+
+		List<String> fetchs = new ArrayList<String>();
+		/*fetchs.add("releases");
+		fetchs.add("files");
+		fetchs.add("tracking");
+		*/
+		fetchs.add("user");
+		return dao.findAll(sEcho, iDisplayStart, iDisplayLength, columns, qSrch, fetchs, alias,4);
 	}
 
 

@@ -265,13 +265,13 @@ public class PRFCDaoImpl extends AbstractDao<Long,PRFC> implements PRFCDao {
 			String dateRange, List<Integer> systemsId, Long sigesId) throws ParseException {
 		JsonSheet json = new JsonSheet();
 		Criteria crit = criteriaByReport( sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange,
-				systemsId,sigesId);
+				systemsId,sigesId,false);
 
 		crit.setFirstResult(iDisplayStart);
 		crit.setMaxResults(iDisplayLength);
 
 		Criteria critCount = criteriaByReport( sEcho, iDisplayStart, iDisplayLength, sSearch, dateRange,
-				systemsId,sigesId);
+				systemsId,sigesId,true);
 
 		critCount.setProjection(Projections.rowCount());
 		Long count = (Long) critCount.uniqueResult();
@@ -287,7 +287,7 @@ public class PRFCDaoImpl extends AbstractDao<Long,PRFC> implements PRFCDao {
 
 	@SuppressWarnings("deprecation")
 	private Criteria criteriaByReport(Integer sEcho, Integer iDisplayStart, Integer iDisplayLength, String sSearch,
-			String dateRange, List<Integer> systemsId, Long sigesId) throws ParseException {
+			String dateRange, List<Integer> systemsId, Long sigesId,boolean count) throws ParseException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PRFCReport.class);
 		crit.createAlias("system", "system");
 		crit.createAlias("user", "user");
@@ -325,9 +325,12 @@ public class PRFCDaoImpl extends AbstractDao<Long,PRFC> implements PRFCDao {
 			crit.add(Restrictions.eq("siges.id", sigesId));
 		}
 		
-		
+		if(!count) {
+			crit.addOrder(Order.desc("requestDate"));
+			
+		}
 
-		crit.addOrder(Order.desc("requestDate"));
+		
 
 		return crit;
 	}

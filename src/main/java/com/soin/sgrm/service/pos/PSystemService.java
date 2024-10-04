@@ -65,4 +65,6 @@ public interface PSystemService {
 
 	void saveAndSiges(PSystem addSystem);
 
+	List<PSystem> listProjectsall(int id);
+
 }

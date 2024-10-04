@@ -221,6 +221,21 @@ public class PSystemDaoImpl implements PSystemDao {
 		    		.add(Restrictions.eq("managers.id", id))
 		    		.list();
 	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<PSystem> listProjectsall(int id) {
+		   return sessionFactory.getCurrentSession().createCriteria(PSystem.class)
+		    		.createAlias("managers","managers")
+		    		.createAlias("userTeam","userTeam")
+		    		.createAlias("leader","leader")
+		    		.add(Restrictions.or(
+		    	            Restrictions.eq("managers.id", id),
+		    	            Restrictions.eq("userTeam.id", id),
+		    	            Restrictions.eq("leader.id", id)
+		    	        ))
+		    		 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+		    		.list();
+	}
 	
 	@SuppressWarnings("unchecked")
 	@Override

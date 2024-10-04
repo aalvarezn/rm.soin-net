@@ -110,6 +110,11 @@ public class PSystemServiceImpl implements PSystemService {
 	public List<PSystem> listProjects(int id) {
 		return dao.listProjects(id);
 	}
+	
+	@Override
+	public List<PSystem> listProjectsall(int id) {
+		return dao.listProjectsall(id);
+	}
 
 	@Override
 	public PSystemInfo findSystemInfoById(Integer id) {

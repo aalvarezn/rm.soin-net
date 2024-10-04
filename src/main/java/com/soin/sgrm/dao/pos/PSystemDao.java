@@ -63,4 +63,6 @@ public interface PSystemDao {
 
 	boolean checkUniqueCode(String sCode, Integer proyectId, Integer typeCheck);
 
+	List<PSystem> listProjectsall(int id);
+
 }

@@ -174,7 +174,7 @@
 				</a></li>
 			</c:if>
 			<c:if test="${infraAccess}">
-				<li><a id="buttonInfraItem" href="<c:url value='/incidence/'/> ">
+				<li><a id="buttonInfraItem" href="<c:url value='/buttonInfra/'/> ">
 						<span>Mis botones</span>
 				</a></li>
 			</c:if>
