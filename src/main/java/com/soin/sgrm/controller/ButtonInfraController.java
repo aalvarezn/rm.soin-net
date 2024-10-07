@@ -1,7 +1,10 @@
 package com.soin.sgrm.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
@@ -17,6 +20,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.huaweicloud.sdk.core.auth.BasicCredentials;
+import com.huaweicloud.sdk.core.auth.ICredential;
+import com.huaweicloud.sdk.functiongraph.v2.FunctionGraphClient;
+import com.huaweicloud.sdk.functiongraph.v2.model.InvokeFunctionRequest;
+import com.huaweicloud.sdk.functiongraph.v2.model.InvokeFunctionResponse;
+import com.huaweicloud.sdk.functiongraph.v2.region.FunctionGraphRegion;
 import com.soin.sgrm.exception.Sentry;
 import com.soin.sgrm.model.RequestBaseR1;
 import com.soin.sgrm.model.RequestBaseTrackingShow;
@@ -103,12 +112,48 @@ public class ButtonInfraController extends BaseController {
 			Model model, HttpSession session) {
 		JsonResponse res = new JsonResponse();
 		try {
-			// Aca se realizara la consulta o activacion del boton
-			RestTemplate restTemplate = new RestTemplate();
-			String url = "https://api.agify.io?name=michael";
-			ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-			res.setData(response.getBody());
+			// curl basico
+			/*
+			 * RestTemplate restTemplate = new RestTemplate(); String url =
+			 * "https://api.agify.io?name=michael"; ResponseEntity<String> response =
+			 * restTemplate.getForEntity(url, String.class);
+			 * res.setData(response.getBody());
+			 */
+			// Invocacion si es Huaweii
+			String id_cuenta = "b7b7717355c742b28c5ffcad2e4ceba1";
+			String function = "default:Function-Prueba:latest";
+			String region = "la-north-2";
+			String ak = "IDT0DQN8LBYZ6RPFOPUB";
+			String sk = "uSgOOeDa6jF56m85wZNEPQUWES3ISCS4iWAvgJHc";
+			/*
+			 * Map<String, Object> body = new HashMap<>(); BasicCredentials basicCredentials
+			 * = new BasicCredentials() .withAk(ak) .withSk(sk); FunctionGraphClient client
+			 * = FunctionGraphClient.newBuilder() .withCredential(basicCredentials)
+			 * .withRegion(FunctionGraphRegion.LA_NORTH_2) .build();
+			 * 
+			 * String functionUrn =
+			 * "urn:fss:la-north-2:b7b7717355c742b28c5ffcad2e4ceba1:function:default:Function-Prueba:latest";
+			 * InvokeFunctionRequest request2 = new InvokeFunctionRequest()
+			 * .withFunctionUrn(functionUrn) .withBody(body); InvokeFunctionResponse
+			 * response = client.invokeFunction(request2); String result =
+			 * response.getResult();
+			 */
+			ICredential auth = new BasicCredentials().withAk(ak).withSk(sk);
+
+			FunctionGraphClient client = FunctionGraphClient.newBuilder().withCredential(auth)
+					.withRegion(FunctionGraphRegion.LA_NORTH_2).build();
+			InvokeFunctionRequest request2 = new InvokeFunctionRequest();
+			Map<String, Object> listbodyInvokeFunctionRequestBody = new HashMap<>();
+		
+			request2.withBody(listbodyInvokeFunctionRequestBody);
+			request2.withFunctionUrn("urn:fss:la-north-2:b7b7717355c742b28c5ffcad2e4ceba1:function:default:Function-Prueba:latest");
+			request2.withXCffLogType("tail");
+			request2.withXCFFRequestVersion("v1");
+
+			InvokeFunctionResponse response = client.invokeFunction(request2);
+			System.out.println(response.toString());
 			res.setStatus("success");
+			res.setData(response.getResult());
 			return res;
 
 		} catch (Exception e) {
